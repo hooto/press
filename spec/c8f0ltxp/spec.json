@@ -1,0 +1,89 @@
+{
+    "metadata": {
+        "id": "c8f0ltxp",
+        "name": "portal"
+    },
+    "nodeModels": [
+        {
+            "metadata": {
+                "name": "entry"
+            },
+            "title": "Content Entry",
+            "fields": [
+                {
+                    "name": "content",
+                    "type": "text",
+                    "title": "Content",
+                    "attrs": [
+                        {
+                            "key": "ui_rows",
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "weight",
+                    "type": "int32",
+                    "title": "Weight"
+                }
+            ]
+        }
+    ],
+    "termModels": [
+        {
+            "metadata": {
+                "name": "keywords"
+            },
+            "type": "tag"
+        },
+        {
+            "metadata": {
+                "name": "categories"
+            },
+            "type": "taxonomy"
+        }
+    ],
+    "actions": [
+        {
+            "name": "list",
+            "datax": [
+                {
+                    "name": "list",
+                    "type": "list",
+                    "query": {
+                        "table": "entry",
+                        "limit": 10,
+                        "limitMax": 100
+                    }
+                }
+            ]
+        },
+        {
+            "name": "view",
+            "datax": [
+                {
+                    "name": "entry",
+                    "type": "entry",
+                    "query": {
+                        "table": "entry"
+                    }
+                }
+            ]
+        }
+    ],
+    "router": {
+        "defaultPagelet": "index.tpl",
+        "routes": [
+            {
+                "path": "view/:id",
+                "dataAction": "view",
+                "template": "entry.tpl"
+            },
+            {
+                "path": "list",
+                "dataAction": "list",
+                "template": "list.tpl"
+            }
+        ]
+    }
+}

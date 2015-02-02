@@ -1,0 +1,3 @@
+[submodule "static/lessui"]
+	path = static/lessui
+	url = https://github.com/lessos/lessui.git

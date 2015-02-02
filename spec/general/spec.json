@@ -1,0 +1,65 @@
+{
+    "metadata": {
+        "id": "general",
+        "name": "General"
+    },
+    "nodeModels": [
+        {
+            "metadata": {
+                "name": "menu"
+            },
+            "title": "Menu",
+            "comment": "Customize the site navigation menu",
+            "fields": [
+                {
+                    "name": "content",
+                    "type": "text"
+                },
+                {
+                    "name": "weight",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "metadata": {
+                "name": "page"
+            },
+            "title": "Basic Page",
+            "comment": "Use basic pages for your static content, such as an 'About us' page",
+            "fields": [
+                {
+                    "name": "content",
+                    "type": "text"
+                },
+                {
+                    "name": "weight",
+                    "type": "int32"
+                }
+            ]
+        }
+    ],
+    "termModels": [
+        {
+            "metadata": {
+                "name": "type"
+            },
+            "type": "taxonomy"
+        }
+    ],
+    "actions": [
+        {
+            "name": "topnav",
+            "datax": [
+                {
+                    "name": "topnav",
+                    "type": "list",
+                    "query": {
+                        "table": "menu",
+                        "limit": 50
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+_*/
+*~
+bin/*
+var/*
+etc/*.sql
+static/jquery/
+static/lessui/
+static/bootstrap/
+static/codemirror/
+

@@ -1,0 +1,10 @@
+
+.l5smgr-query-input {
+    padding: 5px 5px 5px 30px;
+    background: url(/~/img/search-16.png) no-repeat 8px; 
+    width: 300px;
+}
+
+.l5smgr-font-wfix {
+    font-family: 'Courier New', Courier, monospace;
+}

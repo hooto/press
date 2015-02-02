@@ -1,0 +1,13 @@
+#!/bin/bash
+
+files=`find ./src -type f -name "*.go" |xargs`
+for file in $files; do
+    gofmt -w=true ${file}
+done
+
+rm -f ./bin/lesscmf
+
+go build -ldflags "-w -s" -o ./bin/lesscmf ./src/main.go
+
+./bin/lesscmf -logtostderr=true 
+

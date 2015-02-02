@@ -1,0 +1,14 @@
+{
+  "locale": "en",
+  "lang": "English",
+  "data": [
+    {
+      "key": "browser-reject-desc",
+      "val": "This Application are not fully supported in this browser/version"
+    },
+    {
+      "key": "browser-reject-advice-desc",
+      "val": "Please download the following browsers, and Install or Upgrade to the latest version"
+    }
+  ]
+}
