@@ -58,9 +58,16 @@ func (c NodeModel) ListAction() {
 
 		for _, v := range rs {
 
+			var fields []api.FieldModel
+			v.Field("fields").Json(&fields)
+
+			var terms []api.TermModel
+			v.Field("terms").Json(&terms)
+
 			rsp.Items = append(rsp.Items, api.NodeModel{
 				Metadata: api.ObjectMeta{
 					ID:      v.Field("id").String(),
+					Name:    v.Field("name").String(),
 					UserID:  v.Field("userid").String(),
 					Created: v.Field("created").TimeFormat("datetime", "atom"),
 					Updated: v.Field("updated").TimeFormat("datetime", "atom"),
@@ -68,6 +75,8 @@ func (c NodeModel) ListAction() {
 				State:  v.Field("state").Int16(),
 				SpecID: v.Field("specid").String(),
 				Title:  v.Field("title").String(),
+				Fields: fields,
+				Terms:  terms,
 			})
 		}
 	}
@@ -95,14 +104,14 @@ func (c NodeModel) EntryAction() {
 		}
 	}()
 
-	specid, model := c.Params.Get("specid"), c.Params.Get("model")
+	specid, modelid := c.Params.Get("specid"), c.Params.Get("modelid")
 	if c.Params.Get("id") != "" {
 		if s := strings.Split(c.Params.Get("id"), ","); len(s) == 2 {
-			specid, model = s[0], s[1]
+			specid, modelid = s[0], s[1]
 		}
 	}
 
-	nmodel, err := conf.SpecNodeModel(specid, model)
+	nmodel, err := conf.SpecNodeModel(specid, modelid)
 	if err != nil {
 		rsp.Error = &api.ErrorMeta{
 			Code:    "404",

@@ -4,7 +4,7 @@
 <script id="l5smgr-node-specls-tpl" type="text/html">
 <ul class="nav nav-pills">
   {[~it.items :v]}
-  <li class="{[if (it.active == v.metadata.id) {]}active{[}]}"><a href="#{[=v.metadata.id]}">{[=v.title]}</a></li>
+  <li class="spec-item {[if (it.active == v.metadata.id) {]}active{[}]}" tgspec="{[=v.metadata.id]}"><a href="#{[=v.metadata.id]}">{[=v.title]}</a></li>
   {[~]}
 </ul>
 </script>
@@ -27,7 +27,9 @@
 <script id="l5smgr-node-nmodels-tpl" type="text/html">
 <ul class="nav nav-pills nav-stacked">
   {[~it.items :v]}
-  <li class="{[if (it.active == v.metadata.name) {]}active{[}]}"><a href="#{[=v.metadata.id]}">{[=v.title]}</a></li>
+  <li class="node-item {[if (it.active == v.metadata.name) {]}active{[}]}" tgname="{[=v.metadata.name]}">
+    <a href="#{[=v.metadata.id]}">{[=v.title]}</a>
+  </li>
   {[~]}
 </ul>
 </script>
@@ -35,7 +37,47 @@
 <script id="l5smgr-node-tmodels-tpl" type="text/html">
 <ul class="nav nav-pills nav-stacked">
   {[~it.items :v]}
-  <li class="{[if (it.active == v.metadata.name) {]}active{[}]}"><a href="#{[=v.metadata.id]}">{[=v.title]}</a></li>
+  <li class="term-item {[if (it.active == v.metadata.name) {]}active{[}]}" tgname="{[=v.metadata.name]}">
+    <a href="#{[=v.metadata.id]}">{[=v.title]}</a>
+  </li>
   {[~]}
 </ul>
+</script>
+
+<script type="text/javascript">
+
+$("#l5smgr-node-specls").on("click", ".spec-item", function() {
+
+    $("#l5smgr-node-specls").find(".active").removeClass("active");
+    $(this).addClass("active");
+
+    l4iStorage.Set("l5smgr_spec_active", $(this).attr("tgspec"));
+    l4iStorage.Del("l5smgr_nmodel_active");
+    l4iStorage.Del("l5smgr_tmodel_active");
+
+    l5sNode.Index();
+});
+
+$("#l5smgr-node-nmodels").on("click", ".node-item", function() {
+    
+    $("#l5smgr-node-nmodels").find(".active").removeClass("active");
+    $("#l5smgr-node-tmodels").find(".active").removeClass("active");
+    $(this).addClass("active");
+
+    l4iStorage.Set("l5smgr_nmodel_active", $(this).attr("tgname"));
+
+    l5sNode.List(null, $(this).attr("tgname"));
+});
+
+$("#l5smgr-node-tmodels").on("click", ".term-item", function() {
+
+    $("#l5smgr-node-nmodels").find(".active").removeClass("active");
+    $("#l5smgr-node-tmodels").find(".active").removeClass("active");
+    $(this).addClass("active");
+
+    l4iStorage.Set("l5smgr_tmodel_active", $(this).attr("tgname"));
+
+    l5sTerm.List(null, $(this).attr("tgname"));
+});
+
 </script>

@@ -118,6 +118,10 @@ const dsBase = `
                     "type": "string-text"
                 },
                 {
+                    "name": "terms",
+                    "type": "string-text"
+                },
+                {
                     "name": "created",
                     "type": "datetime"
                 },
@@ -244,7 +248,7 @@ const dsBase = `
 `
 
 const (
-	dsNodeModels = `
+	dsTplNodeModels = `
 {
     "columns": [
         {
@@ -265,15 +269,6 @@ const (
             "name": "title",
             "type": "string",
             "length": "100"
-        },
-        {
-            "name": "content",
-            "type": "string-text"
-        },
-        {
-            "name": "weight",
-            "type": "int32",
-            "default": "0"
         },
         {
             "name": "created",
@@ -313,18 +308,14 @@ const (
     ]
 }
 `
-	dsTermModels = `
+	dsTplTermModels = `
 {
+    "name": "template",
     "columns": [
         {
             "name": "id",
             "type": "uint32",
             "IncrAble": true
-        },
-        {
-            "name": "uid",
-            "type": "string",
-            "length": "20"
         },
         {
             "name": "state",
@@ -354,11 +345,6 @@ const (
             "name": "PRIMARY",
             "type": 3,
             "cols": ["id"]
-        },
-        {
-            "name": "uid",
-            "type": 2,
-            "cols": ["uid"]
         },
         {
             "name": "state",

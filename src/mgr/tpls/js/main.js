@@ -34,8 +34,9 @@ l5sMgr.Boot = function()
             "~/lessui/css/lessui.min.css",
             "-/css/main.css?_="+ Math.random(),
             "-/js/spec.js?_="+ Math.random(),
-            "-/js/node.js?_="+ Math.random(),
             "-/js/model.js?_="+ Math.random(),
+            "-/js/term.js?_="+ Math.random(),
+            "-/js/node.js?_="+ Math.random(),
         ], function() {
 
             l5sMgr.Ajax(l5sMgr.base +"-/body.tpl", {

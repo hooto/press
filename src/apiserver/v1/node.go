@@ -1,15 +1,18 @@
 package v1
 
 import (
+	"fmt"
+	"io"
+
 	"../../api"
 	"../../conf"
-	"fmt"
+	"../../datax"
+
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/pagelet"
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
-	"io"
 )
 
 type Node struct {
@@ -36,6 +39,15 @@ func (c Node) ListAction() {
 		}
 	}()
 
+	model, err := conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("modelid"))
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "404",
+			Message: "Spec Not Found",
+		}
+		return
+	}
+
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
 		rsp.Error = &api.ErrorMeta{
@@ -45,7 +57,7 @@ func (c Node) ListAction() {
 		return
 	}
 
-	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("model"))
+	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
 
 	q := rdobase.NewQuerySet().From(table).Limit(100)
 	rs, err := dcn.Base.Query(q)
@@ -61,18 +73,36 @@ func (c Node) ListAction() {
 
 		for _, v := range rs {
 
-			rsp.Items = append(rsp.Items, api.Node{
+			item := api.Node{
 				ID:      v.Field("id").String(),
 				State:   v.Field("state").Int16(),
 				UserID:  v.Field("userid").String(),
 				Title:   v.Field("title").String(),
-				Content: v.Field("content").String(),
-				Weight:  v.Field("content").Int32(),
 				Created: v.Field("created").TimeFormat("datetime", "atom"),
 				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
-			})
+			}
+
+			for _, field := range model.Fields {
+
+				item.Fields = append(item.Fields, api.NodeField{
+					Name:  field.Name,
+					Value: v.Field("field_" + field.Name).String(),
+				})
+			}
+
+			for _, term := range model.Terms {
+
+				item.Terms = append(item.Terms, api.NodeTerm{
+					Name:  term.Metadata.Name,
+					Value: v.Field("term_" + term.Metadata.Name).String(),
+				})
+			}
+
+			rsp.Items = append(rsp.Items, item)
 		}
 	}
+
+	rsp.Model = model
 
 	rsp.Kind = "NodeList"
 }
@@ -106,7 +136,7 @@ func (c Node) EntryAction() {
 		return
 	}
 
-	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("model"))
+	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
 
 	q := rdobase.NewQuerySet().From(table).Limit(1)
 	q.Where.And("id", c.Params.Get("id"))
@@ -127,7 +157,7 @@ func (c Node) EntryAction() {
 		return
 	}
 
-	rsp.Model, err = conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("model"))
+	rsp.Model, err = conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("modelid"))
 	if err != nil {
 		rsp.Error = &api.ErrorMeta{
 			Code:    "404",
@@ -138,11 +168,21 @@ func (c Node) EntryAction() {
 
 	for _, field := range rsp.Model.Fields {
 
-		rsp.Fields = append(rsp.Fields, api.NodeFieldValue{
+		rsp.Fields = append(rsp.Fields, api.NodeField{
 			Name:  field.Name,
 			Value: rs[0].Field("field_" + field.Name).String(),
 		})
 	}
+
+	for _, term := range rsp.Model.Terms {
+
+		rsp.Terms = append(rsp.Terms, api.NodeTerm{
+			Name:  term.Metadata.Name,
+			Value: rs[0].Field("term_" + term.Metadata.Name).String(),
+		})
+	}
+
+	rsp.Terms = datax.NodeTermsQuery(rsp.Model, rsp.Terms)
 
 	rsp.ID = rs[0].Field("id").String()
 	rsp.State = rs[0].Field("state").Int16()
@@ -183,7 +223,7 @@ func (c Node) SetAction() {
 		return
 	}
 
-	model, err := conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("model"))
+	model, err := conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("modelid"))
 	if err != nil {
 		rsp.Error = &api.ErrorMeta{
 			Code:    "404",
@@ -193,7 +233,10 @@ func (c Node) SetAction() {
 	}
 
 	if err := utils.JsonDecode(c.Request.RawBody, &rsp); err != nil {
-		rsp.Error = &api.ErrorMeta{Code: "400", Message: "Bad Request"}
+		rsp.Error = &api.ErrorMeta{
+			Code:    "400",
+			Message: "Bad Request",
+		}
 		return
 	}
 
@@ -207,7 +250,7 @@ func (c Node) SetAction() {
 	}
 
 	//
-	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("model"))
+	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
 
 	if len(rsp.ID) > 0 {
 
@@ -238,11 +281,39 @@ func (c Node) SetAction() {
 			set["state"] = rsp.State
 		}
 
+		//
 		for _, valField := range rsp.Fields {
 
 			if utilx.ArrayContain(valField.Name, fns) &&
 				rs[0].Field("field_"+valField.Name).String() != valField.Value {
 				set["field_"+valField.Name] = valField.Value
+			}
+		}
+
+		//
+		for _, modTerm := range model.Terms {
+
+			for _, term := range rsp.Terms {
+
+				if modTerm.Metadata.Name != term.Name {
+					continue
+				}
+
+				switch modTerm.Type {
+
+				case api.TermTag:
+
+					tags, _ := datax.TermSync(model.SpecID, modTerm.Metadata.Name, term.Value)
+
+					if rs[0].Field("term_"+term.Name).String() != term.Value {
+						set["term_"+modTerm.Metadata.Name] = tags.Content()
+						set["term_"+modTerm.Metadata.Name+"_idx"] = tags.Index()
+					}
+
+				case api.TermTaxonomy:
+
+					set["term_"+modTerm.Metadata.Name] = term.Value
+				}
 			}
 		}
 
@@ -254,10 +325,35 @@ func (c Node) SetAction() {
 		set["created"] = rdobase.TimeNow("datetime")
 		set["userid"] = "dr5a8pgv"
 
+		//
 		for _, valField := range rsp.Fields {
 
 			if utilx.ArrayContain(valField.Name, fns) {
 				set["field_"+valField.Name] = valField.Value
+			}
+		}
+
+		//
+		for _, modTerm := range model.Terms {
+
+			for _, term := range rsp.Terms {
+
+				if modTerm.Metadata.Name != term.Name {
+					continue
+				}
+
+				switch modTerm.Type {
+
+				case api.TermTag:
+
+					tags, _ := datax.TermSync(model.SpecID, modTerm.Metadata.Name, term.Value)
+					set["term_"+modTerm.Metadata.Name] = tags.Content()
+					set["term_"+modTerm.Metadata.Name+"_idx"] = tags.Index()
+
+				case api.TermTaxonomy:
+
+					set["term_"+modTerm.Metadata.Name] = term.Value
+				}
 			}
 		}
 	}

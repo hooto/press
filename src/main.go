@@ -67,6 +67,7 @@ func main() {
 	//
 	pagelet.Config.RouteAppend("v1", "/:controller/:action")
 	pagelet.RegisterController("v1", (*capi.Node)(nil))
+	pagelet.RegisterController("v1", (*capi.Term)(nil))
 	pagelet.RegisterController("v1", (*capi.Spec)(nil))
 	pagelet.RegisterController("v1", (*capi.NodeModel)(nil))
 	pagelet.RegisterController("v1", (*capi.TermModel)(nil))

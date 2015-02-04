@@ -6,128 +6,174 @@ var l5sNode = {
 
 l5sNode.Index = function()
 {
-    l5sMgr.Ajax(l5sMgr.base +"-/node/index.tpl", {
-        callback: function(err, data) {
+    // console.log(uri);
+    seajs.use(["ep"], function (EventProxy) {
 
-            $("#com-content").html(data);
+        var ep = EventProxy.create("tpl", "data", function (tpl, data) {
+            
+            if (tpl) {
+                $("#com-content").html(tpl);
+            }
+
+            if (!l5sNode.speclsCurrent) {
+
+                if (!data || data.kind != "SpecList" 
+                    || data.items === undefined || data.items.length < 1) {
+                    return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Content Type Not Found");
+                }
+
+                l5sNode.speclsCurrent = data.items;
+            }
+
+            //
+            if (!l4iStorage.Get("l5smgr_spec_active")) {
+                for (var i in l5sNode.speclsCurrent) {
+                    l4iStorage.Set("l5smgr_spec_active", l5sNode.speclsCurrent[i].metadata.id);
+                    break;
+                }
+            }
+            if (!l4iStorage.Get("l5smgr_spec_active")) {
+                // TODO
+                return;
+            }
+
+
+            for (var i in l5sNode.speclsCurrent) {
+                if (l5sNode.speclsCurrent[i].metadata.id == l4iStorage.Get("l5smgr_spec_active")) {
+                    l5sNode.specCurrent = l5sNode.speclsCurrent[i];
+                    break;
+                }
+            }
+
+            if (!l5sNode.specCurrent) {
+                // TODO
+            }
+
+            // console.log(l5sNode.specCurrent);
+
+            if (l5sNode.specCurrent) {
+
+                // console.log(l5sNode.specCurrent);
+                        
+                if (!l5sNode.specCurrent.nodeModels) {
+                    l5sNode.specCurrent.nodeModels = [];
+                }
+                if (!l5sNode.specCurrent.termModels) {
+                    l5sNode.specCurrent.termModels = [];
+                }
+
+                var node_model_active = null;
+                 
+                for (var i in l5sNode.specCurrent.nodeModels) {
+                                
+                    if (!node_model_active) {
+                        node_model_active = l5sNode.specCurrent.nodeModels[i].metadata.name;
+                    }
+
+                    if (l4iStorage.Get("l5smgr_nmodel_active") == l5sNode.specCurrent.nodeModels[i].metadata.name) {
+                        node_model_active = l5sNode.specCurrent.nodeModels[i].metadata.name;
+                        break;
+                    }
+                }
+
+                // console.log(l4iStorage.Get("l5smgr_nmodel_active"));
+
+                if (!node_model_active) {
+                    return; // TODO
+                }
+
+                        //
+                if (node_model_active != l4iStorage.Get("l5smgr_nmodel_active")) {
+                    l4iStorage.Set("l5smgr_nmodel_active", node_model_active);
+                }
+
+                //
+                for (var i in l5sNode.specCurrent.nodeModels) {
+                    if (node_model_active == l5sNode.specCurrent.nodeModels[i].metadata.name) {
+                        l5sNode.List(l4iStorage.Get("l5smgr_spec_active"), node_model_active);
+                    }
+                }
+
+                l4iTemplate.Render({
+                    dstid: "l5smgr-node-nmodels",
+                    tplid: "l5smgr-node-nmodels-tpl",
+                    data:  {
+                        active: node_model_active,
+                        items: l5sNode.specCurrent.nodeModels,
+                    },
+                });
+
+                l4iTemplate.Render({
+                    dstid: "l5smgr-node-tmodels",
+                    tplid: "l5smgr-node-tmodels-tpl",
+                    data:  {
+                        items: l5sNode.specCurrent.termModels,
+                    },
+                });
+            }
+
+            var el = document.getElementById("l5smgr-node-specls");
+            if (!el || !el.length || el.length < 1) {
+
+                l4iTemplate.Render({
+                    dstid: "l5smgr-node-specls",
+                    tplid: "l5smgr-node-specls-tpl",
+                    data:  {
+                        active : l4iStorage.Get("l5smgr_spec_active"),
+                        items  : l5sNode.speclsCurrent,
+                    },
+                });
+            }
+        });
+    
+        ep.fail(function (err) {
+            // TODO
+            alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
+        });
+
+        // template
+        var el = document.getElementById("l5smgr-node-specls");
+        if (!el || !el.length || el.length < 1) {
+            l5sMgr.Ajax("-/node/index.tpl", {
+                callback: function(err, tpl) {
+                    
+                    if (err) {
+                        return ep.emit('error', err);
+                    }
+
+                    ep.emit("tpl", tpl);
+                }
+            });
+        } else {
+            ep.emit("tpl", null);
+        }
+
+        if (l5sNode.speclsCurrent) {
+            ep.emit("data", null);
+        } else {
 
             l5sMgr.Ajax("/v1/spec/list", {
-                callback: function(err, data) {
-                    
-                    if (data === undefined || data.kind != "SpecList" 
-                        || data.items === undefined || data.items.length < 1) {
-                        return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Content Type Not Found");
-                    }
-
-                    if (!l4iStorage.Get("l5smgr_node_active")) {
-                        for (var i in data.items) {
-                            l4iStorage.Set("l5smgr_node_active", data.items[i].metadata.id);
-                            break;
-                        }
-                    }
-                    if (!l4iStorage.Get("l5smgr_node_active")) {
-                        // TODO
-                        return;
-                    }
-
-                    for (var i in data.items) {
-                        if (data.items[i].metadata.id == l4iStorage.Get("l5smgr_node_active")) {
-                            l5sNode.specCurrent = data.items[i];
-                            break;
-                        }
-                    }
-
-                    if (!l5sNode.specCurrent) {
-                        // TODO
-                    }
-
-                    // console.log(l5sNode.specCurrent);
-
-                    if (l5sNode.specCurrent) {
-
-                        // console.log(l5sNode.specCurrent);
-                        
-                        if (!l5sNode.specCurrent.nodeModels) {
-                            l5sNode.specCurrent.nodeModels = [];
-                        }
-                        if (!l5sNode.specCurrent.termModels) {
-                            l5sNode.specCurrent.termModels = [];
-                        }
-
-                        var node_model_active = null;
-                       
-                        for (var i in l5sNode.specCurrent.nodeModels) {
-                                
-                            if (!node_model_active) {
-                                node_model_active = l5sNode.specCurrent.nodeModels[i].metadata.name;
-                            }
-
-                            if (l4iStorage.Get("l5smgr_node_model_active") == l5sNode.specCurrent.nodeModels[i].metadata.name) {
-                                node_model_active = l5sNode.specCurrent.nodeModels[i].metadata.name;
-                                break;
-                            }
-                        }
-
-                        if (!node_model_active) {
-                            return; // TODO
-                        }
-
-                        //
-                        if (node_model_active != l4iStorage.Get("l5smgr_node_model_active")) {
-                            l4iStorage.Set("l5smgr_node_model_active", node_model_active);
-                        }
-
-                        //
-                        for (var i in l5sNode.specCurrent.nodeModels) {
-                            // console.log(data.active +"."+ l5sNode.specCurrent.nodeModels[i].metadata.name)
-                            if (node_model_active == l5sNode.specCurrent.nodeModels[i].metadata.name) {
-                                l5sNode.List(l4iStorage.Get("l5smgr_node_active"), node_model_active);
-                            }
-                        }
-                        // console.log(node_model_active);
-
-                        l4iTemplate.Render({
-                            dstid: "l5smgr-node-nmodels",
-                            tplid: "l5smgr-node-nmodels-tpl",
-                            data:  {
-                                active: node_model_active,
-                                items: l5sNode.specCurrent.nodeModels,
-                            },
-                        });
-                    }
-
-                    l5sNode.speclsCurrent = data.items;
-                    // console.log(data);
-                    l4iTemplate.Render({
-                        dstid: "l5smgr-node-specls",
-                        tplid: "l5smgr-node-specls-tpl",
-                        data:  {
-                            active : l4iStorage.Get("l5smgr_node_active"),
-                            items  : data.items,
-                        },
-                    });
-                },
+                callback: ep.done("data"),           
             });
-                
-            // l5sNode.List();
         }
     });
 }
 
-l5sNode.List = function(specid, model)
+
+l5sNode.List = function(specid, modelid)
 {
-    if (!specid && l4iStorage.Get("l5smgr_node_active")) {
-        specid = l4iStorage.Get("l5smgr_node_active");
+    if (!specid && l4iStorage.Get("l5smgr_spec_active")) {
+        specid = l4iStorage.Get("l5smgr_spec_active");
     }
-    if (!model && l4iStorage.Get("l5smgr_node_model_active")) {
-        model = l4iStorage.Get("l5smgr_node_model_active");
+    if (!modelid && l4iStorage.Get("l5smgr_nmodel_active")) {
+        modelid = l4iStorage.Get("l5smgr_nmodel_active");
     }
 
-    if (!specid || !model) {
+    if (!specid || !modelid) {
         return;
     }
 
-    var uri = "specid="+ specid +"&model="+ model;
+    var uri = "specid="+ specid +"&modelid="+ modelid;
     if (document.getElementById("qry_text")) {
         uri = "&qry_text="+ $("#qry_text").val();
     }
@@ -147,6 +193,8 @@ l5sNode.List = function(specid, model)
 
             if (rsj === undefined || rsj.kind != "NodeList" 
                 || rsj.items === undefined || rsj.items.length < 1) {
+                $("#l5smgr-nodels").empty();
+                $("#l5smgr-termls").empty();
                 return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Item Not Found");
             }
 
@@ -162,7 +210,7 @@ l5sNode.List = function(specid, model)
                 tplid: "l5smgr-nodels-tpl",
                 data:  {
                     specid : specid,
-                    model  : model,
+                    modelid  : modelid,
                     items  : rsj.items,
                 },
             });
@@ -196,26 +244,28 @@ l5sNode.List = function(specid, model)
     });
 }
 
-l5sNode.Set = function(specid, model, nodeid)
+l5sNode.Set = function(specid, modelid, nodeid)
 {
-    if (!specid && l4iStorage.Get("l5smgr_node_active")) {
-        specid = l4iStorage.Get("l5smgr_node_active");
+    if (!specid && l4iStorage.Get("l5smgr_spec_active")) {
+        specid = l4iStorage.Get("l5smgr_spec_active");
     }
-    if (!model && l4iStorage.Get("l5smgr_node_model_active")) {
-        model = l4iStorage.Get("l5smgr_node_model_active");
+    if (!modelid && l4iStorage.Get("l5smgr_nmodel_active")) {
+        modelid = l4iStorage.Get("l5smgr_nmodel_active");
     }
 
-    if (!specid || !model) {
+    // console.log(specid +","+ modelid +","+ nodeid);
+
+    if (!specid || !modelid) {
         return;
     }
 
-    var uri = "specid="+ specid +"&model="+ model;
+    var uri = "specid="+ specid +"&modelid="+ modelid;
 
     // console.log(uri);
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, data) {
-            
+
             if (!tpl) {
                 return; // TODO
             }
@@ -230,9 +280,14 @@ l5sNode.Set = function(specid, model, nodeid)
                 data.state = 1;
             }
 
+            if (!data.model.terms) {
+                data.model.terms = [];
+            }
+
             $("#l5smgr-node-alert").hide();
 
             l5sNode.setCurrent = data;
+            // console.log(data);
 
             l4iTemplate.Render({
                 dstid: "l5smgr-nodeset",
@@ -253,6 +308,16 @@ l5sNode.Set = function(specid, model, nodeid)
                         var tplid = null;
 
                         switch (field.type) {
+
+                        case "string":
+
+                            if (!field.value) {
+                                field.value = "";
+                            }
+
+                            tplid = "l5smgr-nodeset-tplstring";
+                            break;
+
                         case "text":
                             
                             if (field.attrs) {
@@ -267,6 +332,7 @@ l5sNode.Set = function(specid, model, nodeid)
 
                             tplid = "l5smgr-nodeset-tpltext";
                             break;
+
                         case "int8":
                         case "int16":
                         case "int32":
@@ -282,6 +348,7 @@ l5sNode.Set = function(specid, model, nodeid)
 
                             tplid = "l5smgr-nodeset-tplint";
                             break;
+
                         default:
                             continue;
                         }
@@ -293,10 +360,78 @@ l5sNode.Set = function(specid, model, nodeid)
                             data   : field,
                         });
                     }
+
+                    for (var i in data.model.terms) {
+
+                        var term = data.model.terms[i];
+
+                        for (var j in data.terms) {
+                            if (data.terms[i].name == term.metadata.name) {
+                                term.value = data.terms[i].value;
+                                break;
+                            }
+                        }
+
+                        var tplid = null;
+
+                        switch (term.type) {
+
+                        case "tag":
+
+                            if (!term.value) {
+                                term.value = "";
+                            }
+
+                            tplid = "l5smgr-nodeset-tplterm_tag";
+
+                            l4iTemplate.Render({
+                                dstid  : "l5smgr-nodeset",
+                                tplid  : tplid,
+                                append : true,
+                                data   : term,
+                            });
+
+                            break;
+
+                        case "taxonomy":
+
+                            if (!term.value) {
+                                term.value = "0";
+                            }
+
+
+                            l5sMgr.Ajax("/v1/term/list?specid="+ specid +"&modelid="+ term.metadata.name, {
+                                callback: function(err, data) {
+                                    
+                                    if (data.kind != "TermList") {
+                                        return;
+                                    }
+
+                                    data.item = term;
+
+                                    tplid = "l5smgr-nodeset-tplterm_taxonomy";
+                        
+                                    l4iTemplate.Render({
+                                        dstid  : "l5smgr-nodeset",
+                                        tplid  : tplid,
+                                        append : true,
+                                        data   : data,
+                                    });
+                                },           
+                            });                            
+
+                            break;
+
+                        default:
+                            continue;
+                        }
+                        
+                    }
+
                 },
             });
         });
-    
+
         ep.fail(function (err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
@@ -339,7 +474,13 @@ l5sNode.SetCommit = function()
 
     l5sNode.setCurrent.title = $("#l5smgr-nodeset").find("input[name=title]").val();
 
-    var vals = [];
+    var req = {
+        id     : $("#l5smgr-nodeset").find("input[name=id]").val(),
+        title  : $("#l5smgr-nodeset").find("input[name=title]").val(),
+        state  : parseInt($("#l5smgr-nodeset").find("input[name=state]").val()),
+        fields : [],
+        terms  : [],
+    }
 
     // console.log()
     for (var i in l5sNode.setCurrent.model.fields) {
@@ -351,8 +492,10 @@ l5sNode.SetCommit = function()
         switch (field.type) {
 
         case "text":
-            val = $("#l5smgr-nodeset").find("textarea[name="+ field.name +"]").val();
+        case "string":
+            val = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
             break;
+
         case "int8":
         case "int16":
         case "int32":
@@ -361,27 +504,44 @@ l5sNode.SetCommit = function()
         case "uint16":
         case "uint32":
         case "uint64":
-            val = $("#l5smgr-nodeset").find("input[name="+ field.name +"]").val();
+            val = $("#l5smgr-nodeset").find("input[name=field_"+ field.name +"]").val();
             break;
+
         }
         
         if (val) {
-            vals.push({name: field.name, value: val});
+            req.fields.push({name: field.name, value: val});
         }
-    }   
-
-    var req = {
-        id     : $("#l5smgr-nodeset").find("input[name=id]").val(),
-        title  : $("#l5smgr-nodeset").find("input[name=title]").val(),
-        state  : parseInt($("#l5smgr-nodeset").find("input[name=state]").val()),
-        fields : vals,
     }
 
+    for (var i in l5sNode.setCurrent.model.terms) {
+        
+        var term = l5sNode.setCurrent.model.terms[i];
+
+        var val = null;
+
+        switch (term.type) {
+
+        case "tag":
+            val = $("#l5smgr-nodeset").find("input[name=term_"+ term.metadata.name +"]").val();
+            break;
+        case "taxonomy":
+            val = $("#l5smgr-nodeset").find("select[name=term_"+ term.metadata.name +"]").val();
+            break;
+        }
+
+        if (val) {
+            req.terms.push({name: term.metadata.name, value: val});
+        }
+    }
+
+    // console.log(l5sNode.setCurrent.model.terms);
     // console.log(JSON.stringify(req));
+    console.log(req);
 
     //
-    var uri = "specid="+ l4iStorage.Get("l5smgr_node_active");
-    uri += "&model="+ l4iStorage.Get("l5smgr_node_model_active");
+    var uri = "specid="+ l4iStorage.Get("l5smgr_spec_active");
+    uri += "&modelid="+ l4iStorage.Get("l5smgr_nmodel_active");
 
     l5sMgr.Ajax("/v1/node/set?"+ uri, {
         method: "POST",
@@ -396,8 +556,7 @@ l5sNode.SetCommit = function()
             $("#l5smgr-nodeset").find("input[name=id]").val(data.id);
 
             l4i.InnerAlert("#l5smgr-node-alert", 'alert-success', "Successful operation");
-            setTimeout(l5sNode.List, 1000);
+            setTimeout(l5sNode.List, 500);
         }
     });
-    // console.log(vals);
 }

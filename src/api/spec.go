@@ -4,6 +4,11 @@
 // license that can be found in the LICENSE file.
 package api
 
+type KeyValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 type Instance struct {
 	TypeMeta `json:",inline"`
 	Metadata ObjectMeta `json:"metadata,omitempty"`
@@ -28,14 +33,27 @@ type SpecList struct {
 }
 
 //
+
+type FieldModel struct {
+	Name      string     `json:"name"`
+	Type      string     `json:"type"`
+	Length    string     `json:"length,omitempty"`
+	Extra     []string   `json:"extra,omitempty"`
+	Attrs     []KeyValue `json:"attrs,omitempty"`
+	IndexType string     `json:"indexType,omitempty"`
+	Title     string     `json:"title"`
+	Comment   string     `json:"comment,omitempty"`
+}
+
 type NodeModel struct {
 	TypeMeta `json:",inline"`
-	Metadata ObjectMeta  `json:"metadata,omitempty"`
-	SpecID   string      `json:"specID,omitempty"`
-	State    int16       `json:"state,omitempty"`
-	Title    string      `json:"title,omitempty"`
-	Comment  string      `json:"comment,omitempty"`
-	Fields   []NodeField `json:"fields,omitempty"`
+	Metadata ObjectMeta   `json:"metadata,omitempty"`
+	SpecID   string       `json:"specID,omitempty"`
+	State    int16        `json:"state,omitempty"`
+	Title    string       `json:"title,omitempty"`
+	Comment  string       `json:"comment,omitempty"`
+	Fields   []FieldModel `json:"fields,omitempty"`
+	Terms    []TermModel  `json:"terms,omitempty"`
 }
 
 type NodeModelList struct {
@@ -53,8 +71,15 @@ type TermModel struct {
 	TypeMeta `json:",inline"`
 	Metadata ObjectMeta `json:"metadata,omitempty"`
 	SpecID   string     `json:"specID,omitempty"`
+	State    int16      `json:"state,omitempty"`
 	Type     string     `json:"type,omitempty"`
 	Title    string     `json:"title,omitempty"`
+	Comment  string     `json:"comment,omitempty"`
+}
+
+type TermModelList struct {
+	TypeMeta `json:",inline"`
+	Items    []TermModel `json:"items,omitempty"`
 }
 
 //

@@ -62,6 +62,13 @@ func (c Spec) ListAction() {
 			qnx.Where.And("specid", v.Field("id").String())
 			if rsnx, err := dcn.Base.Query(qnx); err == nil {
 				for _, vnx := range rsnx {
+
+					var fields []api.FieldModel
+					vnx.Field("fields").Json(&fields)
+
+					var terms []api.TermModel
+					vnx.Field("terms").Json(&terms)
+
 					nodeModels = append(nodeModels, api.NodeModel{
 						Metadata: api.ObjectMeta{
 							ID:      vnx.Field("id").String(),
@@ -70,14 +77,16 @@ func (c Spec) ListAction() {
 							Created: vnx.Field("created").TimeFormat("datetime", "atom"),
 							Updated: vnx.Field("updated").TimeFormat("datetime", "atom"),
 						},
-						Title: vnx.Field("title").String(),
+						Title:  vnx.Field("title").String(),
+						Fields: fields,
+						Terms:  terms,
 					})
 				}
 			}
 
 			//
 			termModels := []api.TermModel{}
-			qtx := rdobase.NewQuerySet().From("nodex").Limit(100)
+			qtx := rdobase.NewQuerySet().From("termx").Limit(100)
 			qtx.Where.And("specid", v.Field("id").String())
 			if rstx, err := dcn.Base.Query(qtx); err == nil {
 				for _, vtx := range rstx {
@@ -90,6 +99,7 @@ func (c Spec) ListAction() {
 							Updated: vtx.Field("updated").TimeFormat("datetime", "atom"),
 						},
 						Title: vtx.Field("title").String(),
+						Type:  vtx.Field("type").String(),
 					})
 				}
 			}

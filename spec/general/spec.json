@@ -12,12 +12,15 @@
             "comment": "Customize the site navigation menu",
             "fields": [
                 {
-                    "name": "content",
-                    "type": "text"
+                    "name": "url",
+                    "type": "string",
+                    "length": "100",
+                    "title": "URL"
                 },
                 {
                     "name": "weight",
-                    "type": "int32"
+                    "type": "int32",
+                    "title": "Weight"
                 }
             ]
         },
@@ -30,11 +33,19 @@
             "fields": [
                 {
                     "name": "content",
-                    "type": "text"
+                    "type": "text",
+                    "title": "Content",
+                    "attrs": [
+                        {
+                            "key": "ui_rows",
+                            "value": "12"
+                        }
+                    ]
                 },
                 {
                     "name": "weight",
-                    "type": "int32"
+                    "type": "int32",
+                    "title": "Weight"
                 }
             ]
         }
@@ -44,7 +55,8 @@
             "metadata": {
                 "name": "type"
             },
-            "type": "taxonomy"
+            "type": "taxonomy",
+            "title": "Type"
         }
     ],
     "actions": [

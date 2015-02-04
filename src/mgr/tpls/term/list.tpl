@@ -12,45 +12,50 @@
     <td align="right">
       <button type="button" 
         class="btn btn-primary btn-sm" 
-        onclick="l5sNode.Set()">
-        New Content
+        onclick="l5sTerm.Set()">
+        New Term
       </button>
     </td>
   </tr>
 </table>
+<div id="l5smgr-termls"></div>
 
+<script id="l5smgr-termls-tpl" type="text/html">  
 <table class="table table-hover">
   <thead>
     <tr>
       <th>ID</th>
       <th>Title</th>
-      <th>State</th>
+      {[ if (it.model.type == "taxonomy") { ]}
+      <th>Weight</th>
+      {[ } ]}
       <th>Created</th>
       <th>Updated</th>
       <th></th>
     </tr>
   </thead>
-  <tbody id="l5smgr-nodels"></tbody>
-</table>
-
-<script id="l5smgr-nodels-tpl" type="text/html">  
+  <tbody>
   {[~it.items :v]}
     <tr>
       <td class="l5smgr-font-wfix">{[=v.id]}</td>
       <td>{[=v.title]}</td>
-      <td>{[=v.state]}</td>
+      {[ if (it.model.type == "taxonomy") { ]}
+      <td>{[=v.weight]}</td>
+      {[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
-      <td align="right"><a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+      <td align="right"><a class="term-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
     </tr>
   {[~]}
+  </tbody>
+</table>
 </script>
 
 <script type="text/javascript">
 
-$("#l5smgr-nodels").on("click", ".node-item", function() {
+$("#l5smgr-termls").on("click", ".term-item", function() {
     var id = $(this).attr("href").substr(1);
-    l5sNode.Set($(this).attr("specid"), $(this).attr("modelid"), id);
+    l5sTerm.Set($(this).attr("specid"), $(this).attr("modelid"), id);
 });
 
 </script>

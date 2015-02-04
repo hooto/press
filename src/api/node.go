@@ -6,17 +6,16 @@ package api
 
 type Node struct {
 	TypeMeta `json:",inline"`
-	SpecID   string           `json:"specID,omitempty"`
-	Model    *NodeModel       `json:"model,omitempty"`
-	ID       string           `json:"id,omitempty"`
-	State    int16            `json:"state,omitempty"`
-	UserID   string           `json:"userid,omitempty"`
-	Title    string           `json:"title,omitempty"`
-	Content  string           `json:"content,omitempty"`
-	Weight   int32            `json:"weight,omitempty"`
-	Created  string           `json:"created,omitempty"`
-	Updated  string           `json:"updated,omitempty"`
-	Fields   []NodeFieldValue `json:"fields,omitempty"`
+	SpecID   string      `json:"specID,omitempty"`
+	Model    *NodeModel  `json:"model,omitempty"`
+	ID       string      `json:"id,omitempty"`
+	State    int16       `json:"state,omitempty"`
+	UserID   string      `json:"userid,omitempty"`
+	Title    string      `json:"title,omitempty"`
+	Created  string      `json:"created,omitempty"`
+	Updated  string      `json:"updated,omitempty"`
+	Fields   []NodeField `json:"fields,omitempty"`
+	Terms    []NodeTerm  `json:"terms,omitempty"`
 }
 
 type NodeList struct {
@@ -43,29 +42,17 @@ const (
 	NodeFieldUint64   NodeFieldType = "uint64"
 	NodeFieldFloat    NodeFieldType = "float"
 	NodeFieldDecimal  NodeFieldType = "decimal"
-	NodeFieldSelect   NodeFieldType = "select"
-	NodeFieldRadio    NodeFieldType = "radio"
 )
 
-type NodeFieldValue struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-type KeyValue struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
 type NodeField struct {
-	Name      string     `json:"name"`
-	Type      string     `json:"type"`
-	Length    string     `json:"length,omitempty"`
-	Extra     []string   `json:"extra,omitempty"`
-	Attrs     []KeyValue `json:"attrs,omitempty"`
-	IndexType string     `json:"indexType,omitempty"`
-	Title     string     `json:"title,omitempty"`
-	Comment   string     `json:"comment,omitempty"`
+	Name  string `json:"name"`
+	Value string `json:"value,omitempty"`
+}
+
+type NodeTerm struct {
+	Name  string `json:"name"`
+	Value string `json:"value,omitempty"`
+	Items []Term `json:"items,omitempty"`
 }
 
 // var rdoColumnTypes = map[string]string{

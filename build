@@ -5,9 +5,9 @@ for file in $files; do
     gofmt -w=true ${file}
 done
 
-rm -f ./bin/lesscmf
+rm -f ./bin/lesscms
 
-go build -ldflags "-w -s" -o ./bin/lesscmf ./src/main.go
+go build -ldflags "-w -s" -o ./bin/lesscms ./src/main.go
 
-./bin/lesscmf -logtostderr=true 
+./bin/lesscms -logtostderr=true 
 

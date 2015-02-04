@@ -26,21 +26,39 @@
                     "type": "int32",
                     "title": "Weight"
                 }
+            ],
+            "terms": [
+                {
+                    "metadata": {
+                        "name": "tags"
+                    },
+                    "type": "tag",
+                    "title": "Tags"
+                },
+                {
+                    "metadata": {
+                        "name": "categories"
+                    },
+                    "type": "taxonomy",
+                    "title": "Categories"
+                }
             ]
         }
     ],
     "termModels": [
         {
             "metadata": {
-                "name": "keywords"
+                "name": "tags"
             },
-            "type": "tag"
+            "type": "tag",
+            "title": "Tags"
         },
         {
             "metadata": {
                 "name": "categories"
             },
-            "type": "taxonomy"
+            "type": "taxonomy",
+            "title": "Categories"
         }
     ],
     "actions": [

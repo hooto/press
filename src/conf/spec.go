@@ -30,6 +30,19 @@ func SpecNodeModel(specid, modelName string) (*api.NodeModel, error) {
 	return &api.NodeModel{}, errors.New("Spec Not Found")
 }
 
+func SpecTermModel(specid, modelName string) (*api.TermModel, error) {
+
+	if spec, ok := Instances[specid]; ok {
+		for _, termModel := range spec.TermModels {
+			if modelName == termModel.Metadata.Name {
+				return &termModel, nil
+			}
+		}
+	}
+
+	return &api.TermModel{}, errors.New("Spec Not Found")
+}
+
 func specInitialize() error {
 
 	ids := []string{"general", "c8f0ltxp"}
@@ -111,10 +124,11 @@ func SpecRefresh(specid string) {
 	if rsnx, err := dcn.Base.Query(qnx); err == nil {
 		for _, vnx := range rsnx {
 
-			var fields []api.NodeField
+			var fields []api.FieldModel
 			vnx.Field("fields").Json(&fields)
 
-			// fmt.Println(fields)
+			var terms []api.TermModel
+			vnx.Field("terms").Json(&terms)
 
 			nodeModels = append(nodeModels, api.NodeModel{
 				Metadata: api.ObjectMeta{
@@ -124,14 +138,16 @@ func SpecRefresh(specid string) {
 					Created: vnx.Field("created").TimeFormat("datetime", "atom"),
 					Updated: vnx.Field("updated").TimeFormat("datetime", "atom"),
 				},
+				SpecID: vnx.Field("specid").String(),
 				Title:  vnx.Field("title").String(),
 				Fields: fields,
+				Terms:  terms,
 			})
 		}
 	}
 
 	termModels := []api.TermModel{}
-	qtx := rdobase.NewQuerySet().From("nodex").Limit(100)
+	qtx := rdobase.NewQuerySet().From("termx").Limit(500)
 	qtx.Where.And("specid", specid)
 	if rstx, err := dcn.Base.Query(qtx); err == nil {
 		for _, vtx := range rstx {
@@ -144,6 +160,7 @@ func SpecRefresh(specid string) {
 					Updated: vtx.Field("updated").TimeFormat("datetime", "atom"),
 				},
 				Title: vtx.Field("title").String(),
+				Type:  vtx.Field("type").String(),
 			})
 		}
 	}
@@ -169,19 +186,9 @@ func SpecRefresh(specid string) {
 func specSchemaSync(spec api.Spec) error {
 
 	var (
-		ds                rdobase.DataSet
-		nodeModelTemplate rdobase.Table
-		termModelTemplate rdobase.Table
-		timenow           = rdobase.TimeNow("datetime")
+		ds      rdobase.DataSet
+		timenow = rdobase.TimeNow("datetime")
 	)
-
-	if err := utils.JsonDecode(dsNodeModels, &nodeModelTemplate); err != nil {
-		return err
-	}
-
-	if err := utils.JsonDecode(dsTermModels, &termModelTemplate); err != nil {
-		return err
-	}
 
 	//
 	dc, err := rdo.ClientPull("def")
@@ -192,11 +199,18 @@ func specSchemaSync(spec api.Spec) error {
 	//
 	for _, nodeModel := range spec.NodeModels {
 
-		tbl := nodeModelTemplate
+		var tbl rdobase.Table
+
+		if err := utils.JsonDecode(dsTplNodeModels, &tbl); err != nil {
+			continue
+		}
+
 		tbl.Name = fmt.Sprintf("nx%s_%s", spec.Metadata.ID, nodeModel.Metadata.Name)
 
 		for _, field := range nodeModel.Fields {
+
 			switch field.Type {
+
 			case "string":
 
 				tbl.AddColumn(&rdobase.Column{
@@ -206,21 +220,71 @@ func specSchemaSync(spec api.Spec) error {
 				})
 
 			case "text":
+
 				tbl.AddColumn(&rdobase.Column{
 					Name: "field_" + field.Name,
 					Type: "string-text",
 				})
+
 			case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64":
+
 				tbl.AddColumn(&rdobase.Column{
 					Name: "field_" + field.Name,
 					Type: field.Type,
 				})
+
 			}
+		}
+
+		for _, term := range nodeModel.Terms {
+
+			switch term.Type {
+
+			case api.TermTag:
+
+				tbl.AddColumn(&rdobase.Column{
+					Name:   "term_" + term.Metadata.Name,
+					Type:   "string",
+					Length: "200",
+				})
+
+				tbl.AddColumn(&rdobase.Column{
+					Name: "term_" + term.Metadata.Name + "_body",
+					Type: "string-text",
+				})
+
+				tbl.AddColumn(&rdobase.Column{
+					Name:   "term_" + term.Metadata.Name + "_idx",
+					Type:   "string",
+					Length: "100",
+				})
+
+				tbl.AddIndex(&rdobase.Index{
+					Name: "term_" + term.Metadata.Name + "_idx",
+					Type: rdobase.IndexTypeIndex,
+					Cols: []string{"term_" + term.Metadata.Name + "_idx"},
+				})
+
+			case api.TermTaxonomy:
+
+				tbl.AddColumn(&rdobase.Column{
+					Name: "term_" + term.Metadata.Name,
+					Type: "uint32",
+				})
+
+				tbl.AddIndex(&rdobase.Index{
+					Name: "term_" + term.Metadata.Name,
+					Type: rdobase.IndexTypeIndex,
+					Cols: []string{"term_" + term.Metadata.Name},
+				})
+			}
+
 		}
 
 		ds.Tables = append(ds.Tables, &tbl)
 
-		fieldjs, _ := utils.JsonEncode(nodeModel.Fields)
+		fieldsjs, _ := utils.JsonEncode(nodeModel.Fields)
+		termsjs, _ := utils.JsonEncode(nodeModel.Terms)
 
 		dc.Base.InsertIgnore("nodex", map[string]interface{}{
 			"id":      spec.Metadata.ID + "." + nodeModel.Metadata.Name,
@@ -230,7 +294,8 @@ func specSchemaSync(spec api.Spec) error {
 			"state":   1,
 			"title":   nodeModel.Title,
 			"comment": nodeModel.Comment,
-			"fields":  fieldjs,
+			"fields":  fieldsjs,
+			"terms":   termsjs,
 			"created": timenow,
 			"updated": timenow,
 		})
@@ -238,8 +303,57 @@ func specSchemaSync(spec api.Spec) error {
 
 	for _, termModel := range spec.TermModels {
 
-		tbl := termModelTemplate
+		var tbl rdobase.Table
+
+		if err := utils.JsonDecode(dsTplTermModels, &tbl); err != nil {
+			continue
+		}
+
 		tbl.Name = fmt.Sprintf("tx%s_%s", spec.Metadata.ID, termModel.Metadata.Name)
+
+		switch termModel.Type {
+
+		case api.TermTag:
+
+			tbl.AddColumn(&rdobase.Column{
+				Name:   "uid",
+				Type:   "string",
+				Length: "16",
+			})
+
+			tbl.AddIndex(&rdobase.Index{
+				Name: "uid",
+				Type: rdobase.IndexTypeUnique,
+				Cols: []string{"uid"},
+			})
+
+		case api.TermTaxonomy:
+
+			tbl.AddColumn(&rdobase.Column{
+				Name: "pid",
+				Type: "uint32",
+			})
+
+			tbl.AddIndex(&rdobase.Index{
+				Name: "pid",
+				Type: rdobase.IndexTypeIndex,
+				Cols: []string{"pid"},
+			})
+
+			tbl.AddColumn(&rdobase.Column{
+				Name: "weight",
+				Type: "int16",
+			})
+
+			tbl.AddIndex(&rdobase.Index{
+				Name: "weight",
+				Type: rdobase.IndexTypeIndex,
+				Cols: []string{"weight"},
+			})
+
+		default:
+			continue
+		}
 
 		ds.Tables = append(ds.Tables, &tbl)
 
@@ -250,7 +364,7 @@ func specSchemaSync(spec api.Spec) error {
 			"userid":  "sysadmin",
 			"type":    termModel.Type,
 			"state":   1,
-			"title":   termModel.Metadata.Name,
+			"title":   termModel.Title,
 			"created": timenow,
 			"updated": timenow,
 		})
@@ -260,7 +374,7 @@ func specSchemaSync(spec api.Spec) error {
 	if err := dc.Dialect.SchemaSync(Config.Database.Dbname, ds); err != nil {
 		return err
 	}
-
+	// return nil
 	dc.Base.InsertIgnore("spec", map[string]interface{}{
 		"id":      spec.Metadata.ID,
 		"userid":  "sysadmin",
