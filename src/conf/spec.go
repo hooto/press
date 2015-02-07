@@ -226,6 +226,12 @@ func specSchemaSync(spec api.Spec) error {
 					Type: "string-text",
 				})
 
+				tbl.AddColumn(&rdobase.Column{
+					Name:   "field_" + field.Name + "_attrs",
+					Type:   "string",
+					Length: "200",
+				})
+
 			case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64":
 
 				tbl.AddColumn(&rdobase.Column{
@@ -286,8 +292,9 @@ func specSchemaSync(spec api.Spec) error {
 		fieldsjs, _ := utils.JsonEncode(nodeModel.Fields)
 		termsjs, _ := utils.JsonEncode(nodeModel.Terms)
 
-		dc.Base.InsertIgnore("nodex", map[string]interface{}{
-			"id":      spec.Metadata.ID + "." + nodeModel.Metadata.Name,
+		setID := spec.Metadata.ID + "." + nodeModel.Metadata.Name
+
+		set := map[string]interface{}{
 			"name":    nodeModel.Metadata.Name,
 			"specid":  spec.Metadata.ID,
 			"userid":  "sysadmin",
@@ -296,9 +303,31 @@ func specSchemaSync(spec api.Spec) error {
 			"comment": nodeModel.Comment,
 			"fields":  fieldsjs,
 			"terms":   termsjs,
-			"created": timenow,
 			"updated": timenow,
-		})
+		}
+
+		q := rdobase.NewQuerySet().From("nodex")
+		q.Where.And("id", setID)
+
+		if rs1, err := dc.Base.Fetch(q); err == nil {
+
+			if nodeModel.Title != rs1.Field("title").String() ||
+				nodeModel.Comment != rs1.Field("comment").String() ||
+				fieldsjs != rs1.Field("fields").String() ||
+				termsjs != rs1.Field("terms").String() {
+
+				fr := rdobase.NewFilter()
+				fr.And("id", setID)
+
+				dc.Base.Update("nodex", set, fr)
+			}
+		} else {
+
+			set["id"] = setID
+			set["created"] = timenow
+
+			dc.Base.Insert("nodex", set)
+		}
 	}
 
 	for _, termModel := range spec.TermModels {
@@ -357,17 +386,51 @@ func specSchemaSync(spec api.Spec) error {
 
 		ds.Tables = append(ds.Tables, &tbl)
 
-		dc.Base.InsertIgnore("termx", map[string]interface{}{
-			"id":      spec.Metadata.ID + "." + termModel.Metadata.Name,
+		// dc.Base.InsertIgnore("termx", map[string]interface{}{
+		// 	"id":      spec.Metadata.ID + "." + termModel.Metadata.Name,
+		// 	"name":    termModel.Metadata.Name,
+		// 	"specid":  spec.Metadata.ID,
+		// 	"userid":  "sysadmin",
+		// 	"type":    termModel.Type,
+		// 	"state":   1,
+		// 	"title":   termModel.Title,
+		// 	"created": timenow,
+		// 	"updated": timenow,
+		// })
+
+		setID := spec.Metadata.ID + "." + termModel.Metadata.Name
+
+		set := map[string]interface{}{
 			"name":    termModel.Metadata.Name,
 			"specid":  spec.Metadata.ID,
 			"userid":  "sysadmin",
 			"type":    termModel.Type,
 			"state":   1,
 			"title":   termModel.Title,
-			"created": timenow,
 			"updated": timenow,
-		})
+		}
+
+		q := rdobase.NewQuerySet().From("termx")
+		q.Where.And("id", setID)
+
+		if rs1, err := dc.Base.Fetch(q); err == nil {
+
+			if termModel.Type != rs1.Field("type").String() ||
+				termModel.Title != rs1.Field("title").String() {
+
+				fr := rdobase.NewFilter()
+				fr.And("id", setID)
+
+				dc.Base.Update("termx", set, fr)
+			}
+
+		} else {
+
+			set["id"] = setID
+			set["created"] = timenow
+
+			dc.Base.Insert("termx", set)
+		}
 	}
 
 	//
@@ -375,15 +438,37 @@ func specSchemaSync(spec api.Spec) error {
 		return err
 	}
 	// return nil
-	dc.Base.InsertIgnore("spec", map[string]interface{}{
-		"id":      spec.Metadata.ID,
+	set := map[string]interface{}{
 		"userid":  "sysadmin",
 		"state":   1,
 		"title":   spec.Metadata.Name,
 		"comment": spec.Comment,
-		"created": timenow,
+		"version": spec.Metadata.ResourceVersion,
 		"updated": timenow,
-	})
+	}
+
+	q := rdobase.NewQuerySet().From("spec")
+	q.Where.And("id", spec.Metadata.ID)
+
+	if rs1, err := dc.Base.Fetch(q); err == nil {
+
+		if spec.Metadata.Name != rs1.Field("title").String() ||
+			spec.Comment != rs1.Field("comment").String() ||
+			spec.Metadata.ResourceVersion != rs1.Field("version").String() {
+
+			fr := rdobase.NewFilter()
+			fr.And("id", spec.Metadata.ID)
+
+			dc.Base.Update("spec", set, fr)
+		}
+
+	} else {
+
+		set["id"] = spec.Metadata.ID
+		set["created"] = timenow
+
+		dc.Base.Insert("spec", set)
+	}
 
 	return nil
 }

@@ -2,6 +2,8 @@ var l5sNode = {
     speclsCurrent: null,
     specCurrent: null,
     setCurrent: null,
+    cmEditor: null,
+    cmEditors: {},
 }
 
 l5sNode.Index = function()
@@ -306,6 +308,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
                         }
 
                         var tplid = null;
+                        var cb = null;
 
                         switch (field.type) {
 
@@ -322,12 +325,18 @@ l5sNode.Set = function(specid, modelid, nodeid)
                             
                             if (field.attrs) {
                                 for (var j in field.attrs) {
-                                    field["attr_"+ field.attrs[i].key] = field.attrs[i].value;
+                                    field["attr_"+ field.attrs[j].key] = field.attrs[j].value;
                                 }
                             }
 
                             if (!field.value) {
                                 field.value = "";
+                            }
+
+                            if (field.attr_format && field.attr_format == "md") {
+                                cb = function() {
+                                    l5sEditor.Open(field.name);
+                                }
                             }
 
                             tplid = "l5smgr-nodeset-tpltext";
@@ -358,6 +367,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
                             tplid  : tplid,
                             append : true,
                             data   : field,
+                            success: cb,
                         });
                     }
 
@@ -492,6 +502,24 @@ l5sNode.SetCommit = function()
         switch (field.type) {
 
         case "text":
+
+            if (field.attrs) {
+                for (var j in field.attrs) {
+
+                    if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
+                        
+                        val = l5sEditor.Content(field.name);
+                        break;
+                    }
+                }
+            }
+
+            if (!val) {
+                val = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
+            }
+
+            break;
+        
         case "string":
             val = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
             break;
@@ -537,7 +565,7 @@ l5sNode.SetCommit = function()
 
     // console.log(l5sNode.setCurrent.model.terms);
     // console.log(JSON.stringify(req));
-    console.log(req);
+    // console.log(req);
 
     //
     var uri = "specid="+ l4iStorage.Get("l5smgr_spec_active");

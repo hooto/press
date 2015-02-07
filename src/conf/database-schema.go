@@ -36,7 +36,7 @@ const dsBase = `
                     "name": "version",
                     "type": "string",
                     "length": "10",
-                    "default": "1"
+                    "default": "0"
                 },
                 {
                     "name": "created",

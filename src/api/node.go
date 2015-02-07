@@ -45,8 +45,9 @@ const (
 )
 
 type NodeField struct {
-	Name  string `json:"name"`
-	Value string `json:"value,omitempty"`
+	Name  string     `json:"name"`
+	Value string     `json:"value,omitempty"`
+	Attrs []KeyValue `json:"attrs,omitempty"`
 }
 
 type NodeTerm struct {

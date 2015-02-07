@@ -32,12 +32,30 @@ l5sMgr.Boot = function()
             "~/bootstrap/3.3/js/bootstrap.min.js",
             "~/lessui/js/lessui.js",
             "~/lessui/css/lessui.min.css",
+            "~/css/main.css?_="+ Math.random(),
             "-/css/main.css?_="+ Math.random(),
             "-/js/spec.js?_="+ Math.random(),
             "-/js/model.js?_="+ Math.random(),
             "-/js/term.js?_="+ Math.random(),
             "-/js/node.js?_="+ Math.random(),
+            "-/js/editor.js?_="+ Math.random(),
+            "~/js/marked.min.js",
         ], function() {
+
+            marked.setOptions({
+                renderer: new marked.Renderer(),
+                gfm: true,
+                tables: true,
+                breaks: false,
+                pedantic: false,
+                sanitize: true,
+                smartLists: true,
+                smartypants: true
+            });
+
+            $(window).resize(function() {
+                l5sEditor.sizeRefresh();
+            });
 
             l5sMgr.Ajax(l5sMgr.base +"-/body.tpl", {
                 callback: function(err, data) {

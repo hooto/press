@@ -71,6 +71,7 @@ func main() {
 	pagelet.RegisterController("v1", (*capi.Spec)(nil))
 	pagelet.RegisterController("v1", (*capi.NodeModel)(nil))
 	pagelet.RegisterController("v1", (*capi.TermModel)(nil))
+	pagelet.RegisterController("v1", (*capi.Text)(nil))
 
 	//
 	pagelet.Config.RouteStaticAppend("mgr", "/~", conf.Config.Prefix+"/static")

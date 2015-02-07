@@ -1,7 +1,8 @@
 {
     "metadata": {
         "id": "c8f0ltxp",
-        "name": "portal"
+        "name": "Portal",
+        "resourceVersion": "2"
     },
     "nodeModels": [
         {
@@ -17,14 +18,13 @@
                     "attrs": [
                         {
                             "key": "ui_rows",
-                            "value": "10"
+                            "value": "20"
+                        },
+                        {
+                            "key": "format",
+                            "value": "md"
                         }
                     ]
-                },
-                {
-                    "name": "weight",
-                    "type": "int32",
-                    "title": "Weight"
                 }
             ],
             "terms": [
