@@ -1,7 +1,7 @@
 package datax
 
 import (
-	// "fmt"
+	"fmt"
 	// "../api"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
@@ -10,7 +10,7 @@ import (
 type QuerySet struct {
 	specid string
 	cols   string
-	table  string
+	Table  string
 	order  string
 	limit  int64
 	offset int64
@@ -24,7 +24,7 @@ func Field(entry rdobase.Entry, col string) string {
 func NewQuery(specid, table string) *QuerySet {
 	return &QuerySet{
 		specid: specid,
-		table:  table,
+		Table:  table,
 		cols:   "*",
 		limit:  1,
 		offset: 0,
@@ -41,9 +41,11 @@ func (q *QuerySet) Query() []rdobase.Entry {
 		return rs
 	}
 
+	fmt.Println(q.Table)
+
 	qs := rdobase.NewQuerySet().
 		Select(q.cols).
-		From("dx" + q.specid + "_" + q.table).
+		From(q.Table).
 		Order(q.order).
 		Limit(q.limit).
 		Offset(q.offset)
@@ -51,6 +53,7 @@ func (q *QuerySet) Query() []rdobase.Entry {
 	qs.Where = q.filter
 
 	rs, err = dc.Base.Query(qs)
+	// fmt.Println(len(rs))
 	if err != nil {
 		return rs
 	}
@@ -74,7 +77,8 @@ func (q *QuerySet) Select(s string) string {
 }
 
 func (q *QuerySet) From(s string) string {
-	q.table = s
+	q.Table = s
+	fmt.Println(q.Table)
 	return ""
 }
 

@@ -39,6 +39,10 @@ const dsBase = `
                     "default": "0"
                 },
                 {
+                    "name": "body",
+                    "type": "string-text"
+                },
+                {
                     "name": "created",
                     "type": "datetime"
                 },

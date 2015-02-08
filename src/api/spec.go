@@ -95,12 +95,12 @@ type Query struct {
 
 //
 type Action struct {
-	Name  string       `json:"name,omitempty"`
+	Name  string       `json:"name"`
 	Datax []ActionData `json:"datax,omitempty"`
 }
 
 type ActionData struct {
-	Name  string `json:"name,omitempty"`
-	Type  string `json:"type,omitempty"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
 	Query Query  `json:"query,omitempty"`
 }

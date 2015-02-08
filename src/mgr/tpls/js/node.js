@@ -497,7 +497,11 @@ l5sNode.SetCommit = function()
 
         var field = l5sNode.setCurrent.model.fields[i];
 
-        var val = null;
+        var field_set = {
+            name: field.name,
+            value: null,
+            attrs: [],
+        };
 
         switch (field.type) {
 
@@ -508,20 +512,23 @@ l5sNode.SetCommit = function()
 
                     if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
                         
-                        val = l5sEditor.Content(field.name);
+                        field_set.value = l5sEditor.Content(field.name);
+                        
+                        field_set.attrs.push({key: "format", value: "md"});
+
                         break;
                     }
                 }
             }
 
-            if (!val) {
-                val = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
+            if (!field_set.value) {
+                field_set.value = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
             }
 
             break;
         
         case "string":
-            val = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
+            field_set.value = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
             break;
 
         case "int8":
@@ -532,13 +539,13 @@ l5sNode.SetCommit = function()
         case "uint16":
         case "uint32":
         case "uint64":
-            val = $("#l5smgr-nodeset").find("input[name=field_"+ field.name +"]").val();
+            field_set.value = $("#l5smgr-nodeset").find("input[name=field_"+ field.name +"]").val();
             break;
 
         }
         
-        if (val) {
-            req.fields.push({name: field.name, value: val});
+        if (field_set.value) {
+            req.fields.push(field_set);
         }
     }
 

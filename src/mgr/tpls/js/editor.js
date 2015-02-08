@@ -54,7 +54,7 @@ l5sEditor.sizeRefresh = function()
         }
 
         if (!$("#field_"+ name +"_colpreview").is(":visible")) {
-            console.log("preview skip");
+            // console.log("preview skip");
             continue;
         }
 
@@ -73,7 +73,7 @@ l5sEditor.PreviewOpen = function(name)
     var width = $("#field_"+ name +"_layout").width(),
         height = $("#field_"+ name +"_layout").height();
 
-    var width5 = (width - 10) / 2;
+    var width5 = (width - 20) / 2;
 
     $("#field_"+ name +"_editor").css({width: width5 +"px"});    
     $("#field_"+ name +"_colpreview").css({width: width5 +"px", height: height +"px"});

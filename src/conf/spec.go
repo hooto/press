@@ -46,6 +46,12 @@ func SpecTermModel(specid, modelName string) (*api.TermModel, error) {
 func specInitialize() error {
 
 	ids := []string{"general", "c8f0ltxp"}
+	timenow := rdobase.TimeNow("datetime")
+
+	dcn, err := rdo.ClientPull("def")
+	if err != nil {
+		return err
+	}
 
 	for _, specid := range ids {
 
@@ -71,12 +77,12 @@ func specInitialize() error {
 			return err
 		}
 
-		// Instances[specid] = spec
-
+		//
 		if err := specSchemaSync(spec); err != nil {
 			return err
 		}
 
+		//
 		pagelet.Config.ViewPath(spec.Metadata.ID,
 			fmt.Sprintf("%s/spec/%s/views", Config.Prefix, spec.Metadata.ID))
 
@@ -90,6 +96,41 @@ func specInitialize() error {
 				"action":     "Pagelet",
 			})
 		}
+
+		//
+		set := map[string]interface{}{
+			"userid":  "sysadmin",
+			"state":   1,
+			"title":   spec.Metadata.Name,
+			"comment": spec.Comment,
+			"version": spec.Metadata.ResourceVersion,
+			"updated": timenow,
+			"body":    cfgstr,
+		}
+
+		q := rdobase.NewQuerySet().From("spec")
+		q.Where.And("id", spec.Metadata.ID)
+
+		if rs1, err := dcn.Base.Fetch(q); err == nil {
+
+			if spec.Metadata.Name != rs1.Field("title").String() ||
+				spec.Comment != rs1.Field("comment").String() ||
+				spec.Metadata.ResourceVersion != rs1.Field("version").String() {
+
+				fr := rdobase.NewFilter()
+				fr.And("id", spec.Metadata.ID)
+
+				dcn.Base.Update("spec", set, fr)
+			}
+
+		} else {
+
+			set["id"] = spec.Metadata.ID
+			set["created"] = timenow
+
+			dcn.Base.Insert("spec", set)
+		}
+
 	}
 
 	// Refresh Spec Config
@@ -165,6 +206,9 @@ func SpecRefresh(specid string) {
 		}
 	}
 
+	var specBody api.Spec
+	rs[0].Field("body").Json(&specBody)
+
 	Instances[rs[0].Field("id").String()] = api.Spec{
 		Metadata: api.ObjectMeta{
 			ID:              rs[0].Field("id").String(),
@@ -178,6 +222,7 @@ func SpecRefresh(specid string) {
 		Comment:    rs[0].Field("comment").String(),
 		NodeModels: nodeModels,
 		TermModels: termModels,
+		Actions:    specBody.Actions,
 	}
 
 	// fmt.Println(nodeModels, termModels)
@@ -191,7 +236,7 @@ func specSchemaSync(spec api.Spec) error {
 	)
 
 	//
-	dc, err := rdo.ClientPull("def")
+	dcn, err := rdo.ClientPull("def")
 	if err != nil {
 		return err
 	}
@@ -309,7 +354,7 @@ func specSchemaSync(spec api.Spec) error {
 		q := rdobase.NewQuerySet().From("nodex")
 		q.Where.And("id", setID)
 
-		if rs1, err := dc.Base.Fetch(q); err == nil {
+		if rs1, err := dcn.Base.Fetch(q); err == nil {
 
 			if nodeModel.Title != rs1.Field("title").String() ||
 				nodeModel.Comment != rs1.Field("comment").String() ||
@@ -319,14 +364,14 @@ func specSchemaSync(spec api.Spec) error {
 				fr := rdobase.NewFilter()
 				fr.And("id", setID)
 
-				dc.Base.Update("nodex", set, fr)
+				dcn.Base.Update("nodex", set, fr)
 			}
 		} else {
 
 			set["id"] = setID
 			set["created"] = timenow
 
-			dc.Base.Insert("nodex", set)
+			dcn.Base.Insert("nodex", set)
 		}
 	}
 
@@ -386,7 +431,7 @@ func specSchemaSync(spec api.Spec) error {
 
 		ds.Tables = append(ds.Tables, &tbl)
 
-		// dc.Base.InsertIgnore("termx", map[string]interface{}{
+		// dcn.Base.InsertIgnore("termx", map[string]interface{}{
 		// 	"id":      spec.Metadata.ID + "." + termModel.Metadata.Name,
 		// 	"name":    termModel.Metadata.Name,
 		// 	"specid":  spec.Metadata.ID,
@@ -413,7 +458,7 @@ func specSchemaSync(spec api.Spec) error {
 		q := rdobase.NewQuerySet().From("termx")
 		q.Where.And("id", setID)
 
-		if rs1, err := dc.Base.Fetch(q); err == nil {
+		if rs1, err := dcn.Base.Fetch(q); err == nil {
 
 			if termModel.Type != rs1.Field("type").String() ||
 				termModel.Title != rs1.Field("title").String() {
@@ -421,7 +466,7 @@ func specSchemaSync(spec api.Spec) error {
 				fr := rdobase.NewFilter()
 				fr.And("id", setID)
 
-				dc.Base.Update("termx", set, fr)
+				dcn.Base.Update("termx", set, fr)
 			}
 
 		} else {
@@ -429,45 +474,13 @@ func specSchemaSync(spec api.Spec) error {
 			set["id"] = setID
 			set["created"] = timenow
 
-			dc.Base.Insert("termx", set)
+			dcn.Base.Insert("termx", set)
 		}
 	}
 
 	//
-	if err := dc.Dialect.SchemaSync(Config.Database.Dbname, ds); err != nil {
+	if err := dcn.Dialect.SchemaSync(Config.Database.Dbname, ds); err != nil {
 		return err
-	}
-	// return nil
-	set := map[string]interface{}{
-		"userid":  "sysadmin",
-		"state":   1,
-		"title":   spec.Metadata.Name,
-		"comment": spec.Comment,
-		"version": spec.Metadata.ResourceVersion,
-		"updated": timenow,
-	}
-
-	q := rdobase.NewQuerySet().From("spec")
-	q.Where.And("id", spec.Metadata.ID)
-
-	if rs1, err := dc.Base.Fetch(q); err == nil {
-
-		if spec.Metadata.Name != rs1.Field("title").String() ||
-			spec.Comment != rs1.Field("comment").String() ||
-			spec.Metadata.ResourceVersion != rs1.Field("version").String() {
-
-			fr := rdobase.NewFilter()
-			fr.And("id", spec.Metadata.ID)
-
-			dc.Base.Update("spec", set, fr)
-		}
-
-	} else {
-
-		set["id"] = spec.Metadata.ID
-		set["created"] = timenow
-
-		dc.Base.Insert("spec", set)
 	}
 
 	return nil

@@ -1,14 +1,14 @@
 <nav class="navbar navbar-default" role="navigation">
-  <div class="container">
+  <div class="container-fluid">
 
     <div class="navbar-header" style="">
         <!-- <a class="navbar-brand" href="#">
             <img alt="" src="/~/cmf/logo.png" width="20px" height="20px">
         </a> -->
-        <span class="navbar-brand">CMP</span>
+        <span class="navbar-brand">Project name</span>
     </div>
 
-    <div id="ts3-nav" class="collapse navbar-collapse">
+    <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
             {{range $v := .topnav}}
             <li class=""><a href="{{Field $v "content"}}">{{Field $v "title"}}</a></li>

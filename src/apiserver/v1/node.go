@@ -287,6 +287,16 @@ func (c Node) SetAction() {
 			if utilx.ArrayContain(valField.Name, fns) &&
 				rs[0].Field("field_"+valField.Name).String() != valField.Value {
 				set["field_"+valField.Name] = valField.Value
+
+				attrs := map[string]string{}
+
+				for _, attr := range valField.Attrs {
+					if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+						attrs["format"] = attr.Value
+					}
+				}
+
+				set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
 			}
 		}
 
@@ -329,7 +339,18 @@ func (c Node) SetAction() {
 		for _, valField := range rsp.Fields {
 
 			if utilx.ArrayContain(valField.Name, fns) {
+
 				set["field_"+valField.Name] = valField.Value
+
+				attrs := map[string]string{}
+
+				for _, attr := range valField.Attrs {
+					if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+						attrs["format"] = attr.Value
+					}
+				}
+
+				set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
 			}
 		}
 

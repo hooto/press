@@ -67,10 +67,19 @@
             "datax": [
                 {
                     "name": "list",
-                    "type": "list",
+                    "type": "node.list",
                     "query": {
                         "table": "entry",
                         "limit": 10,
+                        "limitMax": 100
+                    }
+                },
+                {
+                    "name": "categories",
+                    "type": "term.list",
+                    "query": {
+                        "table": "categories",
+                        "limit": 100,
                         "limitMax": 100
                     }
                 }
@@ -81,7 +90,7 @@
             "datax": [
                 {
                     "name": "entry",
-                    "type": "entry",
+                    "type": "node.entry",
                     "query": {
                         "table": "entry"
                     }

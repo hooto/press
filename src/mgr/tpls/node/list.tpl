@@ -36,12 +36,14 @@
 <script id="l5smgr-nodels-tpl" type="text/html">  
   {[~it.items :v]}
     <tr>
-      <td class="l5smgr-font-wfix">{[=v.id]}</td>
+      <td class="l5smgr-font-wfix"><a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.id]}</a></td>
       <td>{[=v.title]}</td>
       <td>{[=v.state]}</td>
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
-      <td align="right"><a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+      <td align="right">
+        <a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+      </td>
     </tr>
   {[~]}
 </script>

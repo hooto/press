@@ -1,3 +1,3 @@
-<footer class="container text-center">
-&copy;2015 Bootstrap
+<footer class="l5s-footer">
+	&copy;2015 Bootstrap
 </footer>
