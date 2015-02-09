@@ -65,7 +65,7 @@
             "datax": [
                 {
                     "name": "topnav",
-                    "type": "list",
+                    "type": "node.list",
                     "query": {
                         "table": "menu",
                         "limit": 50

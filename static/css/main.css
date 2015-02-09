@@ -1,5 +1,8 @@
+/** front end */
 body {
-  padding-top: 20px;
+  font-size: 16px;
+  /* font-family: "Source Sans Pro", sans-serif; */
+  font-weight: 400;
 }
 
 .l5s-footer {
@@ -24,15 +27,21 @@ body {
 }
 
 .l5s-list-heading {
-  font-size: 160%;
+  font-size: 150%;
   font-weight: bold;
+  color: #428BCA;
   margin: 0;
   padding: 10px 0 0 0;
 }
 
 .l5s-list-heading a {
+  text-decoration: none;
+  color: #428BCA;
+}
+
+.l5s-list-heading a:hover {
   text-decoration: underline;
-  color: #333;
+  color: #F04C5C;
 }
 
 .l5s-list-info {
@@ -43,9 +52,39 @@ body {
   
 }
 
+.l5s-list-body a {
+  color: #2A6496;
+}
+
 .l5s-list-text {
   margin: 10px 0;
   line-height: 180%;
+}
+
+/** node-entry-view */
+.node-entry-view {
+  border: #eee 1px solid;
+  padding: 20px;
+  margin: 0 0 20px 0;
+}
+
+.node-entry-view .header {
+  padding: 0 0 20px 0;
+  margin: 0 0 20px 0;
+  border-bottom: #eee 1px solid;
+  line-height: 100%;
+}
+
+.node-entry-view .header h2 {
+  margin: 0;
+  color: #419EDA;
+  font-weight: 600;
+  font-size: 200%;
+}
+
+.node-entry-view .header .hinfo {
+  padding-top: 10px;
+  color: #777;
 }
 
 /** scroll **/

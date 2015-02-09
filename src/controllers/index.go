@@ -5,6 +5,7 @@ import (
 	"../conf"
 	"../datax"
 	"fmt"
+
 	"github.com/lessos/lessgo/pagelet"
 )
 
@@ -34,6 +35,8 @@ func (c Index) PageletAction() {
 		return
 	}
 
+	c.ViewData["baseuri"] = "/" + specid
+
 	// fmt.Println(spec.Actions)
 
 	for _, action := range spec.Actions {
@@ -62,29 +65,32 @@ func (c Index) PageletAction() {
 
 func (c Index) dataRender(specid string, ad api.ActionData) {
 
-	fmt.Println("c Index dataRender", specid)
+	// fmt.Println("c Index dataRender", specid)
 
 	qry := datax.NewQuery(specid, ad.Query.Table)
-	// fmt.Println(qry)
 	if ad.Query.Limit > 0 {
 		qry.Limit(ad.Query.Limit)
 	}
 
-	// if ad.Typep[:5] == "node" {
+	if c.Params.Get("id") != "" {
+		qry.Filter("id", c.Params.Get("id"))
+	}
 
-	// }
+	switch ad.Type {
 
-	if ad.Type == "node.list" {
-		qry.From("nx" + specid + "_" + qry.Table)
-		c.ViewData[ad.Name] = qry.Query()
-	} else if ad.Type == "node.entry" {
-		qry.From("nx" + specid + "_" + qry.Table)
-		c.ViewData[ad.Name] = qry.QueryEntry()
-	} else if ad.Type == "term.list" {
+	case "node.list":
+		c.ViewData[ad.Name] = qry.NodeList()
+
+	case "node.entry":
+		c.ViewData[ad.Name] = qry.NodeEntry()
+
+	case "term.list":
 		qry.From("tx" + specid + "_" + qry.Table)
 		c.ViewData[ad.Name] = qry.Query()
-	} else if ad.Type == "term.entry" {
+
+	case "term.entry":
 		qry.From("tx" + specid + "_" + qry.Table)
 		c.ViewData[ad.Name] = qry.QueryEntry()
+
 	}
 }

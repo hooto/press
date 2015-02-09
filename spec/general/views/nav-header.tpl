@@ -1,5 +1,5 @@
-<nav class="navbar navbar-default" role="navigation">
-  <div class="container-fluid">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
 
     <div class="navbar-header" style="">
         <!-- <a class="navbar-brand" href="#">
@@ -10,9 +10,9 @@
 
     <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-            {{range $v := .topnav}}
-            <li class=""><a href="{{Field $v "content"}}">{{Field $v "title"}}</a></li>
-            {{end}}
+          {{range $v := .topnav.Items}}
+          <li class=""><a href="#{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
+          {{end}}
         </ul>
 
         <ul class="nav navbar-nav navbar-right">

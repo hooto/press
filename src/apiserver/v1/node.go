@@ -23,11 +23,7 @@ func (c Node) ListAction() {
 
 	c.AutoRender = false
 
-	rsp := api.NodeList{
-		TypeMeta: api.TypeMeta{
-			APIVersion: api.Version,
-		},
-	}
+	var rsp api.NodeList
 
 	defer func() {
 
@@ -39,72 +35,10 @@ func (c Node) ListAction() {
 		}
 	}()
 
-	model, err := conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("modelid"))
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
-			Message: "Spec Not Found",
-		}
-		return
-	}
+	dq := datax.NewQuery(c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq.Limit(100)
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
-
-	q := rdobase.NewQuerySet().From(table).Limit(100)
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	if len(rs) > 0 {
-
-		for _, v := range rs {
-
-			item := api.Node{
-				ID:      v.Field("id").String(),
-				State:   v.Field("state").Int16(),
-				UserID:  v.Field("userid").String(),
-				Title:   v.Field("title").String(),
-				Created: v.Field("created").TimeFormat("datetime", "atom"),
-				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
-			}
-
-			for _, field := range model.Fields {
-
-				item.Fields = append(item.Fields, api.NodeField{
-					Name:  field.Name,
-					Value: v.Field("field_" + field.Name).String(),
-				})
-			}
-
-			for _, term := range model.Terms {
-
-				item.Terms = append(item.Terms, api.NodeTerm{
-					Name:  term.Metadata.Name,
-					Value: v.Field("term_" + term.Metadata.Name).String(),
-				})
-			}
-
-			rsp.Items = append(rsp.Items, item)
-		}
-	}
-
-	rsp.Model = model
-
-	rsp.Kind = "NodeList"
+	rsp = dq.NodeList()
 }
 
 func (c Node) EntryAction() {
@@ -127,71 +61,12 @@ func (c Node) EntryAction() {
 		}
 	}()
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
+	dq := datax.NewQuery(c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq.Limit(100)
 
-	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq.Filter("id", c.Params.Get("id"))
 
-	q := rdobase.NewQuerySet().From(table).Limit(1)
-	q.Where.And("id", c.Params.Get("id"))
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	if len(rs) < 1 {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
-			Message: "Node Not Found",
-		}
-		return
-	}
-
-	rsp.Model, err = conf.SpecNodeModel(c.Params.Get("specid"), c.Params.Get("modelid"))
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
-			Message: "Node Not Found",
-		}
-		return
-	}
-
-	for _, field := range rsp.Model.Fields {
-
-		rsp.Fields = append(rsp.Fields, api.NodeField{
-			Name:  field.Name,
-			Value: rs[0].Field("field_" + field.Name).String(),
-		})
-	}
-
-	for _, term := range rsp.Model.Terms {
-
-		rsp.Terms = append(rsp.Terms, api.NodeTerm{
-			Name:  term.Metadata.Name,
-			Value: rs[0].Field("term_" + term.Metadata.Name).String(),
-		})
-	}
-
-	rsp.Terms = datax.NodeTermsQuery(rsp.Model, rsp.Terms)
-
-	rsp.ID = rs[0].Field("id").String()
-	rsp.State = rs[0].Field("state").Int16()
-	rsp.UserID = rs[0].Field("userid").String()
-	rsp.Title = rs[0].Field("title").String()
-	rsp.Created = rs[0].Field("created").TimeFormat("datetime", "atom")
-	rsp.Updated = rs[0].Field("updated").TimeFormat("datetime", "atom")
-
-	rsp.Kind = "Node"
+	rsp = dq.NodeEntry()
 }
 
 func (c Node) SetAction() {
@@ -286,13 +161,14 @@ func (c Node) SetAction() {
 
 			if utilx.ArrayContain(valField.Name, fns) &&
 				rs[0].Field("field_"+valField.Name).String() != valField.Value {
+
 				set["field_"+valField.Name] = valField.Value
 
-				attrs := map[string]string{}
+				attrs := []api.KeyValue{}
 
 				for _, attr := range valField.Attrs {
 					if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
-						attrs["format"] = attr.Value
+						attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 					}
 				}
 
@@ -342,11 +218,11 @@ func (c Node) SetAction() {
 
 				set["field_"+valField.Name] = valField.Value
 
-				attrs := map[string]string{}
+				attrs := []api.KeyValue{}
 
 				for _, attr := range valField.Attrs {
 					if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
-						attrs["format"] = attr.Value
+						attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 					}
 				}
 

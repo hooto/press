@@ -57,7 +57,12 @@ func main() {
 	// pagelet.Config.ViewFuncRegistry("Query", datax.Query)
 	// pagelet.Config.ViewFuncRegistry("NewQuery", datax.NewQuery)
 	// pagelet.Config.ViewFuncRegistry("QueryEntry", datax.QueryEntry)
-	pagelet.Config.ViewFuncRegistry("Field", datax.Field)
+	pagelet.Config.ViewFuncRegistry("TimeFormat", datax.TimeFormat)
+	pagelet.Config.ViewFuncRegistry("FieldDebug", datax.FieldDebug)
+	pagelet.Config.ViewFuncRegistry("FieldString", datax.FieldString)
+	pagelet.Config.ViewFuncRegistry("FieldSubString", datax.FieldSubString)
+	pagelet.Config.ViewFuncRegistry("FieldHtml", datax.FieldHtml)
+	pagelet.Config.ViewFuncRegistry("FieldSubHtml", datax.FieldSubHtml)
 	pagelet.Config.ViewFuncRegistry("pagelet", datax.Pagelet)
 
 	//

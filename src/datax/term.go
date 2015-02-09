@@ -47,7 +47,7 @@ func (t *TermList) Content() string {
 	return strings.Join(ts, ",")
 }
 
-func NodeTermsQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
+func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
