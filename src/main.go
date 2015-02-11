@@ -54,9 +54,7 @@ func main() {
 	pagelet.Config.HttpPort = conf.Config.HttpPort
 	pagelet.Config.LessIdsServiceUrl = conf.Config.LessIdsUrl
 
-	// pagelet.Config.ViewFuncRegistry("Query", datax.Query)
-	// pagelet.Config.ViewFuncRegistry("NewQuery", datax.NewQuery)
-	// pagelet.Config.ViewFuncRegistry("QueryEntry", datax.QueryEntry)
+	// render functions
 	pagelet.Config.ViewFuncRegistry("TimeFormat", datax.TimeFormat)
 	pagelet.Config.ViewFuncRegistry("FieldDebug", datax.FieldDebug)
 	pagelet.Config.ViewFuncRegistry("FieldString", datax.FieldString)

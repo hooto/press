@@ -68,9 +68,10 @@
                 {
                     "name": "list",
                     "type": "node.list",
+                    "pager": true,
                     "query": {
                         "table": "entry",
-                        "limit": 10,
+                        "limit": 5,
                         "limitMax": 100
                     }
                 },

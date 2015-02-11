@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-static-top" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top l5s-header">
   <div class="container">
 
     <div class="navbar-header" style="">
@@ -11,7 +11,7 @@
     <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
           {{range $v := .topnav.Items}}
-          <li class=""><a href="#{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
+          <li class=""><a href="{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
           {{end}}
         </ul>
 

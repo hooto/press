@@ -20,6 +20,7 @@ type Node struct {
 
 type NodeList struct {
 	TypeMeta `json:",inline"`
+	Metadata ListMeta   `json:"metadata,omitempty"`
 	Model    *NodeModel `json:"model,omitempty"`
 	Items    []Node     `json:"items,omitempty"`
 }

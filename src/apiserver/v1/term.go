@@ -3,6 +3,7 @@ package v1
 import (
 	"../../api"
 	"../../conf"
+	"../../datax"
 
 	"crypto/md5"
 	"errors"
@@ -29,11 +30,7 @@ func (c Term) ListAction() {
 
 	c.AutoRender = false
 
-	rsp := api.TermList{
-		TypeMeta: api.TypeMeta{
-			APIVersion: api.Version,
-		},
-	}
+	var rsp api.TermList
 
 	defer func() {
 
@@ -45,70 +42,10 @@ func (c Term) ListAction() {
 		}
 	}()
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
+	dq := datax.NewQuery(c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq.Limit(100)
 
-	model, err := conf.SpecTermModel(c.Params.Get("specid"), c.Params.Get("modelid"))
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
-			Message: "Term Not Found",
-		}
-		return
-	}
-
-	table := fmt.Sprintf("tx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
-
-	q := rdobase.NewQuerySet().From(table).Limit(100)
-
-	if model.Type == api.TermTag {
-		q.Order("updated desc")
-	} else if model.Type == api.TermTaxonomy {
-		q.Order("weight asc")
-	}
-
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	if len(rs) > 0 {
-
-		for _, v := range rs {
-
-			item := api.Term{
-				ID:      v.Field("id").Uint32(),
-				State:   v.Field("state").Int16(),
-				UserID:  v.Field("userid").String(),
-				Title:   v.Field("title").String(),
-				Created: v.Field("created").TimeFormat("datetime", "atom"),
-				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
-			}
-
-			switch model.Type {
-			case api.TermTag:
-				item.UID = v.Field("uid").String()
-			case api.TermTaxonomy:
-				item.PID = v.Field("pid").Uint32()
-				item.Weight = v.Field("weight").Int32()
-			}
-
-			rsp.Items = append(rsp.Items, item)
-		}
-	}
-
-	rsp.Model = model
-	rsp.Kind = "TermList"
+	rsp = dq.TermList()
 }
 
 func (c Term) EntryAction() {
@@ -131,67 +68,12 @@ func (c Term) EntryAction() {
 		}
 	}()
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
+	dq := datax.NewQuery(c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq.Limit(100)
 
-	table := fmt.Sprintf("tx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq.Filter("id", c.Params.Get("id"))
 
-	q := rdobase.NewQuerySet().From(table).Limit(1)
-	q.Where.And("id", c.Params.Get("id"))
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	if len(rs) < 1 {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
-			Message: "Term Not Found",
-		}
-		return
-	}
-
-	rsp.Model, err = conf.SpecTermModel(c.Params.Get("specid"), c.Params.Get("modelid"))
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
-			Message: "Term Not Found",
-		}
-		return
-	}
-
-	switch rsp.Model.Type {
-	case api.TermTaxonomy:
-		rsp.PID = rs[0].Field("pid").Uint32()
-		rsp.Weight = rs[0].Field("weight").Int32()
-	case api.TermTag:
-		rsp.UID = rs[0].Field("uid").String()
-	default:
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Server Error",
-		}
-		return
-	}
-
-	rsp.ID = rs[0].Field("id").Uint32()
-	rsp.State = rs[0].Field("state").Int16()
-	rsp.UserID = rs[0].Field("userid").String()
-	rsp.Title = rs[0].Field("title").String()
-	rsp.Created = rs[0].Field("created").TimeFormat("datetime", "atom")
-	rsp.Updated = rs[0].Field("updated").TimeFormat("datetime", "atom")
-
-	rsp.Kind = "Term"
+	rsp = dq.TermEntry()
 }
 
 func (c Term) SetAction() {

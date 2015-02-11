@@ -117,12 +117,7 @@ func (c Node) SetAction() {
 
 	var (
 		set = map[string]interface{}{}
-		fns = []string{}
 	)
-
-	for _, modField := range model.Fields {
-		fns = append(fns, modField.Name)
-	}
 
 	//
 	table := fmt.Sprintf("nx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
@@ -159,20 +154,31 @@ func (c Node) SetAction() {
 		//
 		for _, valField := range rsp.Fields {
 
-			if utilx.ArrayContain(valField.Name, fns) &&
-				rs[0].Field("field_"+valField.Name).String() != valField.Value {
+			for _, modField := range model.Fields {
 
-				set["field_"+valField.Name] = valField.Value
+				if modField.Name != valField.Name {
+					continue
+				}
 
-				attrs := []api.KeyValue{}
+				if rs[0].Field("field_"+valField.Name).String() != valField.Value {
 
-				for _, attr := range valField.Attrs {
-					if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
-						attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
+					set["field_"+valField.Name] = valField.Value
+
+					if modField.Type == "text" {
+
+						attrs := []api.KeyValue{}
+
+						for _, attr := range valField.Attrs {
+							if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+								attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
+							}
+						}
+
+						set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
 					}
 				}
 
-				set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
+				break
 			}
 		}
 
@@ -214,19 +220,27 @@ func (c Node) SetAction() {
 		//
 		for _, valField := range rsp.Fields {
 
-			if utilx.ArrayContain(valField.Name, fns) {
+			for _, modField := range model.Fields {
+
+				if modField.Name != valField.Name {
+					continue
+				}
 
 				set["field_"+valField.Name] = valField.Value
 
-				attrs := []api.KeyValue{}
+				if modField.Type == "text" {
+					attrs := []api.KeyValue{}
 
-				for _, attr := range valField.Attrs {
-					if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
-						attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
+					for _, attr := range valField.Attrs {
+						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
+						}
 					}
+
+					set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
 				}
 
-				set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
+				break
 			}
 		}
 

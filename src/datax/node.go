@@ -107,6 +107,13 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 	rsp.Kind = "NodeList"
 
+	if q.Pager {
+		num, _ := dcn.Base.Count(table, q.filter)
+		rsp.Metadata.TotalResults = uint64(num)
+		rsp.Metadata.StartIndex = uint64(q.offset)
+		rsp.Metadata.ItemsPerList = uint64(q.limit)
+	}
+
 	return rsp
 }
 

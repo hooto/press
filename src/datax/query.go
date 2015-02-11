@@ -16,6 +16,7 @@ type QuerySet struct {
 	limit   int64
 	offset  int64
 	filter  rdobase.Filter
+	Pager   bool
 }
 
 func NewQuery(specid, table string) *QuerySet {

@@ -20,6 +20,7 @@ type Term struct {
 
 type TermList struct {
 	TypeMeta `json:",inline"`
+	Metadata ListMeta   `json:"metadata,omitempty"`
 	Model    *TermModel `json:"model,omitempty"`
 	Items    []Term     `json:"items"`
 }

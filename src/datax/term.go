@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"../api"
+	"../conf"
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
@@ -16,6 +17,168 @@ import (
 var (
 	spaceReg = regexp.MustCompile(" +")
 )
+
+func (q *QuerySet) TermList() api.TermList {
+
+	rsp := api.TermList{}
+
+	model, err := conf.SpecTermModel(q.SpecID, q.Table)
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "404",
+			Message: "Term Not Found",
+		}
+		return rsp
+	}
+
+	dcn, err := rdo.ClientPull("def")
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "500",
+			Message: "Can not pull database instance",
+		}
+		return rsp
+	}
+
+	q.limit = 100
+	table := fmt.Sprintf("tx%s_%s", q.SpecID, q.Table)
+
+	qs := rdobase.NewQuerySet().
+		Select(q.cols).
+		From(table).
+		Limit(q.limit).
+		Offset(q.offset)
+
+	if model.Type == api.TermTag {
+		qs.Order("updated desc")
+	} else if model.Type == api.TermTaxonomy {
+		qs.Order("weight asc")
+	}
+
+	qs.Where = q.filter
+
+	rs, err := dcn.Base.Query(qs)
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "500",
+			Message: "Can not pull database instance",
+		}
+		return rsp
+	}
+
+	if len(rs) > 0 {
+
+		for _, v := range rs {
+
+			item := api.Term{
+				ID:      v.Field("id").Uint32(),
+				State:   v.Field("state").Int16(),
+				UserID:  v.Field("userid").String(),
+				Title:   v.Field("title").String(),
+				Created: v.Field("created").TimeFormat("datetime", "atom"),
+				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
+			}
+
+			switch model.Type {
+			case api.TermTag:
+				item.UID = v.Field("uid").String()
+			case api.TermTaxonomy:
+				item.PID = v.Field("pid").Uint32()
+				item.Weight = v.Field("weight").Int32()
+			}
+
+			rsp.Items = append(rsp.Items, item)
+		}
+	}
+
+	rsp.Model = model
+	rsp.Kind = "TermList"
+
+	if q.Pager {
+		num, _ := dcn.Base.Count(table, q.filter)
+		rsp.Metadata.TotalResults = uint64(num)
+		rsp.Metadata.StartIndex = uint64(q.offset)
+		rsp.Metadata.ItemsPerList = uint64(q.limit)
+	}
+
+	return rsp
+}
+
+func (q *QuerySet) TermEntry() api.Term {
+
+	rsp := api.Term{}
+
+	dcn, err := rdo.ClientPull("def")
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "500",
+			Message: "Can not pull database instance",
+		}
+		return rsp
+	}
+
+	rsp.Model, err = conf.SpecTermModel(q.SpecID, q.Table)
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "404",
+			Message: "Term Not Found",
+		}
+		return rsp
+	}
+
+	table := fmt.Sprintf("tx%s_%s", q.SpecID, q.Table)
+
+	qs := rdobase.NewQuerySet().
+		Select(q.cols).
+		From(table).
+		Order(q.order).
+		Limit(1).
+		Offset(q.offset)
+
+	qs.Where = q.filter
+
+	rs, err := dcn.Base.Query(qs)
+	if err != nil {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "500",
+			Message: "Can not pull database instance",
+		}
+		return rsp
+	}
+
+	if len(rs) < 1 {
+		rsp.Error = &api.ErrorMeta{
+			Code:    "404",
+			Message: "Term Not Found",
+		}
+		return rsp
+	}
+
+	switch rsp.Model.Type {
+	case api.TermTaxonomy:
+		rsp.PID = rs[0].Field("pid").Uint32()
+		rsp.Weight = rs[0].Field("weight").Int32()
+	case api.TermTag:
+		rsp.UID = rs[0].Field("uid").String()
+	default:
+		rsp.Error = &api.ErrorMeta{
+			Code:    "500",
+			Message: "Server Error",
+		}
+		return rsp
+	}
+
+	rsp.ID = rs[0].Field("id").Uint32()
+	rsp.State = rs[0].Field("state").Int16()
+	rsp.UserID = rs[0].Field("userid").String()
+	rsp.Title = rs[0].Field("title").String()
+	rsp.Created = rs[0].Field("created").TimeFormat("datetime", "atom")
+	rsp.Updated = rs[0].Field("updated").TimeFormat("datetime", "atom")
+
+	rsp.Kind = "Term"
+
+	return rsp
+}
 
 type TermList api.TermList
 

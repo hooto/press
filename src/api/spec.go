@@ -102,5 +102,6 @@ type Action struct {
 type ActionData struct {
 	Name  string `json:"name"`
 	Type  string `json:"type"`
+	Pager bool   `json:"pager,omitempty"`
 	Query Query  `json:"query,omitempty"`
 }

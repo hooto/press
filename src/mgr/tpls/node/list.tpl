@@ -22,7 +22,6 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>ID</th>
       <th>Title</th>
       <th>State</th>
       <th>Created</th>
@@ -36,8 +35,9 @@
 <script id="l5smgr-nodels-tpl" type="text/html">  
   {[~it.items :v]}
     <tr>
-      <td class="l5smgr-font-wfix"><a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.id]}</a></td>
-      <td>{[=v.title]}</td>
+      <td>
+        <a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
+      </td>
       <td>{[=v.state]}</td>
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>

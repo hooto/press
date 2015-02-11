@@ -528,7 +528,7 @@ l5sNode.SetCommit = function()
             break;
         
         case "string":
-            field_set.value = $("#l5smgr-nodeset").find("textarea[name=field_"+ field.name +"]").val();
+            field_set.value = $("#l5smgr-nodeset").find("input[name=field_"+ field.name +"]").val();
             break;
 
         case "int8":

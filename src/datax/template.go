@@ -3,6 +3,7 @@ package datax
 import (
 	"../conf"
 	"bytes"
+	"github.com/lessos/lessgo/logger"
 	"github.com/lessos/lessgo/pagelet"
 	"html/template"
 )
@@ -39,10 +40,13 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					qry.Limit(datax.Query.Limit)
 				}
 
-				if datax.Type == "list" {
-					data[datax.Name] = qry.Query()
-				} else if datax.Type == "entry" {
-					data[datax.Name] = qry.QueryEntry()
+				switch datax.Type {
+
+				case "node.list":
+					data[datax.Name] = qry.NodeList()
+
+				case "node.entry":
+					data[datax.Name] = qry.NodeEntry()
 				}
 			}
 
@@ -63,6 +67,7 @@ func templateRender(data map[string]interface{}, module, templatePath string) te
 
 	var out bytes.Buffer
 	if err = tplset.Render(&out, data); err != nil {
+		logger.Printf("error", "tplset.Render Error %v", err)
 		return ""
 	}
 
