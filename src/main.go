@@ -62,6 +62,7 @@ func main() {
 	pagelet.Config.ViewFuncRegistry("FieldHtml", datax.FieldHtml)
 	pagelet.Config.ViewFuncRegistry("FieldSubHtml", datax.FieldSubHtml)
 	pagelet.Config.ViewFuncRegistry("pagelet", datax.Pagelet)
+	pagelet.Config.ViewFuncRegistry("FilterUri", datax.FilterUri)
 
 	//
 	pagelet.Config.I18n(conf.Config.Prefix + "/src/i18n/en.json")

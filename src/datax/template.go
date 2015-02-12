@@ -3,10 +3,37 @@ package datax
 import (
 	"../conf"
 	"bytes"
+	"fmt"
+	"html/template"
+	"strings"
+
 	"github.com/lessos/lessgo/logger"
 	"github.com/lessos/lessgo/pagelet"
-	"html/template"
 )
+
+func FilterUri(data map[string]interface{}, args ...interface{}) string {
+
+	uris := []string{}
+
+	for key, val := range data {
+
+		if len(key) > 5 && key[:5] == "term_" {
+			uris = append(uris, fmt.Sprintf("%s=%v", key, val))
+		}
+	}
+
+	if len(args) > 1 {
+		for i := 0; i < len(args); i += 2 {
+			uris = append(uris, fmt.Sprintf("%v=%v", args[i], args[i+1]))
+		}
+	}
+
+	if len(uris) > 0 {
+		return strings.Join(uris, "&")
+	}
+
+	return ""
+}
 
 func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 

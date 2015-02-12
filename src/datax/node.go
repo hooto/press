@@ -2,12 +2,14 @@ package datax
 
 import (
 	"fmt"
+	"strings"
 
 	"../api"
 	"../conf"
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/utilx"
 )
 
 func (q *QuerySet) NodeList() api.NodeList {
@@ -59,6 +61,8 @@ func (q *QuerySet) NodeList() api.NodeList {
 		return rsp
 	}
 
+	termBufs := map[string][]string{}
+
 	if len(rs) > 0 {
 
 		for _, v := range rs {
@@ -93,13 +97,85 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 			for _, term := range model.Terms {
 
-				item.Terms = append(item.Terms, api.NodeTerm{
+				termItem := api.NodeTerm{
 					Name:  term.Metadata.Name,
 					Value: v.Field("term_" + term.Metadata.Name).String(),
-				})
+					Type:  term.Type,
+				}
+
+				item.Terms = append(item.Terms, termItem)
+				if term.Type == api.TermTaxonomy {
+					if !utilx.ArrayContain(termItem.Value, termBufs[termItem.Name]) {
+						termBufs[termItem.Name] = append(termBufs[termItem.Name], termItem.Value)
+					}
+				}
 			}
 
 			rsp.Items = append(rsp.Items, item)
+		}
+	}
+
+	// Fetch Terms
+	termTaxonomy := map[string]api.Term{}
+	for _, term := range model.Terms {
+
+		termids, ok := termBufs[term.Metadata.Name]
+		if !ok || len(termids) < 1 {
+			continue
+		}
+		ids := []interface{}{}
+		for _, tv := range termids {
+			ids = append(ids, tv)
+		}
+
+		switch term.Type {
+
+		case api.TermTaxonomy:
+
+			table := fmt.Sprintf("tx%s_%s", q.SpecID, term.Metadata.Name)
+			qs := rdobase.NewQuerySet().From(table).Limit(1000)
+			qs.Where.And("id.in", ids...)
+
+			if rs, err := dcn.Base.Query(qs); err == nil && len(rs) > 0 {
+
+				for _, v := range rs {
+					termTaxonomy[v.Field("id").String()] = api.Term{
+						ID:    rs[0].Field("id").Uint32(),
+						Title: rs[0].Field("title").String(),
+					}
+				}
+			}
+		}
+	}
+
+	//
+	for k, v := range rsp.Items {
+
+		for tk, tv := range v.Terms {
+
+			if tv.Value == "" {
+				continue
+			}
+
+			switch tv.Type {
+
+			case api.TermTaxonomy:
+
+				if tvs, ok := termTaxonomy[tv.Value]; ok {
+					rsp.Items[k].Terms[tk].Items = append(rsp.Items[k].Terms[tk].Items, tvs)
+				}
+
+			case api.TermTag:
+
+				tags := strings.Split(tv.Value, ",")
+
+				for _, vtag := range tags {
+
+					rsp.Items[k].Terms[tk].Items = append(rsp.Items[k].Terms[tk].Items, api.Term{
+						Title: vtag,
+					})
+				}
+			}
 		}
 	}
 
@@ -188,6 +264,7 @@ func (q *QuerySet) NodeEntry() api.Node {
 		rsp.Terms = append(rsp.Terms, api.NodeTerm{
 			Name:  term.Metadata.Name,
 			Value: rs.Field("term_" + term.Metadata.Name).String(),
+			Type:  term.Type,
 		})
 	}
 

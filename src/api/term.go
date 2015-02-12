@@ -7,7 +7,7 @@ package api
 type Term struct {
 	TypeMeta `json:",inline"`
 	Model    *TermModel `json:"model,omitempty"`
-	ID       uint32     `json:"id"`
+	ID       uint32     `json:"id,omitempty"`
 	PID      uint32     `json:"pid,omitempty"`
 	UID      string     `json:"uid,omitempty"`
 	State    int16      `json:"state,omitempty"`

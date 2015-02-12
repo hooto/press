@@ -9,8 +9,9 @@ body {
 
 .l5s-header {
   background-color: #fff;
-  opacity: 0.90;
-  box-shadow: 0px 0px 3px rgba(153, 153, 153, 0.75);
+  opacity: 0.94;
+  /*box-shadow: 0px 0px 3px rgba(153, 153, 153, 0.75);*/
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
 .l5s-footer {
@@ -31,13 +32,13 @@ body {
   color: #F04C5C;
 }
 
-/** node list **/
-.l5s-list {
+/** l5s-node-list **/
+.l5s-nodels {
   padding-left: 0;
   list-style: none;
 }
 
-.l5s-list-item {
+.l5s-nodels-item {
   margin-top: 20px;
   line-height: 160%;
   background: none repeat scroll 0% 0% #fff;
@@ -48,11 +49,11 @@ body {
   padding: 20px;
 }
 
-.l5s-list-item:first-child {
+.l5s-nodels-item:first-child {
   margin-top: 0;
 }
 
-.l5s-list-heading {
+.l5s-nodels-heading {
   font-size: 150%;
   font-weight: bold;
   color: #428BCA;
@@ -60,35 +61,52 @@ body {
   padding: 0 0 0 0;
 }
 
-.l5s-list-heading a {
+.l5s-nodels-heading a {
   text-decoration: none;
   color: #428BCA;
 }
 
-.l5s-list-heading a:hover {
+.l5s-nodels-heading a:hover {
   text-decoration: underline;
   color: #F04C5C;
 }
 
-.l5s-list-info {
+.l5s-nodels-info {
   color: #777;
+  font-size: 85%;
 }
 
-.l5s-list-body {
+.l5s-nodels-info .section {
+  margin-right: 20px;
+}
+
+.l5s-nodels-info .section a {
+  text-decoration: underline;
+}
+
+.l5s-nodels-info .section a:hover {
+  color: #F04C5C;
+}
+
+.l5s-nodels-info .section .tag-item {
+  margin-right: 10px;
+}
+
+.l5s-nodels-body {
   
 }
 
-.l5s-list-body a {
+.l5s-nodels-body a {
   color: #2A6496;
 }
 
-.l5s-list-text {
+.l5s-nodels-text {
   margin: 10px 0;
   line-height: 180%;
 }
 
-/** node-entry-view */
-.node-entry-view {
+/** l5s-node-view */
+.l5s-nodev {
   border: #eee 1px solid;
   background-color: #fff;
   border-radius: 3px;
@@ -96,28 +114,37 @@ body {
   margin: 0 0 20px 0;
 }
 
-.node-entry-view .header {
+.l5s-nodev .header {
   padding: 0 0 20px 0;
   margin: 0 0 20px 0;
   border-bottom: #eee 1px solid;
   line-height: 100%;
 }
 
-.node-entry-view .header h2 {
+.l5s-nodev .header h2 {
   margin: 0;
   color: #419EDA;
   font-weight: 600;
   font-size: 200%;
 }
 
-.node-entry-view .header .hinfo {
+.l5s-nodev .header .hinfo {
   padding-top: 10px;
   color: #777;
 }
 
+.l5s-nodev .header .hinfo .section {
+  margin-right: 20px;
+  font-size: 80%;
+}
+
+.l5s-nodev .header .hinfo .section a {
+  text-decoration: underline;
+}
+
 /** sidebar **/
 .l5s-sidebar-section {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .l5s-sidebar-section .header h3 {

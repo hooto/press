@@ -112,11 +112,13 @@ func (c Index) dataRender(specid string, ad api.ActionData) {
 					if termVal := c.Params.Get("term_" + term.Metadata.Name); termVal != "" {
 
 						switch term.Type {
-						case "taxonomy":
+						case api.TermTaxonomy:
 							qry.Filter("term_"+term.Metadata.Name, termVal)
-						case "tags":
+							c.ViewData["term_"+term.Metadata.Name] = termVal
+						case api.TermTag:
 							// TOPO
 							qry.Filter("term_"+term.Metadata.Name+".like", "%"+termVal+"%")
+							c.ViewData["term_"+term.Metadata.Name] = termVal
 						}
 					}
 				}

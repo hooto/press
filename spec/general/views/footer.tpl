@@ -4,7 +4,7 @@
       &copy;2015 Demo
     </div>
 	<div class="pull-right">
-      Powered by <strong><a href="http://lessos.com/p/lesscms" target="_blank">lessCMS</a></strong>
+      Powered by <strong><a href="http://lessos.com" target="_blank">lessOS</a></strong>
     </div>
   </div>
 </footer>

@@ -54,6 +54,7 @@ type NodeField struct {
 type NodeTerm struct {
 	Name  string `json:"name"`
 	Value string `json:"value,omitempty"`
+	Type  string `json:"type,omitempty"`
 	Items []Term `json:"items,omitempty"`
 }
 

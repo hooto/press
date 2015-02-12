@@ -225,18 +225,24 @@ func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 				continue
 			}
 
-			table := fmt.Sprintf("tx%s_%s", model.SpecID, modTerm.Metadata.Name)
-
-			q := rdobase.NewQuerySet().From(table)
-
 			switch modTerm.Type {
 
 			case api.TermTag:
 
-				// TODO
+				tags := strings.Split(term.Value, ",")
+
+				for _, vtag := range tags {
+
+					terms[k].Items = append(terms[k].Items, api.Term{
+						Title: vtag,
+					})
+				}
 
 			case api.TermTaxonomy:
 
+				table := fmt.Sprintf("tx%s_%s", model.SpecID, modTerm.Metadata.Name)
+
+				q := rdobase.NewQuerySet().From(table)
 				q.Limit(1)
 				q.Where.And("id", term.Value)
 
@@ -248,6 +254,8 @@ func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 					})
 				}
 			}
+
+			// terms[k].Type = modTerm.Type
 
 			break
 		}
