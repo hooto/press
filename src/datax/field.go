@@ -1,7 +1,6 @@
 package datax
 
 import (
-	// "fmt"
 	"html/template"
 	"regexp"
 	"strings"
@@ -41,7 +40,12 @@ var (
 	regMultiLine  = regexp.MustCompile("\\n+")
 	regMultiSpace = regexp.MustCompile("\\s{2,}")
 	regLineSpace  = regexp.MustCompile("\\n\\s*\\n")
+	mkp           = bluemonday.UGCPolicy()
 )
+
+func init() {
+	mkp.AllowAttrs("class").OnElements("code")
+}
 
 func TimeFormat(timeString, formatFrom, formatTo string) string {
 
@@ -164,7 +168,7 @@ func FieldHtml(fields []api.NodeField, colname string) template.HTML {
 
 	if v, ok := attrs["format"]; ok && v == "md" {
 		unsafe := blackfriday.MarkdownCommon([]byte(val))
-		val = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+		val = string(mkp.SanitizeBytes(unsafe))
 	}
 
 	return template.HTML(val)

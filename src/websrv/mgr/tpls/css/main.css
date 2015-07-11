@@ -24,6 +24,10 @@ body {
     line-height: 1.4em;
 }
 
+#l5smgr-nodeset {
+    background-color: #fff;
+}
+
 .CodeMirror-scroll {
     overflow-x: hidden;
     height: hidden;

@@ -1,23 +1,28 @@
 package main
 
 import (
-	"./conf"
-	"./datax"
 	"flag"
 	"fmt"
-	"github.com/lessos/lessgo/logger"
-	"github.com/lessos/lessgo/pagelet"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"runtime"
 	"runtime/pprof"
+	// "time"
+
+	"github.com/lessos/lessgo/httpsrv"
+	"github.com/lessos/lessgo/logger"
+	"github.com/lessos/lessgo/service/lessids"
+
+	"./conf"
+	"./datax"
+	// "./state"
 )
 
 import (
-	capi "./apiserver/v1"
-	cdef "./controllers"
-	cmgr "./mgr/controllers"
+	cdef "./websrv/frontend"
+	cmgr "./websrv/mgr"
+	capi "./websrv/v1"
 )
 
 var (
@@ -27,6 +32,16 @@ var (
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	// render functions
+	httpsrv.GlobalService.Config.TemplateFuncRegister("TimeFormat", datax.TimeFormat)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldDebug", datax.FieldDebug)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldString", datax.FieldString)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubString", datax.FieldSubString)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldHtml", datax.FieldHtml)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubHtml", datax.FieldSubHtml)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("pagelet", datax.Pagelet)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FilterUri", datax.FilterUri)
 }
 
 func main() {
@@ -50,47 +65,37 @@ func main() {
 		os.Exit(1)
 	}
 
-	// pagelet.Config.UrlBasePath = "cmf"
-	pagelet.Config.HttpPort = conf.Config.HttpPort
-	pagelet.Config.LessIdsServiceUrl = conf.Config.LessIdsUrl
+	lessids.ServiceUrl = conf.Config.LessIdsUrl
 
-	// render functions
-	pagelet.Config.ViewFuncRegistry("TimeFormat", datax.TimeFormat)
-	pagelet.Config.ViewFuncRegistry("FieldDebug", datax.FieldDebug)
-	pagelet.Config.ViewFuncRegistry("FieldString", datax.FieldString)
-	pagelet.Config.ViewFuncRegistry("FieldSubString", datax.FieldSubString)
-	pagelet.Config.ViewFuncRegistry("FieldHtml", datax.FieldHtml)
-	pagelet.Config.ViewFuncRegistry("FieldSubHtml", datax.FieldSubHtml)
-	pagelet.Config.ViewFuncRegistry("pagelet", datax.Pagelet)
-	pagelet.Config.ViewFuncRegistry("FilterUri", datax.FilterUri)
+	// httpsrv.Config.UrlBasePath = "cmf"
+	httpsrv.GlobalService.Config.HttpPort = conf.Config.HttpPort
+	// httpsrv.Config.LessIdsServiceUrl = conf.Config.LessIdsUrl
 
-	//
-	pagelet.Config.I18n(conf.Config.Prefix + "/src/i18n/en.json")
-	pagelet.Config.I18n(conf.Config.Prefix + "/src/i18n/zh_CN.json")
+	// state
+	// for {
 
-	//
-	pagelet.Config.RouteAppend("v1", "/:controller/:action")
-	pagelet.RegisterController("v1", (*capi.Node)(nil))
-	pagelet.RegisterController("v1", (*capi.Term)(nil))
-	pagelet.RegisterController("v1", (*capi.Spec)(nil))
-	pagelet.RegisterController("v1", (*capi.NodeModel)(nil))
-	pagelet.RegisterController("v1", (*capi.TermModel)(nil))
-	pagelet.RegisterController("v1", (*capi.Text)(nil))
+	// 	state.Refresh()
+
+	// 	if state.LessIdsState == state.LessIdsUnRegistered ||
+	// 		state.LessIdsState == state.LessIdsOk {
+	// 		break
+	// 	}
+
+	// 	time.Sleep(3e9)
+	// }
+
+	// conf.SpecRefresh("c8f0ltxp")
 
 	//
-	pagelet.Config.RouteStaticAppend("mgr", "/~", conf.Config.Prefix+"/static")
-	pagelet.Config.RouteStaticAppend("mgr", "/-", conf.Config.Prefix+"/src/mgr/tpls")
-	pagelet.Config.RouteAppend("mgr", "/:controller/:action")
-	pagelet.RegisterController("mgr", (*cmgr.Index)(nil))
+	// httpsrv.Config.I18n(conf.Config.Prefix + "/src/i18n/en.json")
+	// httpsrv.Config.I18n(conf.Config.Prefix + "/src/i18n/zh_CN.json")
 
 	//
-	pagelet.Config.RouteStaticAppend("default", "/~", conf.Config.Prefix+"/static")
-	pagelet.Config.ViewPath("default", conf.Config.Prefix+"/src/views")
-	pagelet.Config.RouteAppend("default", "/:controller/:action")
-	pagelet.RegisterController("default", (*cdef.Index)(nil))
-	pagelet.RegisterController("default", (*cdef.Error)(nil))
+	httpsrv.GlobalService.ModuleRegister("/v1", capi.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/mgr", cmgr.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
 
 	//
 	fmt.Println("Running")
-	pagelet.Run()
+	httpsrv.GlobalService.Start()
 }

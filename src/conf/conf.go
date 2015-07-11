@@ -17,8 +17,9 @@ var (
 )
 
 type ConfigCommon struct {
+	InstanceID string `json:"instanceid"`
 	HttpAddr   string `json:"http_addr"`
-	HttpPort   int    `json:"http_port"`
+	HttpPort   uint16 `json:"http_port"`
 	LessIdsUrl string `json:"lessids_url"`
 	Version    string
 	Prefix     string
@@ -32,7 +33,7 @@ func Initialize(prefix string) error {
 	if prefix == "" {
 		prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/..")
 		if err != nil {
-			prefix = "/opt/lesscmf"
+			prefix = "/opt/lesscms"
 		}
 	}
 	reg, _ := regexp.Compile("/+")

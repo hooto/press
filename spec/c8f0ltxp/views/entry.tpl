@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div>{{FieldHtml .entry.Fields "content"}}</div>
+        <div class="content">{{FieldHtml .entry.Fields "content"}}</div>
       </div>
     
     </div>

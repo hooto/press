@@ -4,13 +4,13 @@ import (
 	"../../api"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/pagelet"
+	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/utils"
 	"io"
 )
 
 type Spec struct {
-	*pagelet.Controller
+	*httpsrv.Controller
 }
 
 func (c Spec) ListAction() {

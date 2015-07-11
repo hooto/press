@@ -11,8 +11,9 @@
 
     <div id="l5s-nav" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-            <li class="l5s-nav-item active"><a href="#content" onclick="l5sMgr.NodeList()">Content</a></li>
-            <li class="l5s-nav-item "><a href="#structure" onclick="l5sMgr.SpecList()">Spec</a></li>
+            <li class="l5s-nav-item active"><a href="#content" onclick="l5sNode.Index()">Content</a></li>
+            <li class="l5s-nav-item "><a href="#structure" onclick="l5sSpec.Index()">Spec</a></li>
+            <li class="l5s-nav-item "><a href="#setting" onclick="l5sMgr.Setting()">Settings</a></li>
         </ul>
 
         <ul class="nav navbar-nav navbar-right">

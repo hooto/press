@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/lessos/lessgo/data/rdo"
+	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/httpsrv"
+	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessgo/utilx"
+
 	"../../api"
 	"../../conf"
 	"../../datax"
-
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/pagelet"
-	"github.com/lessos/lessgo/utils"
-	"github.com/lessos/lessgo/utilx"
 )
 
 type Node struct {
-	*pagelet.Controller
+	*httpsrv.Controller
 }
 
 func (c Node) ListAction() {
@@ -211,7 +211,7 @@ func (c Node) SetAction() {
 
 	} else {
 
-		set["id"] = utils.StringNewRand36(12)
+		set["id"] = utils.StringNewRand(12)
 		set["title"] = rsp.Title
 		set["state"] = rsp.State
 		set["created"] = rdobase.TimeNow("datetime")

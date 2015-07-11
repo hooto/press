@@ -1,16 +1,19 @@
 package conf
 
 import (
-	"../api"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/pagelet"
+	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/utils"
+
+	"../api"
 )
 
 var (
@@ -80,21 +83,6 @@ func specInitialize() error {
 		//
 		if err := specSchemaSync(spec); err != nil {
 			return err
-		}
-
-		//
-		pagelet.Config.ViewPath(spec.Metadata.ID,
-			fmt.Sprintf("%s/spec/%s/views", Config.Prefix, spec.Metadata.ID))
-
-		for _, route := range spec.Router.Routes {
-
-			pagelet.Config.RouteAppend(spec.Metadata.ID, route.Path, map[string]string{
-				"specid":     spec.Metadata.ID,
-				"dataAction": route.DataAction,
-				"template":   route.Template,
-				"controller": "Index",
-				"action":     "Pagelet",
-			})
 		}
 
 		//
@@ -209,6 +197,10 @@ func SpecRefresh(specid string) {
 	var specBody api.Spec
 	rs[0].Field("body").Json(&specBody)
 
+	for i, v := range specBody.Router.Routes {
+		specBody.Router.Routes[i].Tree = strings.Split(strings.Trim(filepath.Clean(v.Path), "/"), "/")
+	}
+
 	Instances[rs[0].Field("id").String()] = api.Spec{
 		Metadata: api.ObjectMeta{
 			ID:              rs[0].Field("id").String(),
@@ -223,7 +215,12 @@ func SpecRefresh(specid string) {
 		NodeModels: nodeModels,
 		TermModels: termModels,
 		Actions:    specBody.Actions,
+		Router:     specBody.Router,
 	}
+
+	// fmt.Println("SET", rs[0].Field("id").String())
+	httpsrv.GlobalService.TemplateLoader.Set(rs[0].Field("id").String(),
+		[]string{fmt.Sprintf("%s/spec/%s/views", Config.Prefix, rs[0].Field("id").String())})
 
 	// fmt.Println(nodeModels, termModels)
 }

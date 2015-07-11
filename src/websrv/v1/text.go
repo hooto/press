@@ -3,12 +3,12 @@ package v1
 import (
 	"io"
 
-	"github.com/lessos/lessgo/pagelet"
+	"github.com/lessos/lessgo/httpsrv"
 	"github.com/russross/blackfriday"
 )
 
 type Text struct {
-	*pagelet.Controller
+	*httpsrv.Controller
 }
 
 func (c Text) MarkdownRenderAction() {

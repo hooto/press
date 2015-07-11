@@ -1,17 +1,18 @@
 package datax
 
 import (
-	"../conf"
 	"bytes"
 	"fmt"
 	"html/template"
 	"strings"
 
+	"../conf"
+
+	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
-	"github.com/lessos/lessgo/pagelet"
 )
 
-func FilterUri(data map[string]interface{}, args ...interface{}) string {
+func FilterUri(data map[string]interface{}, args ...interface{}) template.URL {
 
 	uris := []string{}
 
@@ -29,7 +30,7 @@ func FilterUri(data map[string]interface{}, args ...interface{}) string {
 	}
 
 	if len(uris) > 0 {
-		return strings.Join(uris, "&")
+		return template.URL(strings.Join(uris, "&"))
 	}
 
 	return ""
@@ -87,7 +88,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 
 func templateRender(data map[string]interface{}, module, templatePath string) template.HTML {
 
-	tplset, err := pagelet.MainTemplateLoader.Template(module, templatePath)
+	tplset, err := httpsrv.GlobalService.TemplateLoader.Template(module, templatePath)
 	if err != nil {
 		return ""
 	}

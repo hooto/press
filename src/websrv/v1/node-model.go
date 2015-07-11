@@ -1,18 +1,20 @@
 package v1
 
 import (
-	"../../api"
-	"../../conf"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/pagelet"
-	"github.com/lessos/lessgo/utils"
 	"io"
 	"strings"
+
+	"github.com/lessos/lessgo/data/rdo"
+	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/httpsrv"
+	"github.com/lessos/lessgo/utils"
+
+	"../../api"
+	"../../conf"
 )
 
 type NodeModel struct {
-	*pagelet.Controller
+	*httpsrv.Controller
 }
 
 func (c NodeModel) ListAction() {

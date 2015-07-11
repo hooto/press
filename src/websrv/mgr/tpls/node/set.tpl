@@ -32,7 +32,7 @@
       <td id="field_{[=it.name]}_colspace" style="display:none"></td>
       <td id="field_{[=it.name]}_colpreview" valign="top" style="display:none" classs="l5s-scroll">
         <div class="markdown-body l5s-scroll" 
-          id="field_{[=it.name]}_preview" style="float:right;padding:5px 5px 5px 0;"></div>
+          id="field_{[=it.name]}_preview" style="float:right;padding:5px"></div>
       </td>
     </tr>
     </table>
