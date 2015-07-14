@@ -5,15 +5,15 @@ var l5sEditor = {
 l5sEditor.Open = function(name)
 {
     seajs.use([
-        "~/codemirror/4/codemirror.min.css",
-        "~/codemirror/4/codemirror.min.js",
+        "~/codemirror/5/lib/codemirror.css",
+        "~/codemirror/5/lib/codemirror.js",
     ],
     function() {
+
         seajs.use([
-            "~/codemirror/4/mode/markdown/markdown.min.js",
-            "~/codemirror/4/mode/xml/xml.min.js",
-            "~/codemirror/4/addon/selection/active-line.min.js",
-            // "~/codemirror/4/addon/scroll/annotatescrollbar.min.js",
+            "~/codemirror/5/mode/markdown/markdown.js",
+            "~/codemirror/5/mode/xml/xml.js",
+            "~/codemirror/5/addon/selection/active-line.js",
         ],
         function() {
 

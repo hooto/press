@@ -1,8 +1,21 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package frontend
 
 import (
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"../../api"
@@ -95,6 +108,7 @@ func (c Index) IndexAction() {
 
 			for _, datax := range action.Datax {
 				c.dataRender(specid, datax)
+				c.Data["__datax_table__"] = datax.Query.Table
 			}
 
 			break
@@ -152,12 +166,9 @@ func (c Index) dataRender(specid string, ad api.ActionData) {
 			}
 		}
 
-		page := 1
-		if c.Params.Get("page") != "" {
-			page, _ = strconv.Atoi(c.Params.Get("page"))
-			if page > 1 {
-				qry.Offset(ad.Query.Limit * (int64(page) - 1))
-			}
+		page := c.Params.Int64("page")
+		if page > 1 {
+			qry.Offset(ad.Query.Limit * (page - 1))
 		}
 
 		if c.Params.Get("qry_text") != "" {

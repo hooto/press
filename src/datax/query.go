@@ -1,7 +1,8 @@
 package datax
 
 import (
-	// "fmt"
+	"fmt"
+
 	// "../api"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
@@ -48,6 +49,8 @@ func (q *QuerySet) Query() []rdobase.Entry {
 		Offset(q.offset)
 
 	qs.Where = q.filter
+
+	fmt.Println(qs)
 
 	rs, err = dc.Base.Query(qs)
 	if err != nil {

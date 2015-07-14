@@ -1,0 +1,92 @@
+
+.l5s-comment-embed > header {
+  margin: 5px 0;
+  padding: 0;
+  border: 0;
+  font-size: 15px;
+  display: block;
+}
+
+.l5s-comment-embed > header > .nav-primary {
+  padding: 0;
+  border-bottom: 2px solid;
+  border-bottom-color: rgba(0,0,0,.2);
+  position: relative;
+  line-height: 0;
+  display: block;
+  /*clear: both;*/
+}
+
+.l5s-comment-embed > header > .nav-primary > ul {
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+}
+
+.l5s-comment-embed > header > .nav-primary > ul > li {
+  display: inline-block;
+  line-height: 0;
+  position: relative;
+}
+
+.l5s-comment-embed > header > .nav-primary > ul > li > span {
+  line-height: 1;
+  margin: 0 15px;
+  padding: 12px 0;
+  position: relative;
+  display: block;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.l5s-comment-embed > header > .nav-primary > ul > li > span:after {
+  content: " ";
+  display: block;
+  background-color: #777;
+  height: 2px;
+  bottom: -2px;
+  position: absolute;
+  right: 0;
+  left: 0;
+}
+
+.l5s-comment-embed .entry {
+  margin: 10px 0;
+  /*border-bottom: 1px solid #ccc;*/
+  position: relative;
+  display: block;
+  clear: both;
+}
+
+.l5s-comment-embed .entry:after,
+.l5s-comment-embed .entry:before {
+  content: "";
+  display: table;
+  line-height: 0;
+}
+
+.l5s-comment-embed .entry > .avatar {
+  float: left;
+  margin-right: 12px;
+  background-color: #eee;
+}
+
+.l5s-comment-embed .entry > .avatar > img {
+  width: 48px;
+  height: 48px;
+}
+
+.l5s-comment-embed .entry > .body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: block;
+}
+
+.l5s-comment-embed .new {
+  margin-bottom: 20px;
+}
+
+#l5s-comment-embed-new-form-alert {
+  margin: 5px 0;
+}

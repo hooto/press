@@ -258,7 +258,12 @@ const (
         {
             "name": "id",
             "type": "string",
-            "length": "30"
+            "length": "16"
+        },
+        {
+            "name": "pid",
+            "type": "string",
+            "length": "16"
         },
         {
             "name": "state",
@@ -288,6 +293,11 @@ const (
             "name": "PRIMARY",
             "type": 3,
             "cols": ["id"]
+        },
+        {
+            "name": "pid",
+            "type": 1,
+            "cols": ["pid"]
         },
         {
             "name": "state",

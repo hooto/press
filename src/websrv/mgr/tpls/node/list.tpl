@@ -23,7 +23,7 @@
   <thead>
     <tr>
       <th>Title</th>
-      <th>State</th>
+      <th>Status</th>
       <th>Created</th>
       <th>Updated</th>
       <th></th>

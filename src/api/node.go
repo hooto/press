@@ -9,6 +9,7 @@ type Node struct {
 	SpecID   string      `json:"specID,omitempty"`
 	Model    *NodeModel  `json:"model,omitempty"`
 	ID       string      `json:"id,omitempty"`
+	PID      string      `json:"pid,omitempty"`
 	State    int16       `json:"state,omitempty"`
 	UserID   string      `json:"userid,omitempty"`
 	Title    string      `json:"title,omitempty"`

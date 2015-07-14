@@ -1,0 +1,68 @@
+{
+    "metadata": {
+        "id": "comment",
+        "name": "Comments",
+        "resourceVersion": "1"
+    },
+    "nodeModels": [
+        {
+            "metadata": {
+                "name": "entry"
+            },
+            "title": "Comment Entry",
+            "fields": [
+                {
+                    "name": "content",
+                    "type": "text",
+                    "title": "Comment",
+                    "attrs": [
+                        {
+                            "key": "ui_rows",
+                            "value": "10"
+                        },
+                        {
+                            "key": "format",
+                            "value": "md"
+                        }
+                    ]
+                },
+                {
+                    "name": "refer_id",
+                    "type": "string",
+                    "title": "Refer Content ID",
+                    "length": "16",
+                    "indexType": "1"
+                },
+                {
+                    "name": "refer",
+                    "type": "string",
+                    "title": "Refer",
+                    "length": "40",
+                    "indexType": "1"
+                },
+                {
+                    "name": "author",
+                    "type": "string",
+                    "title": "Author",
+                    "length": "50",
+                    "default": "Guest"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "list",
+            "datax": [
+                {
+                    "name": "list",
+                    "type": "node.list",
+                    "query": {
+                        "table": "entry",
+                        "limit": 200
+                    }
+                }
+            ]
+        }
+    ]
+}

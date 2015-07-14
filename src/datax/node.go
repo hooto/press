@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"../api"
-	"../conf"
-
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/utilx"
+
+	"../api"
+	"../conf"
 )
 
 func (q *QuerySet) NodeList() api.NodeList {
@@ -69,6 +69,7 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 			item := api.Node{
 				ID:      v.Field("id").String(),
+				PID:     v.Field("pid").String(),
 				State:   v.Field("state").Int16(),
 				UserID:  v.Field("userid").String(),
 				Title:   v.Field("title").String(),

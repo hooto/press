@@ -3,11 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
-	_ "net/http/pprof"
 	"os"
 	"runtime"
-	"runtime/pprof"
 	// "time"
 
 	"github.com/lessos/lessgo/httpsrv"
@@ -20,6 +17,7 @@ import (
 )
 
 import (
+	ext_comment "../spec/comment/websrv"
 	cdef "./websrv/frontend"
 	cmgr "./websrv/mgr"
 	capi "./websrv/v1"
@@ -45,17 +43,6 @@ func init() {
 }
 
 func main() {
-
-	go http.ListenAndServe("localhost:6060", nil)
-
-	if *flagCpuprofile != "" {
-		f, err := os.Create(*flagCpuprofile)
-		if err != nil {
-			fmt.Println(err)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
 
 	//
 	flag.Parse()
@@ -89,6 +76,8 @@ func main() {
 	//
 	// httpsrv.Config.I18n(conf.Config.Prefix + "/src/i18n/en.json")
 	// httpsrv.Config.I18n(conf.Config.Prefix + "/src/i18n/zh_CN.json")
+
+	httpsrv.GlobalService.ModuleRegister("/+/comment", ext_comment.NewModule())
 
 	//
 	httpsrv.GlobalService.ModuleRegister("/v1", capi.NewModule())

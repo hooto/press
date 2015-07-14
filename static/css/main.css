@@ -142,9 +142,9 @@ body {
   text-decoration: underline;
 }
 
-.l5s-nodev .content {
+/*.l5s-nodev .content {
   font-height: 200% !important;
-}
+}*/
 
 /** sidebar **/
 .l5s-sidebar-section {
@@ -183,6 +183,11 @@ body {
 }
 .l5s-scroll::-webkit-scrollbar-thumb:active {
   background-color: #444;
+}
+
+.l5s-font-mono {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 1em;
 }
 
 /** markdown **/

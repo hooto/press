@@ -52,7 +52,15 @@
 
         <div class="content">{{FieldHtml .entry.Fields "content"}}</div>
       </div>
-    
+
+      <div id="{{.specid}}-comments">comments loading</div>
+      <script type="text/javascript">
+        window.onload_hooks.push(function() {
+          seajs.use(["+/comment/~/index.js", "+/comment/~/index.css"], function() {
+            l5s.ActionLoader("{{.specid}}-comments", "+/comment/comment/embed?refer_specid={{.specid}}&refer_datax_table={{.__datax_table__}}&refer_id={{.entry.ID}}");
+          });
+        });
+      </script>
     </div>
     
   </div>  

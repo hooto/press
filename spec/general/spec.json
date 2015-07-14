@@ -1,7 +1,8 @@
 {
     "metadata": {
         "id": "general",
-        "name": "General"
+        "name": "General",
+        "resourceVersion": "1"
     },
     "nodeModels": [
         {

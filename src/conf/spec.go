@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/lessos/lessgo/data/rdo"
@@ -48,7 +49,7 @@ func SpecTermModel(specid, modelName string) (*api.TermModel, error) {
 
 func specInitialize() error {
 
-	ids := []string{"general", "c8f0ltxp"}
+	ids := []string{"general", "c8f0ltxp", "comment"}
 	timenow := rdobase.TimeNow("datetime")
 
 	dcn, err := rdo.ClientPull("def")
@@ -260,6 +261,16 @@ func specSchemaSync(spec api.Spec) error {
 					Type:   "string",
 					Length: field.Length,
 				})
+
+				it, _ := strconv.Atoi(field.IndexType)
+				switch it {
+				case rdobase.IndexTypeUnique, rdobase.IndexTypeIndex:
+					tbl.AddIndex(&rdobase.Index{
+						Name: "field_" + field.Name,
+						Type: it,
+						Cols: []string{"field_" + field.Name},
+					})
+				}
 
 			case "text":
 
