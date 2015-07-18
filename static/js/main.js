@@ -21,72 +21,76 @@ l5s.Boot = function()
 
             for (var i in window.onload_hooks) {
                 window.onload_hooks[i]();
-            }
+            }            
+        });
+    });
+}
 
-            $("code[class^='language-']").each(function(i, el) {
 
-                var lang = el.className.substr("language-".length);
+l5s.CodeRender = function()
+{
+    $("code[class^='language-']").each(function(i, el) {
 
-                var modes = [];
+        var lang = el.className.substr("language-".length);
 
-                if (lang == "html") {
-                    lang = "htmlmixed";
-                }
+        var modes = [];
 
-                switch (lang) {
-                
-                case "php":
-                    modes.push("~/codemirror/5/mode/php/php.js");
-                case "htmlmixed":
-                    modes.push("~/codemirror/5/mode/xml/xml.js");
-                    modes.push("~/codemirror/5/mode/javascript/javascript.js");
-                    modes.push("~/codemirror/5/mode/css/css.js");
-                    modes.push("~/codemirror/5/mode/htmlmixed/htmlmixed.js");
-                    break;
+        if (lang == "html") {
+            lang = "htmlmixed";
+        }
 
-                case "c":
-                case "cpp":
-                case "clike":
-                case "java":
-                    lang = "clike";
-                    break;
+        switch (lang) {
+        
+        case "php":
+            modes.push("~/codemirror/5/mode/php/php.js");
+        case "htmlmixed":
+            modes.push("~/codemirror/5/mode/xml/xml.js");
+            modes.push("~/codemirror/5/mode/javascript/javascript.js");
+            modes.push("~/codemirror/5/mode/css/css.js");
+            modes.push("~/codemirror/5/mode/htmlmixed/htmlmixed.js");
+            break;
 
-                case "go":
-                case "javascript":
-                case "css":
-                case "json":
-                case "xml":
-                case "yaml":
-                case "lua":
-                case "markdown":
-                case "r":
-                case "shell":
-                case "sql":
-                case "swift":
-                case "erlang":
-                case "nginx":
-                    modes.push("~/codemirror/5/mode/"+ lang +"/"+ lang +".js");
-                    break;
+        case "c":
+        case "cpp":
+        case "clike":
+        case "java":
+            lang = "clike";
+            break;
 
-                default:
-                    return;
-                }
+        case "go":
+        case "javascript":
+        case "css":
+        case "json":
+        case "xml":
+        case "yaml":
+        case "lua":
+        case "markdown":
+        case "r":
+        case "shell":
+        case "sql":
+        case "swift":
+        case "erlang":
+        case "nginx":
+            modes.push("~/codemirror/5/mode/"+ lang +"/"+ lang +".js");
+            break;
 
-                seajs.use([
-                    "~/codemirror/5/lib/codemirror.css",
-                    "~/codemirror/5/lib/codemirror.js",
-                ],
-                function() {
+        default:
+            return;
+        }
 
-                    modes.push("~/codemirror/5/addon/runmode/runmode.js");
-                    modes.push("~/codemirror/5/mode/clike/clike.js");
+        seajs.use([
+            "~/codemirror/5/lib/codemirror.css",
+            "~/codemirror/5/lib/codemirror.js",
+        ],
+        function() {
 
-                    seajs.use(modes, function() {
+            modes.push("~/codemirror/5/addon/runmode/runmode.js");
+            modes.push("~/codemirror/5/mode/clike/clike.js");
 
-                        $(el).addClass('cm-s-default'); // apply a theme class
-                        CodeMirror.runMode($(el).text(), lang, $(el)[0]);
-                    });
-                });
+            seajs.use(modes, function() {
+
+                $(el).addClass('cm-s-default'); // apply a theme class
+                CodeMirror.runMode($(el).text(), lang, $(el)[0]);
             });
         });
     });

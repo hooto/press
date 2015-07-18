@@ -2,6 +2,12 @@ var l5sComment = {
 
 }
 
+l5sComment.EmbedLoader = function(dstid, ref_specid, ref_table, ref_id)
+{
+    l5s.ActionLoader(dstid, "+/comment/comment/embed?refer_specid="+ ref_specid +
+        "&refer_datax_table="+ ref_table +"&refer_id="+ ref_id );
+}
+
 l5sComment.EmbedCommit = function()
 {
     var form = $("#l5s-comment-embed-new-form");
@@ -98,7 +104,10 @@ l5sComment.EmbedFormActive = function()
     form.find("input[name=captcha_token]").val(captcha_token);
     form.find("#l5s-comment-captcha-url").attr("src", 
         "/+/hcaptcha/api/image?hcaptcha_token="+ captcha_token);
+
+    form.find("textarea[name=content]").focus();
 }
+
 
 l5sComment.EmbedFormHidden = function()
 {
