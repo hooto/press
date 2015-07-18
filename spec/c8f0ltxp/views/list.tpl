@@ -10,13 +10,7 @@
 
   <div class="row">
     
-    <div class="col-md-3">
-        
-        {{pagelet . .specid "search.tpl"}}
-
-        {{pagelet . .specid "term/categories.tpl"}}
-
-    </div>
+    
 
     <div class="col-md-9">
     
@@ -86,10 +80,17 @@
     </ul>
     {{end}}
 
-    </div>    
-    
-  </div>  
+    </div>   
 
+    <div class="col-md-3">
+        
+        {{pagelet . .specid "search.tpl"}}
+
+        {{pagelet . .specid "term/categories.tpl"}}
+
+    </div> 
+    
+  </div>
 </div>
 
 {{pagelet . "general" "footer.tpl"}}
