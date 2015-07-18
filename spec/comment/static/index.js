@@ -57,6 +57,8 @@ l5sComment.EmbedCommit = function()
                 data   : req,
                 append : true,
                 success : function() {
+
+                    $("#l5s-comment-embed-list-header").css({"display": "block"});
                     
                     $("#entry-"+ req.meta.id).css({
                         "outline": "#5cb85c solid 1px",
@@ -92,6 +94,7 @@ l5sComment.EmbedFormActive = function()
     form.css({"display": "block"});
 
     var captcha_token = Math.random();
+    
     form.find("input[name=captcha_token]").val(captcha_token);
     form.find("#l5s-comment-captcha-url").attr("src", 
         "/+/hcaptcha/api/image?hcaptcha_token="+ captcha_token);

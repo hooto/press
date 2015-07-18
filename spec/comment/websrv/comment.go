@@ -59,8 +59,6 @@ func (c Comment) EmbedAction() {
 
 	c.Data["new_form_author"] = "Guest"
 
-	// c.Data["captcha_token"] = utils.StringNewRand(32)
-
 	c.Render(nsSpecID, "embed.tpl")
 }
 

@@ -1,7 +1,6 @@
 <div class="l5s-comment-embed">
   
-  {{if len .list.Items}}
-  <header>
+  <header id="l5s-comment-embed-list-header" style="display:{{if len .list.Items}}block{{else}}none{{end}}">
     <nav class="nav-primary">
       <ul>
         <li>
@@ -10,7 +9,6 @@
       </ul>
     </nav>
   </header>
-  {{end}}
 
   <div id="l5s-comment-embed-list" class="list">
     {{range $v := .list.Items}}
@@ -55,43 +53,43 @@
         </div>
       </div>
 
-<div id="l5s-comment-embed-new-form" class="body new" style="display:none;">
+      <div id="l5s-comment-embed-new-form" class="body new" style="display:none;">
 
-    <div id="l5s-comment-embed-new-form-alert"></div>
+        <div id="l5s-comment-embed-new-form-alert"></div>
 
-    <input type="hidden" name="refer_id" value="{{.new_form_refer_id}}">
-    <input type="hidden" name="refer_specid" value="{{.new_form_refer_specid}}">
-    <input type="hidden" name="refer_datax_table" value="{{.new_form_refer_datax_table}}">
-    <input type="hidden" name="captcha_token" value="">
+        <input type="hidden" name="refer_id" value="{{.new_form_refer_id}}">
+        <input type="hidden" name="refer_specid" value="{{.new_form_refer_specid}}">
+        <input type="hidden" name="refer_datax_table" value="{{.new_form_refer_datax_table}}">
+        <input type="hidden" name="captcha_token" value="">
 
-    <div class="form-group">
-      <label>Your name</label>
-      <input type="text" class="form-control" name="author" value="{{.new_form_author}}">
-    </div>
+        <div class="form-group">
+          <label>Your name</label>
+          <input type="text" class="form-control" name="author" value="{{.new_form_author}}">
+        </div>
 
-    <div class="form-group">
-      <label>Content</label>
-      <textarea class="form-control" rows="3" name="content"></textarea>
-    </div>
+        <div class="form-group">
+          <label>Content</label>
+          <textarea class="form-control" rows="3" name="content"></textarea>
+        </div>
 
-    <div class="form-group">
-      <label>Verification</label>
-      <div>
-        <div class="row">          
-          <div class="col-xs-6">
-            <input type="text" class="form-control" name="captcha_word" value="">
-            <span class="help-block">Type the characters you see in the right picture</span>
+        <div class="form-group">
+          <label>Verification</label>
+          <div>
+            <div class="row">          
+              <div class="col-xs-6">
+                <input type="text" class="form-control" name="captcha_word" value="">
+                <span class="help-block">Type the characters you see in the right picture</span>
+              </div>
+              <div class="col-xs-6" style="background-color: #dce6ff;">
+                <img id="l5s-comment-captcha-url" src="/+/hcaptcha/api/image?hcaptcha_token=">
+              </div>
+            </div>        
           </div>
-          <div class="col-xs-6" style="background-color: #dce6ff;">
-            <img id="l5s-comment-captcha-url" src="/+/hcaptcha/api/image?hcaptcha_token={{.captcha_token}}">
-          </div>
-        </div>        
+        </div>
+
+        <button class="btn btn-default" onclick="l5sComment.EmbedCommit()">Commit</button>
+
       </div>
-    </div>
-
-    <button class="btn btn-default" onclick="l5sComment.EmbedCommit()">Commit</button>
-
-  </div>
 
     </div>
   </div>
