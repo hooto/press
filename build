@@ -1,6 +1,11 @@
 #!/bin/bash
 
-files=`find . -type f -name "*.go" |xargs`
+files=`find src -type f -name "*.go" |xargs`
+for file in $files; do
+    gofmt -w=true ${file}
+done
+
+files=`find spec -type f -name "*.go" |xargs`
 for file in $files; do
     gofmt -w=true ${file}
 done

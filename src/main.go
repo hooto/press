@@ -7,6 +7,7 @@ import (
 	"runtime"
 	// "time"
 
+	"github.com/eryx/hcaptcha/captcha"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
 	"github.com/lessos/lessgo/service/lessids"
@@ -78,6 +79,7 @@ func main() {
 	// httpsrv.Config.I18n(conf.Config.Prefix + "/src/i18n/zh_CN.json")
 
 	httpsrv.GlobalService.ModuleRegister("/+/comment", ext_comment.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/+/hcaptcha", captcha.WebServerModule())
 
 	//
 	httpsrv.GlobalService.ModuleRegister("/v1", capi.NewModule())

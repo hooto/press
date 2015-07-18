@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lessos/lessgo/data/rdo/base"
+
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/eryx/hcaptcha/captcha"
+	"github.com/lessos/lessgo/data/rdo/base"
 )
 
 var (
@@ -23,7 +26,8 @@ type ConfigCommon struct {
 	LessIdsUrl string `json:"lessids_url"`
 	Version    string
 	Prefix     string
-	Database   base.Config `json:"database"`
+	Database   base.Config     `json:"database"`
+	Captcha    captcha.Options `json:"captcha"`
 }
 
 func Initialize(prefix string) error {
@@ -66,6 +70,16 @@ func Initialize(prefix string) error {
 	}
 
 	if _, err = Config.DatabaseInstance(); err != nil {
+		return err
+	}
+
+	// Setting CAPTCHA
+	Config.Captcha = captcha.DefaultConfig
+
+	Config.Captcha.FontPath = prefix + "/vendor/github.com/eryx/hcaptcha/var/fonts/cmr10.ttf"
+	Config.Captcha.DataDir = prefix + "/var/captchadb"
+
+	if err := captcha.Config(Config.Captcha); err != nil {
 		return err
 	}
 

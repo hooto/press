@@ -17,6 +17,7 @@ package websrv
 import (
 	"strings"
 
+	"github.com/eryx/hcaptcha/captcha"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
@@ -27,7 +28,10 @@ import (
 	"../../../src/datax"
 )
 
-const nsSpecID = "comment"
+const (
+	nsSpecID           = "comment"
+	errCaptchaNotMatch = "CaptchaNotMatch"
+)
 
 type Comment struct {
 	*httpsrv.Controller
@@ -54,6 +58,8 @@ func (c Comment) EmbedAction() {
 	c.Data["new_form_refer_datax_table"] = c.Params.Get("refer_datax_table")
 
 	c.Data["new_form_author"] = "Guest"
+
+	// c.Data["captcha_token"] = utils.StringNewRand(32)
 
 	c.Render(nsSpecID, "embed.tpl")
 }
@@ -109,6 +115,14 @@ func (c Comment) SetAction() {
 			Code:    "400",
 			Message: "Content Can Not be Null",
 		}
+		return
+	}
+
+	if set.Error = captcha.Verify(set.CaptchaToken, set.CaptchaWord); set.Error != nil {
+
+		set.Error.Code = errCaptchaNotMatch
+		set.Error.Message = "Word Verification do not match"
+
 		return
 	}
 

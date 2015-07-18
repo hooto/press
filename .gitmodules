@@ -1,3 +1,6 @@
 [submodule "static/lessui"]
 	path = static/lessui
 	url = https://github.com/lessos/lessui.git
+[submodule "vendor/github.com/eryx/hcaptcha"]
+	path = vendor/github.com/eryx/hcaptcha
+	url = git@github.com:eryx/hcaptcha.git

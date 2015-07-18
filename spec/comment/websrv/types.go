@@ -27,4 +27,6 @@ type TypeComment struct {
 	ReferDataxTable string           `json:"refer_datax_table,omitempty"`
 	Content         string           `json:"content,omitempty"`
 	Author          string           `json:"author,omitempty"`
+	CaptchaToken    string           `json:"captcha_token,omitempty"`
+	CaptchaWord     string           `json:"captcha_word,omitempty"`
 }
