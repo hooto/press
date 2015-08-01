@@ -69,7 +69,6 @@
 $("#l5smgr-nodels").on("click", ".node-item", function() {
     var id = $(this).attr("href").substr(1);
     l5sNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
-    l4iStorage.Set("l5smgr_nodels_page", 0);
 });
 
 </script>

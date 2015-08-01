@@ -54,6 +54,8 @@ $("#l5smgr-node-specls").on("click", ".spec-item", function() {
     l4iStorage.Set("l5smgr_spec_active", $(this).attr("tgspec"));
     l4iStorage.Del("l5smgr_nmodel_active");
     l4iStorage.Del("l5smgr_tmodel_active");
+    l4iStorage.Del("l5smgr_nodels_page");
+    l4iStorage.Del("l5smgr_termls_page");
 
     l5sNode.Index();
 });
@@ -65,6 +67,8 @@ $("#l5smgr-node-nmodels").on("click", ".node-item", function() {
     $(this).addClass("active");
 
     l4iStorage.Set("l5smgr_nmodel_active", $(this).attr("tgname"));
+    l4iStorage.Del("l5smgr_nodels_page");
+    l4iStorage.Del("l5smgr_termls_page");
 
     l5sNode.List(null, $(this).attr("tgname"));
 });
@@ -76,6 +80,8 @@ $("#l5smgr-node-tmodels").on("click", ".term-item", function() {
     $(this).addClass("active");
 
     l4iStorage.Set("l5smgr_tmodel_active", $(this).attr("tgname"));
+    l4iStorage.Del("l5smgr_nodels_page");
+    l4iStorage.Del("l5smgr_termls_page");
 
     l5sTerm.List(null, $(this).attr("tgname"));
 });
