@@ -10,7 +10,7 @@
   <input type="hidden" name="model_type" value="{[=it.model.type]}">
   <input type="hidden" name="id" value="{[=it.id]}">
   <input type="hidden" name="pid" value="{[=it.pid]}">
-  <input type="hidden" name="state" value="{[=it.state]}">
+  <input type="hidden" name="status" value="{[=it.status]}">
   <div class="l4i-form-group">
     <label>Title</label>
     <p><input name="title" type="text" value="{[=it.title]}" class="l4i-form-control"></p>

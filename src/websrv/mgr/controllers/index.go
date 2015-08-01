@@ -21,7 +21,7 @@ func (c Index) IndexAction() {
 
 	// TODO
 	// // Check if lessIDS Service Available
-	// if state.IdentityServiceStatus == state.IdentityServiceUnavailable {
+	// if status.IdentityServiceStatus == status.IdentityServiceUnavailable {
 	// 	c.Data["lessids_url"] = lessids.ServiceUrl
 	// 	c.Render("error/lessids.offline.tpl")
 	// 	return

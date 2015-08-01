@@ -164,8 +164,8 @@ func (c Node) SetAction() {
 			set["title"] = rsp.Title
 		}
 
-		if rs[0].Field("state").Int16() != rsp.State {
-			set["state"] = rsp.State
+		if rs[0].Field("status").Int16() != rsp.Status {
+			set["status"] = rsp.Status
 		}
 
 		//
@@ -230,7 +230,7 @@ func (c Node) SetAction() {
 
 		set["id"] = utils.StringNewRand(12)
 		set["title"] = rsp.Title
-		set["state"] = rsp.State
+		set["status"] = rsp.Status
 		set["created"] = rdobase.TimeNow("datetime")
 		set["userid"] = "dr5a8pgv"
 

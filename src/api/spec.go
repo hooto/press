@@ -27,7 +27,7 @@ type Spec struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.ObjectMeta `json:"meta,omitempty"`
 	SrvName        string           `json:"srvname,omitempty"`
-	State          int16            `json:"state,omitempty"`
+	Status         int16            `json:"status,omitempty"`
 	Title          string           `json:"title,omitempty"`
 	Comment        string           `json:"comment,omitempty"`
 	NodeModels     []NodeModel      `json:"nodeModels,omitempty"`
@@ -56,7 +56,7 @@ type NodeModel struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.ObjectMeta `json:"meta,omitempty"`
 	ModName        string           `json:"modname,omitempty"`
-	State          int16            `json:"state,omitempty"`
+	Status         int16            `json:"status,omitempty"`
 	Title          string           `json:"title,omitempty"`
 	Comment        string           `json:"comment,omitempty"`
 	Fields         []FieldModel     `json:"fields,omitempty"`
@@ -78,7 +78,7 @@ type TermModel struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.ObjectMeta `json:"meta,omitempty"`
 	ModName        string           `json:"modname,omitempty"`
-	State          int16            `json:"state,omitempty"`
+	Status         int16            `json:"status,omitempty"`
 	Type           string           `json:"type,omitempty"`
 	Title          string           `json:"title,omitempty"`
 	Comment        string           `json:"comment,omitempty"`

@@ -29,7 +29,7 @@ const (
             "length": "16"
         },
         {
-            "name": "state",
+            "name": "status",
             "type": "int16"
         },
         {
@@ -63,9 +63,9 @@ const (
             "cols": ["pid"]
         },
         {
-            "name": "state",
+            "name": "status",
             "type": 1,
-            "cols": ["state"]
+            "cols": ["status"]
         },
         {
             "name": "userid",
@@ -95,7 +95,7 @@ const (
             "IncrAble": true
         },
         {
-            "name": "state",
+            "name": "status",
             "type": "int16"
         },
         {
@@ -124,9 +124,9 @@ const (
             "cols": ["id"]
         },
         {
-            "name": "state",
+            "name": "status",
             "type": 1,
-            "cols": ["state"]
+            "cols": ["status"]
         },
         {
             "name": "userid",

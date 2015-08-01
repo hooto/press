@@ -8,7 +8,7 @@
 
 <script id="l5smgr-nodeset-tpl" type="text/html">
   <input type="hidden" name="id" value="{[=it.id]}">
-  <input type="hidden" name="state" value="{[=it.state]}">
+  <input type="hidden" name="status" value="{[=it.status]}">
   <div class="l4i-form-group">
     <label>Title</label>
     <p><input name="title" type="text" value="{[=it.title]}" class="l4i-form-control"></p>

@@ -140,7 +140,7 @@ func (c Comment) SetAction() {
 	item := map[string]interface{}{
 		"id":             set.Meta.ID,
 		"title":          re_title,
-		"state":          1,
+		"status":         1,
 		"userid":         utils.StringEncode16("guest", 8),
 		"field_refer_id": set.ReferID,
 		"field_refer":    set.ReferModName + "." + set.ReferDataxTable,

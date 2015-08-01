@@ -44,7 +44,7 @@ func (q *QuerySet) TermCount() (int64, error) {
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	fr := rdobase.NewFilter()
-	fr.And("state", 1)
+	fr.And("status", 1)
 
 	return dcn.Base.Count(table, fr)
 }
@@ -103,7 +103,7 @@ func (q *QuerySet) TermList() api.TermList {
 
 			item := api.Term{
 				ID:      v.Field("id").Uint32(),
-				State:   v.Field("state").Int16(),
+				Status:  v.Field("status").Int16(),
 				UserID:  v.Field("userid").String(),
 				Title:   v.Field("title").String(),
 				Created: v.Field("created").TimeFormat("datetime", "atom"),
@@ -201,7 +201,7 @@ func (q *QuerySet) TermEntry() api.Term {
 	}
 
 	rsp.ID = rs[0].Field("id").Uint32()
-	rsp.State = rs[0].Field("state").Int16()
+	rsp.Status = rs[0].Field("status").Int16()
 	rsp.UserID = rs[0].Field("userid").String()
 	rsp.Title = rs[0].Field("title").String()
 	rsp.Created = rs[0].Field("created").TimeFormat("datetime", "atom")
@@ -376,7 +376,7 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 			"uid":     tv.UID,
 			"title":   tv.Title,
 			"userid":  "sysadmin",
-			"state":   1,
+			"status":  1,
 			"created": timenow,
 			"updated": timenow,
 		}); err == nil {

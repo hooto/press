@@ -72,7 +72,7 @@ func main() {
 	httpsrv.GlobalService.Config.HttpPort = conf.Config.HttpPort
 	// httpsrv.Config.LessIdsServiceUrl = conf.Config.LessIdsUrl
 
-	// state
+	// status
 	status.Init()
 	// for i := 0; i < 3; i++ {
 

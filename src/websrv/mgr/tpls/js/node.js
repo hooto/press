@@ -321,8 +321,8 @@ l5sNode.Set = function(modname, modelid, nodeid)
                 return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
-            if (!data.state) {
-                data.state = 1;
+            if (!data.status) {
+                data.status = 1;
             }
 
             if (!data.model.terms) {
@@ -532,7 +532,7 @@ l5sNode.SetCommit = function()
     var req = {
         id     : $("#l5smgr-nodeset").find("input[name=id]").val(),
         title  : $("#l5smgr-nodeset").find("input[name=title]").val(),
-        state  : parseInt($("#l5smgr-nodeset").find("input[name=state]").val()),
+        status  : parseInt($("#l5smgr-nodeset").find("input[name=status]").val()),
         fields : [],
         terms  : [],
     }

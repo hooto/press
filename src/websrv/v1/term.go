@@ -178,15 +178,15 @@ func (c Term) SetAction() {
 				set["title"] = rsp.Title
 			}
 
-			if rs[0].Field("state").Int16() != rsp.State {
-				set["state"] = rsp.State
+			if rs[0].Field("status").Int16() != rsp.Status {
+				set["status"] = rsp.Status
 			}
 
 		} else {
 
 			set["uid"] = rsp.UID
 			set["title"] = rsp.Title
-			set["state"] = rsp.State
+			set["status"] = rsp.Status
 			set["created"] = rdobase.TimeNow("datetime")
 			set["userid"] = "dr5a8pgv"
 		}
@@ -218,8 +218,8 @@ func (c Term) SetAction() {
 				set["title"] = rsp.Title
 			}
 
-			if rs[0].Field("state").Int16() != rsp.State {
-				set["state"] = rsp.State
+			if rs[0].Field("status").Int16() != rsp.Status {
+				set["status"] = rsp.Status
 			}
 
 			if rs[0].Field("pid").Uint32() != rsp.PID {
@@ -234,7 +234,7 @@ func (c Term) SetAction() {
 
 			set["pid"] = rsp.PID
 			set["title"] = rsp.Title
-			set["state"] = rsp.State
+			set["status"] = rsp.Status
 			set["weight"] = rsp.Weight
 			set["created"] = rdobase.TimeNow("datetime")
 			set["userid"] = "dr5a8pgv"

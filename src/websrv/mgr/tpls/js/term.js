@@ -146,8 +146,8 @@ l5sTerm.Set = function(modname, modelid, termid)
                 return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
-            if (!data.state) {
-                data.state = 1;
+            if (!data.status) {
+                data.status = 1;
             }
             if (!data.weight) {
                 data.weight = 0;
@@ -196,7 +196,7 @@ l5sTerm.Set = function(modname, modelid, termid)
                         id    : "0",
                         pid   : "0",
                         title : "",
-                        state : "1",
+                        status : "1",
                         weight: "0",
                     });
                 },           
@@ -214,7 +214,7 @@ l5sTerm.SetCommit = function()
         kind   : "Term",
         id     : parseInt(form.find("input[name=id]").val()),
         title  : form.find("input[name=title]").val(),
-        state  : parseInt(form.find("input[name=state]").val()),
+        status  : parseInt(form.find("input[name=status]").val()),
     }
 
     var model_type = form.find("input[name=model_type]").val();

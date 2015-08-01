@@ -38,7 +38,7 @@ func (q *QuerySet) NodeCount() (int64, error) {
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	fr := rdobase.NewFilter()
-	fr.And("state", 1)
+	fr.And("status", 1)
 
 	return dcn.Base.Count(table, fr)
 }
@@ -79,7 +79,7 @@ func (q *QuerySet) NodeList() api.NodeList {
 		qs.Order("created desc")
 	}
 
-	q.Filter("state", 1)
+	q.Filter("status", 1)
 
 	qs.Where = q.filter
 
@@ -101,7 +101,7 @@ func (q *QuerySet) NodeList() api.NodeList {
 			item := api.Node{
 				ID:      v.Field("id").String(),
 				PID:     v.Field("pid").String(),
-				State:   v.Field("state").Int16(),
+				Status:  v.Field("status").Int16(),
 				UserID:  v.Field("userid").String(),
 				Title:   v.Field("title").String(),
 				Created: v.Field("created").TimeFormat("datetime", "atom"),
@@ -299,7 +299,7 @@ func (q *QuerySet) NodeEntry() api.Node {
 	rsp.Terms = NodeTermQuery(q.ModName, rsp.Model, rsp.Terms)
 
 	rsp.ID = rs.Field("id").String()
-	rsp.State = rs.Field("state").Int16()
+	rsp.Status = rs.Field("status").Int16()
 	rsp.UserID = rs.Field("userid").String()
 	rsp.Title = rs.Field("title").String()
 	rsp.Created = rs.Field("created").TimeFormat("datetime", "atom")

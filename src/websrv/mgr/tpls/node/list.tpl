@@ -40,7 +40,7 @@
       <td>
         <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
       </td>
-      <td>{[=v.state]}</td>
+      <td>{[=v.status]}</td>
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
       <td align="right">

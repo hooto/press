@@ -24,7 +24,7 @@ type Term struct {
 	ID             uint32     `json:"id,omitempty"`
 	PID            uint32     `json:"pid,omitempty"`
 	UID            string     `json:"uid,omitempty"`
-	State          int16      `json:"state,omitempty"`
+	Status         int16      `json:"status,omitempty"`
 	UserID         string     `json:"userid,omitempty"`
 	Title          string     `json:"title"`
 	Weight         int32      `json:"weight,omitempty"`
