@@ -3,11 +3,12 @@ package controllers
 import (
 	"io"
 	// "net/http"
+	// "fmt"
 
 	"github.com/lessos/lessgo/httpsrv"
 	// "github.com/lessos/lessgo/service/lessids"
 
-	// "../../../state"
+	"../../../status"
 )
 
 type Index struct {
@@ -20,7 +21,7 @@ func (c Index) IndexAction() {
 
 	// TODO
 	// // Check if lessIDS Service Available
-	// if state.LessIdsState == state.LessIdsUnavailable {
+	// if state.IdentityServiceStatus == state.IdentityServiceUnavailable {
 	// 	c.Data["lessids_url"] = lessids.ServiceUrl
 	// 	c.Render("error/lessids.offline.tpl")
 	// 	return
@@ -49,11 +50,13 @@ func (c Index) IndexAction() {
 	// 	return
 	// }
 
+	// fmt.Println(status.IdentityServiceStatus)
+
 	//
-	// if state.LessIdsState == state.LessIdsUnRegistered {
-	// 	c.Redirect("/mgr/setup/index")
-	// 	return
-	// }
+	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
+		c.Redirect("/mgr/setup/index")
+		return
+	}
 
 	io.WriteString(c.Response.Out, `<!DOCTYPE html>
 <html lang="en">

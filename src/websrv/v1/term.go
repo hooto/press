@@ -1,10 +1,20 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package v1
 
 import (
-	"../../api"
-	"../../conf"
-	"../../datax"
-
 	"crypto/md5"
 	"errors"
 	"fmt"
@@ -15,7 +25,13 @@ import (
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
+	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessids/idsapi"
+
+	"../../api"
+	"../../conf"
+	"../../datax"
 )
 
 var (
@@ -28,21 +44,16 @@ type Term struct {
 
 func (c Term) ListAction() {
 
-	c.AutoRender = false
-
 	var rsp api.TermList
 
-	defer func() {
+	defer c.RenderJson(&rsp)
 
-		c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response.Out.Header().Set("Content-type", "application/json")
+	if !c.Session.AccessAllowed("editor.list") {
+		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		return
+	}
 
-		if rspj, err := utils.JsonEncode(rsp); err == nil {
-			io.WriteString(c.Response.Out, rspj)
-		}
-	}()
-
-	dq := datax.NewQuery(c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 	dq.Limit(100)
 
 	rsp = dq.TermList()
@@ -50,25 +61,20 @@ func (c Term) ListAction() {
 
 func (c Term) EntryAction() {
 
-	c.AutoRender = false
-
 	rsp := api.Term{
-		TypeMeta: api.TypeMeta{
+		TypeMeta: types.TypeMeta{
 			APIVersion: api.Version,
 		},
 	}
 
-	defer func() {
+	defer c.RenderJson(&rsp)
 
-		c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response.Out.Header().Set("Content-type", "application/json")
+	if !c.Session.AccessAllowed("editor.read") {
+		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		return
+	}
 
-		if rspj, err := utils.JsonEncode(rsp); err == nil {
-			io.WriteString(c.Response.Out, rspj)
-		}
-	}()
-
-	dq := datax.NewQuery(c.Params.Get("specid"), c.Params.Get("modelid"))
+	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 	dq.Limit(100)
 
 	dq.Filter("id", c.Params.Get("id"))
@@ -78,58 +84,50 @@ func (c Term) EntryAction() {
 
 func (c Term) SetAction() {
 
-	c.AutoRender = false
+	rsp := api.Term{}
 
-	rsp := api.Term{
-		TypeMeta: api.TypeMeta{
-			APIVersion: api.Version,
-		},
+	defer c.RenderJson(&rsp)
+
+	if !c.Session.AccessAllowed("editor.write") {
+		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		return
 	}
-
-	defer func() {
-
-		c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response.Out.Header().Set("Content-type", "application/json")
-
-		if rspj, err := utils.JsonEncode(rsp); err == nil {
-			io.WriteString(c.Response.Out, rspj)
-		}
-	}()
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
+		rsp.Error = &types.ErrorMeta{
 			Code:    "500",
 			Message: "Can not pull database instance",
 		}
 		return
 	}
 
-	model, err := conf.SpecTermModel(c.Params.Get("specid"), c.Params.Get("modelid"))
+	model, err := conf.SpecTermModel(c.Params.Get("modname"), c.Params.Get("modelid"))
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
+		rsp.Error = &types.ErrorMeta{
 			Code:    "404",
 			Message: "Spec or Model Not Found",
 		}
 		return
 	}
 
-	if err := utils.JsonDecode(c.Request.RawBody, &rsp); err != nil {
-		rsp.Error = &api.ErrorMeta{
+	if err := c.Request.JsonDecode(&rsp); err != nil {
+		rsp.Error = &types.ErrorMeta{
 			Code:    "400",
-			Message: "Bad Request",
+			Message: "Bad Request " + err.Error(),
 		}
 		return
 	}
 
 	var (
 		set   = map[string]interface{}{}
-		table = fmt.Sprintf("tx%s_%s", c.Params.Get("specid"), c.Params.Get("modelid"))
+		table = fmt.Sprintf("tx%s_%s", utils.StringEncode16(c.Params.Get("modname"), 12), c.Params.Get("modelid"))
 	)
 
 	q := rdobase.NewQuerySet().From(table).Limit(1)
 
 	switch model.Type {
+
 	case api.TermTag:
 
 		uniTitle := spaceReg.ReplaceAllString(strings.TrimSpace(strings.ToLower(rsp.Title)), " ")
@@ -143,7 +141,7 @@ func (c Term) SetAction() {
 
 		rs, err := dcn.Base.Query(q)
 		if err != nil {
-			rsp.Error = &api.ErrorMeta{
+			rsp.Error = &types.ErrorMeta{
 				Code:    "500",
 				Message: "Can not pull database instance",
 			}
@@ -179,7 +177,7 @@ func (c Term) SetAction() {
 
 			rs, err := dcn.Base.Query(q)
 			if err != nil {
-				rsp.Error = &api.ErrorMeta{
+				rsp.Error = &types.ErrorMeta{
 					Code:    "500",
 					Message: "Can not pull database instance",
 				}
@@ -187,7 +185,7 @@ func (c Term) SetAction() {
 			}
 
 			if len(rs) < 1 {
-				rsp.Error = &api.ErrorMeta{
+				rsp.Error = &types.ErrorMeta{
 					Code:    "404",
 					Message: "Term Not Found",
 				}
@@ -221,7 +219,7 @@ func (c Term) SetAction() {
 		}
 
 	default:
-		rsp.Error = &api.ErrorMeta{
+		rsp.Error = &types.ErrorMeta{
 			Code:    "500",
 			Message: "Server Error",
 		}
@@ -251,7 +249,7 @@ func (c Term) SetAction() {
 		}
 
 		if err != nil {
-			rsp.Error = &api.ErrorMeta{
+			rsp.Error = &types.ErrorMeta{
 				Code:    "500",
 				Message: err.Error(),
 			}

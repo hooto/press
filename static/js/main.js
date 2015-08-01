@@ -14,7 +14,7 @@ l5s.Boot = function()
     function() {
 
         seajs.use([
-            "~/bootstrap/3.3/js/bootstrap.min.js",
+            // "~/bootstrap/3.3/js/bootstrap.min.js",
             "~/lessui/js/lessui.js",
         ],
         function() {
@@ -40,7 +40,7 @@ l5s.CodeRender = function()
         }
 
         switch (lang) {
-        
+
         case "php":
             modes.push("~/codemirror/5/mode/php/php.js");
         case "htmlmixed":
@@ -57,10 +57,14 @@ l5s.CodeRender = function()
             lang = "clike";
             break;
 
+        case "json":
+            modes.push("~/codemirror/5/mode/javascript/javascript.js");
+            lang = "application/ld+json";
+            break;
+
         case "go":
         case "javascript":
         case "css":
-        case "json":
         case "xml":
         case "yaml":
         case "lua":
@@ -96,6 +100,26 @@ l5s.CodeRender = function()
     });
 }
 
+l5s.NavActive = function(tplid, path)
+{
+    if (!tplid || !path) {
+        return;
+    }
+
+    var nav = $("#"+ tplid);
+    nav.find("a").each(function() {
+
+        var href = $(this).attr("href");
+
+        if (href) {
+
+            if (href.match(path)) {
+                nav.find("a.active").removeClass("active");
+                $(this).addClass("active");
+            }
+        }        
+    });
+}
 
 l5s.Ajax = function(url, options)
 {

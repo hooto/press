@@ -2,6 +2,10 @@ body {
     padding: 0px;
 }
 
+.l5smgr-font-fixspace {
+    font-family: 'Courier New', Courier, monospace, sans-serif;
+}
+
 .l5smgr-query-input {
     padding: 5px 5px 5px 30px;
     background: url(/~/img/search-16.png) no-repeat 8px; 
@@ -25,7 +29,7 @@ body {
 }
 
 #l5smgr-nodeset {
-    background-color: #fff;
+    /*background-color: #fff;*/
 }
 
 .CodeMirror-scroll {
@@ -78,3 +82,72 @@ body {
 .CodeMirror *::-webkit-scrollbar-thumb:active {
     background-color: #444;
 }
+
+#l5s-mgr-header {
+  padding: 0 15px;
+  margin-bottom: 10px; 
+  /*background-color: #283041;*/
+  background-color: #444;
+  color: #fff;
+}
+
+#l5s-uh-topnav {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow: auto;
+  display: table;
+}
+
+#l5s-uh-topnav > a {
+  display: table-cell;
+  margin-right: 20px;
+  vertical-align:middle;
+  font-size: 16px;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #fff;
+  height: 50px;
+  line-height: 50px;
+}
+
+#l5s-uh-topnav > a:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+#l5s-uh-topnav > a.active {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+
+.l5s-subnav {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  overflow: auto;
+  display: table;
+}
+
+.l5s-subnav > a {
+  display: table-cell;
+  margin-right: 20px;
+  vertical-align:middle;
+  font-size: 14px;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: #333;
+  border-radius: 3px;
+}
+
+.l5s-subnav > a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.l5s-subnav > a.active {
+  color: #fff;
+  background-color: #428bca;
+}
+
+

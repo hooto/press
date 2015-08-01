@@ -18,20 +18,19 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lessos/lessgo/httpsrv"
+	"github.com/lessos/lessgo/x/webui"
+
 	"../../api"
 	"../../conf"
 	"../../datax"
-
-	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessgo/x/webui"
 )
 
 type Index struct {
 	*httpsrv.Controller
-	SpecID string
 }
 
-func (c Index) filter(rt []string, spec api.Spec) (string, string, bool) {
+func (c Index) filter(rt []string, spec *api.Spec) (string, string, bool) {
 
 	for _, route := range spec.Router.Routes {
 
@@ -73,41 +72,54 @@ func (c Index) IndexAction() {
 	c.AutoRender = false
 
 	var (
-		specid = "general"
-		uris   = strings.Split(strings.Trim(filepath.Clean(c.Request.RequestPath), "/"), "/")
+		srvname = "general"
+		uris    = strings.Split(strings.Trim(filepath.Clean(c.Request.RequestPath), "/"), "/")
 	)
 
-	if len(uris) > 0 {
-		specid = uris[0]
+	if len(uris) < 1 {
+		uris = append(uris, "general")
+	} else {
+		srvname = uris[0]
 	}
 
-	spec, ok := conf.Instances[specid]
+	if len(uris) < 2 {
+		uris = append(uris, "")
+	}
+
+	mod, ok := conf.Modules[srvname]
 	if !ok {
-		return
+		srvname = "general"
+		mod, ok = conf.Modules[srvname]
+		if !ok {
+			return
+		}
 	}
 
-	dataAction, template, mat := c.filter(uris[1:], spec)
+	dataAction, template, mat := c.filter(uris[1:], mod)
 	if !mat {
-		specid, template = "general", "404.tpl"
+
+		srvname = "general"
+
+		if uris[1] == "" {
+			template = "index.tpl"
+		} else {
+			template = "404.tpl"
+		}
 	}
 
-	c.Data["baseuri"] = "/" + specid
-	c.Data["specid"] = specid
+	c.Data["baseuri"] = "/" + srvname
+	c.Data["modname"] = mod.SrvName
 
 	if dataAction != "" {
 
-		for _, action := range spec.Actions {
+		for _, action := range mod.Actions {
 
 			if action.Name != dataAction {
 				continue
 			}
 
-			// if c.Params.Get("start") != "" {
-			// 	// action.Query.Offset =
-			// }
-
 			for _, datax := range action.Datax {
-				c.dataRender(specid, datax)
+				c.dataRender(srvname, datax)
 				c.Data["__datax_table__"] = datax.Query.Table
 			}
 
@@ -115,14 +127,23 @@ func (c Index) IndexAction() {
 		}
 	}
 
-	c.Render(specid, template)
+	c.Render(mod.Meta.Name, template)
 }
 
-func (c Index) dataRender(specid string, ad api.ActionData) {
+func (c Index) dataRender(srvname string, ad api.ActionData) {
 
-	qry := datax.NewQuery(specid, ad.Query.Table)
+	mod, ok := conf.Modules[srvname]
+	if !ok {
+		return
+	}
+
+	qry := datax.NewQuery(mod.Meta.Name, ad.Query.Table)
 	if ad.Query.Limit > 0 {
 		qry.Limit(ad.Query.Limit)
+	}
+
+	if ad.Query.Order != "" {
+		qry.Order(ad.Query.Order)
 	}
 
 	if id := c.Params.Get("id"); id != "" {
@@ -138,32 +159,29 @@ func (c Index) dataRender(specid string, ad api.ActionData) {
 
 	case "node.list":
 
-		if spec, ok := conf.Instances[specid]; ok {
+		for _, modNode := range mod.NodeModels {
 
-			for _, modNode := range spec.NodeModels {
+			if ad.Query.Table != modNode.Meta.Name {
+				continue
+			}
 
-				if ad.Query.Table != modNode.Metadata.Name {
-					continue
-				}
+			for _, term := range modNode.Terms {
 
-				for _, term := range modNode.Terms {
+				if termVal := c.Params.Get("term_" + term.Meta.Name); termVal != "" {
 
-					if termVal := c.Params.Get("term_" + term.Metadata.Name); termVal != "" {
-
-						switch term.Type {
-						case api.TermTaxonomy:
-							qry.Filter("term_"+term.Metadata.Name, termVal)
-							c.Data["term_"+term.Metadata.Name] = termVal
-						case api.TermTag:
-							// TOPO
-							qry.Filter("term_"+term.Metadata.Name+".like", "%"+termVal+"%")
-							c.Data["term_"+term.Metadata.Name] = termVal
-						}
+					switch term.Type {
+					case api.TermTaxonomy:
+						qry.Filter("term_"+term.Meta.Name, termVal)
+						c.Data["term_"+term.Meta.Name] = termVal
+					case api.TermTag:
+						// TOPO
+						qry.Filter("term_"+term.Meta.Name+".like", "%"+termVal+"%")
+						c.Data["term_"+term.Meta.Name] = termVal
 					}
 				}
-
-				break
 			}
+
+			break
 		}
 
 		page := c.Params.Int64("page")
@@ -182,8 +200,8 @@ func (c Index) dataRender(specid string, ad api.ActionData) {
 
 		if qry.Pager {
 			pager := webui.NewPager(0,
-				uint64(ls.Metadata.TotalResults),
-				uint64(ls.Metadata.ItemsPerList),
+				uint64(ls.Meta.TotalResults),
+				uint64(ls.Meta.ItemsPerList),
 				10)
 			pager.CurrentPageNumber = uint64(page)
 			c.Data[ad.Name+"_pager"] = pager
@@ -200,14 +218,13 @@ func (c Index) dataRender(specid string, ad api.ActionData) {
 
 		if qry.Pager {
 			c.Data[ad.Name+"_pager"] = webui.NewPager(0,
-				uint64(ls.Metadata.TotalResults),
-				uint64(ls.Metadata.ItemsPerList),
+				uint64(ls.Meta.TotalResults),
+				uint64(ls.Meta.ItemsPerList),
 				10)
 		}
 
 	case "term.entry":
 
 		c.Data[ad.Name] = qry.TermEntry()
-
 	}
 }

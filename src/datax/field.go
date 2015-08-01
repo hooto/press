@@ -1,3 +1,17 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package datax
 
 import (
@@ -6,10 +20,10 @@ import (
 	"strings"
 	"time"
 
-	"../api"
-
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
+
+	"../api"
 )
 
 const (
@@ -41,6 +55,7 @@ var (
 	regMultiSpace = regexp.MustCompile("\\s{2,}")
 	regLineSpace  = regexp.MustCompile("\\n\\s*\\n")
 	mkp           = bluemonday.UGCPolicy()
+	htmlp         = bluemonday.UGCPolicy()
 )
 
 func init() {
@@ -86,11 +101,6 @@ func textHtml2str(src string) string {
 	return strings.TrimSpace(src)
 }
 
-// func textAutoParagraph(src string) string {
-// 	lines := strings.Split(src, "\n\n")
-// 	return "<p>" + strings.Join(lines, "</p>\n<p>") + "</p>"
-// }
-
 func fieldValue(fields []api.NodeField, colname string) (string, map[string]string) {
 
 	var (
@@ -131,11 +141,13 @@ func FieldSubString(fields []api.NodeField, colname string, length int) string {
 
 	val, _ := fieldValue(fields, colname)
 
-	if len(val) > length {
-		return val[:length] + "..."
+	ustr := []rune(val)
+
+	if len(ustr) > length {
+		return string(ustr[0:length]) + "..."
 	}
 
-	return val
+	return string(ustr)
 }
 
 func FieldDebug(fields []api.NodeField, colname string, length int) template.HTML {
@@ -166,12 +178,55 @@ func FieldHtml(fields []api.NodeField, colname string) template.HTML {
 
 	val, attrs := fieldValue(fields, colname)
 
-	if v, ok := attrs["format"]; ok && v == "md" {
-		unsafe := blackfriday.MarkdownCommon([]byte(val))
-		val = string(mkp.SanitizeBytes(unsafe))
+	fm, ok := attrs["format"]
+	if !ok {
+		fm = "txt"
 	}
 
+	val = strings.TrimSpace(strings.Replace(val, "\r\n", "\n", -1))
+	val = regMultiLine.ReplaceAllString(val, "\n\n")
+
+	switch fm {
+
+	case "md":
+		unsafe := blackfriday.MarkdownCommon([]byte(val))
+		val = string(mkp.SanitizeBytes(unsafe))
+
+	case "txt":
+		if lines := strings.Split(val, "\n\n"); len(lines) > 1 {
+			val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"
+			val = strings.Replace(val, "\n", "<br>", -1)
+		}
+	}
+
+	val = htmlp.Sanitize(val)
+
 	return template.HTML(val)
+}
+
+func substr(s string, start, length int) string {
+
+	bt := []rune(s)
+
+	if start < 1 {
+		start = 0
+	}
+
+	if length < 1 {
+		length = 1
+	}
+
+	end := start + length
+
+	if end >= len(bt) {
+		end = len(bt) - 1
+	}
+
+	if end <= start {
+		return ""
+	}
+
+	return string(bt[start:end])
 }
 
 func FieldSubHtml(fields []api.NodeField, colname string, length int) template.HTML {
@@ -187,20 +242,20 @@ func FieldSubHtml(fields []api.NodeField, colname string, length int) template.H
 		if v == "md" {
 			unsafe := blackfriday.MarkdownCommon([]byte(val))
 			val = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
-			v = "html"
-		}
-
-		if v == "html" {
-			val = textHtml2str(val)
 		}
 	}
 
-	if len(val) > length {
-		val = val[:length] + "..."
+	ustr := []rune(textHtml2str(val))
+
+	if len(ustr) > length {
+		val = string(ustr[0:length]) + "..."
+	} else {
+		val = string(ustr)
 	}
 
-	lines := strings.Split(val, "\n\n")
-	val = "<p>" + strings.Join(lines, "</p>\n<p>") + "</p>"
+	if lines := strings.Split(val, "\n\n"); len(lines) > 1 {
+		val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"
+	}
 
 	return template.HTML(val)
 }

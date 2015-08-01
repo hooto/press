@@ -9,6 +9,7 @@
 <script id="l5smgr-termset-tpl" type="text/html">
   <input type="hidden" name="model_type" value="{[=it.model.type]}">
   <input type="hidden" name="id" value="{[=it.id]}">
+  <input type="hidden" name="pid" value="{[=it.pid]}">
   <input type="hidden" name="state" value="{[=it.state]}">
   <div class="l4i-form-group">
     <label>Title</label>

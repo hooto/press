@@ -1,27 +1,28 @@
+<div id="l5s-mgr-header" class="">
+<table width="100%">
+  <tr>
+    
+    <td align="left" width="120px">
+      <div class="">
+        <span class="">CMS</span>
+      </div>
+    </td>
+    
+    <td>
+      <div id="l5s-uh-topnav">
+        <a class="l4i-nav-item active" href="#node/index">Content</a>
+        <a class="l4i-nav-item" href="#spec/index">Modules</a>
+        <a class="l4i-nav-item" href="#sys/index">System</a>
+      </div>
+    </td>
 
-<nav class="navbar navbar-inverse navbar-static-top" style="margin-bottom:10px;">
-  <div class="container-fluid">
-
-    <div class="navbar-header" style="">
-        <a class="navbar-brand" href="#">
-            <!-- <img alt="Brand" src="/mgr/-/img/logo.png"> -->
-        </a>
-        <span class="navbar-brand">CMS</span>
-    </div>
-
-    <div id="l5s-nav" class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-            <li class="l5s-nav-item active"><a href="#content" onclick="l5sNode.Index()">Content</a></li>
-            <li class="l5s-nav-item "><a href="#structure" onclick="l5sSpec.Index()">Spec</a></li>
-            <li class="l5s-nav-item "><a href="#setting" onclick="l5sMgr.Setting()">Settings</a></li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#signout" onclick="l5sIDS.Logout()">Logout</a></li>
-        </ul>
-    </div>
-
-  </div>
-</nav>
+    <td align="right">
+      <div id="">
+        <span class="btn btn-default btn-xs">Sign Out</span>
+      </div>
+    </td>
+  </tr>
+</table>
+</div>
 
 <div id="com-content" class="container-fluid">loading</div>

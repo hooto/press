@@ -1,5 +1,7 @@
 var l5sMgr = {
-    base : "/mgr/",
+    base    : "/mgr/",
+    api     : "/v1/",
+    basetpl : "/mgr/-/",
 }
 
 l5sMgr.Boot = function()
@@ -38,9 +40,12 @@ l5sMgr.Boot = function()
             "-/js/model.js?_="+ Math.random(),
             "-/js/term.js?_="+ Math.random(),
             "-/js/node.js?_="+ Math.random(),
+            "-/js/sys.js?_="+ Math.random(),
             "-/js/editor.js?_="+ Math.random(),
             "~/js/marked.min.js",
         ], function() {
+
+            l5sSys.Init();
 
             marked.setOptions({
                 renderer: new marked.Renderer(),
@@ -57,27 +62,23 @@ l5sMgr.Boot = function()
                 l5sEditor.sizeRefresh();
             });
 
-            l5sMgr.Ajax(l5sMgr.base +"-/body.tpl", {
+            l5sMgr.TplCmd("body", {
                 callback: function(err, data) {
                 
+                    l5sSys.Init();
+                    l5sNode.Init();
+                    l5sSpec.Init();
+
                     $("#body-content").html(data);
                 
                     l5sNode.Index();
+                    // l5sSys.Index();
+                    // l5sSpec.Index();
                 }
             });
         });
     });
 }
-
-// l5sMgr.ComLoader = function(uri)
-// {
-//     l5sMgr.Ajax("#com-content", uri);
-// }
-
-// l5sMgr.WorkLoader = function(uri)
-// {
-//     l5sMgr.Ajax("#work-content", uri);
-// }
 
 l5sMgr.Ajax = function(url, options)
 {
@@ -97,7 +98,9 @@ l5sMgr.Ajax = function(url, options)
     url += Math.random();
 
     //
-    url += "&access_token="+ l4iCookie.Get("access_token");
+    if (l4iCookie.Get("access_token")) {
+        url += "&access_token="+ l4iCookie.Get("access_token");
+    }
 
     //
     if (options.method === undefined) {
@@ -134,3 +137,41 @@ l5sMgr.Ajax = function(url, options)
         }
     });
 }
+
+
+
+l5sMgr.ApiCmd = function(url, options)
+{
+    l5sMgr.Ajax(l5sMgr.api + url, options);
+}
+
+l5sMgr.TplCmd = function(url, options)
+{
+    l5sMgr.Ajax(l5sMgr.basetpl + url +".tpl", options);
+}
+
+l5sMgr.Loader = function(target, uri)
+{
+    l5sMgr.Ajax(l5sMgr.basetpl + uri +".tpl", {
+        callback: function(err, data) {
+            $(target).html(data);
+        }
+    });
+}
+
+l5sMgr.BodyLoader = function(uri)
+{
+    l5sMgr.Loader("#body-content", uri);
+}
+
+l5sMgr.ComLoader = function(uri)
+{
+    l5sMgr.Loader("#com-content", uri);
+}
+
+l5sMgr.WorkLoader = function(uri)
+{
+    l5sMgr.Loader("#work-content", uri);
+}
+
+

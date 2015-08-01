@@ -1,3 +1,17 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -5,19 +19,18 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	// "time"
 
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
-	"github.com/lessos/lessgo/service/lessids"
+	"github.com/lessos/lessids/idclient"
 
 	"./conf"
 	"./datax"
-	// "./state"
+	"./status"
 )
 
 import (
-	ext_comment "../spec/comment/websrv"
+	ext_comment "../modules/comment/websrv"
 	cdef "./websrv/frontend"
 	cmgr "./websrv/mgr"
 	capi "./websrv/v1"
@@ -53,19 +66,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	lessids.ServiceUrl = conf.Config.LessIdsUrl
+	idclient.ServiceUrl = conf.Config.IdentityServiceUrl
 
 	// httpsrv.Config.UrlBasePath = "cmf"
 	httpsrv.GlobalService.Config.HttpPort = conf.Config.HttpPort
 	// httpsrv.Config.LessIdsServiceUrl = conf.Config.LessIdsUrl
 
 	// state
-	// for {
+	status.Init()
+	// for i := 0; i < 3; i++ {
 
-	// 	state.Refresh()
+	// 	status.Refresh()
 
-	// 	if state.LessIdsState == state.LessIdsUnRegistered ||
-	// 		state.LessIdsState == state.LessIdsOk {
+	// 	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered ||
+	// 		status.IdentityServiceStatus == status.IdentityServiceOK {
 	// 		break
 	// 	}
 

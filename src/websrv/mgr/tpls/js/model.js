@@ -60,7 +60,7 @@ l5sMgrModel.List = function(tplid)
             }
 
             for (var i in rsj.items.info.items) {
-                rsj.items.info.items[i].metadata.updated = l4i.TimeParseFormat(rsj.items.info.items[i].metadata.updated, "Y-m-d");
+                rsj.items.info.items[i].meta.updated = l4i.TimeParseFormat(rsj.items.info.items[i].meta.updated, "Y-m-d");
             }
 
             lessTemplate.Render({

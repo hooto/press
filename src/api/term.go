@@ -1,26 +1,40 @@
-// Copyright 2014 lessOS.com. All rights reserved.
+// Copyright 2015 lessOS.com, All rights reserved.
 //
-// Use of this source code is governed by the Apache 2.0
-// license that can be found in the LICENSE file.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package api
 
+import (
+	"github.com/lessos/lessgo/types"
+)
+
 type Term struct {
-	TypeMeta `json:",inline"`
-	Model    *TermModel `json:"model,omitempty"`
-	ID       uint32     `json:"id,omitempty"`
-	PID      uint32     `json:"pid,omitempty"`
-	UID      string     `json:"uid,omitempty"`
-	State    int16      `json:"state,omitempty"`
-	UserID   string     `json:"userid,omitempty"`
-	Title    string     `json:"title"`
-	Weight   int32      `json:"weight,omitempty"`
-	Created  string     `json:"created,omitempty"`
-	Updated  string     `json:"updated,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Model          *TermModel `json:"model,omitempty"`
+	ID             uint32     `json:"id,omitempty"`
+	PID            uint32     `json:"pid,omitempty"`
+	UID            string     `json:"uid,omitempty"`
+	State          int16      `json:"state,omitempty"`
+	UserID         string     `json:"userid,omitempty"`
+	Title          string     `json:"title"`
+	Weight         int32      `json:"weight,omitempty"`
+	Created        string     `json:"created,omitempty"`
+	Updated        string     `json:"updated,omitempty"`
 }
 
 type TermList struct {
-	TypeMeta `json:",inline"`
-	Metadata ListMeta   `json:"metadata,omitempty"`
-	Model    *TermModel `json:"model,omitempty"`
-	Items    []Term     `json:"items"`
+	types.TypeMeta `json:",inline"`
+	Meta           types.ListMeta `json:"meta,omitempty"`
+	Model          *TermModel     `json:"model,omitempty"`
+	Items          []Term         `json:"items"`
 }

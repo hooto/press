@@ -2,16 +2,18 @@ package controllers
 
 import (
 	"fmt"
-	"io"
-	// "net/http"
+	"net/http"
+	"strings"
 
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/net/httpclient"
-	"github.com/lessos/lessgo/service/lessids"
+	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessids/idclient"
+	"github.com/lessos/lessids/idsapi"
 
 	"../../../conf"
-	"../../../state"
+	"../../../status"
 )
 
 type Setup struct {
@@ -20,122 +22,90 @@ type Setup struct {
 
 func (c Setup) IndexAction() {
 
-	// TODO
-	// session, err := c.Session.SessionFetch()
-	// if err != nil || session.Uid == 0 {
-	// 	c.Redirect(lessids.LoginUrl(c.Request.RawAbsUrl()))
-	// 	return
-	// }
+	if !idclient.IsLogin(c.Session.AccessToken) {
+		c.Redirect(idclient.LoginUrl(c.Request.RawAbsUrl()))
+		return
+	}
 
-	// if c.Params.Get("access_token") != "" {
+	if token := c.Params.Get("access_token"); token != "" {
 
-	// 	ck := &http.Cookie{
-	// 		Name:     "access_token",
-	// 		Value:    session.AccessToken,
-	// 		Path:     "/",
-	// 		HttpOnly: true,
-	// 		Expires:  session.Expired.UTC(),
-	// 	}
-	// 	http.SetCookie(c.Response.Out, ck)
+		ck := &http.Cookie{
+			Name:     "access_token",
+			Value:    token,
+			Path:     "/",
+			HttpOnly: true,
+			Expires:  idclient.Expired(864000),
+		}
+		http.SetCookie(c.Response.Out, ck)
 
-	// 	c.Redirect("/lesscms")
-	// 	return
-	// }
+		c.Redirect("/mgr")
+		return
+	}
 
-	if state.LessIdsState == state.LessIdsUnRegistered {
+	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
 
-		c.Data["lessids_url"] = lessids.ServiceUrl
+		c.Data["ids_url"] = idclient.ServiceUrl
 
-		c.Data["instance_id"] = conf.Config.InstanceID
+		host := c.Request.Host
+		if i := strings.Index(host, ":"); i > 0 {
+			host = host[:i]
+		}
 
-		insturl := "http://" + conf.Config.HttpAddr
+		insturl := "http://" + host
 		if conf.Config.HttpPort != 80 {
 			insturl += fmt.Sprintf(":%d", conf.Config.HttpPort)
 		}
-		c.Data["instance_url"] = insturl + "/lesscms"
+		c.Data["instance_url"] = insturl
 
 		c.Data["app_id"] = "lesscms"
-		c.Data["app_title"] = "lessCMS"
-		c.Data["version"] = conf.Config.Version
+		c.Data["app_title"] = conf.Config.AppTitle
+		c.Data["version"] = conf.Version
 
 		c.Render("setup/app-register.tpl")
 		return
 	}
 
-	c.Redirect("/lesscms")
+	c.Redirect("/mgr")
 }
 
 func (c Setup) AppRegisterPutAction() {
 
-	c.AutoRender = false
-
-	var rsp = struct {
-		Status  int
-		Message string
-	}{
-		400,
-		"Bad Request",
+	reg := idsapi.AppInstanceRegister{
+		AccessToken: c.Session.AccessToken,
+		Instance: idsapi.AppInstance{
+			Meta: types.ObjectMeta{
+				ID: conf.Config.InstanceID,
+			},
+			AppID:      "lesscms",
+			AppTitle:   c.Params.Get("app_title"),
+			Version:    conf.Version,
+			Url:        c.Params.Get("instance_url"),
+			Privileges: conf.Perms,
+		},
 	}
 
-	defer func() {
-		if rspj, err := utils.JsonEncode(rsp); err == nil {
-			io.WriteString(c.Response.Out, rspj)
+	defer c.RenderJson(&reg)
+
+	regjs, _ := utils.JsonEncode(reg)
+
+	// fmt.Println(regjs)
+
+	hc := httpclient.Put(idclient.ServiceUrl + "/v1/app-auth/register")
+	hc.Body(regjs)
+
+	if err := hc.ReplyJson(&reg); err != nil {
+
+		reg.Error = &types.ErrorMeta{idsapi.ErrCodeInternalError, err.Error()}
+
+	} else if reg.Error == nil && reg.Kind == "AppInstanceRegister" {
+
+		conf.Config.InstanceID = reg.Instance.Meta.ID
+		conf.Config.AppTitle = reg.Instance.AppTitle
+
+		status.IdentityServiceStatus = status.IdentityServiceOK
+
+		if err := conf.Save(); err != nil {
+			reg.Error = &types.ErrorMeta{idsapi.ErrCodeInternalError, err.Error()}
 		}
-	}()
-
-	// session, err := c.Session.SessionFetch()
-	// if err != nil || session.Uid == 0 {
-	// 	rsp.Status = 401
-	// 	rsp.Message = "Unauthorized"
-	// 	return
-	// }
-
-	if c.Params.Get("instance_id") == "" ||
-		c.Params.Get("app_id") == "" {
-		return
-	}
-
-	var req struct {
-		AccessToken string `json:"access_token"`
-		Data        struct {
-			InstanceID  string           `json:"instance_id"`
-			InstanceUrl string           `json:"instance_url"`
-			AppId       string           `json:"app_id"`
-			AppTitle    string           `json:"app_title"`
-			Version     string           `json:"version"`
-			Privileges  []conf.Privilege `json:"privileges"`
-		} `json:"data"`
-	}
-
-	req.AccessToken = c.Session.AccessToken
-	req.Data.InstanceID = c.Params.Get("instance_id")
-	req.Data.InstanceUrl = c.Params.Get("instance_url")
-	req.Data.AppId = "lesscms"
-	req.Data.AppTitle = c.Params.Get("app_title")
-	req.Data.Version = conf.Config.Version
-	req.Data.Privileges = conf.Privileges
-
-	reqstr, err := utils.JsonEncode(req)
-	if err != nil {
-		return
-	}
-
-	hc := httpclient.Put(c.Params.Get("lessids_url") +
-		"/app-auth/register?access_token=" + c.Session.AccessToken)
-	hc.Body(reqstr)
-
-	regstr, err := hc.ReplyString()
-	var reg struct {
-		Status  int
-		Message string
-	}
-	err = utils.JsonDecode(regstr, &reg)
-	if reg.Status != 200 {
-		rsp.Status = reg.Status
-		rsp.Message = reg.Message
-	} else {
-		state.Refresh()
-		rsp.Status = 200
-		rsp.Message = "Successfully registered"
 	}
 }

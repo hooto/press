@@ -4,7 +4,7 @@
 <script id="l5smgr-node-specls-tpl" type="text/html">
 <ul class="nav nav-pills">
   {[~it.items :v]}
-  <li class="spec-item {[if (it.active == v.metadata.id) {]}active{[}]}" tgspec="{[=v.metadata.id]}"><a href="#{[=v.metadata.id]}">{[=v.title]}</a></li>
+  <li class="spec-item {[if (it.active == v.meta.name) {]}active{[}]}" tgspec="{[=v.meta.name]}"><a href="#{[=v.meta.name]}">{[=v.title]}</a></li>
   {[~]}
 </ul>
 </script>
@@ -27,8 +27,8 @@
 <script id="l5smgr-node-nmodels-tpl" type="text/html">
 <ul class="nav nav-pills nav-stacked">
   {[~it.items :v]}
-  <li class="node-item {[if (it.active == v.metadata.name) {]}active{[}]}" tgname="{[=v.metadata.name]}">
-    <a href="#{[=v.metadata.id]}">{[=v.title]}</a>
+  <li class="node-item {[if (it.active == v.meta.name) {]}active{[}]}" tgname="{[=v.meta.name]}">
+    <a href="#{[=v.meta.name]}">{[=v.title]}</a>
   </li>
   {[~]}
 </ul>
@@ -37,8 +37,8 @@
 <script id="l5smgr-node-tmodels-tpl" type="text/html">
 <ul class="nav nav-pills nav-stacked">
   {[~it.items :v]}
-  <li class="term-item {[if (it.active == v.metadata.name) {]}active{[}]}" tgname="{[=v.metadata.name]}">
-    <a href="#{[=v.metadata.id]}">{[=v.title]}</a>
+  <li class="term-item {[if (it.active == v.meta.name) {]}active{[}]}" tgname="{[=v.meta.name]}">
+    <a href="#{[=v.meta.name]}">{[=v.title]}</a>
   </li>
   {[~]}
 </ul>

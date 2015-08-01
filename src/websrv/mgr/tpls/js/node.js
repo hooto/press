@@ -1,14 +1,20 @@
 var l5sNode = {
-    speclsCurrent: null,
+    speclsCurrent: [],
     specCurrent: null,
     setCurrent: null,
     cmEditor: null,
     cmEditors: {},
 }
 
+l5sNode.Init = function()
+{
+    l4i.UrlEventRegister("node/index", l5sNode.Index);
+}
+
 l5sNode.Index = function()
 {
-    // console.log(uri);
+    var alertid = "#l5smgr-node-alert";
+
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, data) {
@@ -17,20 +23,30 @@ l5sNode.Index = function()
                 $("#com-content").html(tpl);
             }
 
-            if (!l5sNode.speclsCurrent) {
+            // console.log(data);
+
+            //
+            if (l5sNode.speclsCurrent.length < 1) {
 
                 if (!data || data.kind != "SpecList" 
                     || data.items === undefined || data.items.length < 1) {
-                    return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Content Type Not Found");
+                    return l4i.InnerAlert(alertid, 'alert-danger', "Content Type Not Found");
                 }
 
-                l5sNode.speclsCurrent = data.items;
+                for (var i in data.items) {
+
+                    if (!data.items[i].nodeModels || data.items[i].nodeModels.length < 1) {
+                        continue;
+                    }
+
+                    l5sNode.speclsCurrent.push(data.items[i]);
+                }
             }
 
             //
             if (!l4iStorage.Get("l5smgr_spec_active")) {
                 for (var i in l5sNode.speclsCurrent) {
-                    l4iStorage.Set("l5smgr_spec_active", l5sNode.speclsCurrent[i].metadata.id);
+                    l4iStorage.Set("l5smgr_spec_active", l5sNode.speclsCurrent[i].meta.name);
                     break;
                 }
             }
@@ -41,7 +57,9 @@ l5sNode.Index = function()
 
 
             for (var i in l5sNode.speclsCurrent) {
-                if (l5sNode.speclsCurrent[i].metadata.id == l4iStorage.Get("l5smgr_spec_active")) {
+
+
+                if (l5sNode.speclsCurrent[i].meta.name == l4iStorage.Get("l5smgr_spec_active")) {
                     l5sNode.specCurrent = l5sNode.speclsCurrent[i];
                     break;
                 }
@@ -69,11 +87,11 @@ l5sNode.Index = function()
                 for (var i in l5sNode.specCurrent.nodeModels) {
                                 
                     if (!node_model_active) {
-                        node_model_active = l5sNode.specCurrent.nodeModels[i].metadata.name;
+                        node_model_active = l5sNode.specCurrent.nodeModels[i].meta.name;
                     }
 
-                    if (l4iStorage.Get("l5smgr_nmodel_active") == l5sNode.specCurrent.nodeModels[i].metadata.name) {
-                        node_model_active = l5sNode.specCurrent.nodeModels[i].metadata.name;
+                    if (l4iStorage.Get("l5smgr_nmodel_active") == l5sNode.specCurrent.nodeModels[i].meta.name) {
+                        node_model_active = l5sNode.specCurrent.nodeModels[i].meta.name;
                         break;
                     }
                 }
@@ -91,7 +109,7 @@ l5sNode.Index = function()
 
                 //
                 for (var i in l5sNode.specCurrent.nodeModels) {
-                    if (node_model_active == l5sNode.specCurrent.nodeModels[i].metadata.name) {
+                    if (node_model_active == l5sNode.specCurrent.nodeModels[i].meta.name) {
                         l5sNode.List(l4iStorage.Get("l5smgr_spec_active"), node_model_active);
                     }
                 }
@@ -136,7 +154,7 @@ l5sNode.Index = function()
         // template
         var el = document.getElementById("l5smgr-node-specls");
         if (!el || !el.length || el.length < 1) {
-            l5sMgr.Ajax("-/node/index.tpl", {
+            l5sMgr.TplCmd("node/index", {
                 callback: function(err, tpl) {
                     
                     if (err) {
@@ -150,11 +168,11 @@ l5sNode.Index = function()
             ep.emit("tpl", null);
         }
 
-        if (l5sNode.speclsCurrent) {
+        if (l5sNode.speclsCurrent.length > 0) {
             ep.emit("data", null);
         } else {
 
-            l5sMgr.Ajax("/v1/spec/list", {
+            l5sMgr.ApiCmd("mod-set/spec-list", {
                 callback: ep.done("data"),           
             });
         }
@@ -162,20 +180,22 @@ l5sNode.Index = function()
 }
 
 
-l5sNode.List = function(specid, modelid)
+l5sNode.List = function(modname, modelid)
 {
-    if (!specid && l4iStorage.Get("l5smgr_spec_active")) {
-        specid = l4iStorage.Get("l5smgr_spec_active");
+    var alertid = "#l5smgr-node-alert";
+
+    if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
+        modname = l4iStorage.Get("l5smgr_spec_active");
     }
     if (!modelid && l4iStorage.Get("l5smgr_nmodel_active")) {
         modelid = l4iStorage.Get("l5smgr_nmodel_active");
     }
 
-    if (!specid || !modelid) {
+    if (!modname || !modelid) {
         return;
     }
 
-    var uri = "specid="+ specid +"&modelid="+ modelid;
+    var uri = "modname="+ modname +"&modelid="+ modelid;
     if (document.getElementById("qry_text")) {
         uri = "&qry_text="+ $("#qry_text").val();
     }
@@ -197,10 +217,10 @@ l5sNode.List = function(specid, modelid)
                 || rsj.items === undefined || rsj.items.length < 1) {
                 $("#l5smgr-nodels").empty();
                 $("#l5smgr-termls").empty();
-                return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
-            $("#l5smgr-node-alert").hide();
+            $(alertid).hide();
 
             for (var i in rsj.items) {
                 rsj.items[i].created = l4i.TimeParseFormat(rsj.items[i].created, "Y-m-d");
@@ -211,7 +231,7 @@ l5sNode.List = function(specid, modelid)
                 dstid: "l5smgr-nodels",
                 tplid: "l5smgr-nodels-tpl",
                 data:  {
-                    specid : specid,
+                    modname : modname,
                     modelid  : modelid,
                     items  : rsj.items,
                 },
@@ -226,7 +246,7 @@ l5sNode.List = function(specid, modelid)
         // template
         var el = document.getElementById("l5smgr-nodels");
         if (!el || el.length < 1) {
-            l5sMgr.Ajax("-/node/list.tpl", {
+            l5sMgr.TplCmd("node/list", {
                 callback: function(err, tpl) {
                     
                     if (err) {
@@ -240,28 +260,30 @@ l5sNode.List = function(specid, modelid)
             ep.emit("tpl", null);
         }
 
-        l5sMgr.Ajax("/v1/node/list?"+ uri, {
+        l5sMgr.ApiCmd("/node/list?"+ uri, {
             callback: ep.done("data"),           
         });
     });
 }
 
-l5sNode.Set = function(specid, modelid, nodeid)
+l5sNode.Set = function(modname, modelid, nodeid)
 {
-    if (!specid && l4iStorage.Get("l5smgr_spec_active")) {
-        specid = l4iStorage.Get("l5smgr_spec_active");
+    var alertid = "#l5smgr-node-alert";
+
+    if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
+        modname = l4iStorage.Get("l5smgr_spec_active");
     }
     if (!modelid && l4iStorage.Get("l5smgr_nmodel_active")) {
         modelid = l4iStorage.Get("l5smgr_nmodel_active");
     }
 
-    // console.log(specid +","+ modelid +","+ nodeid);
+    // console.log(modname +","+ modelid +","+ nodeid);
 
-    if (!specid || !modelid) {
+    if (!modname || !modelid) {
         return;
     }
 
-    var uri = "specid="+ specid +"&modelid="+ modelid;
+    var uri = "modname="+ modname +"&modelid="+ modelid;
 
     // console.log(uri);
     seajs.use(["ep"], function (EventProxy) {
@@ -275,7 +297,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
             $("#work-content").html(tpl);
 
             if (data === undefined || data.kind != "Node") {
-                return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
             if (!data.state) {
@@ -286,7 +308,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
                 data.model.terms = [];
             }
 
-            $("#l5smgr-node-alert").hide();
+            $(alertid).hide();
 
             l5sNode.setCurrent = data;
             // console.log(data);
@@ -376,7 +398,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
                         var term = data.model.terms[i];
 
                         for (var j in data.terms) {
-                            if (data.terms[i].name == term.metadata.name) {
+                            if (data.terms[i].name == term.meta.name) {
                                 term.value = data.terms[i].value;
                                 break;
                             }
@@ -410,7 +432,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
                             }
 
 
-                            l5sMgr.Ajax("/v1/term/list?specid="+ specid +"&modelid="+ term.metadata.name, {
+                            l5sMgr.ApiCmd("/term/list?modname="+ modname +"&modelid="+ term.meta.name, {
                                 callback: function(err, data) {
                                     
                                     if (data.kind != "TermList") {
@@ -447,7 +469,7 @@ l5sNode.Set = function(specid, modelid, nodeid)
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
 
-        l5sMgr.Ajax("-/node/set.tpl", {
+        l5sMgr.TplCmd("node/set", {
             callback: function(err, tpl) {
                     
                 if (err) {
@@ -458,11 +480,11 @@ l5sNode.Set = function(specid, modelid, nodeid)
         });
 
         if (nodeid) {
-            l5sMgr.Ajax("/v1/node/entry?"+ uri +"&id="+ nodeid, {
+            l5sMgr.ApiCmd("/node/entry?"+ uri +"&id="+ nodeid, {
                 callback: ep.done("data"),           
             });
         } else {
-            l5sMgr.Ajax("/v1/node-model/entry?"+ uri, {
+            l5sMgr.ApiCmd("/node-model/entry?"+ uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
                         kind  : "Node",
@@ -478,6 +500,8 @@ l5sNode.Set = function(specid, modelid, nodeid)
 
 l5sNode.SetCommit = function()
 {
+    var alertid = "#l5smgr-node-alert";
+
     if (!l5sNode.setCurrent) {
         return;
     }
@@ -558,39 +582,38 @@ l5sNode.SetCommit = function()
         switch (term.type) {
 
         case "tag":
-            val = $("#l5smgr-nodeset").find("input[name=term_"+ term.metadata.name +"]").val();
+            val = $("#l5smgr-nodeset").find("input[name=term_"+ term.meta.name +"]").val();
             break;
         case "taxonomy":
-            val = $("#l5smgr-nodeset").find("select[name=term_"+ term.metadata.name +"]").val();
+            val = $("#l5smgr-nodeset").find("select[name=term_"+ term.meta.name +"]").val();
             break;
         }
 
         if (val) {
-            req.terms.push({name: term.metadata.name, value: val});
+            req.terms.push({name: term.meta.name, value: val});
         }
     }
 
     // console.log(l5sNode.setCurrent.model.terms);
     // console.log(JSON.stringify(req));
-    // console.log(req);
 
     //
-    var uri = "specid="+ l4iStorage.Get("l5smgr_spec_active");
+    var uri = "modname="+ l4iStorage.Get("l5smgr_spec_active");
     uri += "&modelid="+ l4iStorage.Get("l5smgr_nmodel_active");
 
-    l5sMgr.Ajax("/v1/node/set?"+ uri, {
-        method: "POST",
-        data : JSON.stringify(req),
+    l5sMgr.ApiCmd("node/set?"+ uri, {
+        method : "POST",
+        data   : JSON.stringify(req),
         callback : function(err, data) {
 
             if (data === undefined || data.kind != "Node") {
-                return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', data.error.message);
+                return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
             }
 
             // console.log(data.id);
             $("#l5smgr-nodeset").find("input[name=id]").val(data.id);
 
-            l4i.InnerAlert("#l5smgr-node-alert", 'alert-success', "Successful operation");
+            l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
             setTimeout(l5sNode.List, 500);
         }
     });

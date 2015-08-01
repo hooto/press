@@ -44,7 +44,7 @@
       {[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
-      <td align="right"><a class="term-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+      <td align="right"><a class="term-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
     </tr>
   {[~]}
   </tbody>
@@ -55,7 +55,7 @@
 
 $("#l5smgr-termls").on("click", ".term-item", function() {
     var id = $(this).attr("href").substr(1);
-    l5sTerm.Set($(this).attr("specid"), $(this).attr("modelid"), id);
+    l5sTerm.Set($(this).attr("modname"), $(this).attr("modelid"), id);
 });
 
 </script>

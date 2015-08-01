@@ -1,15 +1,14 @@
 {
-    "instanceid": "gk3fo1k6",
-    "http_addr": "127.0.0.1",
-    "http_port": 9533,
-    "lessids_url": "http://127.0.0.1:50101/ids",
-    "lessstorage": "http://127.0.0.1:30102/s",
-    "database" : {
-        "driver": "mysql",
-        "host": "127.0.0.1",
-        "port": "3306",
-        "user": "root",
-        "pass": "123456",
-        "dbname": "lesscms"
-    }
+  "instance_id": "18a8488ec661",
+  "app_title": "CMS",
+  "http_port": 9533,
+  "identity_service_url": "http://127.0.0.1:1778/ids",
+  "database": {
+    "driver": "mysql",
+    "host": "127.0.0.1",
+    "port": "3306",
+    "user": "root",
+    "pass": "123456",
+    "dbname": "lesscms"
+  }
 }

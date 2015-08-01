@@ -7,12 +7,81 @@ body {
   background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.03);
 }
 
+/** l5s-header **/
 .l5s-header {
   background-color: #fff;
   opacity: 0.94;
   /*box-shadow: 0px 0px 3px rgba(153, 153, 153, 0.75);*/
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
+
+#l5s-topbar {
+  padding: 0 15px;
+  margin-bottom: 10px; 
+  /*background-color: #283041;*/
+  background-color: #fff;
+  color: #777;
+  opacity: 0.94;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
+  border-width: 0 0 1px;
+  
+  min-height: 50px;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  position: fixed;
+}
+
+.l5s-topbar-brand {
+  font-weight: bold;
+}
+
+.l5s-topbar-layout {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+
+.l5s-topbar-sets {
+  position: relative;
+  margin-right: 40px;
+  display: inline-block;
+  vertical-align:middle;
+  line-height: 50px;
+}
+
+.l5s-topbar-nav {
+  /*position: relative;*/
+  /*list-style: none;*/
+  padding: 0;
+  margin: 0;
+  overflow: auto;
+  /*display: table;*/
+}
+
+.l5s-topbar-nav > a {
+  display: table-cell;
+  margin-right: 20px;
+  vertical-align:middle;
+  font-size: 16px;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #777;
+  height: 50px;
+  line-height: 50px;
+}
+
+.l5s-topbar-nav > a:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.l5s-topbar-nav > a.active {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+
 
 .l5s-footer {
   width: 100%;
@@ -105,6 +174,14 @@ body {
   line-height: 180%;
 }
 
+.l5s-nodels-item .l5s-nodels-text > p {
+  margin: 0 0 0.5em !important;
+}
+
+.l5s-nodels-item .l5s-nodels-text > p:last-child {
+  margin-bottom: 0 !important;;
+}
+
 /** l5s-node-view */
 .l5s-nodev {
   border: #eee 1px solid;
@@ -142,9 +219,30 @@ body {
   text-decoration: underline;
 }
 
-/*.l5s-nodev .content {
-  font-height: 200% !important;
-}*/
+.l5s-nodev .content {
+  line-height: 160% !important;
+}
+
+.l5s-nodev .content pre {
+  padding: 10px !important;
+  border: 0 !important;
+  background-color: rgba(0,0,0,0.05);
+  /*border-left: 0px solid #ccc !important;*/
+  /*border-radius: 0px !important;*/
+}
+
+.l5s-nodev .content > p {
+  margin: 0 0 1.0em !important;
+}
+
+.l5s-nodev .content > p:last-child {
+  margin-bottom: 0 !important;;
+}
+
+.l5s-nodev .content pre:hover {
+  /*border-radius: 3px !important;*/
+  /*outline: 2px solid #ccc;*/
+}
 
 /** sidebar **/
 .l5s-sidebar-section {

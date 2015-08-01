@@ -2,22 +2,24 @@ var l5sTerm = {
 
 }
 
-l5sTerm.List = function(specid, modelid)
+l5sTerm.List = function(modname, modelid)
 {
-    if (!specid && l4iStorage.Get("l5smgr_spec_active")) {
-        specid = l4iStorage.Get("l5smgr_spec_active");
+    var alertid = "#l5smgr-node-alert";
+
+    if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
+        modname = l4iStorage.Get("l5smgr_spec_active");
     }
     if (!modelid && l4iStorage.Get("l5smgr_tmodel_active")) {
         modelid = l4iStorage.Get("l5smgr_tmodel_active");
     }
 
-    if (!specid || !modelid) {
+    if (!modname || !modelid) {
         return;
     }
 
-    var uri = "specid="+ specid +"&modelid="+ modelid;
+    var uri = "modname="+ modname +"&modelid="+ modelid;
     if (document.getElementById("qry_text")) {
-        uri = "&qry_text="+ $("#qry_text").val();
+        uri += "&qry_text="+ $("#qry_text").val();
     }
 
     // console.log(uri);
@@ -31,16 +33,19 @@ l5sTerm.List = function(specid, modelid)
 
             l4iStorage.Set("l5smgr_tmodel_active", modelid);
 
-            if (rsj === undefined || rsj.kind != "TermList" 
-                || rsj.items === undefined || rsj.items.length < 1) {
+            if (!rsj || rsj.kind != "TermList" 
+                || !rsj.items || rsj.items.length < 1) {
+                
                 $("#l5smgr-nodels").empty();
                 $("#l5smgr-termls").empty();
-                return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Item Not Found");
+                
+                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
-            $("#l5smgr-node-alert").hide();
+            $(alertid).hide();
 
             for (var i in rsj.items) {
+                
                 rsj.items[i].created = l4i.TimeParseFormat(rsj.items[i].created, "Y-m-d");
                 rsj.items[i].updated = l4i.TimeParseFormat(rsj.items[i].updated, "Y-m-d H:i:s");
 
@@ -54,7 +59,7 @@ l5sTerm.List = function(specid, modelid)
                 tplid: "l5smgr-termls-tpl",
                 data:  {
                     model   : rsj.model,
-                    specid  : specid,
+                    modname : modname,
                     modelid : modelid,
                     items   : rsj.items,
                 },
@@ -69,7 +74,7 @@ l5sTerm.List = function(specid, modelid)
         // template
         var el = document.getElementById("l5smgr-termls");
         if (!el || el.length < 1) {
-            l5sMgr.Ajax("-/term/list.tpl", {
+            l5sMgr.TplCmd("/term/list", {
                 callback: function(err, tpl) {
                     
                     if (err) {
@@ -83,27 +88,29 @@ l5sTerm.List = function(specid, modelid)
             ep.emit("tpl", null);
         }
 
-        l5sMgr.Ajax("/v1/term/list?"+ uri, {
+        l5sMgr.ApiCmd("/term/list?"+ uri, {
             callback: ep.done("data"),           
         });
     });
 }
 
 
-l5sTerm.Set = function(specid, modelid, termid)
+l5sTerm.Set = function(modname, modelid, termid)
 {
-    if (!specid && l4iStorage.Get("l5smgr_spec_active")) {
-        specid = l4iStorage.Get("l5smgr_spec_active");
+    var alertid = "#l5smgr-node-alert";
+
+    if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
+        modname = l4iStorage.Get("l5smgr_spec_active");
     }
     if (!modelid && l4iStorage.Get("l5smgr_tmodel_active")) {
         modelid = l4iStorage.Get("l5smgr_tmodel_active");
     }
 
-    if (!specid || !modelid) {
+    if (!modname || !modelid) {
         return;
     }
 
-    var uri = "specid="+ specid +"&modelid="+ modelid;
+    var uri = "modname="+ modname +"&modelid="+ modelid;
 
     // console.log(uri);
     seajs.use(["ep"], function (EventProxy) {
@@ -116,8 +123,8 @@ l5sTerm.Set = function(specid, modelid, termid)
 
             $("#work-content").html(tpl);
 
-            if (data === undefined || data.kind != "Term") {
-                return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', "Item Not Found");
+            if (!data || data.kind != "Term") {
+                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
             if (!data.state) {
@@ -130,7 +137,7 @@ l5sTerm.Set = function(specid, modelid, termid)
                 data.pid = 0;
             }
 
-            $("#l5smgr-node-alert").hide();
+            $(alertid).hide();
 
             l4iTemplate.Render({
                 dstid: "l5smgr-termset",
@@ -147,7 +154,7 @@ l5sTerm.Set = function(specid, modelid, termid)
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
 
-        l5sMgr.Ajax("-/term/set.tpl", {
+        l5sMgr.TplCmd("/term/set", {
             callback: function(err, tpl) {
                     
                 if (err) {
@@ -158,11 +165,11 @@ l5sTerm.Set = function(specid, modelid, termid)
         });
 
         if (termid) {
-            l5sMgr.Ajax("/v1/term/entry?"+ uri +"&id="+ termid, {
+            l5sMgr.ApiCmd("/term/entry?"+ uri +"&id="+ termid, {
                 callback: ep.done("data"),           
             });
         } else {
-            l5sMgr.Ajax("/v1/term-model/entry?"+ uri, {
+            l5sMgr.ApiCmd("/term-model/entry?"+ uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
                         kind  : "Term",
@@ -181,39 +188,42 @@ l5sTerm.Set = function(specid, modelid, termid)
 
 l5sTerm.SetCommit = function()
 {
+    var form = $("#l5smgr-termset"),
+        alertid = "#l5smgr-node-alert";
+
     var req = {
         kind   : "Term",
-        id     : parseInt($("#l5smgr-termset").find("input[name=id]").val()),
-        title  : $("#l5smgr-termset").find("input[name=title]").val(),
-        state  : parseInt($("#l5smgr-termset").find("input[name=state]").val()),
+        id     : parseInt(form.find("input[name=id]").val()),
+        title  : form.find("input[name=title]").val(),
+        state  : parseInt(form.find("input[name=state]").val()),
     }
 
-    var model_type = $("#l5smgr-termset").find("input[name=model_type]").val();
+    var model_type = form.find("input[name=model_type]").val();
     if (model_type = "taxonomy") {
-        req.weight = parseInt($("#l5smgr-termset").find("input[name=weight]").val());
-        req.pid = parseInt($("#l5smgr-termset").find("input[name=pid]").val());
+        req.weight = parseInt(form.find("input[name=weight]").val());
+        req.pid    = parseInt(form.find("input[name=pid]").val());
     } else if (model_type = "tag") {
 
     }
 
-    // console.log(req);
+    console.log(JSON.stringify(req));
 
     //
-    var uri = "specid="+ l4iStorage.Get("l5smgr_spec_active");
-    uri += "&modelid="+ l4iStorage.Get("l5smgr_tmodel_active");
+    var uri = "modname="+ l4iStorage.Get("l5smgr_spec_active") +
+        "&modelid="+ l4iStorage.Get("l5smgr_tmodel_active");
 
-    l5sMgr.Ajax("/v1/term/set?"+ uri, {
+    l5sMgr.ApiCmd("term/set?"+ uri, {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
 
-            if (data === undefined || data.kind != "Term") {
-                return l4i.InnerAlert("#l5smgr-node-alert", 'alert-danger', data.error.message);
+            if (!data || data.kind != "Term") {
+                return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
             }
 
-            $("#l5smgr-termset").find("input[name=id]").val(data.id);
+            form.find("input[name=id]").val(data.id);
 
-            l4i.InnerAlert("#l5smgr-node-alert", 'alert-success', "Successful operation");
+            l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
             setTimeout(l5sTerm.List, 500);
         }
     });

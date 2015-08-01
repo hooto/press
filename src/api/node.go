@@ -1,29 +1,43 @@
-// Copyright 2014 lessOS.com. All rights reserved.
+// Copyright 2015 lessOS.com, All rights reserved.
 //
-// Use of this source code is governed by the Apache 2.0
-// license that can be found in the LICENSE file.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package api
 
+import (
+	"github.com/lessos/lessgo/types"
+)
+
 type Node struct {
-	TypeMeta `json:",inline"`
-	SpecID   string      `json:"specID,omitempty"`
-	Model    *NodeModel  `json:"model,omitempty"`
-	ID       string      `json:"id,omitempty"`
-	PID      string      `json:"pid,omitempty"`
-	State    int16       `json:"state,omitempty"`
-	UserID   string      `json:"userid,omitempty"`
-	Title    string      `json:"title,omitempty"`
-	Created  string      `json:"created,omitempty"`
-	Updated  string      `json:"updated,omitempty"`
-	Fields   []NodeField `json:"fields,omitempty"`
-	Terms    []NodeTerm  `json:"terms,omitempty"`
+	types.TypeMeta `json:",inline"`
+	ModName        string      `json:"modname,omitempty"`
+	Model          *NodeModel  `json:"model,omitempty"`
+	ID             string      `json:"id,omitempty"`
+	PID            string      `json:"pid,omitempty"`
+	State          int16       `json:"state,omitempty"`
+	UserID         string      `json:"userid,omitempty"`
+	Title          string      `json:"title,omitempty"`
+	Created        string      `json:"created,omitempty"`
+	Updated        string      `json:"updated,omitempty"`
+	Fields         []NodeField `json:"fields,omitempty"`
+	Terms          []NodeTerm  `json:"terms,omitempty"`
 }
 
 type NodeList struct {
-	TypeMeta `json:",inline"`
-	Metadata ListMeta   `json:"metadata,omitempty"`
-	Model    *NodeModel `json:"model,omitempty"`
-	Items    []Node     `json:"items,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Meta           types.ListMeta `json:"meta,omitempty"`
+	Model          *NodeModel     `json:"model,omitempty"`
+	Items          []Node         `json:"items,omitempty"`
 }
 
 type NodeFieldType string
@@ -58,21 +72,3 @@ type NodeTerm struct {
 	Type  string `json:"type,omitempty"`
 	Items []Term `json:"items,omitempty"`
 }
-
-// var rdoColumnTypes = map[string]string{
-// 	"bool":            "bool",
-// 	"string":          "varchar(%v)",
-// 	"string-text":     "longtext",
-// 	"date":            "date",
-// 	"datetime":        "datetime",
-// 	"int8":            "tinyint",
-// 	"int16":           "smallint",
-// 	"int32":           "integer",
-// 	"int64":           "bigint",
-// 	"uint8":           "tinyint unsigned",
-// 	"uint16":          "smallint unsigned",
-// 	"uint32":          "integer unsigned",
-// 	"uint64":          "bigint unsigned",
-// 	"float64":         "double precision",
-// 	"float64-decimal": "numeric(%v, %v)",
-// }

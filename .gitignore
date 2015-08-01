@@ -7,4 +7,4 @@ static/jquery/
 static/lessui/
 static/bootstrap/
 static/codemirror/
-
+src/import.go

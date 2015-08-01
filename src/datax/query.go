@@ -1,15 +1,26 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package datax
 
 import (
-	"fmt"
-
-	// "../api"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 )
 
 type QuerySet struct {
-	SpecID  string
+	ModName string
 	ModelID string
 	cols    string
 	Table   string
@@ -20,9 +31,9 @@ type QuerySet struct {
 	Pager   bool
 }
 
-func NewQuery(specid, table string) *QuerySet {
+func NewQuery(modname, table string) *QuerySet {
 	return &QuerySet{
-		SpecID:  specid,
+		ModName: modname,
 		ModelID: table,
 		Table:   table,
 		cols:    "*",
@@ -49,8 +60,6 @@ func (q *QuerySet) Query() []rdobase.Entry {
 		Offset(q.offset)
 
 	qs.Where = q.filter
-
-	fmt.Println(qs)
 
 	rs, err = dc.Base.Query(qs)
 	if err != nil {

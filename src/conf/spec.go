@@ -1,3 +1,17 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package conf
 
 import (
@@ -12,20 +26,27 @@ import (
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
+	"github.com/lessos/lessgo/logger"
 	"github.com/lessos/lessgo/utils"
 
 	"../api"
 )
 
 var (
-	Instances = map[string]api.Spec{}
+	Modules = map[string]*api.Spec{}
 )
 
-func SpecNodeModel(specid, modelName string) (*api.NodeModel, error) {
+func SpecNodeModel(modname, modelName string) (*api.NodeModel, error) {
 
-	if spec, ok := Instances[specid]; ok {
-		for _, nodeModel := range spec.NodeModels {
-			if modelName == nodeModel.Metadata.Name {
+	for _, mod := range Modules {
+
+		if mod.Meta.Name != modname {
+			continue
+		}
+
+		for _, nodeModel := range mod.NodeModels {
+
+			if modelName == nodeModel.Meta.Name {
 				return &nodeModel, nil
 			}
 		}
@@ -34,11 +55,17 @@ func SpecNodeModel(specid, modelName string) (*api.NodeModel, error) {
 	return &api.NodeModel{}, errors.New("Spec Not Found")
 }
 
-func SpecTermModel(specid, modelName string) (*api.TermModel, error) {
+func SpecTermModel(modname, modelName string) (*api.TermModel, error) {
 
-	if spec, ok := Instances[specid]; ok {
-		for _, termModel := range spec.TermModels {
-			if modelName == termModel.Metadata.Name {
+	for _, mod := range Modules {
+
+		if mod.Meta.Name != modname {
+			continue
+		}
+
+		for _, termModel := range mod.TermModels {
+
+			if modelName == termModel.Meta.Name {
 				return &termModel, nil
 			}
 		}
@@ -47,9 +74,8 @@ func SpecTermModel(specid, modelName string) (*api.TermModel, error) {
 	return &api.TermModel{}, errors.New("Spec Not Found")
 }
 
-func specInitialize() error {
+func module_init() error {
 
-	ids := []string{"general", "c8f0ltxp", "comment"}
 	timenow := rdobase.TimeNow("datetime")
 
 	dcn, err := rdo.ClientPull("def")
@@ -57,10 +83,29 @@ func specInitialize() error {
 		return err
 	}
 
-	for _, specid := range ids {
+	//
+	q := rdobase.NewQuerySet().From("modules").Limit(200)
+	q.Where.And("status", 1)
+	if rs, err := dcn.Base.Query(q); err == nil {
+
+		for _, v := range rs {
+
+			var mod api.Spec
+
+			if err := v.Field("body").Json(&mod); err == nil && mod.Meta.Name != "" {
+				mod.SrvName = v.Field("srvname").String()
+				Modules[v.Field("srvname").String()] = &mod
+			} else {
+				logger.Printf("error", "Module.Init(%s) Failed", v.Field("name").String())
+			}
+		}
+	}
+
+	//
+	for _, modname := range coreModules {
 
 		//
-		file := fmt.Sprintf("%s/spec/%s/spec.json", Config.Prefix, specid)
+		file := fmt.Sprintf("%s/modules/%s/spec.json", Config.Prefix, modname)
 		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
 			return errors.New("Error: config file is not exists")
 		}
@@ -81,157 +126,84 @@ func specInitialize() error {
 			return err
 		}
 
-		//
-		if err := specSchemaSync(spec); err != nil {
-			return err
-		}
+		specResVersion, _ := strconv.Atoi(spec.Meta.ResourceVersion)
+		instResVersion := 0
 
-		//
-		set := map[string]interface{}{
-			"userid":  "sysadmin",
-			"state":   1,
-			"title":   spec.Metadata.Name,
-			"comment": spec.Comment,
-			"version": spec.Metadata.ResourceVersion,
-			"updated": timenow,
-			"body":    cfgstr,
-		}
+		for _, mod := range Modules {
 
-		q := rdobase.NewQuerySet().From("spec")
-		q.Where.And("id", spec.Metadata.ID)
+			if mod.Meta.Name == modname {
 
-		if rs1, err := dcn.Base.Fetch(q); err == nil {
+				instResVersion, _ = strconv.Atoi(mod.Meta.ResourceVersion)
 
-			if spec.Metadata.Name != rs1.Field("title").String() ||
-				spec.Comment != rs1.Field("comment").String() ||
-				spec.Metadata.ResourceVersion != rs1.Field("version").String() {
-
-				fr := rdobase.NewFilter()
-				fr.And("id", spec.Metadata.ID)
-
-				dcn.Base.Update("spec", set, fr)
+				break
 			}
+		}
+
+		if specResVersion <= instResVersion {
+			continue
+		}
+
+		//
+		jsb, _ := utils.JsonEncodeIndent(spec, "  ")
+		set := map[string]interface{}{
+			"status":  1,
+			"title":   spec.Title,
+			"version": spec.Meta.ResourceVersion,
+			"updated": timenow,
+			"body":    string(jsb),
+		}
+
+		q = rdobase.NewQuerySet().From("modules")
+		q.Where.And("name", spec.Meta.Name)
+
+		if _, err := dcn.Base.Fetch(q); err == nil {
+
+			fr := rdobase.NewFilter()
+			fr.And("name", spec.Meta.Name)
+
+			dcn.Base.Update("modules", set, fr)
 
 		} else {
 
-			set["id"] = spec.Metadata.ID
+			set["name"] = spec.Meta.Name
+			set["srvname"] = spec.Meta.Name
 			set["created"] = timenow
 
-			dcn.Base.Insert("spec", set)
+			dcn.Base.Insert("modules", set)
 		}
 
+		Modules[spec.Meta.Name] = &spec
 	}
 
-	// Refresh Spec Config
-	for _, specid := range ids {
-		SpecRefresh(specid)
+	//
+	for _, mod := range Modules {
+
+		if err := _instance_schema_sync(mod); err != nil {
+			return err
+		}
+
+		SpecRefresh(mod.SrvName)
 	}
 
 	return nil
 }
 
-func SpecRefresh(specid string) {
-	//
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
+func SpecRefresh(srvname string) {
+
+	spec, ok := Modules[srvname]
+	if !ok {
 		return
 	}
 
-	q := rdobase.NewQuerySet().From("spec").Limit(1)
-	q.Where.And("id", specid)
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		return
+	for i, v := range spec.Router.Routes {
+		spec.Router.Routes[i].Tree = strings.Split(strings.Trim(filepath.Clean(v.Path), "/"), "/")
 	}
 
-	if len(rs) < 1 {
-		return
-	}
-
-	nodeModels := []api.NodeModel{}
-	qnx := rdobase.NewQuerySet().From("nodex").Limit(100)
-	qnx.Where.And("specid", specid)
-	if rsnx, err := dcn.Base.Query(qnx); err == nil {
-		for _, vnx := range rsnx {
-
-			var fields []api.FieldModel
-			vnx.Field("fields").Json(&fields)
-
-			var terms []api.TermModel
-			vnx.Field("terms").Json(&terms)
-
-			nodeModels = append(nodeModels, api.NodeModel{
-				Metadata: api.ObjectMeta{
-					ID:      vnx.Field("id").String(),
-					Name:    vnx.Field("name").String(),
-					UserID:  vnx.Field("userid").String(),
-					Created: vnx.Field("created").TimeFormat("datetime", "atom"),
-					Updated: vnx.Field("updated").TimeFormat("datetime", "atom"),
-				},
-				SpecID: vnx.Field("specid").String(),
-				Title:  vnx.Field("title").String(),
-				Fields: fields,
-				Terms:  terms,
-			})
-		}
-	}
-
-	termModels := []api.TermModel{}
-	qtx := rdobase.NewQuerySet().From("termx").Limit(500)
-	qtx.Where.And("specid", specid)
-	if rstx, err := dcn.Base.Query(qtx); err == nil {
-		for _, vtx := range rstx {
-			termModels = append(termModels, api.TermModel{
-				Metadata: api.ObjectMeta{
-					ID:      vtx.Field("id").String(),
-					Name:    vtx.Field("name").String(),
-					UserID:  vtx.Field("userid").String(),
-					Created: vtx.Field("created").TimeFormat("datetime", "atom"),
-					Updated: vtx.Field("updated").TimeFormat("datetime", "atom"),
-				},
-				Title: vtx.Field("title").String(),
-				Type:  vtx.Field("type").String(),
-			})
-		}
-	}
-
-	var specBody api.Spec
-	rs[0].Field("body").Json(&specBody)
-
-	for i, v := range specBody.Router.Routes {
-		specBody.Router.Routes[i].Tree = strings.Split(strings.Trim(filepath.Clean(v.Path), "/"), "/")
-	}
-
-	Instances[rs[0].Field("id").String()] = api.Spec{
-		Metadata: api.ObjectMeta{
-			ID:              rs[0].Field("id").String(),
-			UserID:          rs[0].Field("userid").String(),
-			Created:         rs[0].Field("created").TimeFormat("datetime", "atom"),
-			Updated:         rs[0].Field("updated").TimeFormat("datetime", "atom"),
-			ResourceVersion: rs[0].Field("version").String(),
-		},
-		State:      rs[0].Field("state").Int16(),
-		Title:      rs[0].Field("title").String(),
-		Comment:    rs[0].Field("comment").String(),
-		NodeModels: nodeModels,
-		TermModels: termModels,
-		Actions:    specBody.Actions,
-		Router:     specBody.Router,
-	}
-
-	// fmt.Println("SET", rs[0].Field("id").String())
-	httpsrv.GlobalService.TemplateLoader.Set(rs[0].Field("id").String(),
-		[]string{fmt.Sprintf("%s/spec/%s/views", Config.Prefix, rs[0].Field("id").String())})
-
-	// fmt.Println(nodeModels, termModels)
+	httpsrv.GlobalService.TemplateLoader.Set(spec.Meta.Name,
+		[]string{fmt.Sprintf("%s/modules/%s/views", Config.Prefix, spec.Meta.Name)})
 }
 
-func specSchemaSync(spec api.Spec) error {
-
-	var (
-		ds      rdobase.DataSet
-		timenow = rdobase.TimeNow("datetime")
-	)
+func _instance_schema_sync(spec *api.Spec) error {
 
 	//
 	dcn, err := rdo.ClientPull("def")
@@ -239,7 +211,9 @@ func specSchemaSync(spec api.Spec) error {
 		return err
 	}
 
-	//
+	ds := rdobase.DataSet{}
+
+	// nodes
 	for _, nodeModel := range spec.NodeModels {
 
 		var tbl rdobase.Table
@@ -248,7 +222,7 @@ func specSchemaSync(spec api.Spec) error {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("nx%s_%s", spec.Metadata.ID, nodeModel.Metadata.Name)
+		tbl.Name = fmt.Sprintf("nx%s_%s", utils.StringEncode16(spec.Meta.Name, 12), nodeModel.Meta.Name)
 
 		for _, field := range nodeModel.Fields {
 
@@ -302,87 +276,48 @@ func specSchemaSync(spec api.Spec) error {
 			case api.TermTag:
 
 				tbl.AddColumn(&rdobase.Column{
-					Name:   "term_" + term.Metadata.Name,
+					Name:   "term_" + term.Meta.Name,
 					Type:   "string",
 					Length: "200",
 				})
 
 				tbl.AddColumn(&rdobase.Column{
-					Name: "term_" + term.Metadata.Name + "_body",
+					Name: "term_" + term.Meta.Name + "_body",
 					Type: "string-text",
 				})
 
 				tbl.AddColumn(&rdobase.Column{
-					Name:   "term_" + term.Metadata.Name + "_idx",
+					Name:   "term_" + term.Meta.Name + "_idx",
 					Type:   "string",
 					Length: "100",
 				})
 
 				tbl.AddIndex(&rdobase.Index{
-					Name: "term_" + term.Metadata.Name + "_idx",
+					Name: "term_" + term.Meta.Name + "_idx",
 					Type: rdobase.IndexTypeIndex,
-					Cols: []string{"term_" + term.Metadata.Name + "_idx"},
+					Cols: []string{"term_" + term.Meta.Name + "_idx"},
 				})
 
 			case api.TermTaxonomy:
 
 				tbl.AddColumn(&rdobase.Column{
-					Name: "term_" + term.Metadata.Name,
+					Name: "term_" + term.Meta.Name,
 					Type: "uint32",
 				})
 
 				tbl.AddIndex(&rdobase.Index{
-					Name: "term_" + term.Metadata.Name,
+					Name: "term_" + term.Meta.Name,
 					Type: rdobase.IndexTypeIndex,
-					Cols: []string{"term_" + term.Metadata.Name},
+					Cols: []string{"term_" + term.Meta.Name},
 				})
 			}
 
 		}
 
 		ds.Tables = append(ds.Tables, &tbl)
-
-		fieldsjs, _ := utils.JsonEncode(nodeModel.Fields)
-		termsjs, _ := utils.JsonEncode(nodeModel.Terms)
-
-		setID := spec.Metadata.ID + "." + nodeModel.Metadata.Name
-
-		set := map[string]interface{}{
-			"name":    nodeModel.Metadata.Name,
-			"specid":  spec.Metadata.ID,
-			"userid":  "sysadmin",
-			"state":   1,
-			"title":   nodeModel.Title,
-			"comment": nodeModel.Comment,
-			"fields":  fieldsjs,
-			"terms":   termsjs,
-			"updated": timenow,
-		}
-
-		q := rdobase.NewQuerySet().From("nodex")
-		q.Where.And("id", setID)
-
-		if rs1, err := dcn.Base.Fetch(q); err == nil {
-
-			if nodeModel.Title != rs1.Field("title").String() ||
-				nodeModel.Comment != rs1.Field("comment").String() ||
-				fieldsjs != rs1.Field("fields").String() ||
-				termsjs != rs1.Field("terms").String() {
-
-				fr := rdobase.NewFilter()
-				fr.And("id", setID)
-
-				dcn.Base.Update("nodex", set, fr)
-			}
-		} else {
-
-			set["id"] = setID
-			set["created"] = timenow
-
-			dcn.Base.Insert("nodex", set)
-		}
 	}
 
+	// terms
 	for _, termModel := range spec.TermModels {
 
 		var tbl rdobase.Table
@@ -391,7 +326,7 @@ func specSchemaSync(spec api.Spec) error {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("tx%s_%s", spec.Metadata.ID, termModel.Metadata.Name)
+		tbl.Name = fmt.Sprintf("tx%s_%s", utils.StringEncode16(spec.Meta.Name, 12), termModel.Meta.Name)
 
 		switch termModel.Type {
 
@@ -438,55 +373,9 @@ func specSchemaSync(spec api.Spec) error {
 		}
 
 		ds.Tables = append(ds.Tables, &tbl)
-
-		// dcn.Base.InsertIgnore("termx", map[string]interface{}{
-		// 	"id":      spec.Metadata.ID + "." + termModel.Metadata.Name,
-		// 	"name":    termModel.Metadata.Name,
-		// 	"specid":  spec.Metadata.ID,
-		// 	"userid":  "sysadmin",
-		// 	"type":    termModel.Type,
-		// 	"state":   1,
-		// 	"title":   termModel.Title,
-		// 	"created": timenow,
-		// 	"updated": timenow,
-		// })
-
-		setID := spec.Metadata.ID + "." + termModel.Metadata.Name
-
-		set := map[string]interface{}{
-			"name":    termModel.Metadata.Name,
-			"specid":  spec.Metadata.ID,
-			"userid":  "sysadmin",
-			"type":    termModel.Type,
-			"state":   1,
-			"title":   termModel.Title,
-			"updated": timenow,
-		}
-
-		q := rdobase.NewQuerySet().From("termx")
-		q.Where.And("id", setID)
-
-		if rs1, err := dcn.Base.Fetch(q); err == nil {
-
-			if termModel.Type != rs1.Field("type").String() ||
-				termModel.Title != rs1.Field("title").String() {
-
-				fr := rdobase.NewFilter()
-				fr.And("id", setID)
-
-				dcn.Base.Update("termx", set, fr)
-			}
-
-		} else {
-
-			set["id"] = setID
-			set["created"] = timenow
-
-			dcn.Base.Insert("termx", set)
-		}
 	}
 
-	//
+	// sync
 	if err := dcn.Dialect.SchemaSync(Config.Database.Dbname, ds); err != nil {
 		return err
 	}

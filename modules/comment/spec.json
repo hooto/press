@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "name": "comment",
+    "resourceVersion": "1",
+    "updated": "2015-07-31T15:52:53Z"
+  },
+  "title": "Comment 2",
+  "nodeModels": [
+    {
+      "meta": {
+        "name": "entry"
+      },
+      "title": "Comment Entry",
+      "fields": [
+        {
+          "name": "content",
+          "type": "text",
+          "attrs": [
+            {
+              "key": "ui_rows",
+              "value": "10"
+            },
+            {
+              "key": "format",
+              "value": "md"
+            }
+          ],
+          "title": "Comment"
+        },
+        {
+          "name": "refer_id",
+          "type": "string",
+          "length": "16",
+          "indexType": "1",
+          "title": "Refer Content ID"
+        },
+        {
+          "name": "refer",
+          "type": "string",
+          "length": "40",
+          "indexType": "1",
+          "title": "Refer"
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "length": "50",
+          "title": "Author"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "name": "list",
+      "datax": [
+        {
+          "name": "list",
+          "type": "node.list",
+          "query": {
+            "table": "entry",
+            "limit": 200
+          }
+        }
+      ]
+    }
+  ],
+  "router": {}
+}

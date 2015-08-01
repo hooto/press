@@ -1,113 +1,60 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package v1
 
 import (
-	"../../api"
-	"../../conf"
-	"io"
 	"strings"
 
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessgo/types"
+	"github.com/lessos/lessids/idsapi"
+
+	"../../api"
+	"../../conf"
 )
 
 type TermModel struct {
 	*httpsrv.Controller
 }
 
-func (c TermModel) ListAction() {
-
-	c.AutoRender = false
-
-	rsp := api.TermModelList{
-		TypeMeta: api.TypeMeta{
-			APIVersion: api.Version,
-		},
-	}
-
-	defer func() {
-
-		c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response.Out.Header().Set("Content-type", "application/json")
-
-		if rspj, err := utils.JsonEncode(rsp); err == nil {
-			io.WriteString(c.Response.Out, rspj)
-		}
-	}()
-
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	q := rdobase.NewQuerySet().From("termx").Limit(100)
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	if len(rs) > 0 {
-
-		for _, v := range rs {
-
-			rsp.Items = append(rsp.Items, api.TermModel{
-				Metadata: api.ObjectMeta{
-					ID:      v.Field("id").String(),
-					Name:    v.Field("name").String(),
-					UserID:  v.Field("userid").String(),
-					Created: v.Field("created").TimeFormat("datetime", "atom"),
-					Updated: v.Field("updated").TimeFormat("datetime", "atom"),
-				},
-				State:  v.Field("state").Int16(),
-				SpecID: v.Field("specid").String(),
-				Title:  v.Field("title").String(),
-			})
-		}
-	}
-
-	rsp.Kind = "TermModelList"
-}
-
 func (c TermModel) EntryAction() {
 
-	c.AutoRender = false
-
 	rsp := api.TermModel{
-		TypeMeta: api.TypeMeta{
+		TypeMeta: types.TypeMeta{
 			APIVersion: api.Version,
 		},
 	}
 
-	defer func() {
+	defer c.RenderJson(&rsp)
 
-		c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response.Out.Header().Set("Content-type", "application/json")
+	if !c.Session.AccessAllowed("editor.read") {
+		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		return
+	}
 
-		if rspj, err := utils.JsonEncode(rsp); err == nil {
-			io.WriteString(c.Response.Out, rspj)
-		}
-	}()
-
-	specid, modelid := c.Params.Get("specid"), c.Params.Get("modelid")
+	modname, modelid := c.Params.Get("modname"), c.Params.Get("modelid")
 	if c.Params.Get("id") != "" {
 		if s := strings.Split(c.Params.Get("id"), ","); len(s) == 2 {
-			specid, modelid = s[0], s[1]
+			modname, modelid = s[0], s[1]
 		}
 	}
 
-	model, err := conf.SpecTermModel(specid, modelid)
+	model, err := conf.SpecTermModel(modname, modelid)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeBadArgument,
 			Message: "Model Not Found",
 		}
 		return

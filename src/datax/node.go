@@ -1,3 +1,17 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package datax
 
 import (
@@ -6,6 +20,8 @@ import (
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/types"
+	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
 
 	"../api"
@@ -16,10 +32,10 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 	rsp := api.NodeList{}
 
-	model, err := conf.SpecNodeModel(q.SpecID, q.Table)
+	model, err := conf.SpecNodeModel(q.ModName, q.Table)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeBadArgument,
 			Message: "Spec Not Found",
 		}
 		return rsp
@@ -27,17 +43,15 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
 	}
 
-	table := fmt.Sprintf("nx%s_%s", q.SpecID, q.Table)
-	// q.Limit(100)
+	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	// q := rdobase.NewQuerySet().From(table).Limit(100)
 	qs := rdobase.NewQuerySet().
 		Select(q.cols).
 		From(table).
@@ -50,12 +64,14 @@ func (q *QuerySet) NodeList() api.NodeList {
 		qs.Order("created desc")
 	}
 
+	q.Filter("state", 1)
+
 	qs.Where = q.filter
 
 	rs, err := dcn.Base.Query(qs)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
@@ -99,8 +115,8 @@ func (q *QuerySet) NodeList() api.NodeList {
 			for _, term := range model.Terms {
 
 				termItem := api.NodeTerm{
-					Name:  term.Metadata.Name,
-					Value: v.Field("term_" + term.Metadata.Name).String(),
+					Name:  term.Meta.Name,
+					Value: v.Field("term_" + term.Meta.Name).String(),
 					Type:  term.Type,
 				}
 
@@ -120,7 +136,7 @@ func (q *QuerySet) NodeList() api.NodeList {
 	termTaxonomy := map[string]api.Term{}
 	for _, term := range model.Terms {
 
-		termids, ok := termBufs[term.Metadata.Name]
+		termids, ok := termBufs[term.Meta.Name]
 		if !ok || len(termids) < 1 {
 			continue
 		}
@@ -133,7 +149,7 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 		case api.TermTaxonomy:
 
-			table := fmt.Sprintf("tx%s_%s", q.SpecID, term.Metadata.Name)
+			table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), term.Meta.Name)
 			qs := rdobase.NewQuerySet().From(table).Limit(1000)
 			qs.Where.And("id.in", ids...)
 
@@ -186,9 +202,9 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 	if q.Pager {
 		num, _ := dcn.Base.Count(table, q.filter)
-		rsp.Metadata.TotalResults = uint64(num)
-		rsp.Metadata.StartIndex = uint64(q.offset)
-		rsp.Metadata.ItemsPerList = uint64(q.limit)
+		rsp.Meta.TotalResults = uint64(num)
+		rsp.Meta.StartIndex = uint64(q.offset)
+		rsp.Meta.ItemsPerList = uint64(q.limit)
 	}
 
 	return rsp
@@ -196,31 +212,27 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 func (q *QuerySet) NodeEntry() api.Node {
 
-	rsp := api.Node{
-		TypeMeta: api.TypeMeta{
-			APIVersion: api.Version,
-		},
-	}
+	rsp := api.Node{}
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
 	}
 
-	rsp.Model, err = conf.SpecNodeModel(q.SpecID, q.Table)
+	rsp.Model, err = conf.SpecNodeModel(q.ModName, q.Table)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeBadArgument,
 			Message: "Node Not Found",
 		}
 		return rsp
 	}
 
-	table := fmt.Sprintf("nx%s_%s", q.SpecID, q.Table)
+	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := rdobase.NewQuerySet().
 		Select(q.cols).
@@ -234,8 +246,8 @@ func (q *QuerySet) NodeEntry() api.Node {
 
 	rs, err := dcn.Base.Fetch(qs)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: err.Error(),
 		}
 		return rsp
@@ -263,13 +275,13 @@ func (q *QuerySet) NodeEntry() api.Node {
 	for _, term := range rsp.Model.Terms {
 
 		rsp.Terms = append(rsp.Terms, api.NodeTerm{
-			Name:  term.Metadata.Name,
-			Value: rs.Field("term_" + term.Metadata.Name).String(),
+			Name:  term.Meta.Name,
+			Value: rs.Field("term_" + term.Meta.Name).String(),
 			Type:  term.Type,
 		})
 	}
 
-	rsp.Terms = NodeTermQuery(rsp.Model, rsp.Terms)
+	rsp.Terms = NodeTermQuery(q.ModName, rsp.Model, rsp.Terms)
 
 	rsp.ID = rs.Field("id").String()
 	rsp.State = rs.Field("state").Int16()

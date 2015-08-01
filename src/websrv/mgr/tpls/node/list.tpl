@@ -36,13 +36,13 @@
   {[~it.items :v]}
     <tr>
       <td>
-        <a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
+        <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
       </td>
       <td>{[=v.state]}</td>
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
       <td align="right">
-        <a class="node-item" specid="{[=it.specid]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+        <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
       </td>
     </tr>
   {[~]}
@@ -52,7 +52,7 @@
 
 $("#l5smgr-nodels").on("click", ".node-item", function() {
     var id = $(this).attr("href").substr(1);
-    l5sNode.Set($(this).attr("specid"), $(this).attr("modelid"), id);
+    l5sNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
 });
 
 </script>

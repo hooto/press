@@ -133,7 +133,7 @@ l5sEditor.previewChanged = function(name)
     $("#field_"+ name +"_preview").html(marked(text));
 
     // // backend markdown render
-    // l5sMgr.Ajax("/v1/text/markdown-render", {
+    // l5sMgr.ApiCmd("/text/markdown-render", {
     //     method : "POST",
     //     data   : text,
     //     callback : function(err, data) {

@@ -1,38 +1,45 @@
-// Copyright 2014 lessOS.com. All rights reserved.
+// Copyright 2015 lessOS.com, All rights reserved.
 //
-// Use of this source code is governed by the Apache 2.0
-// license that can be found in the LICENSE file.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package api
+
+import (
+	"github.com/lessos/lessgo/types"
+)
 
 type KeyValue struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
-type Instance struct {
-	TypeMeta `json:",inline"`
-	Metadata ObjectMeta `json:"metadata,omitempty"`
-	Spec     Spec       `json:"spec,omitempty"`
-}
-
 type Spec struct {
-	TypeMeta   `json:",inline"`
-	Metadata   ObjectMeta  `json:"metadata,omitempty"`
-	State      int16       `json:"state,omitempty"`
-	Title      string      `json:"title,omitempty"`
-	Comment    string      `json:"comment,omitempty"`
-	NodeModels []NodeModel `json:"nodeModels,omitempty"`
-	TermModels []TermModel `json:"termModels,omitempty"`
-	Actions    []Action    `json:"actions,omitempty"`
-	Router     Router      `json:"router,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Meta           types.ObjectMeta `json:"meta,omitempty"`
+	SrvName        string           `json:"srvname,omitempty"`
+	State          int16            `json:"state,omitempty"`
+	Title          string           `json:"title,omitempty"`
+	Comment        string           `json:"comment,omitempty"`
+	NodeModels     []NodeModel      `json:"nodeModels,omitempty"`
+	TermModels     []TermModel      `json:"termModels,omitempty"`
+	Actions        []Action         `json:"actions,omitempty"`
+	Router         Router           `json:"router,omitempty"`
 }
 
 type SpecList struct {
-	TypeMeta `json:",inline"`
-	Items    []Spec `json:"items,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Items          []Spec `json:"items,omitempty"`
 }
-
-//
 
 type FieldModel struct {
 	Name      string     `json:"name"`
@@ -46,19 +53,19 @@ type FieldModel struct {
 }
 
 type NodeModel struct {
-	TypeMeta `json:",inline"`
-	Metadata ObjectMeta   `json:"metadata,omitempty"`
-	SpecID   string       `json:"specID,omitempty"`
-	State    int16        `json:"state,omitempty"`
-	Title    string       `json:"title,omitempty"`
-	Comment  string       `json:"comment,omitempty"`
-	Fields   []FieldModel `json:"fields,omitempty"`
-	Terms    []TermModel  `json:"terms,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Meta           types.ObjectMeta `json:"meta,omitempty"`
+	ModName        string           `json:"modname,omitempty"`
+	State          int16            `json:"state,omitempty"`
+	Title          string           `json:"title,omitempty"`
+	Comment        string           `json:"comment,omitempty"`
+	Fields         []FieldModel     `json:"fields,omitempty"`
+	Terms          []TermModel      `json:"terms,omitempty"`
 }
 
 type NodeModelList struct {
-	TypeMeta `json:",inline"`
-	Items    []NodeModel `json:"items,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Items          []NodeModel `json:"items,omitempty"`
 }
 
 //
@@ -68,18 +75,18 @@ const (
 )
 
 type TermModel struct {
-	TypeMeta `json:",inline"`
-	Metadata ObjectMeta `json:"metadata,omitempty"`
-	SpecID   string     `json:"specID,omitempty"`
-	State    int16      `json:"state,omitempty"`
-	Type     string     `json:"type,omitempty"`
-	Title    string     `json:"title,omitempty"`
-	Comment  string     `json:"comment,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Meta           types.ObjectMeta `json:"meta,omitempty"`
+	ModName        string           `json:"modname,omitempty"`
+	State          int16            `json:"state,omitempty"`
+	Type           string           `json:"type,omitempty"`
+	Title          string           `json:"title,omitempty"`
+	Comment        string           `json:"comment,omitempty"`
 }
 
 type TermModelList struct {
-	TypeMeta `json:",inline"`
-	Items    []TermModel `json:"items,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Items          []TermModel `json:"items,omitempty"`
 }
 
 //
@@ -87,7 +94,7 @@ type Query struct {
 	Spec   string   `json:"spec,omitempty"`
 	Table  string   `json:"table,omitempty"`
 	Fields string   `json:"fields,omitempty"`
-	Order  []string `json:"order,omitempty"`
+	Order  string   `json:"order,omitempty"`
 	Limit  int64    `json:"limit,omitempty"`
 	Offset int64    `json:"offset,omitempty"`
 	Filter []string `json:"filter,omitempty"`

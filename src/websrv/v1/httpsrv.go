@@ -22,12 +22,22 @@ func NewModule() httpsrv.Module {
 
 	module := httpsrv.NewModule("cms_api")
 
+	//
+	module.ControllerRegister(new(ModSet))
+
+	//
 	module.ControllerRegister(new(Node))
-	module.ControllerRegister(new(Term))
-	module.ControllerRegister(new(Spec))
 	module.ControllerRegister(new(NodeModel))
+
+	//
+	module.ControllerRegister(new(Term))
 	module.ControllerRegister(new(TermModel))
+
+	//
 	module.ControllerRegister(new(Text))
+
+	//
+	module.ControllerRegister(new(Sys))
 
 	return module
 }

@@ -1,3 +1,17 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package datax
 
 import (
@@ -7,11 +21,13 @@ import (
 	"regexp"
 	"strings"
 
-	"../api"
-	"../conf"
-
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/types"
+	"github.com/lessos/lessgo/utils"
+
+	"../api"
+	"../conf"
 )
 
 var (
@@ -22,10 +38,10 @@ func (q *QuerySet) TermList() api.TermList {
 
 	rsp := api.TermList{}
 
-	model, err := conf.SpecTermModel(q.SpecID, q.Table)
+	model, err := conf.SpecTermModel(q.ModName, q.Table)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeBadArgument,
 			Message: "Term Not Found",
 		}
 		return rsp
@@ -33,15 +49,15 @@ func (q *QuerySet) TermList() api.TermList {
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
 	}
 
 	q.limit = 100
-	table := fmt.Sprintf("tx%s_%s", q.SpecID, q.Table)
+	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := rdobase.NewQuerySet().
 		Select(q.cols).
@@ -59,8 +75,8 @@ func (q *QuerySet) TermList() api.TermList {
 
 	rs, err := dcn.Base.Query(qs)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
@@ -92,14 +108,15 @@ func (q *QuerySet) TermList() api.TermList {
 	}
 
 	rsp.Model = model
-	rsp.Kind = "TermList"
 
 	if q.Pager {
 		num, _ := dcn.Base.Count(table, q.filter)
-		rsp.Metadata.TotalResults = uint64(num)
-		rsp.Metadata.StartIndex = uint64(q.offset)
-		rsp.Metadata.ItemsPerList = uint64(q.limit)
+		rsp.Meta.TotalResults = uint64(num)
+		rsp.Meta.StartIndex = uint64(q.offset)
+		rsp.Meta.ItemsPerList = uint64(q.limit)
 	}
+
+	rsp.Kind = "TermList"
 
 	return rsp
 }
@@ -110,23 +127,23 @@ func (q *QuerySet) TermEntry() api.Term {
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
 	}
 
-	rsp.Model, err = conf.SpecTermModel(q.SpecID, q.Table)
+	rsp.Model, err = conf.SpecTermModel(q.ModName, q.Table)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeBadArgument,
 			Message: "Term Not Found",
 		}
 		return rsp
 	}
 
-	table := fmt.Sprintf("tx%s_%s", q.SpecID, q.Table)
+	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := rdobase.NewQuerySet().
 		Select(q.cols).
@@ -139,16 +156,16 @@ func (q *QuerySet) TermEntry() api.Term {
 
 	rs, err := dcn.Base.Query(qs)
 	if err != nil {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Can not pull database instance",
 		}
 		return rsp
 	}
 
 	if len(rs) < 1 {
-		rsp.Error = &api.ErrorMeta{
-			Code:    "404",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeBadArgument,
 			Message: "Term Not Found",
 		}
 		return rsp
@@ -161,8 +178,8 @@ func (q *QuerySet) TermEntry() api.Term {
 	case api.TermTag:
 		rsp.UID = rs[0].Field("uid").String()
 	default:
-		rsp.Error = &api.ErrorMeta{
-			Code:    "500",
+		rsp.Error = &types.ErrorMeta{
+			Code:    api.ErrCodeInternalError,
 			Message: "Server Error",
 		}
 		return rsp
@@ -210,7 +227,7 @@ func (t *TermList) Content() string {
 	return strings.Join(ts, ",")
 }
 
-func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
+func NodeTermQuery(modname string, model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
@@ -221,7 +238,7 @@ func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 
 		for k, term := range terms {
 
-			if modTerm.Metadata.Name != term.Name {
+			if modTerm.Meta.Name != term.Name {
 				continue
 			}
 
@@ -240,7 +257,7 @@ func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 
 			case api.TermTaxonomy:
 
-				table := fmt.Sprintf("tx%s_%s", model.SpecID, modTerm.Metadata.Name)
+				table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), modTerm.Meta.Name)
 
 				q := rdobase.NewQuerySet().From(table)
 				q.Limit(1)
@@ -264,7 +281,7 @@ func NodeTermQuery(model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 	return terms
 }
 
-func TermSync(specid, modelid, terms string) (TermList, error) {
+func TermSync(modname, modelid, terms string) (TermList, error) {
 
 	ls := TermList{}
 
@@ -309,7 +326,7 @@ func TermSync(specid, modelid, terms string) (TermList, error) {
 		ids = append(ids, tag.UID)
 	}
 
-	table := fmt.Sprintf("tx%s_%s", specid, modelid)
+	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), modelid)
 
 	if len(ids) > 0 {
 
@@ -317,10 +334,13 @@ func TermSync(specid, modelid, terms string) (TermList, error) {
 		q.Where.And("uid.in", ids...)
 
 		if rs, err := dcn.Base.Query(q); err == nil {
+
 			for _, v := range rs {
 
 				for tk, tv := range ls.Items {
+
 					if v.Field("uid").String() == tv.UID {
+
 						ls.Items[tk].ID = v.Field("id").Uint32()
 						break
 					}
@@ -337,16 +357,15 @@ func TermSync(specid, modelid, terms string) (TermList, error) {
 			continue
 		}
 
-		rs, err := dcn.Base.Insert(table, map[string]interface{}{
+		if rs, err := dcn.Base.Insert(table, map[string]interface{}{
 			"uid":     tv.UID,
 			"title":   tv.Title,
 			"userid":  "sysadmin",
 			"state":   1,
 			"created": timenow,
 			"updated": timenow,
-		})
+		}); err == nil {
 
-		if err == nil {
 			if incrid, err := rs.LastInsertId(); err == nil && incrid > 0 {
 				ls.Items[tk].ID = uint32(incrid)
 			}

@@ -1,7 +1,7 @@
 
 <div id="l5smgr-nodeset" style="box-sizing: border-box;">loading</div>
 
-<div>
+<div style="margin-bottom:20px;">
   <button class="btn btn-default btn-primary" onclick="l5sNode.SetCommit()">Save</button>
   <button class="btn btn-default" onclick="l5sNode.List()">Cancel</button>
 </div>
@@ -56,7 +56,7 @@
 <script id="l5smgr-nodeset-tplterm_tag" type="text/html">
   <div class="l4i-form-group">
     <label>{[=it.title]}</label>
-    <input type="text" name="term_{[=it.metadata.name]}" class="l4i-form-control" value="{[=it.value]}">
+    <input type="text" name="term_{[=it.meta.name]}" class="l4i-form-control" value="{[=it.value]}">
   </div>
 </script>
 
@@ -64,7 +64,7 @@
   <div class="l4i-form-group">
     <label>{[=it.item.title]}</label>
     <div>
-    <select class="form-control" name="term_{[=it.item.metadata.name]}">
+    <select class="form-control" name="term_{[=it.item.meta.name]}">
       {[~it.items :v]}
       <option value="{[=v.id]}" {[if (it.item.value == v.id) { ]}selected{[ } ]}>{[=v.title]}</option>
       {[~]}
