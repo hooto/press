@@ -28,6 +28,21 @@ import (
 	"../conf"
 )
 
+func (q *QuerySet) NodeCount() (int64, error) {
+
+	dcn, err := rdo.ClientPull("def")
+	if err != nil {
+		return 0, err
+	}
+
+	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+
+	fr := rdobase.NewFilter()
+	fr.And("state", 1)
+
+	return dcn.Base.Count(table, fr)
+}
+
 func (q *QuerySet) NodeList() api.NodeList {
 
 	rsp := api.NodeList{}

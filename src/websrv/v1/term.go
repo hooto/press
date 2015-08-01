@@ -35,7 +35,8 @@ import (
 )
 
 var (
-	spaceReg = regexp.MustCompile(" +")
+	spaceReg              = regexp.MustCompile(" +")
+	term_list_limit int64 = 15
 )
 
 type Term struct {
@@ -44,19 +45,40 @@ type Term struct {
 
 func (c Term) ListAction() {
 
-	var rsp api.TermList
+	var ls api.TermList
 
-	defer c.RenderJson(&rsp)
+	defer c.RenderJson(&ls)
 
 	if !c.Session.AccessAllowed("editor.list") {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
 	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
-	dq.Limit(100)
+	dq.Limit(term_list_limit)
 
-	rsp = dq.TermList()
+	page := c.Params.Int64("page")
+	if page < 1 {
+		page = 1
+	}
+
+	if page > 1 {
+		dq.Offset(int64((page - 1) * term_list_limit))
+	}
+
+	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+
+	count, err := dqc.TermCount()
+	if err != nil {
+		ls.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		return
+	}
+
+	ls = dq.TermList()
+
+	ls.Meta.TotalResults = uint64(count)
+	ls.Meta.StartIndex = uint64((page - 1) * term_list_limit)
+	ls.Meta.ItemsPerList = uint64(term_list_limit)
 }
 
 func (c Term) EntryAction() {

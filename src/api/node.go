@@ -20,16 +20,16 @@ import (
 
 type Node struct {
 	types.TypeMeta `json:",inline"`
-	Model   *NodeModel  `json:"model,omitempty"`
-	ID      string      `json:"id,omitempty"`
-	PID     string      `json:"pid,omitempty"`
-	State   int16       `json:"state,omitempty"`
-	UserID  string      `json:"userid,omitempty"`
-	Title   string      `json:"title,omitempty"`
-	Created string      `json:"created,omitempty"`
-	Updated string      `json:"updated,omitempty"`
-	Fields  []NodeField `json:"fields,omitempty"`
-	Terms   []NodeTerm  `json:"terms,omitempty"`
+	Model          *NodeModel  `json:"model,omitempty"`
+	ID             string      `json:"id,omitempty"`
+	PID            string      `json:"pid,omitempty"`
+	State          int16       `json:"state,omitempty"`
+	UserID         string      `json:"userid,omitempty"`
+	Title          string      `json:"title,omitempty"`
+	Created        string      `json:"created,omitempty"`
+	Updated        string      `json:"updated,omitempty"`
+	Fields         []NodeField `json:"fields,omitempty"`
+	Terms          []NodeTerm  `json:"terms,omitempty"`
 }
 
 type NodeList struct {

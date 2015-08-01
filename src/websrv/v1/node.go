@@ -34,21 +34,46 @@ type Node struct {
 	*httpsrv.Controller
 }
 
+var (
+	node_list_limit int64 = 15
+)
+
 func (c Node) ListAction() {
 
-	rsp := api.NodeList{}
+	ls := api.NodeList{}
 
-	defer c.RenderJson(&rsp)
+	defer c.RenderJson(&ls)
 
 	if !c.Session.AccessAllowed("editor.list") {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
 	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
-	dq.Limit(100)
+	dq.Limit(node_list_limit)
 
-	rsp = dq.NodeList()
+	page := c.Params.Int64("page")
+	if page < 1 {
+		page = 1
+	}
+
+	if page > 1 {
+		dq.Offset(int64((page - 1) * node_list_limit))
+	}
+
+	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+
+	count, err := dqc.NodeCount()
+	if err != nil {
+		ls.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		return
+	}
+
+	ls = dq.NodeList()
+
+	ls.Meta.TotalResults = uint64(count)
+	ls.Meta.StartIndex = uint64((page - 1) * node_list_limit)
+	ls.Meta.ItemsPerList = uint64(node_list_limit)
 }
 
 func (c Node) EntryAction() {

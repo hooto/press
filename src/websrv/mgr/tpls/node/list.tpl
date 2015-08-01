@@ -1,4 +1,3 @@
-
 <table width="100%">
   <tr>
     <td>
@@ -32,6 +31,9 @@
   <tbody id="l5smgr-nodels"></tbody>
 </table>
 
+<div id="l5smgr-nodels-pager"></div>
+
+
 <script id="l5smgr-nodels-tpl" type="text/html">  
   {[~it.items :v]}
     <tr>
@@ -48,11 +50,26 @@
   {[~]}
 </script>
 
+<script id="l5smgr-nodels-pager-tpl" type="text/html">
+<ul class="pagination pagination-sm">
+  {[ if (it.FirstPageNumber > 0) { ]}
+  <li><a href="#{[=it.FirstPageNumber]}" onclick="l5sNode.ListPage({[=it.FirstPageNumber]})">First</a></li>
+  {[ } ]}
+  {[~it.RangePages :v]}
+  <li {[ if (v == it.CurrentPageNumber) { ]}class="active"{[ } ]}><a href="#{[=v]}" onclick="l5sNode.ListPage({[=v]})">{[=v]}</a></li>
+  {[~]}
+  {[ if (it.LastPageNumber > 0) { ]}
+  <li><a href="#{[=it.LastPageNumber]}" onclick="l5sNode.ListPage({[=it.LastPageNumber]})">Last</a></li>
+  {[ } ]}
+</ul>
+</script>
+
 <script type="text/javascript">
 
 $("#l5smgr-nodels").on("click", ".node-item", function() {
     var id = $(this).attr("href").substr(1);
     l5sNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
+    l4iStorage.Set("l5smgr_nodels_page", 0);
 });
 
 </script>

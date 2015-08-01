@@ -207,7 +207,7 @@ func (c Index) dataRender(srvname string, ad api.ActionData) {
 		c.Data[ad.Name] = ls
 
 		if qry.Pager {
-			pager := webui.NewPager(0,
+			pager := webui.NewPager(uint64(page),
 				uint64(ls.Meta.TotalResults),
 				uint64(ls.Meta.ItemsPerList),
 				10)
@@ -220,7 +220,7 @@ func (c Index) dataRender(srvname string, ad api.ActionData) {
 		entry := qry.NodeEntry()
 
 		if entry.Title != "" {
-			// TOCH
+			// TODO
 			c.Data["__html_head_title__"] = datax.StringSub(datax.TextHtml2Str(entry.Title), 0, 50)
 		}
 

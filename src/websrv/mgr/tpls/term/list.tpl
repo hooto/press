@@ -1,4 +1,3 @@
-
 <table width="100%">
   <tr>
     <td>
@@ -18,7 +17,11 @@
     </td>
   </tr>
 </table>
+
 <div id="l5smgr-termls"></div>
+
+<div id="l5smgr-termls-pager"></div>
+
 
 <script id="l5smgr-termls-tpl" type="text/html">  
 <table class="table table-hover">
@@ -49,6 +52,20 @@
   {[~]}
   </tbody>
 </table>
+</script>
+
+<script id="l5smgr-termls-pager-tpl" type="text/html">
+<ul class="pagination pagination-sm">
+  {[ if (it.FirstPageNumber > 0) { ]}
+  <li><a href="#{[=it.FirstPageNumber]}" onclick="l5sTerm.ListPage({[=it.FirstPageNumber]})">First</a></li>
+  {[ } ]}
+  {[~it.RangePages :v]}
+  <li {[ if (v == it.CurrentPageNumber) { ]}class="active"{[ } ]}><a href="#{[=v]}" onclick="l5sTerm.ListPage({[=v]})">{[=v]}</a></li>
+  {[~]}
+  {[ if (it.LastPageNumber > 0) { ]}
+  <li><a href="#{[=it.LastPageNumber]}" onclick="l5sTerm.ListPage({[=it.LastPageNumber]})">Last</a></li>
+  {[ } ]}
+</ul>
 </script>
 
 <script type="text/javascript">

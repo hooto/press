@@ -34,6 +34,21 @@ var (
 	spaceReg = regexp.MustCompile(" +")
 )
 
+func (q *QuerySet) TermCount() (int64, error) {
+
+	dcn, err := rdo.ClientPull("def")
+	if err != nil {
+		return 0, err
+	}
+
+	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+
+	fr := rdobase.NewFilter()
+	fr.And("state", 1)
+
+	return dcn.Base.Count(table, fr)
+}
+
 func (q *QuerySet) TermList() api.TermList {
 
 	rsp := api.TermList{}
@@ -56,7 +71,7 @@ func (q *QuerySet) TermList() api.TermList {
 		return rsp
 	}
 
-	q.limit = 100
+	// q.limit = 100
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := rdobase.NewQuerySet().

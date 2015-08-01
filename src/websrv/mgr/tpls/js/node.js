@@ -179,23 +179,28 @@ l5sNode.Index = function()
     });
 }
 
-
 l5sNode.List = function(modname, modelid)
 {
-    var alertid = "#l5smgr-node-alert";
+    var alertid = "#l5smgr-node-alert",
+        page = 0;
 
     if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
         modname = l4iStorage.Get("l5smgr_spec_active");
     }
+
     if (!modelid && l4iStorage.Get("l5smgr_nmodel_active")) {
         modelid = l4iStorage.Get("l5smgr_nmodel_active");
+    }
+
+    if (l4iStorage.Get("l5smgr_nodels_page")) {
+        page = l4iStorage.Get("l5smgr_nodels_page");
     }
 
     if (!modname || !modelid) {
         return;
     }
 
-    var uri = "modname="+ modname +"&modelid="+ modelid;
+    var uri = "modname="+ modname +"&modelid="+ modelid +"&page="+ page;
     if (document.getElementById("qry_text")) {
         uri = "&qry_text="+ $("#qry_text").val();
     }
@@ -235,6 +240,16 @@ l5sNode.List = function(modname, modelid)
                     modelid  : modelid,
                     items  : rsj.items,
                 },
+                success: function() {
+
+                    rsj.meta.RangeLen = 20;
+
+                    l4iTemplate.Render({
+                        dstid  : "l5smgr-nodels-pager",
+                        tplid  : "l5smgr-nodels-pager-tpl",
+                        data   : l4i.Pager(rsj.meta),
+                    });
+                }
             });
         });
     
@@ -264,6 +279,12 @@ l5sNode.List = function(modname, modelid)
             callback: ep.done("data"),           
         });
     });
+}
+
+l5sNode.ListPage = function(page)
+{
+    l4iStorage.Set("l5smgr_nodels_page", parseInt(page));
+    l5sNode.List();
 }
 
 l5sNode.Set = function(modname, modelid, nodeid)

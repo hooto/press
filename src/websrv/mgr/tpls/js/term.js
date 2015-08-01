@@ -4,7 +4,8 @@ var l5sTerm = {
 
 l5sTerm.List = function(modname, modelid)
 {
-    var alertid = "#l5smgr-node-alert";
+    var alertid = "#l5smgr-node-alert",
+        page = 0;
 
     if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
         modname = l4iStorage.Get("l5smgr_spec_active");
@@ -12,12 +13,15 @@ l5sTerm.List = function(modname, modelid)
     if (!modelid && l4iStorage.Get("l5smgr_tmodel_active")) {
         modelid = l4iStorage.Get("l5smgr_tmodel_active");
     }
+    if (l4iStorage.Get("l5smgr_termls_page")) {
+        page = l4iStorage.Get("l5smgr_termls_page");
+    }
 
     if (!modname || !modelid) {
         return;
     }
 
-    var uri = "modname="+ modname +"&modelid="+ modelid;
+    var uri = "modname="+ modname +"&modelid="+ modelid +"&page="+ page;
     if (document.getElementById("qry_text")) {
         uri += "&qry_text="+ $("#qry_text").val();
     }
@@ -63,6 +67,16 @@ l5sTerm.List = function(modname, modelid)
                     modelid : modelid,
                     items   : rsj.items,
                 },
+                success: function() {
+
+                    rsj.meta.RangeLen = 20;
+
+                    l4iTemplate.Render({
+                        dstid  : "l5smgr-termls-pager",
+                        tplid  : "l5smgr-termls-pager-tpl",
+                        data   : l4i.Pager(rsj.meta),
+                    });
+                }
             });
         });
     
@@ -94,6 +108,11 @@ l5sTerm.List = function(modname, modelid)
     });
 }
 
+l5sTerm.ListPage = function(page)
+{
+    l4iStorage.Set("l5smgr_termls_page", parseInt(page));
+    l5sTerm.List();
+}
 
 l5sTerm.Set = function(modname, modelid, termid)
 {
