@@ -15,8 +15,10 @@
 package frontend
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/x/webui"
@@ -76,6 +78,8 @@ func (c Index) IndexAction() {
 		uris    = strings.Split(strings.Trim(filepath.Clean(c.Request.RequestPath), "/"), "/")
 	)
 
+	start := time.Now().UnixNano()
+
 	if len(uris) < 1 {
 		uris = append(uris, "general")
 	} else {
@@ -128,6 +132,8 @@ func (c Index) IndexAction() {
 	}
 
 	c.Render(mod.Meta.Name, template)
+
+	c.RenderString(fmt.Sprintf("<!-- rt-time/db+render : %d ms -->", (time.Now().UnixNano()-start)/1e6))
 }
 
 func (c Index) dataRender(srvname string, ad api.ActionData) {
@@ -170,9 +176,11 @@ func (c Index) dataRender(srvname string, ad api.ActionData) {
 				if termVal := c.Params.Get("term_" + term.Meta.Name); termVal != "" {
 
 					switch term.Type {
+
 					case api.TermTaxonomy:
 						qry.Filter("term_"+term.Meta.Name, termVal)
 						c.Data["term_"+term.Meta.Name] = termVal
+
 					case api.TermTag:
 						// TOPO
 						qry.Filter("term_"+term.Meta.Name+".like", "%"+termVal+"%")
@@ -209,7 +217,14 @@ func (c Index) dataRender(srvname string, ad api.ActionData) {
 
 	case "node.entry":
 
-		c.Data[ad.Name] = qry.NodeEntry()
+		entry := qry.NodeEntry()
+
+		if entry.Title != "" {
+			// TOCH
+			c.Data["__html_head_title__"] = datax.StringSub(datax.TextHtml2Str(entry.Title), 0, 50)
+		}
+
+		c.Data[ad.Name] = entry
 
 	case "term.list":
 

@@ -86,7 +86,7 @@ func FieldTimeFormat(fields []api.NodeField, colname, format string) string {
 	return tp.Format(format)
 }
 
-func textHtml2str(src string) string {
+func TextHtml2Str(src string) string {
 
 	src = regElement.ReplaceAllStringFunc(src, strings.ToLower)
 
@@ -163,7 +163,7 @@ func FieldDebug(fields []api.NodeField, colname string, length int) template.HTM
 		}
 
 		if v == "html" {
-			val = textHtml2str(val)
+			val = TextHtml2Str(val)
 		}
 	}
 
@@ -204,11 +204,11 @@ func FieldHtml(fields []api.NodeField, colname string) template.HTML {
 	return template.HTML(val)
 }
 
-func substr(s string, start, length int) string {
+func StringSub(s string, start, length int) string {
 
 	bt := []rune(s)
 
-	if start < 1 {
+	if start < 0 {
 		start = 0
 	}
 
@@ -219,7 +219,7 @@ func substr(s string, start, length int) string {
 	end := start + length
 
 	if end >= len(bt) {
-		end = len(bt) - 1
+		end = len(bt)
 	}
 
 	if end <= start {
@@ -245,7 +245,7 @@ func FieldSubHtml(fields []api.NodeField, colname string, length int) template.H
 		}
 	}
 
-	ustr := []rune(textHtml2str(val))
+	ustr := []rune(TextHtml2Str(val))
 
 	if len(ustr) > length {
 		val = string(ustr[0:length]) + "..."
