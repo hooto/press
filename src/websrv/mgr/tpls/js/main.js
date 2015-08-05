@@ -33,10 +33,14 @@ l5sMgr.Boot = function()
             "~/bootstrap/3.3/css/bootstrap.min.css",
             "~/bootstrap/3.3/js/bootstrap.min.js",
             "~/lessui/js/lessui.js",
-            "~/lessui/css/lessui.min.css",
+            "~/lessui/css/lessui.css",
             "~/css/main.css?_="+ Math.random(),
             "-/css/main.css?_="+ Math.random(),
+            "-/css/defx.css",
             "-/js/spec.js?_="+ Math.random(),
+            "-/js/spec-editor.js?_="+ Math.random(),
+            "-/js/tablet.js",
+            "-/js/lc-editor.js",
             "-/js/model.js?_="+ Math.random(),
             "-/js/term.js?_="+ Math.random(),
             "-/js/node.js?_="+ Math.random(),
@@ -71,9 +75,9 @@ l5sMgr.Boot = function()
 
                     $("#body-content").html(data);
                 
-                    l5sNode.Index();
+                    // l5sNode.Index();
                     // l5sSys.Index();
-                    // l5sSpec.Index();
+                    l5sSpec.Index();
                 }
             });
         });

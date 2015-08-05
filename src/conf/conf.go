@@ -17,9 +17,9 @@ package conf
 import (
 	"errors"
 	"fmt"
-
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -34,10 +34,18 @@ var (
 	Config        ConfigCommon
 	Version       = "1.0.0.dev00"
 	captchaConfig captcha.Options
+
+	User = &user.User{
+		Uid:      "2048",
+		Gid:      "2048",
+		Username: "action",
+		HomeDir:  "/home/action",
+	}
 )
 
 type ConfigCommon struct {
 	Prefix             string      `json:"prefix,omitempty"`
+	ModuleDir          string      `json:"module_dir,omitempty"`
 	InstanceID         string      `json:"instance_id"`
 	AppTitle           string      `json:"app_title,omitempty"`
 	HttpPort           uint16      `json:"http_port"`
@@ -57,8 +65,7 @@ func Initialize(prefix string) error {
 	}
 	reg, _ := regexp.Compile("/+")
 	Config.Prefix = "/" + strings.Trim(reg.ReplaceAllString(prefix, "/"), "/")
-
-	fmt.Println(Config.Prefix)
+	Config.ModuleDir = Config.Prefix + "/modules"
 
 	file := Config.Prefix + "/etc/main.json"
 	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
@@ -103,6 +110,11 @@ func Initialize(prefix string) error {
 	captchaConfig.DataDir = Config.Prefix + "/var/captchadb"
 
 	if err := captcha.Config(captchaConfig); err != nil {
+		return err
+	}
+
+	// Default User
+	if User, err = user.Current(); err != nil {
 		return err
 	}
 

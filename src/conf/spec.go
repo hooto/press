@@ -22,6 +22,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
@@ -33,8 +34,17 @@ import (
 )
 
 var (
+	locker  sync.Mutex
 	Modules = map[string]*api.Spec{}
 )
+
+func SpecSet(spec *api.Spec) {
+
+	locker.Lock()
+	defer locker.Unlock()
+
+	Modules[spec.SrvName] = spec
+}
 
 func SpecNodeModel(modname, modelName string) (*api.NodeModel, error) {
 
@@ -236,12 +246,11 @@ func _instance_schema_sync(spec *api.Spec) error {
 					Length: field.Length,
 				})
 
-				it, _ := strconv.Atoi(field.IndexType)
-				switch it {
+				switch field.IndexType {
 				case rdobase.IndexTypeUnique, rdobase.IndexTypeIndex:
 					tbl.AddIndex(&rdobase.Index{
 						Name: "field_" + field.Name,
-						Type: it,
+						Type: field.IndexType,
 						Cols: []string{"field_" + field.Name},
 					})
 				}

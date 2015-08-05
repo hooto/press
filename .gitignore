@@ -8,3 +8,4 @@ static/lessui/
 static/bootstrap/
 static/codemirror/
 src/import.go
+modules/ruilog

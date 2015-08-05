@@ -59,6 +59,26 @@ const (
 	NodeFieldDecimal  NodeFieldType = "decimal"
 )
 
+var (
+	NodeFieldTypes = []string{
+		"bool",
+		"string",
+		"text",
+		"date",
+		"datetime",
+		"int8",
+		"int16",
+		"int32",
+		"int64",
+		"uint8",
+		"uint16",
+		"uint32",
+		"uint64",
+		"float",
+		"decimal",
+	}
+)
+
 type NodeField struct {
 	Name  string     `json:"name"`
 	Value string     `json:"value,omitempty"`

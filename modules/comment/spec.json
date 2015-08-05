@@ -2,9 +2,9 @@
   "meta": {
     "name": "comment",
     "resourceVersion": "1",
-    "updated": "2015-07-31T15:52:53Z"
+    "updated": "2015-08-02T04:53:16Z"
   },
-  "title": "Comment 2",
+  "title": "Comment",
   "nodeModels": [
     {
       "meta": {
@@ -31,14 +31,14 @@
           "name": "refer_id",
           "type": "string",
           "length": "16",
-          "indexType": "1",
+          "indexType": 1,
           "title": "Refer Content ID"
         },
         {
           "name": "refer",
           "type": "string",
           "length": "40",
-          "indexType": "1",
+          "indexType": 1,
           "title": "Refer"
         },
         {

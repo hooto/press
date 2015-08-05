@@ -25,7 +25,7 @@ const dsBase = `
                 {
                     "name": "name",
                     "type": "string",
-                    "length": "50"
+                    "length": "30"
                 },
                 {
                     "name": "srvname",

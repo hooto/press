@@ -19,7 +19,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
@@ -29,6 +32,59 @@ import (
 	"../api"
 	"../conf"
 )
+
+var (
+	modNamePattern        = regexp.MustCompile("^[0-9a-z/]{3,30}$")
+	srvNamePattern        = regexp.MustCompile("^[0-9a-z/\\-_]{1,50}$")
+	modelNamePattern      = regexp.MustCompile("^[a-z]{1,1}[0-9a-z_]{1,20}$")
+	nodeFeildNamePattern  = regexp.MustCompile("^[a-z]{1,1}[0-9a-z_]{1,20}$")
+	routePathPattern      = regexp.MustCompile("^[0-9a-zA-Z_/\\-:]{1,30}$")
+	routeParamNamePattern = regexp.MustCompile("^[a-z]{1,1}[0-9a-zA-Z_]{0,29}$")
+)
+
+func ModNameFilter(name string) (string, error) {
+
+	name = strings.Trim(filepath.Clean(strings.ToLower(name)), "/")
+
+	if mat := modNamePattern.MatchString(name); !mat {
+		return "", fmt.Errorf("Invalid Module Name (%s)", name)
+	}
+
+	return name, nil
+}
+
+func SrvNameFilter(name string) (string, error) {
+
+	name = strings.Trim(filepath.Clean(strings.ToLower(name)), "/")
+
+	if mat := srvNamePattern.MatchString(name); !mat {
+		return "", fmt.Errorf("Invalid Service Name (%s)", name)
+	}
+
+	return name, nil
+}
+
+func ModelNameFilter(name string) (string, error) {
+
+	name = strings.TrimSpace(strings.ToLower(name))
+
+	if mat := modelNamePattern.MatchString(name); !mat {
+		return "", fmt.Errorf("Invalid Model Name (%s)", name)
+	}
+
+	return name, nil
+}
+
+func RoutePathFilter(name string) (string, error) {
+
+	name = strings.TrimSpace(name)
+
+	if mat := routePathPattern.MatchString(name); !mat {
+		return "", fmt.Errorf("Invalid Route Path (%s)", name)
+	}
+
+	return name, nil
+}
 
 func SpecNew(entry api.Spec) error {
 	return nil
@@ -71,6 +127,10 @@ func SpecInfoNew(entry api.Spec) error {
 		return errors.New("Title Not Found")
 	}
 
+	if entry.SrvName == "" {
+		return errors.New("SrvName Not Found")
+	}
+
 	_, err := SpecFetch(entry.Meta.Name)
 	if err == nil {
 		return errors.New("Spec Already Exists ")
@@ -80,7 +140,7 @@ func SpecInfoNew(entry api.Spec) error {
 	entry.Meta.Created = utilx.TimeNow("atom")
 
 	dir := fmt.Sprintf("%s/modules/%s", conf.Config.Prefix, entry.Meta.Name)
-	if err := os.Mkdir(dir, 0750); err != nil {
+	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
 
@@ -102,9 +162,515 @@ func SpecInfoSet(entry api.Spec) error {
 		return err
 	}
 
-	if prev.Title != entry.Title {
+	if prev.Title != entry.Title || prev.SrvName != entry.SrvName {
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
 
 		prev.Title = entry.Title
+		prev.SrvName = entry.SrvName
+		prev.Meta.Updated = utilx.TimeNow("atom")
+
+		if err := _specSet(prev); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func SpecTermSet(modname string, entry api.TermModel) error {
+
+	if modname == "" {
+		return errors.New("modname Not Found")
+	}
+
+	prev, err := SpecFetch(modname)
+	if err != nil {
+		return err
+	}
+
+	sync, found := false, false
+	for i, termModel := range prev.TermModels {
+
+		if termModel.Meta.Name == entry.Meta.Name {
+
+			found = true
+
+			if prev.Title != entry.Title {
+				prev.TermModels[i].Title = entry.Title
+				sync = true
+			}
+		}
+	}
+
+	if !found {
+		entry.ModName = ""
+		prev.TermModels = append(prev.TermModels, entry)
+		sync = true
+	}
+
+	if sync {
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
+
+		prev.Meta.Updated = utilx.TimeNow("atom")
+
+		if err := _specSet(prev); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func _keyValueListEqual(ls1, ls2 []api.KeyValue) bool {
+
+	if len(ls1) != len(ls2) {
+		return false
+	}
+
+	for _, kv1 := range ls1 {
+
+		found := false
+
+		for _, kv2 := range ls2 {
+
+			if kv1.Key == kv2.Key {
+
+				if kv1.Value != kv2.Value {
+					return false
+				}
+
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	return true
+}
+
+func _termListEqual(ls1, ls2 []api.TermModel) bool {
+
+	if len(ls1) != len(ls2) {
+		return false
+	}
+
+	for _, kv1 := range ls1 {
+
+		found := false
+
+		for _, kv2 := range ls2 {
+
+			if kv1.Meta.Name == kv2.Meta.Name {
+
+				if kv1.Type != kv2.Type ||
+					kv1.Title != kv2.Title {
+					return false
+				}
+
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	return true
+}
+
+func SpecNodeSet(modname string, entry api.NodeModel) error {
+
+	if modname == "" {
+		return errors.New("modname Not Found")
+	}
+
+	for i, field := range entry.Fields {
+
+		if mat := nodeFeildNamePattern.MatchString(field.Name); !mat {
+			return fmt.Errorf("Invalid Field Name (%s)", field.Name)
+		}
+
+		if field.Title == "" {
+			entry.Fields[i].Title = field.Name
+		}
+
+		if !utilx.ArrayContain(field.Type, api.NodeFieldTypes) {
+			return fmt.Errorf("Invalid Field Type (%s:%s)", field.Name, field.Type)
+		}
+
+		if field.IndexType != 0 && field.IndexType != 1 && field.IndexType != 2 {
+			return fmt.Errorf("Invalid Field Index Type (%s:%s)", field.Name, field.IndexType)
+		}
+
+		if field.Type == "string" {
+
+			length, _ := strconv.Atoi(field.Length)
+
+			if length < 1 {
+				entry.Fields[i].Length = "10"
+			} else if length > 200 {
+				entry.Fields[i].Length = "200"
+			}
+		}
+
+		for _, attr := range field.Attrs {
+
+			if mat := nodeFeildNamePattern.MatchString(attr.Key); !mat {
+				return fmt.Errorf("Invalid Field Attribute Key (%s)", attr.Key)
+			}
+		}
+	}
+
+	prev, err := SpecFetch(modname)
+	if err != nil {
+		return err
+	}
+
+	sync, found := false, false
+	for i, nodeModel := range prev.NodeModels {
+
+		if nodeModel.Meta.Name == entry.Meta.Name {
+
+			found = true
+
+			if prev.Title != entry.Title {
+				prev.NodeModels[i].Title = entry.Title
+				sync = true
+			}
+
+			if len(nodeModel.Fields) != len(entry.Fields) && len(entry.Fields) > 0 {
+
+				prev.NodeModels[i].Fields = entry.Fields
+				sync = true
+
+			} else {
+
+				for _, prevField := range nodeModel.Fields {
+
+					field_sync := true
+
+					for _, curField := range entry.Fields {
+
+						if curField.Name == prevField.Name {
+
+							if curField.Title == prevField.Title &&
+								curField.Type == prevField.Type &&
+								curField.IndexType == prevField.IndexType &&
+								curField.Length == prevField.Length &&
+								_keyValueListEqual(curField.Attrs, prevField.Attrs) {
+
+								field_sync = false
+							}
+
+							break
+						}
+					}
+
+					if field_sync && len(entry.Fields) > 0 {
+
+						sync = true
+						prev.NodeModels[i].Fields = entry.Fields
+
+						break
+					}
+				}
+			}
+
+			if !_termListEqual(nodeModel.Terms, entry.Terms) {
+
+				prev.NodeModels[i].Terms = entry.Terms
+				sync = true
+
+				for _, sterm := range entry.Terms {
+
+					ptermok := false
+
+					for i, pterm := range prev.TermModels {
+
+						if pterm.Meta.Name == sterm.Meta.Name {
+
+							ptermok = true
+							prev.TermModels[i] = sterm
+							break
+						}
+					}
+
+					if !ptermok {
+						prev.TermModels = append(prev.TermModels, sterm)
+					}
+				}
+			}
+		}
+	}
+
+	if !found {
+		entry.ModName = ""
+		prev.NodeModels = append(prev.NodeModels, entry)
+
+		sync = true
+	}
+
+	if sync {
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
+
+		prev.Meta.Updated = utilx.TimeNow("atom")
+
+		if err := _specSet(prev); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func SpecActionSet(modname string, entry api.Action) error {
+
+	if modname == "" {
+		return errors.New("modname Not Found")
+	}
+
+	if mat := modelNamePattern.MatchString(entry.Name); !mat {
+		return fmt.Errorf("Invalid Action Name (%s)", entry.Name)
+	}
+
+	prev, err := SpecFetch(modname)
+	if err != nil {
+		return err
+	}
+
+	for _, dentry := range entry.Datax {
+
+		if mat := modelNamePattern.MatchString(dentry.Name); !mat {
+			return fmt.Errorf("Invalid Datax Name (%s)", dentry.Name)
+		}
+
+		types := strings.Split(dentry.Type, ".")
+		if len(types) != 2 {
+			return fmt.Errorf("Invalid Datax Type (%s:%s)", dentry.Name, dentry.Type)
+		}
+
+		if !utilx.ArrayContain(types[1], []string{"list", "entry"}) {
+			return fmt.Errorf("Invalid Datax Type (%s:%s)", dentry.Name, dentry.Type)
+		}
+
+		switch types[0] {
+
+		case "node":
+
+			if dentry.Query.Limit < 1 {
+				dentry.Query.Limit = 1
+			} else if dentry.Query.Limit > 10000 {
+				dentry.Query.Limit = 10000
+			}
+
+			table_found := false
+			for _, nodeModel := range prev.NodeModels {
+
+				if nodeModel.Meta.Name == dentry.Query.Table {
+					table_found = true
+					break
+				}
+			}
+
+			if !table_found {
+				return fmt.Errorf("Query Table Not Found (%s)", dentry.Query.Table)
+			}
+
+		case "term":
+
+			table_found := false
+			for _, termModel := range prev.TermModels {
+
+				if termModel.Meta.Name == dentry.Query.Table {
+					table_found = true
+					break
+				}
+			}
+
+			if !table_found {
+				return fmt.Errorf("Query Table Not Found (%s)", dentry.Query.Table)
+			}
+
+		default:
+			return fmt.Errorf("Invalid Datax Type (%s:%s)", dentry.Name, dentry.Type)
+		}
+	}
+
+	sync, found := false, false
+	for i, action := range prev.Actions {
+
+		if action.Name == entry.Name {
+
+			found = true
+
+			if len(action.Datax) != len(entry.Datax) && len(entry.Datax) > 0 {
+
+				prev.Actions[i].Datax = entry.Datax
+				sync = true
+
+			} else {
+
+				for _, prevDatax := range action.Datax {
+
+					datax_sync := true
+
+					for _, curField := range entry.Datax {
+
+						if curField.Name == prevDatax.Name {
+
+							if curField.Type == prevDatax.Type &&
+								curField.Pager == prevDatax.Pager &&
+								curField.Query.Table == prevDatax.Query.Table &&
+								curField.Query.Limit == prevDatax.Query.Limit &&
+								curField.Query.Order == prevDatax.Query.Order {
+
+								datax_sync = false
+							}
+
+							break
+						}
+					}
+
+					if datax_sync && len(entry.Datax) > 0 {
+
+						sync = true
+						prev.Actions[i].Datax = entry.Datax
+
+						break
+					}
+				}
+			}
+
+		}
+	}
+
+	if !found {
+		entry.ModName = ""
+		prev.Actions = append(prev.Actions, entry)
+
+		sync = true
+	}
+
+	if sync {
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
+
+		prev.Meta.Updated = utilx.TimeNow("atom")
+
+		if err := _specSet(prev); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func _routeParamsEqual(a1, a2 map[string]string) bool {
+
+	if len(a1) != len(a2) {
+		return false
+	}
+
+	for k, v := range a1 {
+
+		found := false
+
+		for k2, v2 := range a2 {
+
+			if k == k2 {
+
+				if v != v2 {
+					return false
+				}
+
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	return true
+}
+
+func SpecRouteSet(modname string, entry api.Route) error {
+
+	if modname == "" {
+		return errors.New("modname Not Found")
+	}
+
+	var err error
+
+	if entry.Path, err = RoutePathFilter(entry.Path); err != nil {
+		return fmt.Errorf("Invalid Action Path (%s)", entry.Path)
+	}
+
+	for k, _ := range entry.Params {
+
+		if mat := routeParamNamePattern.MatchString(k); !mat {
+			return fmt.Errorf("Invalid Param Name (%s)", k)
+		}
+	}
+
+	prev, err := SpecFetch(modname)
+	if err != nil {
+		return err
+	}
+
+	sync, found := true, false
+	for i, prevRoute := range prev.Router.Routes {
+
+		if prevRoute.Path == entry.Path {
+
+			found = true
+
+			if entry.DataAction == prevRoute.DataAction &&
+				entry.Template == prevRoute.Template &&
+				_routeParamsEqual(entry.Params, prevRoute.Params) {
+
+				sync = false
+			} else {
+				entry.ModName = ""
+				prev.Router.Routes[i] = entry
+			}
+
+			break
+		}
+	}
+
+	if !found {
+		entry.ModName = ""
+		prev.Router.Routes = append(prev.Router.Routes, entry)
+
+		sync = true
+	}
+
+	if sync {
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
+
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
 		if err := _specSet(prev); err != nil {
@@ -142,6 +708,9 @@ func SpecSchemaSync(spec api.Spec) error {
 		ds      rdobase.DataSet
 		timenow = rdobase.TimeNow("datetime")
 	)
+
+	// TODO
+	conf.SpecSet(&spec)
 
 	//
 	dcn, err := rdo.ClientPull("def")
@@ -209,12 +778,12 @@ func SpecSchemaSync(spec api.Spec) error {
 					Length: field.Length,
 				})
 
-				it, _ := strconv.Atoi(field.IndexType)
-				switch it {
+				switch field.IndexType {
+
 				case rdobase.IndexTypeUnique, rdobase.IndexTypeIndex:
 					tbl.AddIndex(&rdobase.Index{
 						Name: "field_" + field.Name,
-						Type: it,
+						Type: field.IndexType,
 						Cols: []string{"field_" + field.Name},
 					})
 				}

@@ -2,7 +2,7 @@
   "meta": {
     "name": "portal",
     "resourceVersion": "6",
-    "updated": "2015-07-30T01:25:59Z"
+    "updated": "2015-08-02T04:59:59Z"
   },
   "title": "Portal",
   "nodeModels": [
@@ -103,14 +103,12 @@
       {
         "path": "view/:id",
         "dataAction": "view",
-        "template": "entry.tpl",
-        "omitempty": null
+        "template": "entry.tpl"
       },
       {
         "path": "list",
         "dataAction": "list",
-        "template": "list.tpl",
-        "omitempty": null
+        "template": "list.tpl"
       }
     ]
   }

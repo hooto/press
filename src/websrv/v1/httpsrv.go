@@ -24,6 +24,7 @@ func NewModule() httpsrv.Module {
 
 	//
 	module.ControllerRegister(new(ModSet))
+	module.ControllerRegister(new(ModSetFs))
 
 	//
 	module.ControllerRegister(new(Node))

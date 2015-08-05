@@ -26,14 +26,24 @@ type KeyValue struct {
 type Spec struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.ObjectMeta `json:"meta,omitempty"`
-	SrvName        string           `json:"srvname,omitempty"`
+	SrvName        string           `json:"srvname"`
 	Status         int16            `json:"status,omitempty"`
-	Title          string           `json:"title,omitempty"`
+	Title          string           `json:"title"`
 	Comment        string           `json:"comment,omitempty"`
 	NodeModels     []NodeModel      `json:"nodeModels,omitempty"`
 	TermModels     []TermModel      `json:"termModels,omitempty"`
 	Actions        []Action         `json:"actions,omitempty"`
+	Views          []View           `json:"views,omitempty"`
 	Router         Router           `json:"router,omitempty"`
+}
+
+type View struct {
+	Path string `json:"path"`
+}
+
+type ViewList struct {
+	types.TypeMeta `json:",inline"`
+	Items          []View `json:"items,omitempty"`
 }
 
 type SpecList struct {
@@ -47,7 +57,7 @@ type FieldModel struct {
 	Length    string     `json:"length,omitempty"`
 	Extra     []string   `json:"extra,omitempty"`
 	Attrs     []KeyValue `json:"attrs,omitempty"`
-	IndexType string     `json:"indexType,omitempty"`
+	IndexType int        `json:"indexType,omitempty"`
 	Title     string     `json:"title"`
 	Comment   string     `json:"comment,omitempty"`
 }
@@ -102,8 +112,10 @@ type Query struct {
 
 //
 type Action struct {
-	Name  string       `json:"name"`
-	Datax []ActionData `json:"datax,omitempty"`
+	types.TypeMeta `json:",inline"`
+	Name           string       `json:"name"`
+	ModName        string       `json:"modname,omitempty"`
+	Datax          []ActionData `json:"datax,omitempty"`
 }
 
 type ActionData struct {
