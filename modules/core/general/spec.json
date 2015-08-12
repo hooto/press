@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "name": "core/general",
+    "resourceVersion": "7",
+    "updated": "2015-08-10T09:27:07Z"
+  },
+  "srvname": "",
+  "title": "General",
+  "nodeModels": [
+    {
+      "meta": {
+        "name": "menu"
+      },
+      "title": "Menu",
+      "comment": "Customize the site navigation menu",
+      "fields": [
+        {
+          "name": "url",
+          "type": "string",
+          "length": "100",
+          "title": "URL"
+        },
+        {
+          "name": "weight",
+          "type": "int32",
+          "title": "Weight"
+        }
+      ],
+      "extensions": {}
+    },
+    {
+      "meta": {
+        "name": "page"
+      },
+      "title": "Basic Page",
+      "comment": "Use basic pages for your static content, such as an 'About us' page",
+      "fields": [
+        {
+          "name": "content",
+          "type": "text",
+          "attrs": [
+            {
+              "key": "ui_rows",
+              "value": "12"
+            },
+            {
+              "key": "format",
+              "value": "md"
+            }
+          ],
+          "title": "Content"
+        }
+      ],
+      "extensions": {}
+    }
+  ],
+  "actions": [
+    {
+      "name": "topnav",
+      "datax": [
+        {
+          "name": "topnav",
+          "type": "node.list",
+          "query": {
+            "table": "menu",
+            "order": "field_weight asc",
+            "limit": 50
+          },
+          "cache_ttl": 3600
+        }
+      ]
+    },
+    {
+      "name": "view",
+      "datax": [
+        {
+          "name": "page",
+          "type": "node.entry",
+          "query": {
+            "table": "page",
+            "limit": 1
+          },
+          "cache_ttl": 3600
+        }
+      ]
+    }
+  ],
+  "router": {
+    "routes": [
+      {
+        "path": "view/:id",
+        "dataAction": "view",
+        "template": "entry.tpl"
+      }
+    ]
+  }
+}

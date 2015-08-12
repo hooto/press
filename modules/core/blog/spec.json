@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "name": "core/blog",
+    "resourceVersion": "10",
+    "created": "2015-08-10T05:00:15Z",
+    "updated": "2015-08-10T06:21:52Z"
+  },
+  "srvname": "blog",
+  "title": "Blog",
+  "nodeModels": [
+    {
+      "meta": {
+        "name": "entry"
+      },
+      "title": "Content Entry",
+      "fields": [
+        {
+          "name": "content",
+          "type": "text",
+          "length": "0",
+          "attrs": [
+            {
+              "key": "ui_rows",
+              "value": "15"
+            },
+            {
+              "key": "format",
+              "value": "md"
+            }
+          ],
+          "title": "Content"
+        }
+      ],
+      "terms": [
+        {
+          "meta": {
+            "name": "tags"
+          },
+          "type": "tag",
+          "title": "Tags"
+        },
+        {
+          "meta": {
+            "name": "categories"
+          },
+          "type": "taxonomy",
+          "title": "Categories"
+        }
+      ],
+      "extensions": {
+        "access_counter": true,
+        "comment_perentry": true
+      }
+    }
+  ],
+  "termModels": [
+    {
+      "meta": {
+        "name": "tags"
+      },
+      "type": "tag",
+      "title": "Tags"
+    },
+    {
+      "meta": {
+        "name": "categories"
+      },
+      "type": "taxonomy",
+      "title": "Categories"
+    }
+  ],
+  "actions": [
+    {
+      "name": "list",
+      "datax": [
+        {
+          "name": "list",
+          "type": "node.list",
+          "pager": true,
+          "query": {
+            "table": "entry",
+            "limit": 10
+          },
+          "cache_ttl": 600
+        },
+        {
+          "name": "categories",
+          "type": "term.list",
+          "query": {
+            "table": "categories",
+            "limit": 100
+          },
+          "cache_ttl": 3600
+        }
+      ]
+    },
+    {
+      "name": "view",
+      "datax": [
+        {
+          "name": "entry",
+          "type": "node.entry",
+          "query": {
+            "table": "entry",
+            "limit": 1
+          },
+          "cache_ttl": 600
+        }
+      ]
+    }
+  ],
+  "router": {
+    "routes": [
+      {
+        "path": "view/:id",
+        "dataAction": "view",
+        "template": "entry.tpl"
+      },
+      {
+        "path": "list",
+        "dataAction": "list",
+        "template": "list.tpl"
+      }
+    ]
+  }
+}

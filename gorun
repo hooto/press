@@ -1,18 +1,13 @@
 #!/bin/bash
 
-files=`find src -type f -name "*.go" |xargs`
-for file in $files; do
-    gofmt -w=true ${file}
-done
-
-files=`find modules -type f -name "*.go" |xargs`
+files=`find . -type f -name "*.go" ! -path "vendor/*" |xargs`
 for file in $files; do
     gofmt -w=true ${file}
 done
 
 rm -f ./bin/lesscms
 
-go build -ldflags "-w -s" -o ./bin/lesscms ./src/main.go
+go build -ldflags "-w -s" -o ./bin/lesscms ./main.go
 
 ./bin/lesscms -logtostderr=true 
 
