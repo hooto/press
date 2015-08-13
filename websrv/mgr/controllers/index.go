@@ -33,23 +33,21 @@ func (c Index) IndexAction() {
 		return
 	}
 
-	// //
-	// if c.Params.Get("access_token") != "" {
+	//
+	if c.Params.Get("access_token") != "" {
 
-	// 	ck := &http.Cookie{
-	// 		Name:     "access_token",
-	// 		Value:    session.AccessToken,
-	// 		Path:     "/",
-	// 		HttpOnly: true,
-	// 		Expires:  session.Expired.UTC(),
-	// 	}
-	// 	http.SetCookie(c.Response.Out, ck)
+		// ck := &http.Cookie{
+		// 	Name:     "access_token",
+		// 	Value:    c.Session.AccessToken,
+		// 	Path:     "/",
+		// 	HttpOnly: true,
+		// 	Expires:  session.Expired.UTC(),
+		// }
+		// http.SetCookie(c.Response.Out, ck)
 
-	// 	c.Redirect("/mgr")
-	// 	return
-	// }
-
-	// fmt.Println(status.IdentityServiceStatus)
+		c.Redirect("/mgr")
+		return
+	}
 
 	//
 	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
@@ -57,6 +55,7 @@ func (c Index) IndexAction() {
 		return
 	}
 
+	//
 	io.WriteString(c.Response.Out, `<!DOCTYPE html>
 <html lang="en">
 <head>
