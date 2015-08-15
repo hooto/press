@@ -84,19 +84,6 @@ l5sMgr.Boot = function()
     });
 }
 
-l5sMgr.SignOut = function()
-{
-    // l4iCookie.Del("access_token");
-
-    // console.log("access_token");
-    // return;
-
-    l5sMgr.ApiCmd("ids/clean-cookie", {
-        success: function() {
-
-        },
-    });
-}
 
 l5sMgr.Ajax = function(url, options)
 {
@@ -191,5 +178,3 @@ l5sMgr.WorkLoader = function(uri)
 {
     l5sMgr.Loader("#work-content", uri);
 }
-
-

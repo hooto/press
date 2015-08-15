@@ -193,3 +193,38 @@ l5s.ApiCmd = function(url, options)
     l5s.Ajax(l5s.base + url, options);
 }
 
+l5s.AuthSessionRefresh = function()
+{
+    l5s.Ajax("/auth/session", {
+        callback: function(err, data) {
+            
+            if (err || !data || data.kind != "AuthSession") {
+                return;
+            }
+            
+            l4iTemplate.Render({
+                dstid: "l5s-topvar-user-box",
+                tplid: "l5s-topvar-user-box-tpl",
+                data:  data,
+                success: function() {
+    
+                    $("#l5s-topvar-user-box").hover(
+                        function() {
+                            $("#l5s-topvar-user-modal").fadeIn(300);
+                        },
+                        function() {
+                        }
+                    );
+                    $("#l5s-topvar-user-modal").hover(
+                        function() {
+                        },
+                        function() {
+                            $("#l5s-topvar-user-modal").fadeOut(300);
+                        }
+                    );
+                },
+            });
+        },
+    });
+}
+

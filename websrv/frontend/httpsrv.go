@@ -33,6 +33,7 @@ func NewModule() httpsrv.Module {
 	module.ControllerRegister(new(Index))
 	module.ControllerRegister(new(Error))
 	module.ControllerRegister(new(S2))
+	module.ControllerRegister(new(Auth))
 
 	return module
 }

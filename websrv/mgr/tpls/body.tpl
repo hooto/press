@@ -18,7 +18,7 @@
 
     <td align="right">
       <div id="">
-        <span class="btn btn-default btn-xs" onclick="l5sMgr.SignOut()">Sign Out</span>
+        <a class="btn btn-default btn-xs" href="/auth/sign-out">Sign Out</a>
       </div>
     </td>
   </tr>

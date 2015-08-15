@@ -129,6 +129,10 @@ func (c Index) IndexAction() {
 		}
 	}
 
+	if session, err := c.Session.Instance(); err == nil {
+		c.Data["session"] = session
+	}
+
 	c.Data["baseuri"] = "/" + srvname
 	c.Data["srvname"] = srvname
 	c.Data["modname"] = mod.Meta.Name
