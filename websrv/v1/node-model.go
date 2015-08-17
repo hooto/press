@@ -17,6 +17,7 @@ package v1
 import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
+	"github.com/lessos/lessids/idclient"
 	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
@@ -33,7 +34,7 @@ func (c NodeModel) EntryAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("editor.read") {
+	if !idclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}

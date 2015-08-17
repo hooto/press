@@ -39,7 +39,7 @@ type Sys struct {
 
 func (c Sys) ConfigListAction() {
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		c.RenderJson(types.TypeMeta{
 			Error: &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"},
 		})
@@ -55,7 +55,7 @@ func (c Sys) ConfigSetAction() {
 
 	defer c.RenderJson(&ls)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -133,7 +133,7 @@ func (c Sys) StatusAction() {
 
 	defer c.RenderJson(&set)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -164,7 +164,7 @@ func (c Sys) IdentityStatusAction() {
 
 	var sets api.SysIdentityStatus
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		sets.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -195,7 +195,7 @@ func (c Sys) IdentityStatusAction() {
 
 	hc := httpclient.Get(idclient.ServiceUrl +
 		"/v1/my-app/inst-entry?instid=" + config.Config.InstanceID +
-		"&access_token=" + c.Session.AccessToken)
+		"&access_token=" + idclient.SessionAccessToken(c.Session))
 
 	var info idsapi.AppInstance
 

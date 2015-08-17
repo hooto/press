@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/lessos/lessgo/types"
+	"github.com/lessos/lessids/idclient"
 	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
@@ -33,7 +34,7 @@ func (c ModSet) FsTplListAction() {
 
 	defer c.RenderJson(&ls)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}

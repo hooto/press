@@ -22,7 +22,7 @@ type Setup struct {
 
 func (c Setup) IndexAction() {
 
-	if !idclient.IsLogin(c.Session.AccessToken) {
+	if !idclient.SessionIsLogin(c.Session) {
 		c.Redirect(idclient.LoginUrl(c.Request.RawAbsUrl()))
 		return
 	}
@@ -71,7 +71,7 @@ func (c Setup) IndexAction() {
 func (c Setup) AppRegisterPutAction() {
 
 	reg := idsapi.AppInstanceRegister{
-		AccessToken: c.Session.AccessToken,
+		AccessToken: idclient.SessionAccessToken(c.Session),
 		Instance: idsapi.AppInstance{
 			Meta: types.ObjectMeta{
 				ID: config.Config.InstanceID,

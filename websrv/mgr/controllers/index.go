@@ -39,7 +39,7 @@ func (c Index) IndexAction() {
 		return
 	}
 
-	if !c.Session.IsLogin() {
+	if !idclient.SessionIsLogin(c.Session) {
 		c.Redirect(idclient.AuthServiceUrl(
 			config.Config.InstanceID,
 			fmt.Sprintf("//%s/auth/cb", c.Request.Host),

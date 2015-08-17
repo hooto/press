@@ -108,7 +108,7 @@ l5sComment.EmbedFormActive = function()
 
     form.find("textarea[name=content]").focus();
 
-    $("body").scrollTop($(window).scrollTop() + 300);
+    $("body").scrollTop($(window).scrollTop() + 350);
 }
 
 

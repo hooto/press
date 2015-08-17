@@ -89,18 +89,6 @@ func (c Index) IndexAction() {
 		srvname = uris[0]
 	}
 
-	// hstr := c.Request.RequestURI
-	// hstr += c.Session.AccessToken
-
-	// h := md5.New()
-	// io.WriteString(h, hstr)
-
-	// hkey := fmt.Sprintf("%x", h.Sum(nil))[:16]
-
-	// if rs := store.CacheGet()
-
-	// fmt.Println(hstr, c.Request.RequestURI)
-
 	if len(uris) < 2 {
 		uris = append(uris, "")
 	}
@@ -114,9 +102,6 @@ func (c Index) IndexAction() {
 		}
 	}
 
-	// cache //
-	// sql, params := q.Parse()
-
 	dataAction, template, mat := c.filter(uris[1:], mod)
 	if !mat {
 
@@ -129,9 +114,9 @@ func (c Index) IndexAction() {
 		}
 	}
 
-	if session, err := c.Session.Instance(); err == nil {
-		c.Data["session"] = session
-	}
+	// if session, err := c.Session.Instance(); err == nil {
+	// 	c.Data["session"] = session
+	// }
 
 	c.Data["baseuri"] = "/" + srvname
 	c.Data["srvname"] = srvname

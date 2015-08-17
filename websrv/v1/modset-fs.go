@@ -30,6 +30,7 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessids/idclient"
 	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
@@ -50,7 +51,7 @@ func (c ModSetFs) RenameAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -94,7 +95,7 @@ func (c ModSetFs) DelAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -105,7 +106,6 @@ func (c ModSetFs) DelAction() {
 	}
 
 	//
-
 	modname, err := modset.ModNameFilter(c.Params.Get("modname"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"403", "Forbidden"}
@@ -138,7 +138,7 @@ func (c ModSetFs) PutAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -309,7 +309,7 @@ func (c ModSetFs) ListAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -412,7 +412,7 @@ func (c ModSetFs) GetAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}

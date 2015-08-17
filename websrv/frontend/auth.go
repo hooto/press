@@ -33,7 +33,7 @@ type Auth struct {
 func (c Auth) CbAction() {
 
 	http.SetCookie(c.Response.Out, &http.Cookie{
-		Name:     "access_token",
+		Name:     idclient.AccessTokenKey,
 		Value:    c.Params.Get("access_token"),
 		Path:     "/",
 		HttpOnly: true,
@@ -57,9 +57,7 @@ func (c Auth) LoginAction() {
 	}
 
 	c.Redirect(idclient.AuthServiceUrl(
-		config.Config.InstanceID,
-		fmt.Sprintf("//%s/auth/cb", c.Request.Host),
-		referer))
+		config.Config.InstanceID, fmt.Sprintf("//%s/auth/cb", c.Request.Host), referer))
 }
 
 type AuthSession struct {
@@ -73,12 +71,14 @@ type AuthSession struct {
 
 func (c Auth) SessionAction() {
 
+	// fmt.Println("session", c.Session.IsLogin())
+
 	set := AuthSession{
 		IDsUrl:   idclient.ServiceUrl,
 		PhotoUrl: idclient.ServiceUrl + "/v1/service/photo/guest",
 	}
 
-	if session, err := c.Session.Instance(); err == nil {
+	if session, err := idclient.SessionInstance(c.Session); err == nil {
 
 		set.UserID = session.UserID
 		set.UserName = session.UserName
@@ -96,11 +96,10 @@ func (c Auth) SessionAction() {
 func (c Auth) SignOutAction() {
 
 	http.SetCookie(c.Response.Out, &http.Cookie{
-		Name:     "access_token",
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Expires:  time.Now().Add(-86400),
+		Name:    idclient.AccessTokenKey,
+		Value:   "",
+		Path:    "/",
+		Expires: time.Now().Add(-86400),
 	})
 
 	c.AutoRender = false

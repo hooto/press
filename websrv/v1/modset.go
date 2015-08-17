@@ -21,9 +21,12 @@ import (
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
+
+	"github.com/lessos/lessids/idclient"
 	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
+	"../../config"
 	"../../modset"
 )
 
@@ -39,7 +42,7 @@ func (c ModSet) SpecListAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("editor.list") {
+	if !idclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -82,7 +85,7 @@ func (c ModSet) SpecEntryAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !c.Session.AccessAllowed("editor.read") {
+	if !idclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -148,7 +151,8 @@ func (c ModSet) SpecInfoSetAction() {
 
 	defer c.RenderJson(&set)
 
-	if !c.Session.AccessAllowed("editor.write") {
+	if !idclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
+
 		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -203,7 +207,7 @@ func (c ModSet) SpecTermSetAction() {
 
 	defer c.RenderJson(&set)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -262,7 +266,7 @@ func (c ModSet) SpecNodeSetAction() {
 
 	defer c.RenderJson(&set)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -314,7 +318,7 @@ func (c ModSet) SpecActionSetAction() {
 
 	defer c.RenderJson(&set)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
@@ -367,7 +371,7 @@ func (c ModSet) SpecRouteSetAction() {
 
 	defer c.RenderJson(&set)
 
-	if !c.Session.AccessAllowed("sys.admin") {
+	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}

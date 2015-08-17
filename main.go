@@ -74,7 +74,7 @@ func main() {
 
 	idclient.ServiceUrl = config.Config.IdentityServiceUrl
 
-	// httpsrv.Config.UrlBasePath = "cmf"
+	// httpsrv.Config.UrlBasePath = "ap"
 	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort
 
 	// status
