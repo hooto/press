@@ -2,7 +2,9 @@ _*/
 *~
 bin/*
 var/*
+webui/l5s/img/src
 misc/import.go
 misc/cm-compress.go
 misc/rhel/pkg-builder
 cm-compress
+modules/ruilog

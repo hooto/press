@@ -229,7 +229,7 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 
 	fm, ok := attrs["format"]
 	if !ok {
-		fm = "txt"
+		fm = "text"
 	}
 
 	val = strings.TrimSpace(strings.Replace(val, "\r\n", "\n", -1))
@@ -245,7 +245,7 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 		unsafe := blackfriday.MarkdownCommon([]byte(val))
 		val = string(mkp.SanitizeBytes(unsafe))
 
-	case "txt":
+	case "text":
 		if lines := strings.Split(val, "\n\n"); len(lines) > 1 {
 			val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"
 			val = strings.Replace(val, "\n", "<br>", -1)

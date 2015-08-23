@@ -27,7 +27,7 @@
               {{if eq $term.Name "categories"}}
               {{if $term.Items}}
               <span class="section">
-                <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp;
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>&nbsp;
                 {{range $term_item := $term.Items}}
                 <a href="{{$.baseuri}}/list?term_categories={{printf "%d" $term_item.ID}}">{{$term_item.Title}}</a>
                 {{end}}

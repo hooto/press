@@ -15,8 +15,11 @@
 package main
 
 import (
+	_ "expvar"
 	"flag"
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"runtime"
 
@@ -61,6 +64,8 @@ func main() {
 
 	//
 	flag.Parse()
+
+	//
 	if err := config.Initialize(*flagPrefix); err != nil {
 		fmt.Println("Error on config.Initialize", err)
 		logger.Printf("error", "config.Initialize error: %v", err)
@@ -93,6 +98,8 @@ func main() {
 	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
 
 	//
+	go http.ListenAndServe(":60001", nil)
+
 	fmt.Println("Running")
 	httpsrv.GlobalService.Start()
 }

@@ -53,11 +53,7 @@ func (q *QuerySet) Hash() string {
 
 	ps := []string{}
 	for _, p := range params {
-
-		switch p.(type) {
-		case string:
-			ps = append(ps, p.(string))
-		}
+		ps = append(ps, fmt.Sprintf("%v", p))
 	}
 
 	str := fmt.Sprintf("%s.%s.%s.%s.%d.%d %s,%s",

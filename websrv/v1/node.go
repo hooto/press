@@ -52,6 +52,7 @@ func (c Node) ListAction() {
 
 	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 	dq.Limit(node_list_limit)
+	dq.Filter("status.gt", 0)
 
 	page := c.Params.Int64("page")
 	if page < 1 {
@@ -63,6 +64,7 @@ func (c Node) ListAction() {
 	}
 
 	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dqc.Filter("status.gt", 0)
 
 	count, err := dqc.NodeCount()
 	if err != nil {
@@ -90,6 +92,7 @@ func (c Node) EntryAction() {
 
 	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 	dq.Limit(100)
+	dq.Filter("status.gt", 0)
 
 	dq.Filter("id", c.Params.Get("id"))
 
@@ -178,21 +181,24 @@ func (c Node) SetAction() {
 					continue
 				}
 
-				if rs[0].Field("field_"+valField.Name).String() != valField.Value {
+				if rs[0].Field("field_"+modField.Name).String() != valField.Value {
+					set["field_"+modField.Name] = valField.Value
+				}
 
-					set["field_"+valField.Name] = valField.Value
+				if modField.Type == "text" {
 
-					if modField.Type == "text" {
+					attrs := []api.KeyValue{}
 
-						attrs := []api.KeyValue{}
-
-						for _, attr := range valField.Attrs {
-							if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
-								attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
-							}
+					for _, attr := range valField.Attrs {
+						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text"}) {
+							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 						}
+					}
 
-						set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
+					attrs_js, _ := utils.JsonEncode(attrs)
+
+					if attrs_js != rs[0].Field("field_"+modField.Name+"_attrs").String() {
+						set["field_"+modField.Name+"_attrs"] = attrs_js
 					}
 				}
 
@@ -250,7 +256,7 @@ func (c Node) SetAction() {
 					attrs := []api.KeyValue{}
 
 					for _, attr := range valField.Attrs {
-						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text"}) {
 							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 						}
 					}
@@ -317,6 +323,77 @@ func (c Node) SetAction() {
 			}
 			return
 		}
+	}
+
+	rsp.Kind = "Node"
+}
+
+func (c Node) DelAction() {
+
+	rsp := api.Node{}
+
+	defer c.RenderJson(&rsp)
+
+	if !idclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+		return
+	}
+
+	dcn, err := rdo.ClientPull("def")
+	if err != nil {
+		rsp.Error = &types.ErrorMeta{
+			Code:    "500",
+			Message: "Can not pull database instance",
+		}
+		return
+	}
+
+	if _, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid")); err != nil {
+		rsp.Error = &types.ErrorMeta{
+			Code:    "404",
+			Message: "Spec or Model Not Found",
+		}
+		return
+	}
+
+	//
+	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(c.Params.Get("modname"), 12), c.Params.Get("modelid"))
+
+	q := rdobase.NewQuerySet().From(table).Limit(1)
+	q.Where.And("id", c.Params.Get("id"))
+
+	rs, err := dcn.Base.Query(q)
+	if err != nil {
+		rsp.Error = &types.ErrorMeta{
+			Code:    "500",
+			Message: "Can not pull database instance",
+		}
+		return
+	}
+
+	if len(rs) < 1 {
+		rsp.Error = &types.ErrorMeta{
+			Code:    "404",
+			Message: "Node Not Found",
+		}
+		return
+	}
+
+	set := map[string]interface{}{
+		"updated": rdobase.TimeNow("datetime"),
+		"status":  0,
+	}
+
+	ft := rdobase.NewFilter()
+	ft.And("id", c.Params.Get("id"))
+	_, err = dcn.Base.Update(table, set, ft)
+
+	if err != nil {
+		rsp.Error = &types.ErrorMeta{
+			Code:    "500",
+			Message: err.Error(),
+		}
+		return
 	}
 
 	rsp.Kind = "Node"

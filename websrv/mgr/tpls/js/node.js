@@ -11,6 +11,16 @@ var l5sNode = {
         type: false,
         name: "OFF",
     }],
+    status_def : [{
+        type: 1,
+        name: "Publish",
+    },{
+        type: 2,
+        name: "Draft",
+    },{
+        type: 3,
+        name: "Private",
+    }],
 }
 
 l5sNode.Init = function()
@@ -251,6 +261,7 @@ l5sNode.List = function(modname, modelid)
                     modname : modname,
                     modelid  : modelid,
                     items  : rsj.items,
+                    _status_def : l5sNode.status_def,
                 },
                 success: function() {
 
@@ -316,6 +327,8 @@ l5sNode.Set = function(modname, modelid, nodeid)
         return;
     }
 
+    l5sEditor.Clean();
+
     var uri = "modname="+ modname +"&modelid="+ modelid;
 
     // console.log(uri);
@@ -348,6 +361,8 @@ l5sNode.Set = function(modname, modelid, nodeid)
             $(alertid).hide();
 
             l5sNode.setCurrent = data;
+            data._status_def = l5sNode.status_def;
+
             // console.log(data);
 
             l4iTemplate.Render({
@@ -355,12 +370,16 @@ l5sNode.Set = function(modname, modelid, nodeid)
                 tplid: "l5smgr-nodeset-tpl",
                 data:  data,
                 success: function() {
+                    
                     for (var i in data.model.fields) {
 
                         var field = data.model.fields[i];
 
+                        var field_entry = {};
+
                         for (var j in data.fields) {
                             if (data.fields[i].name == field.name) {
+                                field_entry = data.fields[i];
                                 field.value = data.fields[i].value;
                                 break;
                             }
@@ -385,6 +404,12 @@ l5sNode.Set = function(modname, modelid, nodeid)
                             if (field.attrs) {
                                 for (var j in field.attrs) {
                                     field["attr_"+ field.attrs[j].key] = field.attrs[j].value;
+                                }                                
+                            }
+
+                            if (field_entry.attrs) {
+                                for (var j in field_entry.attrs) {
+                                    field["attr_"+ field_entry.attrs[j].key] = field_entry.attrs[j].value;
                                 }
                             }
 
@@ -392,11 +417,13 @@ l5sNode.Set = function(modname, modelid, nodeid)
                                 field.value = "";
                             }
 
-                            if (field.attr_format && field.attr_format == "md") {
-                                cb = function() {
-                                    l5sEditor.Open(field.name);
-                                }
+                            if (!field.attr_format) {
+                                field.attr_format = "text";
                             }
+
+                            cb = function() {
+                                l5sEditor.Open(field.name, field.attr_format);
+                            };                            
 
                             tplid = "l5smgr-nodeset-tpltext";
                             break;
@@ -422,7 +449,7 @@ l5sNode.Set = function(modname, modelid, nodeid)
                         }
 
                         l4iTemplate.Render({
-                            dstid  : "l5smgr-nodeset",
+                            dstid  : "l5smgr-nodeset-fields",
                             tplid  : tplid,
                             append : true,
                             data   : field,
@@ -454,7 +481,7 @@ l5sNode.Set = function(modname, modelid, nodeid)
                             tplid = "l5smgr-nodeset-tplterm_tag";
 
                             l4iTemplate.Render({
-                                dstid  : "l5smgr-nodeset",
+                                dstid  : "l5smgr-nodeset-fields",
                                 tplid  : tplid,
                                 append : true,
                                 data   : term,
@@ -481,7 +508,7 @@ l5sNode.Set = function(modname, modelid, nodeid)
                                     tplid = "l5smgr-nodeset-tplterm_taxonomy";
                         
                                     l4iTemplate.Render({
-                                        dstid  : "l5smgr-nodeset",
+                                        dstid  : "l5smgr-nodeset-fields",
                                         tplid  : tplid,
                                         append : true,
                                         data   : data,
@@ -500,7 +527,7 @@ l5sNode.Set = function(modname, modelid, nodeid)
 
                     if (data.model.extensions.comment_perentry) {
                         l4iTemplate.Render({
-                            dstid  : "l5smgr-nodeset",
+                            dstid  : "l5smgr-nodeset-fields",
                             tplid  : "l5smgr-nodeset-tplext_comment_perentry",
                             append : true,
                             data   : {
@@ -548,6 +575,7 @@ l5sNode.Set = function(modname, modelid, nodeid)
     });
 }
 
+
 l5sNode.SetCommit = function()
 {
     var form = $("#l5smgr-nodeset"),
@@ -562,7 +590,7 @@ l5sNode.SetCommit = function()
     var req = {
         id     : form.find("input[name=id]").val(),
         title  : form.find("input[name=title]").val(),
-        status  : parseInt(form.find("input[name=status]").val()),
+        status : parseInt(form.find("select[name=status]").val()),
         fields : [],
         terms  : [],
         ext_comment_perentry: form.find("select[name=ext_comment_perentry]").val(),
@@ -589,23 +617,34 @@ l5sNode.SetCommit = function()
 
         case "text":
 
-            if (field.attrs) {
-                for (var j in field.attrs) {
-
-                    if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
-                        
-                        field_set.value = l5sEditor.Content(field.name);
-                        
-                        field_set.attrs.push({key: "format", value: "md"});
-
-                        break;
-                    }
-                }
+            var format = form.find("input[name=field_"+ field.name +"_attr_format]").val();
+            if (!format) {
+                format = "text";
             }
 
-            if (!field_set.value) {
-                field_set.value = form.find("textarea[name=field_"+ field.name +"]").val();
-            }
+            field_set.attrs.push({key: "format", value: format});
+            field_set.value = l5sEditor.Content(field.name);
+
+            // console.log(format);
+
+            // if (field.attrs) {
+                
+            //     for (var j in field.attrs) {
+
+            //         if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
+                        
+            //             field_set.value = l5sEditor.Content(field.name);
+                        
+            //             field_set.attrs.push({key: "format", value: "md"});
+
+            //             break;
+            //         }
+            //     }
+            // }
+
+            // if (!field_set.value) {
+            //     field_set.value = form.find("textarea[name=field_"+ field.name +"]").val();
+            // }
 
             break;
         
@@ -672,7 +711,50 @@ l5sNode.SetCommit = function()
             form.find("input[name=id]").val(data.id);
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
-            setTimeout(l5sNode.List, 500);
+            setTimeout(function() {
+                l5sNode.List();
+                l5sEditor.Clean();
+            }, 500);
+        }
+    });
+}
+
+
+l5sNode.Del = function(modname, modelid, id)
+{
+    console.log(modname, modelid, id);
+    l4iModal.Open({
+        title  : "Delete",
+        tplsrc : '<div id="l5smgr-node-del" class="alert alert-danger">Are you sure to delete this?</div>',
+        height : "200px",
+        buttons: [{
+            title: "Confirm to delete",
+            onclick : 'l5sNode.DelCommit("'+modname+'","'+modelid+'","'+id+'")',
+            style: "btn-danger",
+        },{
+            title: "Cancel",
+            onclick : "l4iModal.Close()",
+        }],
+    });
+}
+
+l5sNode.DelCommit = function(modname, modelid, id)
+{
+    var alertid = "#l5smgr-node-del";
+    var uri = "modname="+ modname + "&modelid="+ modelid +"&id="+ id;
+
+    l5sMgr.ApiCmd("node/del?"+ uri, {
+        callback : function(err, data) {
+
+            if (!data || data.kind != "Node") {
+                return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
+            }
+
+            l4i.InnerAlert(alertid, 'alert-success', "Successful deleted");
+            setTimeout(function() {
+                l5sNode.List();
+                l4iModal.Close();
+            }, 500);
         }
     });
 }

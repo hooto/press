@@ -2,7 +2,7 @@ var l5sEditor = {
     editors: {},
 }
 
-l5sEditor.Open = function(name)
+l5sEditor.Open = function(name, format)
 {
     seajs.use([
         "~/codemirror/5/lib/codemirror.css",
@@ -17,11 +17,38 @@ l5sEditor.Open = function(name)
         ],
         function() {
 
+            // console.log(format);
+
+            var lineNumbers = false;
+            if (format == "md") {
+                lineNumbers = true;
+                $("#field_"+ name +"_editor_mdr").show();
+            } else {
+                $("#field_"+ name +"_editor_mdr").hide();
+            }
+            
+            $("#field_"+ name +"_editor_nav").find("a.active").removeClass("active");
+            $("#field_"+ name +"_editor_nav").find("a.editor-nav-"+ format).addClass("active");
+
+            var editor = l5sEditor.editors[name];
+            if (editor) {
+
+                $("#field_"+ name +"_attr_format").val(format);
+   
+                l5sEditor.editors[name].setOption("lineNumbers", lineNumbers);
+
+                if (format != "md") {
+                    l5sEditor.PreviewClose(name);                    
+                }
+
+                return;
+            }
+
             var height = $("#field_"+ name +"_layout").height();
 
             l5sEditor.editors[name] = CodeMirror.fromTextArea(document.getElementById("field_"+ name), {
                 mode            : "markdown",
-                lineNumbers     : true,
+                lineNumbers     : lineNumbers,
                 theme           : "default",
                 lineWrapping    : true,
                 styleActiveLine : true,
@@ -30,7 +57,6 @@ l5sEditor.Open = function(name)
             l5sEditor.editors[name].setSize("100%", height);
 
             l5sEditor.editors[name].on("change", function(cm) {
-                // console.log("editor changed: "+ name);
                 l5sEditor.previewChanged(name);
             });
 
@@ -206,5 +232,17 @@ l5sEditor.Content = function(name)
 
 l5sEditor.Close = function(name)
 {
-    delete l5sEditor.editors[name];
+    var edr = l5sEditor.editors[name];
+    if (edr) {
+        l5sEditor.editors[name] = null;
+        delete l5sEditor.editors[name];
+    }
+}
+
+l5sEditor.Clean = function()
+{
+    for (var i in l5sEditor.editors) {
+        l5sEditor.editors[i] = null;
+        delete l5sEditor.editors[i];
+    }
 }

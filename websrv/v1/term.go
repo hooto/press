@@ -36,8 +36,9 @@ import (
 )
 
 var (
-	spaceReg              = regexp.MustCompile(" +")
-	term_list_limit int64 = 15
+	spaceReg                       = regexp.MustCompile(" +")
+	term_list_limit          int64 = 15
+	term_list_limit_taxonomy int64 = 200
 )
 
 type Term struct {
@@ -55,17 +56,34 @@ func (c Term) ListAction() {
 		return
 	}
 
-	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
-	dq.Limit(term_list_limit)
+	model, err := config.SpecTermModel(c.Params.Get("modname"), c.Params.Get("modelid"))
+	if err != nil {
+		ls.Error = &types.ErrorMeta{
+			Code:    "404",
+			Message: "Spec or Model Not Found",
+		}
+		return
+	}
 
-	page := c.Params.Int64("page")
+	page, limit := c.Params.Int64("page"), term_list_limit
+
+	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	if model.Type == api.TermTaxonomy {
+		limit = term_list_limit_taxonomy
+		page = 1
+	}
+
 	if page < 1 {
 		page = 1
 	}
 
+	dq.Limit(limit)
 	if page > 1 {
-		dq.Offset(int64((page - 1) * term_list_limit))
+		dq.Offset(int64((page - 1) * limit))
 	}
+
+	//
+	ls = dq.TermList()
 
 	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 
@@ -75,11 +93,9 @@ func (c Term) ListAction() {
 		return
 	}
 
-	ls = dq.TermList()
-
 	ls.Meta.TotalResults = uint64(count)
-	ls.Meta.StartIndex = uint64((page - 1) * term_list_limit)
-	ls.Meta.ItemsPerList = uint64(term_list_limit)
+	ls.Meta.StartIndex = uint64((page - 1) * limit)
+	ls.Meta.ItemsPerList = uint64(limit)
 }
 
 func (c Term) EntryAction() {
@@ -240,6 +256,8 @@ func (c Term) SetAction() {
 			set["created"] = rdobase.TimeNow("datetime")
 			set["userid"] = "dr5a8pgv"
 		}
+
+		datax.TermTaxonomyCacheClean(c.Params.Get("modname"), c.Params.Get("modelid"))
 
 	default:
 		rsp.Error = &types.ErrorMeta{

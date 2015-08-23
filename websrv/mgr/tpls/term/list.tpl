@@ -27,7 +27,7 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>ID</th>
+      <th width="80px">ID</th>
       <th>Title</th>
       {[ if (it.model.type == "taxonomy") { ]}
       <th>Weight</th>
@@ -39,6 +39,7 @@
   </thead>
   <tbody>
   {[~it.items :v]}
+  {[ if (v.pid == 0) { ]}
     <tr>
       <td class="l5smgr-font-wfix">{[=v.id]}</td>
       <td>{[=v.title]}</td>
@@ -49,6 +50,19 @@
       <td>{[=v.updated]}</td>
       <td align="right"><a class="term-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
     </tr>
+    {[? v._subs]}
+    {[~v._subs :v2]}
+    <tr>
+      <td class="l5smgr-font-wfix">{[=v2.id]}</td>
+      <td>{[=l5sTerm.Sprint(v2._dp)]}{[=v2.title]}</td>
+      <td>{[=l5sTerm.Sprint(v2._dp)]}{[=v2.weight]}</td>
+      <td>{[=v2.created]}</td>
+      <td>{[=v2.updated]}</td>
+      <td align="right"><a class="term-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v2.id]}">Edit</a>
+    </tr>
+    {[~]}
+    {[?]}
+  {[ } ]}
   {[~]}
   </tbody>
 </table>

@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	coreModules = []string{"core/general", "core/comment", "core/blog"}
+	coreModules = []string{"core/general", "core/comment", "core/blog", "ruilog/notebook"}
 
 	Perms = []idsapi.AppPrivilege{
 		idsapi.AppPrivilege{

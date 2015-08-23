@@ -43,12 +43,17 @@
       <td>
         <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
       </td>
-      <td>{[=v.status]}</td>
+      <td>
+      {[~it._status_def :sv]}
+        {[if (sv.type == v.status) { ]}{[=sv.name]}{[ } ]}
+      {[~]}
+      </td>
       {[if (it.model.extensions.access_counter) { ]}<td>{[=v.ext_access_counter]}</td>{[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
       <td align="right">
-        <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+        <a class="node-item-del btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Del</a>
+        <a class="node-item btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
       </td>
     </tr>
   {[~]}
@@ -76,4 +81,8 @@ $("#l5smgr-nodels").on("click", ".node-item", function() {
     l5sNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
 });
 
+$("#l5smgr-nodels").on("click", ".node-item-del", function() {
+    var id = $(this).attr("href").substr(1);
+    l5sNode.Del($(this).attr("modname"), $(this).attr("modelid"), id);
+});
 </script>

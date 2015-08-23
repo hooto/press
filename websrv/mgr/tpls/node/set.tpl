@@ -8,23 +8,41 @@
 
 <script id="l5smgr-nodeset-tpl" type="text/html">
   <input type="hidden" name="id" value="{[=it.id]}">
-  <input type="hidden" name="status" value="{[=it.status]}">
   <div class="l4i-form-group">
     <label>Title</label>
     <p><input name="title" type="text" value="{[=it.title]}" class="l4i-form-control"></p>
   </div>
+  <div id="l5smgr-nodeset-fields"></div>
+  <div class="l4i-form-group">
+    <label>Status</label>
+    <p>
+      <select name="status" class="l4i-form-control">
+      {[~it._status_def :sv]}
+        <option value="{[=sv.type]}" {[if (sv.type == it.status) { ]}selected{[ } ]}>{[=sv.name]}</option>
+      {[~]}
+      </select>
+    </p>
+  </div>
 </script>
 
 <script id="l5smgr-nodeset-tpltext" type="text/html">
-  <div class="l4i-form-group">
+  <div class="l4i-form-group l5smgr-nodeset-tpltext">
     <label id="field_{[=it.name]}_tools">
-      {[=it.title]}
-      <a class="btn btn-default btn-xs preview_open" href="#preview-open" onclick="l5sEditor.PreviewOpen('{[=it.name]}')" style="display:none">Open real-time preview</a>
-      <a class="btn btn-default btn-xs preview_close" href="#preview-close" onclick="l5sEditor.PreviewClose('{[=it.name]}')" style="display:none">Close real-time preview</a>
+      <span>{[=it.title]}</span>
+      <span id="field_{[=it.name]}_editor_nav" class="editor-nav">
+        <a class="tpltext-editor-item editor-nav-text" href="#" 
+          onclick="l5sEditor.Open('{[=it.name]}', 'text')">Text</a>
+        <a class="tpltext-editor-item editor-nav-md" href="#"
+          onclick="l5sEditor.Open('{[=it.name]}', 'md')">Markdown</a>
+      </span>
+      <span id="field_{[=it.name]}_editor_mdr" class="editor_mdr" style="display:none">
+        <a class="tpltext-editor-item preview_open" href="#preview-open" onclick="l5sEditor.PreviewOpen('{[=it.name]}')" style="display:none">Open Markdown Preview</a>
+        <a class="tpltext-editor-item preview_close" href="#preview-close" onclick="l5sEditor.PreviewClose('{[=it.name]}')" style="display:none">Close Markdown Preview</a>
+      </span>
     </label>
-    <input type="hidden" name="field_{[=it.name]}_attr_format" value="{[=it.attr_format]}">
+    <input type="hidden" id="field_{[=it.name]}_attr_format" name="field_{[=it.name]}_attr_format" value="{[=it.attr_format]}">
     
-    <table width="100%" id="field_{[=it.name]}_layout">
+    <table width="100%" id="field_{[=it.name]}_layout" class="editor-fra">
     <tr>
       <td id="field_{[=it.name]}_editor" valign="top">
         <textarea class="l4i-form-control " id="field_{[=it.name]}" name="field_{[=it.name]}" rows="{[if (it.attr_ui_rows) {]}{[=it.attr_ui_rows]}{[} else {]}6{[}]}">{[=it.value]}</textarea>

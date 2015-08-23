@@ -62,6 +62,12 @@ func (q *QuerySet) TermList() api.TermList {
 		return rsp
 	}
 
+	if model.Type == api.TermTaxonomy {
+		if tc, ok := term_cmap[q.ModName+q.Table]; ok {
+			return tc.ls
+		}
+	}
+
 	dcn, err := rdo.ClientPull("def")
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
@@ -77,14 +83,16 @@ func (q *QuerySet) TermList() api.TermList {
 	qs := rdobase.NewQuerySet().
 		Select(q.cols).
 		From(table).
-		Limit(q.limit).
 		Offset(q.offset)
 
 	if model.Type == api.TermTag {
 		qs.Order("updated desc")
 	} else if model.Type == api.TermTaxonomy {
-		qs.Order("weight asc")
+		q.limit = 200
+		qs.Order("weight desc")
 	}
+
+	qs.Limit(q.limit)
 
 	qs.Where = q.filter
 
@@ -103,6 +111,7 @@ func (q *QuerySet) TermList() api.TermList {
 
 			item := api.Term{
 				ID:      v.Field("id").Uint32(),
+				PID:     v.Field("pid").Uint32(),
 				Status:  v.Field("status").Int16(),
 				UserID:  v.Field("userid").String(),
 				Title:   v.Field("title").String(),
@@ -133,6 +142,23 @@ func (q *QuerySet) TermList() api.TermList {
 
 	rsp.Kind = "TermList"
 
+	if model.Type == api.TermTaxonomy {
+
+		term_locker.Lock()
+		defer term_locker.Unlock()
+
+		tcm := &term_cates{
+			ls:  rsp,
+			dps: map[uint32][]uint32{},
+		}
+
+		for _, term_entry := range tcm.ls.Items {
+			tcm.dps[term_entry.ID] = _term_cate_subtree(&tcm.ls, []uint32{}, term_entry.ID)
+		}
+
+		term_cmap[q.ModName+q.Table] = tcm
+	}
+
 	// qryhash := q.Hash()
 
 	// if model.CacheTTL > 0 && entry.Title != "" {
@@ -140,6 +166,35 @@ func (q *QuerySet) TermList() api.TermList {
 	// }
 
 	return rsp
+}
+
+func _term_cate_subtree(termls *api.TermList, prs []uint32, pid uint32) []uint32 {
+
+	if _term_in_array(prs, pid) {
+		return prs
+	}
+
+	prs = append(prs, pid)
+
+	for _, entry := range termls.Items {
+
+		if entry.PID == pid {
+			prs = _term_cate_subtree(termls, prs, entry.ID)
+		}
+	}
+
+	return prs
+}
+
+func _term_in_array(arr []uint32, a uint32) bool {
+
+	for _, ar := range arr {
+		if ar == a {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (q *QuerySet) TermEntry() api.Term {
@@ -207,6 +262,7 @@ func (q *QuerySet) TermEntry() api.Term {
 	}
 
 	rsp.ID = rs[0].Field("id").Uint32()
+	rsp.PID = rs[0].Field("pid").Uint32()
 	rsp.Status = rs[0].Field("status").Int16()
 	rsp.UserID = rs[0].Field("userid").String()
 	rsp.Title = rs[0].Field("title").String()

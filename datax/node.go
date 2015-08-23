@@ -152,8 +152,6 @@ func (q *QuerySet) NodeList() api.NodeList {
 		qs.Order("created desc")
 	}
 
-	q.Filter("status", 1)
-
 	qs.Where = q.filter
 
 	rs, err := dcn.Base.Query(qs)
@@ -166,6 +164,7 @@ func (q *QuerySet) NodeList() api.NodeList {
 	}
 
 	termBufs := map[string][]string{}
+	termTaxonomy := map[string]api.Term{}
 
 	if len(rs) > 0 {
 
@@ -219,7 +218,15 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 				item.Terms = append(item.Terms, termItem)
 				if term.Type == api.TermTaxonomy {
-					if !utilx.ArrayContain(termItem.Value, termBufs[termItem.Name]) {
+
+					if te := TermTaxonomyCacheEntry(q.ModName, term.Meta.Name, v.Field("term_"+term.Meta.Name).Uint32()); te != nil {
+
+						termTaxonomy[v.Field("term_"+term.Meta.Name).String()] = api.Term{
+							ID:    te.ID,
+							Title: te.Title,
+						}
+
+					} else if !utilx.ArrayContain(termItem.Value, termBufs[termItem.Name]) {
 						termBufs[termItem.Name] = append(termBufs[termItem.Name], termItem.Value)
 					}
 				}
@@ -230,7 +237,6 @@ func (q *QuerySet) NodeList() api.NodeList {
 	}
 
 	// Fetch Terms
-	termTaxonomy := map[string]api.Term{}
 	for _, term := range model.Terms {
 
 		termids, ok := termBufs[term.Meta.Name]
@@ -254,8 +260,8 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 				for _, v := range rs {
 					termTaxonomy[v.Field("id").String()] = api.Term{
-						ID:    rs[0].Field("id").Uint32(),
-						Title: rs[0].Field("title").String(),
+						ID:    v.Field("id").Uint32(),
+						Title: v.Field("title").String(),
 					}
 				}
 			}

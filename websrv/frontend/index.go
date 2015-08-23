@@ -177,6 +177,8 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		qry.Filter("id", id)
 	}
 
+	qry.Filter("status", 1)
+
 	qry.Pager = ad.Pager
 
 	switch ad.Type {
@@ -196,7 +198,17 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 					switch term.Type {
 
 					case api.TermTaxonomy:
-						qry.Filter("term_"+term.Meta.Name, termVal)
+
+						if idxs := datax.TermTaxonomyCacheIndexes(mod.Meta.Name, term.Meta.Name, termVal); len(idxs) > 1 {
+							args := []interface{}{}
+							for _, idx := range idxs {
+								args = append(args, idx)
+							}
+							qry.Filter("term_"+term.Meta.Name+".in", args...)
+						} else {
+							qry.Filter("term_"+term.Meta.Name, termVal)
+						}
+
 						c.Data["term_"+term.Meta.Name] = termVal
 
 					case api.TermTag:

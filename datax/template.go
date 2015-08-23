@@ -101,6 +101,8 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					qry.Order(datax.Query.Order)
 				}
 
+				qry.Filter("status", 1)
+
 				switch datax.Type {
 
 				case "node.list":

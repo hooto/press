@@ -1,5 +1,5 @@
 var l5sTerm = {
-
+    taxonomy_ls_cache : null,
 }
 
 l5sTerm.List = function(modname, modelid)
@@ -48,6 +48,8 @@ l5sTerm.List = function(modname, modelid)
 
             $(alertid).hide();
 
+
+
             for (var i in rsj.items) {
                 
                 rsj.items[i].created = l4i.TimeParseFormat(rsj.items[i].created, "Y-m-d");
@@ -56,7 +58,17 @@ l5sTerm.List = function(modname, modelid)
                 if (!rsj.items[i].weight) {
                     rsj.items[i].weight = 0;
                 }
+
+                if (!rsj.items[i].pid) {
+                    rsj.items[i].pid = 0;
+                }
+
+                if (rsj.model.type == "taxonomy" && rsj.items[i].pid == 0) {
+                    rsj.items[i]._subs = l5sTerm.ListSubRange(rsj.items, null, rsj.items[i].id, 0);
+                } 
             }
+
+            l5sTerm.taxonomy_ls_cache = rsj;
 
             l4iTemplate.Render({
                 dstid: "l5smgr-termls",
@@ -69,13 +81,19 @@ l5sTerm.List = function(modname, modelid)
                 },
                 success: function() {
 
-                    rsj.meta.RangeLen = 20;
+                    if (rsj.model.type != "taxonomy") {
+                        rsj.meta.RangeLen = 20;
 
-                    l4iTemplate.Render({
-                        dstid  : "l5smgr-termls-pager",
-                        tplid  : "l5smgr-termls-pager-tpl",
-                        data   : l4i.Pager(rsj.meta),
-                    });
+                        l4iTemplate.Render({
+                            dstid  : "l5smgr-termls-pager",
+                            tplid  : "l5smgr-termls-pager-tpl",
+                            data   : l4i.Pager(rsj.meta),
+                        });
+                    } else {
+                        $("#l5smgr-termls-pager").empty();
+                    }
+
+                    
                 }
             });
         });
@@ -106,6 +124,47 @@ l5sTerm.List = function(modname, modelid)
             callback: ep.done("data"),           
         });
     });
+}
+
+l5sTerm.Sprint = function(num)
+{
+    var s = "";
+    for (i = 0; i < num; i++) {
+        s += "&nbsp;&nbsp;&nbsp;&nbsp;";
+    }
+
+    return s;
+}
+
+l5sTerm.ListSubRange = function(ls, rs, pid, dpnum)
+{
+    if (!rs) {
+        rs = [];
+    }
+
+    dpnum++;
+
+    // console.log(rs, pid);
+    // console.log(ls.length);
+
+    for (var i in rs) {
+        if (rs[i].id == pid) {
+            // return rs;
+        }
+    }
+
+    for (var i in ls) {
+        
+        if (ls[i].pid == pid) {
+            ls[i]._dp = dpnum;
+            rs.push(ls[i]);
+            rs = l5sTerm.ListSubRange(ls, rs, ls[i].id, dpnum);
+        }
+    }
+
+    // console.log(rs);
+
+    return rs;
 }
 
 l5sTerm.ListPage = function(page)
@@ -155,6 +214,8 @@ l5sTerm.Set = function(modname, modelid, termid)
             if (!data.pid) {
                 data.pid = 0;
             }
+
+            data._taxonomy_ls = l5sTerm.taxonomy_ls_cache;
 
             $(alertid).hide();
 
@@ -220,7 +281,7 @@ l5sTerm.SetCommit = function()
     var model_type = form.find("input[name=model_type]").val();
     if (model_type = "taxonomy") {
         req.weight = parseInt(form.find("input[name=weight]").val());
-        req.pid    = parseInt(form.find("input[name=pid]").val());
+        req.pid    = parseInt(form.find("select[name=pid]").val());
     } else if (model_type = "tag") {
 
     }

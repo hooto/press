@@ -166,8 +166,9 @@ body {
 
 .l5s-ctn-header h2 {
   margin: 0;
-  font-size: 160%;
-  color: #F04C5C;
+  font-size: 120%;
+  font-weight: normal;
+  color: #f04c5c;
 }
 
 /** l5s-node-list **/
@@ -206,7 +207,7 @@ body {
 
 .l5s-nodels-heading a:hover {
   text-decoration: underline;
-  color: #F04C5C;
+  color: #f04c5c;
 }
 
 .l5s-nodels-info {
@@ -219,11 +220,12 @@ body {
 }
 
 .l5s-nodels-info .section a {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .l5s-nodels-info .section a:hover {
-  color: #F04C5C;
+  color: #f04c5c;
+  text-decoration: underline;
 }
 
 .l5s-nodels-info .section .tag-item {
@@ -269,9 +271,9 @@ body {
 
 .l5s-nodev .header h2 {
   margin: 0;
-  color: #419EDA;
-  font-weight: 600;
-  font-size: 200%;
+  /*color: #419EDA;*/
+  font-weight: bold;
+  font-size: 160%;
 }
 
 .l5s-nodev .header .hinfo {
@@ -285,11 +287,29 @@ body {
 }
 
 .l5s-nodev .header .hinfo .section a {
+  text-decoration: none;
+}
+
+.l5s-nodev .header .hinfo .section a:hover {
+  color: #f04c5c;
   text-decoration: underline;
+}
+
+.l5s-nodev .header .hinfo .section .tag-item {
+  margin-right: 10px;
 }
 
 .l5s-nodev .content {
   line-height: 160% !important;
+}
+
+.l5s-nodev .content a {
+  text-decoration: none;
+}
+
+.l5s-nodev .content a:hover {
+  color: #f04c5c;
+  text-decoration: underline;
 }
 
 .l5s-nodev .content pre {
@@ -322,6 +342,41 @@ body {
   margin: 0 0 10px 0;
   font-weight: 400;
   font-size: 120%;
+}
+
+.l5s-sidebar-section .term-taxonomy-group .list-group-item {
+  padding: 0 !important;
+}
+
+.l5s-sidebar-section .term-taxonomy-item {
+  color: #555;
+  padding: 8px 10px;
+  display: block;
+}
+
+.l5s-sidebar-section .term-taxonomy-item:hover {
+  background-color: #eee;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.l5s-sidebar-section .term-taxonomy-item.active {
+  color: #f04c5c;
+}
+
+.l5s-sidebar-section .term-taxonomy-subitem {
+  padding: 6px 0 6px 25px;
+  display: block;
+}
+
+.l5s-sidebar-section .term-taxonomy-subitem:hover {
+  background-color: #eee;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.l5s-sidebar-section .term-taxonomy-subitem.active {
+  color: #f04c5c;
 }
 
 /** scroll **/
