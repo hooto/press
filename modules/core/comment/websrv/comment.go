@@ -47,6 +47,7 @@ func (c Comment) EmbedAction() {
 
 	qry := datax.NewQuery(nsModName, "entry")
 	qry.Limit(500)
+	qry.Filter("status", 1)
 	qry.Order("created asc")
 	qry.Filter("field_refer_id", c.Params.Get("refer_id"))
 	qry.Filter("field_refer", c.Params.Get("refer_modname")+"."+c.Params.Get("refer_datax_table"))
