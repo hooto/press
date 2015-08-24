@@ -77,9 +77,9 @@ window.onload_hooks.push(function() {
         l5sComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
     });
 });
+{{end}}
 
 window.onload_hooks.push(function() {
     l5s.CodeRender();
 });
-{{end}}
 </script>
