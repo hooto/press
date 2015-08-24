@@ -22,7 +22,7 @@
           <strong>{{FieldSubString $v.Fields "author" 50}}</strong>
           <small>@{{TimeFormat $v.Created "atom" "Y-m-d H:i"}}</small>
         </div>
-        <p>{{FieldSubHtml $v.Fields "content" 300}}</p>
+        <p>{{FieldSubHtml $v.Fields "content" 2000}}</p>
       </div>
     </div>
     {{end}}
@@ -90,11 +90,8 @@
         <button class="btn btn-default" onclick="l5sComment.EmbedCommit()">Commit</button>
 
       </div>
-
     </div>
   </div>
-
-
 </div>
 
 <script id="l5s-comment-embed-tpl" type="text/html">
