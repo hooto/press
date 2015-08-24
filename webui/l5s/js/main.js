@@ -14,14 +14,15 @@ l5s.Boot = function()
     function() {
 
         seajs.use([
-            // "~/bootstrap/3.3/js/bootstrap.min.js",
             "~/lessui/js/lessui.js",
         ],
         function() {
 
-            for (var i in window.onload_hooks) {
-                window.onload_hooks[i]();
-            }            
+            setTimeout(function() {
+                for (var i in window.onload_hooks) {
+                    window.onload_hooks[i]();
+                } 
+            }, 10);                       
         });
     });
 }
