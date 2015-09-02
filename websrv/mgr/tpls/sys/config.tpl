@@ -29,7 +29,13 @@
       {[~it.items :v]}
       <tr>
         <td width="20%">{[=v.key]}</td>
-        <td width="40%"><input type="text" class="form-control l5smgr-sys-config-item" name="{[=v.key]}" value="{[=v.value]}"></td>
+        <td width="40%">
+          {[ if (v.type !== undefined && v.type == "text") { ]}
+          <textarea class="form-control l5smgr-sys-config-item" name="{[=v.key]}" rows="3">{[=v.value]}</textarea>
+          {[ } else { ]}
+          <input type="text" class="form-control l5smgr-sys-config-item" name="{[=v.key]}" value="{[=v.value]}">
+          {[ } ]}
+        </td>
         <td>{[=v.comment]}</td>
       </tr>
       {[~]}

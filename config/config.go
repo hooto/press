@@ -35,7 +35,7 @@ import (
 
 var (
 	Config        ConfigCommon
-	Version       = "0.0.1.dev"
+	Version       = "0.0.2.dev"
 	captchaConfig captcha.Options
 
 	User = &user.User{
@@ -61,10 +61,11 @@ type ConfigCommon struct {
 
 func init() {
 	SysConfigList.Kind = "SysConfigList"
-	SysConfigList.Insert(api.SysConfig{"frontend_footer_copyright", "2015 Demo", ""})
-	SysConfigList.Insert(api.SysConfig{"frontend_header_site_name", "CMS", "Site's Name"})
-	SysConfigList.Insert(api.SysConfig{"frontend_header_site_logo_url", "", ""})
-	SysConfigList.Insert(api.SysConfig{"ls2_uri", "//127.0.0.1/bucket-name", "Storage Service URI"})
+	SysConfigList.Insert(api.SysConfig{"frontend_header_site_name", "CMS", "Site's Name", ""})
+	SysConfigList.Insert(api.SysConfig{"frontend_header_site_logo_url", "", "", ""})
+	SysConfigList.Insert(api.SysConfig{"frontend_footer_copyright", "2015 Demo", "", ""})
+	SysConfigList.Insert(api.SysConfig{"frontend_footer_analytics_scripts", "", "Embed analytics script just as Google Analytics or Piwik ...", "text"})
+	SysConfigList.Insert(api.SysConfig{"ls2_uri", "//127.0.0.1/bucket-name", "Storage Service URI", ""})
 }
 
 func Initialize(prefix string) error {

@@ -4,7 +4,8 @@
       &copy;{{SysConfig "frontend_footer_copyright"}}
     </div>
 	<div class="pull-right">
-      Powered by <strong><a href="http://www.lessos.com/p/lesscms" target="_blank">lessCMS</a></strong>
+      Powered by <strong><a href="https://www.drupal.org" target="_blank">Drupal</a></strong>
     </div>
   </div>
 </footer>
+{{raw (SysConfig "frontend_footer_analytics_scripts")}}

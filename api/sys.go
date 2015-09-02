@@ -68,6 +68,7 @@ type SysConfig struct {
 	Key     string `json:"key"`
 	Value   string `json:"value"`
 	Comment string `json:"comment,omitempty"`
+	Type    string `json:"type,omitempty"`
 }
 
 type SysConfigList struct {

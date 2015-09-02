@@ -83,7 +83,7 @@ l5sSys.ConfigSetCommit = function()
     }
 
     try {
-        
+
         form.find(".l5smgr-sys-config-item").each(function() {
             
             req.items.push({
