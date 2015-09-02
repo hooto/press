@@ -32,6 +32,8 @@
       <span id="field_{[=it.name]}_editor_nav" class="editor-nav">
         <a class="tpltext-editor-item editor-nav-text" href="#" 
           onclick="l5sEditor.Open('{[=it.name]}', 'text')">Text</a>
+        <a class="tpltext-editor-item editor-nav-html" href="#"
+          onclick="l5sEditor.Open('{[=it.name]}', 'html')">Html</a>
         <a class="tpltext-editor-item editor-nav-md" href="#"
           onclick="l5sEditor.Open('{[=it.name]}', 'md')">Markdown</a>
       </span>

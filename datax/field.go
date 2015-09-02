@@ -245,6 +245,9 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 		unsafe := blackfriday.MarkdownCommon([]byte(val))
 		val = string(mkp.SanitizeBytes(unsafe))
 
+	case "html":
+		val = htmlp.Sanitize(val)
+
 	case "text":
 		if lines := strings.Split(val, "\n\n"); len(lines) > 1 {
 			val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"

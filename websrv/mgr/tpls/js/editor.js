@@ -20,8 +20,11 @@ l5sEditor.Open = function(name, format)
             // console.log(format);
 
             var lineNumbers = false;
+            if (format == "md" || format == "html") {
+                lineNumbers = true;                
+            }
+
             if (format == "md") {
-                lineNumbers = true;
                 $("#field_"+ name +"_editor_mdr").show();
             } else {
                 $("#field_"+ name +"_editor_mdr").hide();
