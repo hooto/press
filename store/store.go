@@ -16,17 +16,18 @@ package store
 
 import (
 	"github.com/lessos/lessdb/skv"
+	skvdrv "github.com/lessos/lessdb/skv/goleveldb"
 )
 
 var (
-	CacheDB *skv.DB
+	CacheDB skv.DB
 	err     error
 	errInit = &skv.Reply{Status: "ClientError"}
 )
 
 func Init(cfg skv.Config) error {
 
-	if CacheDB, err = skv.Open(cfg); err != nil {
+	if CacheDB, err = skvdrv.Open(cfg); err != nil {
 		return err
 	}
 
@@ -39,11 +40,7 @@ func CacheSetBytes(key, value []byte, ttl int) *skv.Reply {
 		return errInit
 	}
 
-	if ttl > 0 {
-		return CacheDB.Setex(key, value, uint64(ttl*1e3))
-	}
-
-	return CacheDB.Set(key, value)
+	return CacheDB.Set(key, value, uint64(ttl*1e3))
 }
 
 func CacheSet(key, value string, ttl int) *skv.Reply {
@@ -56,11 +53,7 @@ func CacheSetJson(key string, value interface{}, ttl int) *skv.Reply {
 		return errInit
 	}
 
-	if ttl > 0 {
-		return CacheDB.SetexJson([]byte(key), value, uint64(ttl*1e3))
-	}
-
-	return CacheDB.SetJson([]byte(key), value)
+	return CacheDB.SetJson([]byte(key), value, uint64(ttl*1e3))
 }
 
 func CacheGet(key string) *skv.Reply {

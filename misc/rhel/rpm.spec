@@ -12,7 +12,7 @@ Group: Applications
 Source0: lesscms-x.y.z.tar.gz
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}
 
-Requires:   redhat-lsb-core
+Requires:   redhat-lsb-core,leveldb,snappy,gd
 Requires:   lesscms
 Requires(pre):  shadow-utils
 Requires(post): chkconfig
@@ -28,16 +28,16 @@ install -d %{buildroot}%{app_home}/bin
 install -d %{buildroot}%{app_home}/etc
 install -d %{buildroot}%{app_home}/var
 install -d %{buildroot}%{app_home}/vendor/github.com/eryx/hcaptcha/var/fonts
-install -d %{buildroot}%{app_home}/modules
+install -d %{buildroot}%{_initrddir}
 
 
 cp -rp ./webui %{buildroot}%{app_home}/
 cp -rp ./websrv %{buildroot}%{app_home}/
+cp -rp ./modules %{buildroot}%{app_home}/
 
 
 install -m 0755 -p bin/lesscms %{buildroot}%{app_home}/bin/lesscms
-cp -rp etc/main.json.tpl %{buildroot}%{app_home}/etc/main.json
-cp -rp modules %{buildroot}%{app_home}/
+install -m 0640 -p etc/main.json.tpl %{buildroot}%{app_home}/etc/main.json
 install -p -D -m 0755 misc/rhel/init.d-scripts %{buildroot}%{_initrddir}/lesscms
 install -p -D -m 0755 vendor/github.com/eryx/hcaptcha/var/fonts/cmr10.ttf %{buildroot}%{app_home}/vendor/github.com/eryx/hcaptcha/var/fonts/cmr10.ttf
 
