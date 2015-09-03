@@ -335,6 +335,18 @@ body {
   /*outline: 2px solid #ccc;*/
 }
 
+.l5s-nodev .content > table {
+  width: 100%;
+}
+.l5s-nodev .content > table tr {
+  border-bottom: 1px solid #ddd !important;
+}
+.l5s-nodev .content > table th,
+.l5s-nodev .content > table td {
+  padding: 3px 5px 3px 0;
+}
+
+
 /** sidebar **/
 .l5s-sidebar-section {
   margin-bottom: 20px;
