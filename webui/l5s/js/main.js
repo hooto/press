@@ -4,6 +4,10 @@ var l5s = {
 
 l5s.Boot = function()
 {
+    if (window._basepath) {
+        l5s.base = window._basepath;
+    }
+
     seajs.config({
         base: l5s.base,
     });
@@ -27,6 +31,10 @@ l5s.Boot = function()
     });
 }
 
+l5s.HttpSrvBasePath = function(uri)
+{
+    return l5s.base +"/"+ uri;
+}
 
 l5s.CodeRender = function()
 {
@@ -128,7 +136,7 @@ l5s.Ajax = function(url, options)
 
     //
     if (url.substr(0, 1) != "/" && url.substr(0, 4) != "http") {
-        url = l5s.base + url;
+        url = l5s.base +"/"+ url;
     }
 
     //
@@ -181,7 +189,7 @@ l5s.Ajax = function(url, options)
 
 l5s.ActionLoader = function(target, uri)
 {
-    l5s.Ajax(l5s.base + uri, {
+    l5s.Ajax(l5s.base +"/"+ uri, {
         callback: function(err, data) {
             $("#"+ target).html(data);
         }
@@ -191,12 +199,12 @@ l5s.ActionLoader = function(target, uri)
 
 l5s.ApiCmd = function(url, options)
 {
-    l5s.Ajax(l5s.base + url, options);
+    l5s.Ajax(l5s.base +"/"+ url, options);
 }
 
 l5s.AuthSessionRefresh = function()
 {
-    l5s.Ajax("/auth/session", {
+    l5s.Ajax("auth/session", {
         callback: function(err, data) {
             
             if (err || !data || data.kind != "AuthSession") {

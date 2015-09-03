@@ -8,7 +8,7 @@ body {
 
 .l5smgr-query-input {
     padding: 5px 5px 5px 30px;
-    background: url(/~/l5s/img/search-16.png) no-repeat 8px; 
+    background: url(../img/search-16.png) no-repeat 8px; 
     width: 300px;
 }
 
@@ -23,9 +23,9 @@ body {
 
 #l5smgr-nodeset .CodeMirror {
     border-right: 1px solid #ccc;
-
     font-size: 13px;
     line-height: 1.4em;
+    /*height: auto;*/
 }
 
 #l5smgr-nodeset {

@@ -14,7 +14,7 @@
     {{range $v := .list.Items}}
     <div class="entry">
       <div class="avatar">
-        <img src="/+/comment/~/img/user-default.png">
+        <img src="{{HttpSrvBasePath "+/comment/~/img/user-default.png"}}">
       </div>  
       
       <div class="body">
@@ -41,7 +41,7 @@
   <div class="list">
     <div class="entry">
       <div class="avatar">
-        <img src="/+/comment/~/img/user-default.png">
+        <img src="{{HttpSrvBasePath "+/comment/~/img/user-default.png"}}">
       </div>  
       
       <div id="l5s-comment-embed-new-form-ctrl" class="body">
@@ -81,7 +81,7 @@
                 <span class="help-block">Type the characters you see in the right picture</span>
               </div>
               <div class="col-xs-6" style="background-color: #dce6ff;">
-                <img id="l5s-comment-captcha-url" src="/+/hcaptcha/api/image?hcaptcha_token=">
+                <img id="l5s-comment-captcha-url" src="">
               </div>
             </div>        
           </div>
@@ -97,7 +97,7 @@
 <script id="l5s-comment-embed-tpl" type="text/html">
 <div class="entry" id="entry-{[=it.meta.id]}">
   <div class="avatar">
-    <img src="/+/comment/~/img/user-default.png">
+    <img src="{[=l5s.HttpSrvBasePath("+/comment/~/img/user-default.png")]}">
   </div>
   <div class="body">
     <div class="info">

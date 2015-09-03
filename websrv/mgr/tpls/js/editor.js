@@ -55,6 +55,7 @@ l5sEditor.Open = function(name, format)
                 theme           : "default",
                 lineWrapping    : true,
                 styleActiveLine : true,
+                // viewportMargin  : Infinity,
             });
 
             l5sEditor.editors[name].setSize("100%", height);

@@ -58,6 +58,7 @@ func init() {
 	httpsrv.GlobalService.Config.TemplateFuncRegister("pagelet", datax.Pagelet)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("FilterUri", datax.FilterUri)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("SysConfig", config.SysConfigList.FetchString)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("HttpSrvBasePath", config.HttpSrvBasePath)
 }
 
 func main() {
@@ -79,7 +80,7 @@ func main() {
 
 	idclient.ServiceUrl = config.Config.IdentityServiceUrl
 
-	// httpsrv.Config.UrlBasePath = "ap"
+	httpsrv.GlobalService.Config.UrlBasePath = "ap"
 	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort
 
 	// status

@@ -43,7 +43,7 @@ l5sComment.EmbedCommit = function()
                     var captcha_token = Math.random();
                     form.find("input[name=captcha_token]").val(captcha_token);
                     form.find("#l5s-comment-captcha-url").attr("src", 
-                        "/+/hcaptcha/api/image?hcaptcha_token="+ captcha_token);
+                        l5s.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
                 }
 
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -101,10 +101,10 @@ l5sComment.EmbedFormActive = function()
         captcha_token = Math.random();
 
     form.css({"display": "block"});
-   
+
     form.find("input[name=captcha_token]").val(captcha_token);
     form.find("#l5s-comment-captcha-url").attr("src", 
-        "/+/hcaptcha/api/image?hcaptcha_token="+ captcha_token);
+        l5s.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
 
     form.find("textarea[name=content]").focus();
 

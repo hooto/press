@@ -43,7 +43,7 @@ func (c Auth) CbAction() {
 	if c.Params.Get("state") != "" {
 		c.Redirect(c.Params.Get("state"))
 	} else {
-		c.Redirect("/")
+		c.Redirect(config.HttpSrvBasePath(""))
 	}
 }
 
@@ -51,13 +51,14 @@ func (c Auth) LoginAction() {
 
 	c.AutoRender = false
 
-	referer := "/"
+	referer := config.HttpSrvBasePath("")
 	if len(c.Request.Referer()) > 10 {
 		referer = c.Request.Referer()
 	}
 
 	c.Redirect(idclient.AuthServiceUrl(
-		config.Config.InstanceID, fmt.Sprintf("//%s/auth/cb", c.Request.Host), referer))
+		config.Config.InstanceID,
+		fmt.Sprintf("//%s%s/auth/cb", c.Request.Host, config.HttpSrvBasePath("")), referer))
 }
 
 type AuthSession struct {
@@ -104,7 +105,7 @@ func (c Auth) SignOutAction() {
 
 	c.AutoRender = false
 
-	referer := "/"
+	referer := config.HttpSrvBasePath("")
 	if len(c.Request.Referer()) > 10 {
 		referer = c.Request.Referer()
 	}
