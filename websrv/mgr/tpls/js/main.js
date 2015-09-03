@@ -92,6 +92,10 @@ l5sMgr.Boot = function()
     });
 }
 
+l5sMgr.HttpSrvBasePath = function(uri)
+{
+    return l5sMgr.base +"/"+ uri;
+}
 
 l5sMgr.Ajax = function(url, options)
 {

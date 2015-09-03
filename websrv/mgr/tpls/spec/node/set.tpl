@@ -150,6 +150,16 @@
             </select>
           </td>
         </tr>
+        <tr>
+          <td>Permalink Enable</td>
+          <td>
+            <select class="form-control input-sm" name="ext_permalink">
+            {[~it._general_onoff :gv]}
+            <option value="{[=gv.type]}" {[ if (it.extensions.permalink == gv.type) { ]}selected{[ } ]}>{[=gv.name]}</option>
+            {[~]}
+            </select>
+          </td>
+        </tr>
       </tbody>
       </table>
     </div>

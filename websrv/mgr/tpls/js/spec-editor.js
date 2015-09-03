@@ -843,12 +843,12 @@ l9rPodFs.Get = function(options)
         options.error = function(){};
     }
 
-    var url = "v1/mod-set-fs/get?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/get?modname="+ l4iSession.Get("l5s-speceditor-modname");
     // url += "?access_token="+ l4iCookie.Get("access_token");
     url += "&path="+ options.path;
 
     // console.log("box refresh:"+ url);
-    l5sMgr.Ajax(url, {
+    l5sMgr.ApiCmd(url, {
         success: function(data) {
             
             if (!data) {
@@ -900,9 +900,9 @@ l9rPodFs.Post = function(options)
         sumcheck : options.sumcheck,
     }
 
-    var url = "v1/mod-set-fs/put?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/put?modname="+ l4iSession.Get("l5s-speceditor-modname");
 
-    l5sMgr.Ajax(url, {
+    l5sMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 30000,
         data    : JSON.stringify(req),
@@ -951,8 +951,8 @@ l9rPodFs.Rename = function(options)
         pathset : options.pathset,
     }
 
-    var url = "v1/mod-set-fs/rename?modname="+ l4iSession.Get("l5s-speceditor-modname");
-    l5sMgr.Ajax(url, {
+    var url = "mod-set-fs/rename?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    l5sMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
@@ -995,9 +995,9 @@ l9rPodFs.Del = function(options)
         path    : options.path,
     }
 
-    var url = "v1/mod-set-fs/del?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/del?modname="+ l4iSession.Get("l5s-speceditor-modname");
 
-    l5sMgr.Ajax(url, {
+    l5sMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
@@ -1036,10 +1036,10 @@ l9rPodFs.List = function(options)
         options.error = function(){};
     }
 
-    var url = "v1/mod-set-fs/list?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/list?modname="+ l4iSession.Get("l5s-speceditor-modname");
     url += "&path="+ options.path;
 
-    l5sMgr.Ajax(url, {
+    l5sMgr.ApiCmd(url, {
         method  : "GET",
         timeout : 30000,
         success : function(data) {
