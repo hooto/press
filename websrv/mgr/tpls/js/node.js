@@ -298,7 +298,7 @@ l5sNode.List = function(modname, modelid)
             ep.emit("tpl", null);
         }
 
-        l5sMgr.ApiCmd("/node/list?"+ uri, {
+        l5sMgr.ApiCmd("node/list?"+ uri, {
             callback: ep.done("data"),           
         });
     });
@@ -496,7 +496,7 @@ l5sNode.Set = function(modname, modelid, nodeid)
                             }
 
 
-                            l5sMgr.ApiCmd("/term/list?modname="+ modname +"&modelid="+ term.meta.name, {
+                            l5sMgr.ApiCmd("term/list?modname="+ modname +"&modelid="+ term.meta.name, {
                                 callback: function(err, data) {
                                     
                                     if (data.kind != "TermList") {
@@ -556,11 +556,11 @@ l5sNode.Set = function(modname, modelid, nodeid)
         });
 
         if (nodeid) {
-            l5sMgr.ApiCmd("/node/entry?"+ uri +"&id="+ nodeid, {
+            l5sMgr.ApiCmd("node/entry?"+ uri +"&id="+ nodeid, {
                 callback: ep.done("data"),           
             });
         } else {
-            l5sMgr.ApiCmd("/node-model/entry?"+ uri, {
+            l5sMgr.ApiCmd("node-model/entry?"+ uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
                         kind  : "Node",

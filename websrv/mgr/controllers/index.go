@@ -35,14 +35,14 @@ func (c Index) IndexAction() {
 
 	//
 	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
-		c.Redirect("/mgr/setup/index")
+		c.Redirect(config.HttpSrvBasePath("mgr/setup/index"))
 		return
 	}
 
 	if !idclient.SessionIsLogin(c.Session) {
 		c.Redirect(idclient.AuthServiceUrl(
 			config.Config.InstanceID,
-			fmt.Sprintf("//%s/auth/cb", c.Request.Host),
+			fmt.Sprintf("//%s%s/auth/cb", c.Request.Host, config.HttpSrvBasePath("")),
 			c.Request.RawAbsUrl()))
 		return
 	}
@@ -53,9 +53,10 @@ func (c Index) IndexAction() {
 <head>
   <meta charset="utf-8">
   <title>CMS</title>
-  <script src="/mgr/~/lessui/js/sea.js"></script>
-  <script src="/mgr/-/js/main.js"></script>
+  <script src="`+config.HttpSrvBasePath("mgr/~/lessui/js/sea.js")+`"></script>
+  <script src="`+config.HttpSrvBasePath("mgr/-/js/main.js")+`"></script>
   <script type="text/javascript">
+    window._basepath = "`+config.HttpSrvBasePath("")+`";
     window.onload = l5sMgr.Boot() ;
   </script>
 </head>

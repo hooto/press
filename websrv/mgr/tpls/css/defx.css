@@ -37,10 +37,10 @@
   background-position: -48px 0;
 }
 .lcx-icon-bug {
-  background-image: url("/mgr/-/img/base/bug-48.png");
+  background-image: url("../img/base/bug-48.png");
 }
 .lcx-icon-help {
-  background-image: url("/mgr/-/img/base/help-48.png");
+  background-image: url("../img/base/help-48.png");
 }
 .lcx-nav-grp {
   position: relative;
@@ -919,7 +919,7 @@
 body {
   /*background-color: #eee;*/
   /*background-repeat: repeat;*/
-  /*background-image: url("/mgr/-/img/gen/grid-hexagons.png"), linear-gradient(10deg, #222222, #999999);*/
+  /*background-image: url("../img/gen/grid-hexagons.png"), linear-gradient(10deg, #222222, #999999);*/
   /*background-image: url("@{url-img}/gen/grid-hexagons.png"), radial-gradient(circle, #ccc, #666);*/
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -1060,25 +1060,25 @@ body {
   background-position: 0 0;
 }
 .lcx-ico-play {
-  background-image: url("/mgr/-/img/base/play-32.png");
+  background-image: url("../img/base/play-32.png");
 }
 .lcx-ico-plugin {
-  background-image: url("/mgr/-/img/base/plugin-32.png");
+  background-image: url("../img/base/plugin-32.png");
 }
 .lcx-ico-term {
-  background-image: url("/mgr/-/img/base/term-32.png");
+  background-image: url("../img/base/term-32.png");
 }
 .lcx-ico-set2 {
-  background-image: url("/mgr/-/img/base/set2-32.png");
+  background-image: url("../img/base/set2-32.png");
 }
 .lcx-ico-set3 {
-  background-image: url("/mgr/-/img/base/set3-32.png");
+  background-image: url("../img/base/set3-32.png");
 }
 .lcx-ico-user {
-  background-image: url("/mgr/-/img/base/user-32.png");
+  background-image: url("../img/base/user-32.png");
 }
 .lcx-ico-bug {
-  background-image: url("/mgr/-/img/base/bug-32.png");
+  background-image: url("../img/base/bug-32.png");
 }
 .lcx-lay-colbg {
   background-color: rgba(0, 0, 0, 0.1);

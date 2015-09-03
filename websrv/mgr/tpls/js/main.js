@@ -1,4 +1,5 @@
 var l5sMgr = {
+    frtbase : "/",
     base    : "/mgr/",
     api     : "/v1/",
     basetpl : "/mgr/-/",
@@ -6,6 +7,13 @@ var l5sMgr = {
 
 l5sMgr.Boot = function()
 {
+    if (window._basepath) {
+        l5sMgr.frtbase = window._basepath;
+        l5sMgr.base    = window._basepath +"/mgr/";
+        l5sMgr.api     = window._basepath +"/v1/";
+        l5sMgr.basetpl = window._basepath +"/mgr/-/";
+    }
+
     seajs.config({
         base: l5sMgr.base,
         alias: {
@@ -25,7 +33,7 @@ l5sMgr.Boot = function()
 
         if (!((browser == 'Chrome' && version >= 22)
             || (browser == 'Firefox' && version >= 31.0))) { 
-            $('body').load("/error/browser");
+            $('body').load(window._basepath +"/error/browser");
             return;
         }
 

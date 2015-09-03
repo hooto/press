@@ -106,7 +106,7 @@ l5sTerm.List = function(modname, modelid)
         // template
         var el = document.getElementById("l5smgr-termls");
         if (!el || el.length < 1) {
-            l5sMgr.TplCmd("/term/list", {
+            l5sMgr.TplCmd("term/list", {
                 callback: function(err, tpl) {
                     
                     if (err) {
@@ -120,7 +120,7 @@ l5sTerm.List = function(modname, modelid)
             ep.emit("tpl", null);
         }
 
-        l5sMgr.ApiCmd("/term/list?"+ uri, {
+        l5sMgr.ApiCmd("term/list?"+ uri, {
             callback: ep.done("data"),           
         });
     });
@@ -234,7 +234,7 @@ l5sTerm.Set = function(modname, modelid, termid)
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
 
-        l5sMgr.TplCmd("/term/set", {
+        l5sMgr.TplCmd("term/set", {
             callback: function(err, tpl) {
                     
                 if (err) {
@@ -245,11 +245,11 @@ l5sTerm.Set = function(modname, modelid, termid)
         });
 
         if (termid) {
-            l5sMgr.ApiCmd("/term/entry?"+ uri +"&id="+ termid, {
+            l5sMgr.ApiCmd("term/entry?"+ uri +"&id="+ termid, {
                 callback: ep.done("data"),           
             });
         } else {
-            l5sMgr.ApiCmd("/term-model/entry?"+ uri, {
+            l5sMgr.ApiCmd("term-model/entry?"+ uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
                         kind  : "Term",

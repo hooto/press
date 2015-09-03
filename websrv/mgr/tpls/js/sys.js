@@ -191,7 +191,7 @@ l5sSys.IdentitySync = function()
 {
     var form = $("#l5s-mgr-sys-ids");
 
-    l5sMgr.Ajax("/mgr/setup/app-register-put", {
+    l5sMgr.Ajax("setup/app-register-put", {
         method : "POST",
         data   : form.serialize(),
         success: function(data) {

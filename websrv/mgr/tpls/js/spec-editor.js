@@ -568,7 +568,7 @@ function _fsUploadCommit(reqid, file)
                 },
                 error: function(status, message) {
 
-                    console.log(message);
+                    // console.log(message);
 
                     $("#"+ reqid).find(".alert").show().append("<div>"+ file.name +" Failed</div>");
                     // console.log(status, message);
@@ -843,7 +843,7 @@ l9rPodFs.Get = function(options)
         options.error = function(){};
     }
 
-    var url = "/v1/mod-set-fs/get?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "v1/mod-set-fs/get?modname="+ l4iSession.Get("l5s-speceditor-modname");
     // url += "?access_token="+ l4iCookie.Get("access_token");
     url += "&path="+ options.path;
 
@@ -900,7 +900,7 @@ l9rPodFs.Post = function(options)
         sumcheck : options.sumcheck,
     }
 
-    var url = "/v1/mod-set-fs/put?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "v1/mod-set-fs/put?modname="+ l4iSession.Get("l5s-speceditor-modname");
 
     l5sMgr.Ajax(url, {
         method  : "POST",
@@ -951,7 +951,7 @@ l9rPodFs.Rename = function(options)
         pathset : options.pathset,
     }
 
-    var url = "/v1/mod-set-fs/rename?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "v1/mod-set-fs/rename?modname="+ l4iSession.Get("l5s-speceditor-modname");
     l5sMgr.Ajax(url, {
         method  : "POST",
         timeout : 10000,
@@ -995,7 +995,7 @@ l9rPodFs.Del = function(options)
         path    : options.path,
     }
 
-    var url = "/v1/mod-set-fs/del?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "v1/mod-set-fs/del?modname="+ l4iSession.Get("l5s-speceditor-modname");
 
     l5sMgr.Ajax(url, {
         method  : "POST",
@@ -1036,7 +1036,7 @@ l9rPodFs.List = function(options)
         options.error = function(){};
     }
 
-    var url = "/v1/mod-set-fs/list?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "v1/mod-set-fs/list?modname="+ l4iSession.Get("l5s-speceditor-modname");
     url += "&path="+ options.path;
 
     l5sMgr.Ajax(url, {
