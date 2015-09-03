@@ -60,11 +60,19 @@ type ConfigCommon struct {
 }
 
 func init() {
+
 	SysConfigList.Kind = "SysConfigList"
+
 	SysConfigList.Insert(api.SysConfig{"frontend_header_site_name", "CMS", "Site's Name", ""})
 	SysConfigList.Insert(api.SysConfig{"frontend_header_site_logo_url", "", "", ""})
 	SysConfigList.Insert(api.SysConfig{"frontend_footer_copyright", "2015 Demo", "", ""})
-	SysConfigList.Insert(api.SysConfig{"frontend_footer_analytics_scripts", "", "Embed analytics script just as Google Analytics or Piwik ...", "text"})
+
+	SysConfigList.Insert(api.SysConfig{"frontend_html_head_subtitle", "CMS", "Sub Title for HTML Head Title", ""})
+	SysConfigList.Insert(api.SysConfig{"frontend_html_head_meta_keywords", "", "Meta Keywords in HTML Head for Search engine optimization", ""})
+	SysConfigList.Insert(api.SysConfig{"frontend_html_head_meta_description", "", "Meta Description in HTML Head for Search engine optimization", ""})
+
+	SysConfigList.Insert(api.SysConfig{"frontend_footer_analytics_scripts", "",
+		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text"})
 	SysConfigList.Insert(api.SysConfig{"ls2_uri", "//127.0.0.1/bucket-name", "Storage Service URI", ""})
 }
 
