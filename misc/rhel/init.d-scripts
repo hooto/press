@@ -14,7 +14,7 @@
 DAEMON=/opt/lesscms/bin/lesscms
 DAEMON_ARGS="--prefix=/opt/lesscms"
 NAME=lesscms
-APPUSER=root
+APPUSER=lesscms
 
 set -e
 
@@ -23,7 +23,7 @@ case "$1" in
         echo -n -e "Starting $NAME ...\n" 
         
         # Start lesscms!
-        $DAEMON $DAEMON_ARGS > /dev/null 2>&1 &
+        su -s /bin/bash -c "$DAEMON $DAEMON_ARGS > /dev/null 2>&1 &" $APPUSER
         sleep 2
         echo -n -e "$NAME PID: "
         if pidof $NAME; then

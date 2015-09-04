@@ -77,7 +77,7 @@ fi
 
     
 %files
-%defattr(-,root,root,-)
+%defattr(-,lesscms,lesscms,-)
 %dir %{app_home}
 %{_initrddir}/lesscms
 %config(noreplace) %{app_home}/etc/main.json
