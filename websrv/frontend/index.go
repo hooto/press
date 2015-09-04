@@ -169,14 +169,6 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		qry.Order(ad.Query.Order)
 	}
 
-	id := c.Params.Get("id")
-	if id != "" {
-		if len(id) > 5 && id[len(id)-5:] == ".html" {
-			id = id[:len(id)-5]
-		}
-		qry.Filter("id", id)
-	}
-
 	qry.Filter("status", 1)
 
 	qry.Pager = ad.Pager
@@ -265,6 +257,26 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 
 	case "node.entry":
 
+		id := c.Params.Get("id")
+		if id == "" {
+			return
+		}
+
+		nodeModel, err := config.SpecNodeModel(mod.Meta.Name, ad.Query.Table)
+		if err != nil {
+			return
+		}
+
+		// permalink_name := ""
+		if len(id) > 5 && id[len(id)-5:] == ".html" {
+			id = id[:len(id)-5]
+			qry.Filter("id", id)
+		} else if nodeModel.Extensions.Permalink != "" {
+			qry.Filter("ext_permalink_idx", utils.StringEncode16(id, 12))
+		} else {
+			return
+		}
+
 		var entry api.Node
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 {
@@ -273,33 +285,29 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			}
 		}
 
-		if entry.Title == "" {
+		if entry.ID == "" {
 			entry = qry.NodeEntry()
 			if ad.CacheTTL > 0 && entry.Title != "" {
 				c.hookPosts = append(c.hookPosts, func() {
 					store.CacheSetJson(qryhash, &entry, ad.CacheTTL)
 				})
 			}
-
 		}
 
-		if id != "" {
+		if entry.ID == "" {
+			return
+		}
 
-			if nodeModel, err := config.SpecNodeModel(mod.Meta.Name, ad.Query.Table); err == nil {
+		if nodeModel.Extensions.AccessCounter {
 
-				if nodeModel.Extensions.AccessCounter {
+			if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
 
-					if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
-
-						table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), ad.Query.Table)
-						store.CacheSet("access_counter/"+table+"/"+ips[0]+"/"+id, "1", 0)
-					}
-				}
+				table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), ad.Query.Table)
+				store.CacheSet("access_counter/"+table+"/"+ips[0]+"/"+entry.ID, "1", 0)
 			}
 		}
 
 		if entry.Title != "" {
-			// TODO
 			c.Data["__html_head_title__"] = datax.StringSub(datax.TextHtml2Str(entry.Title), 0, 50)
 		}
 

@@ -251,6 +251,10 @@ l5sNode.List = function(modname, modelid)
                 if (!rsj.items[i].ext_access_counter) {
                     rsj.items[i].ext_access_counter = 0;
                 }
+
+                if (!rsj.items[i].ext_permalink_name) {
+                    rsj.items[i].ext_permalink_name = "";
+                }
             }
 
             l4iTemplate.Render({
@@ -356,6 +360,10 @@ l5sNode.Set = function(modname, modelid, nodeid)
 
             if (!data.ext_comment_perentry) {
                 data.ext_comment_perentry = false;
+            }
+
+            if (!data.ext_permalink_name) {
+                data.ext_permalink_name = "";
             }
 
             $(alertid).hide();
@@ -536,6 +544,17 @@ l5sNode.Set = function(modname, modelid, nodeid)
                             },
                         });
                     }
+
+                    if (data.model.extensions.permalink && data.model.extensions.permalink != "") {
+                        l4iTemplate.Render({
+                            dstid  : "l5smgr-nodeset-tops",
+                            tplid  : "l5smgr-nodeset-tplext_permalink",
+                            append : true,
+                            data   : {
+                                ext_permalink_name: data.ext_permalink_name,
+                            },
+                        });
+                    }
                 },
             });
         });
@@ -594,6 +613,7 @@ l5sNode.SetCommit = function()
         fields : [],
         terms  : [],
         ext_comment_perentry: form.find("select[name=ext_comment_perentry]").val(),
+        ext_permalink_name: form.find("input[name=ext_permalink_name]").val(),
     }
 
     if (req.ext_comment_perentry && req.ext_comment_perentry == "false") {
@@ -602,6 +622,7 @@ l5sNode.SetCommit = function()
         req.ext_comment_perentry = true;
     }
 
+    // console.log("DDD");
     // console.log(req);
     for (var i in l5sNode.setCurrent.model.fields) {
 

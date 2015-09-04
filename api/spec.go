@@ -75,9 +75,10 @@ type NodeModel struct {
 }
 
 type SpecExtensions struct {
-	AccessCounter   bool `json:"access_counter,omitempty"`
-	CommentEnable   bool `json:"comment_enable,omitempty"`
-	CommentPerEntry bool `json:"comment_perentry,omitempty"`
+	AccessCounter   bool   `json:"access_counter,omitempty"`
+	CommentEnable   bool   `json:"comment_enable,omitempty"`
+	CommentPerEntry bool   `json:"comment_perentry,omitempty"`
+	Permalink       string `json:"permalink,omitempty"`
 }
 
 type NodeModelList struct {

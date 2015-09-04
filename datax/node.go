@@ -188,6 +188,13 @@ func (q *QuerySet) NodeList() api.NodeList {
 				item.ExtCommentPerEntry = v.Field("ext_comment_perentry").Bool()
 			}
 
+			if model.Extensions.Permalink != "" && v.Field("ext_permalink_name").String() != "" {
+				item.ExtPermalinkName = v.Field("ext_permalink_name").String()
+				item.SelfLink = fmt.Sprintf("%s", item.ExtPermalinkName)
+			} else {
+				item.SelfLink = fmt.Sprintf("%s.html", item.ID)
+			}
+
 			for _, field := range model.Fields {
 
 				nodeField := api.NodeField{
@@ -406,6 +413,10 @@ func (q *QuerySet) NodeEntry() api.Node {
 
 	if rsp.Model.Extensions.CommentPerEntry {
 		rsp.ExtCommentPerEntry = rs.Field("ext_comment_perentry").Bool()
+	}
+
+	if rsp.Model.Extensions.Permalink != "" {
+		rsp.ExtPermalinkName = rs.Field("ext_permalink_name").String()
 	}
 
 	rsp.Kind = "Node"

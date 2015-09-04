@@ -15,7 +15,7 @@
     <ul class="l5s-nodels">
       {{range $v := .list.Items}}
       <li class="l5s-nodels-item">
-        <h4 class="l5s-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.ID}}.html">{{$v.Title}}</a></h4>
+        <h4 class="l5s-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
         <span class="l5s-nodels-info">
             
             <span class="section">

@@ -356,6 +356,11 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 				sync = true
 			}
 
+			if nodeModel.Extensions.Permalink != entry.Extensions.Permalink {
+				prev.NodeModels[i].Extensions.Permalink = entry.Extensions.Permalink
+				sync = true
+			}
+
 			if len(nodeModel.Fields) != len(entry.Fields) && len(entry.Fields) > 0 {
 
 				prev.NodeModels[i].Fields = entry.Fields
@@ -796,6 +801,25 @@ func SpecSchemaSync(spec api.Spec) error {
 			})
 		}
 
+		if nodeModel.Extensions.Permalink != "" &&
+			nodeModel.Extensions.Permalink != "off" {
+			tbl.AddColumn(&rdobase.Column{
+				Name:   "ext_permalink_name",
+				Type:   "string",
+				Length: "100",
+			})
+			tbl.AddColumn(&rdobase.Column{
+				Name:   "ext_permalink_idx",
+				Type:   "string",
+				Length: "12",
+			})
+			tbl.AddIndex(&rdobase.Index{
+				Name: "ext_permalink_idx",
+				Type: rdobase.IndexTypeIndex,
+				Cols: []string{"ext_permalink_idx"},
+			})
+		}
+
 		for _, field := range nodeModel.Fields {
 
 			switch field.Type {
@@ -837,7 +861,6 @@ func SpecSchemaSync(spec api.Spec) error {
 					Name: "field_" + field.Name,
 					Type: field.Type,
 				})
-
 			}
 		}
 

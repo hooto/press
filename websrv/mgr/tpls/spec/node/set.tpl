@@ -151,10 +151,10 @@
           </td>
         </tr>
         <tr>
-          <td>Permalink Enable</td>
+          <td>Permalink Settings</td>
           <td>
             <select class="form-control input-sm" name="ext_permalink">
-            {[~it._general_onoff :gv]}
+            {[~it._permalink_def :gv]}
             <option value="{[=gv.type]}" {[ if (it.extensions.permalink == gv.type) { ]}selected{[ } ]}>{[=gv.name]}</option>
             {[~]}
             </select>

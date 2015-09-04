@@ -149,6 +149,17 @@ var l5sSpec = {
         type: false,
         name: "OFF",
     }],
+
+    permalink_def : [{
+        type: "",
+        name: "Off",
+    },{
+        type: "name",
+        name: "Name",
+    },{
+        type: "day-name",
+        name: "Day and Name",
+    }],
 }
 
 
@@ -684,6 +695,7 @@ l5sSpec.NodeSet = function(modname, modelid)
             data._field_idx_typedef = l5sSpec.field_idx_typedef;
             data._field_typedef = l5sSpec.field_typedef;
             data._general_onoff = l5sSpec.general_onoff;
+            data._permalink_def = l5sSpec.permalink_def;
 
             //
             if (!data.terms) {
@@ -820,6 +832,8 @@ l5sSpec.NodeSetCommit = function()
     if (form.find("select[name=ext_comment_perentry]").val() == "true") {
         req.extensions.comment_perentry = true;
     }
+
+    req.extensions.permalink = form.find("select[name=ext_permalink]").val();
 
     try {
         

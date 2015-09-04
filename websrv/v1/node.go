@@ -16,6 +16,9 @@ package v1
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
+	"sync"
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
@@ -37,6 +40,8 @@ type Node struct {
 
 var (
 	node_list_limit int64 = 15
+	reg_permalink         = regexp.MustCompile("^[0-9a-z_-]{1,100}$")
+	node_set_lock   sync.Mutex
 )
 
 func (c Node) ListAction() {
@@ -105,6 +110,9 @@ func (c Node) SetAction() {
 
 	defer c.RenderJson(&rsp)
 
+	node_set_lock.Lock()
+	defer node_set_lock.Unlock()
+
 	if !idclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
 		return
@@ -142,6 +150,55 @@ func (c Node) SetAction() {
 
 	//
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(c.Params.Get("modname"), 12), c.Params.Get("modelid"))
+
+	if model.Extensions.Permalink != "" {
+
+		rsp.ExtPermalinkName = strings.Replace(strings.ToLower(strings.TrimSpace(rsp.ExtPermalinkName)), " ", "-", -1)
+
+		if !reg_permalink.MatchString(rsp.ExtPermalinkName) {
+			rsp.Error = &types.ErrorMeta{
+				Code:    "400",
+				Message: "Invalid Permalink Name",
+			}
+			return
+		}
+
+		// set["ext_permalink_name"] = rsp.ExtPermalinkName
+
+		permaname := rsp.ExtPermalinkName
+
+		for i := 0; i < 10; i++ {
+
+			if i > 0 {
+				permaname = fmt.Sprintf("%s-%d", rsp.ExtPermalinkName, i)
+			}
+
+			permaidx := utils.StringEncode16(permaname, 12)
+
+			q := rdobase.NewQuerySet().From(table).Limit(1)
+			q.Where.And("ext_permalink_idx", permaidx)
+
+			if len(rsp.ID) > 0 {
+				q.Where.And("id.ne", rsp.ID)
+			}
+
+			if rs, err := dcn.Base.Query(q); err == nil && len(rs) < 1 {
+
+				set["ext_permalink_name"] = permaname
+				set["ext_permalink_idx"] = permaidx
+				break
+			}
+		}
+
+		if _, ok := set["ext_permalink_idx"]; !ok {
+
+			rsp.Error = &types.ErrorMeta{
+				Code:    "400",
+				Message: "Permalink Name Conflict",
+			}
+			return
+		}
+	}
 
 	if len(rsp.ID) > 0 {
 

@@ -20,6 +20,7 @@ import (
 
 type Node struct {
 	types.TypeMeta     `json:",inline"`
+	SelfLink           string       `json:"self_link,omitempty"`
 	Model              *NodeModel   `json:"model,omitempty"`
 	ID                 string       `json:"id,omitempty"`
 	PID                string       `json:"pid,omitempty"`
@@ -32,6 +33,7 @@ type Node struct {
 	Terms              []NodeTerm   `json:"terms,omitempty"`
 	ExtAccessCounter   uint32       `json:"ext_access_counter,omitempty"`
 	ExtCommentPerEntry bool         `json:"ext_comment_perentry,omitempty"`
+	ExtPermalinkName   string       `json:"ext_permalink_name,omitempty"`
 }
 
 type NodeList struct {

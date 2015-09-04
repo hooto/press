@@ -12,6 +12,7 @@
     <label>Title</label>
     <p><input name="title" type="text" value="{[=it.title]}" class="l4i-form-control"></p>
   </div>
+  <div id="l5smgr-nodeset-tops"></div>
   <div id="l5smgr-nodeset-fields"></div>
   <div class="l4i-form-group">
     <label>Status</label>
@@ -103,6 +104,16 @@
       <option value="{[=gv.type]}" {[ if (it.ext_comment_perentry == gv.type) { ]}selected{[ } ]}>{[=gv.name]}</option>
       {[~]}
     </select>
+    </div>
+  </div>
+</script>
+
+
+<script id="l5smgr-nodeset-tplext_permalink" type="text/html">
+  <div class="l4i-form-group">
+    <label>Permalink Name</label>
+    <div>
+      <input type="text" name="ext_permalink_name" class="l4i-form-control" value="{[=it.ext_permalink_name]}">
     </div>
   </div>
 </script>

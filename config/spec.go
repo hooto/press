@@ -267,6 +267,25 @@ func _instance_schema_sync(spec *api.Spec) error {
 			})
 		}
 
+		if nodeModel.Extensions.Permalink != "" &&
+			nodeModel.Extensions.Permalink != "off" {
+			tbl.AddColumn(&rdobase.Column{
+				Name:   "ext_permalink_name",
+				Type:   "string",
+				Length: "100",
+			})
+			tbl.AddColumn(&rdobase.Column{
+				Name:   "ext_permalink_idx",
+				Type:   "string",
+				Length: "12",
+			})
+			tbl.AddIndex(&rdobase.Index{
+				Name: "ext_permalink_idx",
+				Type: rdobase.IndexTypeIndex,
+				Cols: []string{"ext_permalink_idx"},
+			})
+		}
+
 		for _, field := range nodeModel.Fields {
 
 			switch field.Type {
