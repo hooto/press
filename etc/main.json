@@ -12,9 +12,5 @@
     "dbname": "lesscms",
     "engine": "MyISAM"
   },
-  "cache_db": {
-    "CompactionTableSize": 0,
-    "BlockCacheCapacity": 0,
-    "WriteBuffer": 0
-  }
+  "cache_db": {}
 }

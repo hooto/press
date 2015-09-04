@@ -193,9 +193,9 @@ func (c Sys) IdentityStatusAction() {
 		},
 	}
 
-	hc := httpclient.Get(idclient.ServiceUrl +
-		"/v1/my-app/inst-entry?instid=" + config.Config.InstanceID +
-		"&access_token=" + idclient.SessionAccessToken(c.Session))
+	hc := httpclient.Get(fmt.Sprintf("%s/v1/my-app/inst-entry?instid=%s&%s=%s",
+		idclient.ServiceUrl, config.Config.InstanceID,
+		idclient.AccessTokenKey, idclient.SessionAccessToken(c.Session)))
 
 	var info idsapi.AppInstance
 

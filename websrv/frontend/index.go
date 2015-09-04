@@ -267,7 +267,6 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			return
 		}
 
-		// permalink_name := ""
 		if len(id) > 5 && id[len(id)-5:] == ".html" {
 			id = id[:len(id)-5]
 			qry.Filter("id", id)
