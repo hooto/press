@@ -102,6 +102,8 @@ func (c S2) IndexAction() {
 	width, height := 2000, 2000
 
 	switch ipn {
+	case "i6040":
+		width, height = 60, 40
 	case "thumb":
 		width, height = 150, 150
 	case "medium":
@@ -170,7 +172,7 @@ func (c S2) IndexAction() {
 	case ".jpg", ".jpeg":
 
 		c.Response.Out.Header().Set("Content-type", "image/jpeg")
-		out = gd.ImageToJpegBuffer(imd, 80)
+		out = gd.ImageToJpegBuffer(imd, 85)
 
 	case ".png":
 

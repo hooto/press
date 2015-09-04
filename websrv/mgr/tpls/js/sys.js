@@ -24,6 +24,8 @@ l5sSys.Init = function()
 
 l5sSys.Index = function()
 {
+    l4iStorage.Set("l5smgr_nav_last_active", "sys/index");
+    
     l5sMgr.TplCmd("sys/index", {
         callback: function(err, data) {
             $("#com-content").html(data);

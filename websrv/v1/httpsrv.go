@@ -40,5 +40,8 @@ func NewModule() httpsrv.Module {
 	//
 	module.ControllerRegister(new(Sys))
 
+	//
+	module.ControllerRegister(new(S2Obj))
+
 	return module
 }

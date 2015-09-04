@@ -534,7 +534,7 @@ function _fsUploadCommit(reqid, file)
 {
     var reader = new FileReader();
     
-    reader.onload = (function(file) {  
+    reader.onload = (function(file) {
         
         return function(e) {
             

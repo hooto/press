@@ -20,6 +20,7 @@ import (
 
 type FsFile struct {
 	types.TypeMeta `json:",inline"`
+	SelfLink       string `json:"self_link,omitempty"`
 	Path           string `json:"path,omitempty"`
 	PathSet        string `json:"pathSet,omitempty"`
 	Name           string `json:"name,omitempty"`

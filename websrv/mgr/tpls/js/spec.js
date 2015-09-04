@@ -170,6 +170,8 @@ l5sSpec.Init = function()
 
 l5sSpec.Index = function()
 {
+    l4iStorage.Set("l5smgr_nav_last_active", "spec/index");
+    
     l5sMgr.TplCmd("spec/index", {
         callback: function(err, data) {
                 

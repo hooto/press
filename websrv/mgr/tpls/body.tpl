@@ -10,7 +10,8 @@
     
     <td>
       <div id="l5s-uh-topnav">
-        <a class="l4i-nav-item active" href="#node/index">Content</a>
+        <a class="l4i-nav-item" href="#node/index">Content</a>
+        <a class="l4i-nav-item" href="#s2/index">Storage</a>
         <a class="l4i-nav-item" href="#spec/index">Modules</a>
         <a class="l4i-nav-item" href="#sys/index">System</a>
       </div>

@@ -53,6 +53,7 @@ l5sMgr.Boot = function()
             "-/js/term.js?_="+ Math.random(),
             "-/js/node.js?_="+ Math.random(),
             "-/js/sys.js?_="+ Math.random(),
+            "-/js/s2.js?_="+ Math.random(),
             "-/js/editor.js?_="+ Math.random(),
             "~/l5s/js/marked.min.js",
         ], function() {
@@ -80,12 +81,18 @@ l5sMgr.Boot = function()
                     l5sSys.Init();
                     l5sNode.Init();
                     l5sSpec.Init();
+                    l5sS2.Init();
 
                     $("#body-content").html(data);
-                
-                    l5sNode.Index();
-                    // l5sSys.Index();
-                    // l5sSpec.Index();
+
+                    var navlast = l4iStorage.Get("l5smgr_nav_last_active");
+                    if (!navlast) {
+                        navlast = "node/index";
+                    }
+
+                    $("#l5s-uh-topnav").find("a[href='#"+navlast+"']").addClass("active");
+
+                    l4i.UrlEventHandler(navlast);
                 }
             });
         });

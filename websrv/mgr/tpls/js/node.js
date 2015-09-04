@@ -30,6 +30,8 @@ l5sNode.Init = function()
 
 l5sNode.Index = function()
 {
+    l4iStorage.Set("l5smgr_nav_last_active", "node/index");
+    
     var alertid = "#l5smgr-node-alert";
 
     seajs.use(["ep"], function (EventProxy) {
