@@ -86,9 +86,16 @@
     <label>{[=it.item.title]}</label>
     <div>
     <select class="form-control" name="term_{[=it.item.meta.name]}">
-      {[~it.items :v]}
+    {[~it.items :v]}
+      {[ if (v.pid == 0) { ]}
       <option value="{[=v.id]}" {[if (it.item.value == v.id) { ]}selected{[ } ]}>{[=v.title]}</option>
-      {[~]}
+      {[? v._subs]}
+        {[~v._subs :v2]}
+        <option value="{[=v2.id]}" {[if (it.item.value == v2.id) { ]}selected{[ } ]}>{[=l5sTerm.Sprint(v2._dp)]}{[=v2.title]}</option>
+        {[~]}
+      {[}]}
+      {[ } ]}
+    {[~]}
     </select>
     </div>
   </div>

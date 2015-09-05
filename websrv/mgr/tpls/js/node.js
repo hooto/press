@@ -515,6 +515,17 @@ l5sNode.Set = function(modname, modelid, nodeid)
 
                                     data.item = term;
 
+                                    for (var i in data.items) {
+                
+                                        if (!data.items[i].pid) {
+                                            data.items[i].pid = 0;
+                                        }
+
+                                        if (data.items[i].pid == 0) {
+                                            data.items[i]._subs = l5sTerm.ListSubRange(data.items, null, data.items[i].id, 0);
+                                        } 
+                                    }
+
                                     tplid = "l5smgr-nodeset-tplterm_taxonomy";
                         
                                     l4iTemplate.Render({
