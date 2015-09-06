@@ -35,7 +35,7 @@ import (
 
 var (
 	Config        ConfigCommon
-	Version       = "0.1.0.dev"
+	Version       = "0.1.1.dev"
 	captchaConfig captcha.Options
 
 	User = &user.User{
