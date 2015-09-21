@@ -26,7 +26,7 @@ l5s.Boot = function()
                 for (var i in window.onload_hooks) {
                     window.onload_hooks[i]();
                 } 
-            }, 10);                       
+            }, 100);                       
         });
     });
 }
