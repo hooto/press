@@ -102,6 +102,8 @@ func (c S2) IndexAction() {
 	width, height, crop := 2000, 2000, true
 
 	switch ipn {
+	case "i6040":
+		width, height = 60, 40
 	case "s800":
 		width, height, crop = 800, 800, false
 	case "thumb":
