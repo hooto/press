@@ -19,7 +19,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"math/rand"
+	// "math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -99,11 +99,11 @@ func (c S2) IndexAction() {
 		return
 	}
 
-	width, height := 2000, 2000
+	width, height, crop := 2000, 2000, true
 
 	switch ipn {
-	case "i6040":
-		width, height = 60, 40
+	case "s800":
+		width, height, crop = 800, 800, false
 	case "thumb":
 		width, height = 150, 150
 	case "medium":
@@ -153,7 +153,7 @@ func (c S2) IndexAction() {
 
 	defer ims.Destroy()
 
-	sx, sy, sw, sh, dstw, dsth, _ := _resize_dimensions(ims.Sx(), ims.Sy(), width, height)
+	sx, sy, sw, sh, dstw, dsth, _ := _resize_dimensions(ims.Sx(), ims.Sy(), width, height, crop)
 
 	imd := gd.CreateTrueColor(dstw, dsth)
 	defer imd.Destroy()
@@ -187,7 +187,7 @@ func (c S2) IndexAction() {
 	}
 
 	if len(out) > 10 {
-		store.CacheSetBytes([]byte(hid), out, 36000+rand.Intn(36000))
+		// store.CacheSetBytes([]byte(hid), out, 36000+rand.Intn(36000))
 	}
 
 	// fmt.Println("rez size", len(out))
@@ -196,10 +196,25 @@ func (c S2) IndexAction() {
 	c.Response.Out.Write(out)
 }
 
-func _resize_dimensions(srcw, srch, dstw, dsth int) (sx, sy, sw, sh, dw, dh int, do bool) {
+func _resize_dimensions(srcw, srch, dstw, dsth int, crop bool) (sx, sy, sw, sh, dw, dh int, do bool) {
+
+	if dstw > srcw && dsth > srch {
+		return 0, 0, srcw, srch, srcw, srch, true
+	}
+
+	if !crop {
+
+		cropw_ratio := float32(dstw) / float32(srcw)
+		croph_ratio := float32(dsth) / float32(srch)
+
+		if cropw_ratio < croph_ratio {
+			dsth = int(cropw_ratio * float32(srch))
+		} else {
+			dstw = int(croph_ratio * float32(srcw))
+		}
+	}
 
 	dst_ratio := float32(dstw) / float32(dsth)
-
 	sdw := int(_float_min(float32(srch)*dst_ratio, float32(srcw)))
 	sdh := int(_float_min(float32(srcw)/dst_ratio, float32(srch)))
 
@@ -220,6 +235,15 @@ func _resize_dimensions(srcw, srch, dstw, dsth int) (sx, sy, sw, sh, dw, dh int,
 func _float_min(a, b float32) float32 {
 
 	if a < b {
+		return a
+	}
+
+	return b
+}
+
+func _float_max(a, b float32) float32 {
+
+	if a > b {
 		return a
 	}
 
