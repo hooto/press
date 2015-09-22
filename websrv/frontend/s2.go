@@ -189,7 +189,7 @@ func (c S2) IndexAction() {
 	}
 
 	if len(out) > 10 {
-		// store.CacheSetBytes([]byte(hid), out, 36000+rand.Intn(36000))
+		store.CacheSetBytes([]byte(hid), out, 36000+rand.Intn(36000))
 	}
 
 	// fmt.Println("rez size", len(out))
@@ -237,15 +237,6 @@ func _resize_dimensions(srcw, srch, dstw, dsth int, crop bool) (sx, sy, sw, sh, 
 func _float_min(a, b float32) float32 {
 
 	if a < b {
-		return a
-	}
-
-	return b
-}
-
-func _float_max(a, b float32) float32 {
-
-	if a > b {
 		return a
 	}
 
