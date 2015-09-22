@@ -15,11 +15,10 @@
 package frontend
 
 import (
-	// "bytes"
 	"crypto/md5"
 	"fmt"
 	"io"
-	// "math/rand"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
