@@ -159,7 +159,7 @@ func (c Comment) SetAction() {
 		"updated":        set.Meta.Created,
 	}
 
-	if _, err := dcn.Base.Insert("nx"+utils.StringEncode16("comment", 12)+"_entry", item); err != nil {
+	if _, err := dcn.Base.Insert("nx"+utils.StringEncode16("core/comment", 12)+"_entry", item); err != nil {
 		set.Error = &types.ErrorMeta{
 			Code:    "500",
 			Message: err.Error(),

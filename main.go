@@ -103,4 +103,6 @@ func main() {
 
 	fmt.Println("Running")
 	httpsrv.GlobalService.Start()
+
+	select {}
 }
