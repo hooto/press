@@ -85,6 +85,7 @@ func main() {
 
 	// status
 	status.Init()
+	datax.Worker()
 
 	//
 	// httpsrv.Config.I18n(config.Config.Prefix + "/src/i18n/en.json")

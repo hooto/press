@@ -7,7 +7,7 @@ done
 
 rm -f ./bin/lesscms
 
-go build -o ./bin/lesscms ./main.go
+go build -race -o ./bin/lesscms ./main.go
 
 ./bin/lesscms -logtostderr=true 
 

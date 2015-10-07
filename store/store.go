@@ -34,26 +34,26 @@ func Init(cfg skv.Config) error {
 	return nil
 }
 
-func CacheSetBytes(key, value []byte, ttl int) *skv.Reply {
+func CacheSetBytes(key, value []byte, ttl uint32) *skv.Reply {
 
 	if CacheDB == nil {
 		return errInit
 	}
 
-	return CacheDB.Set(key, value, uint64(ttl*1e3))
+	return CacheDB.KvPut(key, value, uint32(ttl*1e3))
 }
 
-func CacheSet(key, value string, ttl int) *skv.Reply {
+func CacheSet(key, value string, ttl uint32) *skv.Reply {
 	return CacheSetBytes([]byte(key), []byte(value), ttl)
 }
 
-func CacheSetJson(key string, value interface{}, ttl int) *skv.Reply {
+func CacheSetJson(key string, value interface{}, ttl uint32) *skv.Reply {
 
 	if CacheDB == nil {
 		return errInit
 	}
 
-	return CacheDB.SetJson([]byte(key), value, uint64(ttl*1e3))
+	return CacheDB.KvPutJson([]byte(key), value, uint32(ttl*1e3))
 }
 
 func CacheGet(key string) *skv.Reply {
@@ -62,7 +62,7 @@ func CacheGet(key string) *skv.Reply {
 		return errInit
 	}
 
-	return CacheDB.Get([]byte(key))
+	return CacheDB.KvGet([]byte(key))
 }
 
 func CacheDel(key string) *skv.Reply {
@@ -71,5 +71,5 @@ func CacheDel(key string) *skv.Reply {
 		return errInit
 	}
 
-	return CacheDB.Del([]byte(key))
+	return CacheDB.KvDel([]byte(key))
 }

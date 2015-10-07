@@ -17,6 +17,7 @@ package datax
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/lessos/lessgo/data/rdo"
@@ -30,7 +31,21 @@ import (
 	"../store"
 )
 
-func init() {
+var (
+	worker_counter_locker sync.Mutex
+	worker_pending        = false
+)
+
+func Worker() {
+
+	worker_counter_locker.Lock()
+	defer worker_counter_locker.Unlock()
+
+	if worker_pending {
+		return
+	}
+
+	worker_pending = true
 
 	go func() {
 
@@ -50,7 +65,7 @@ func init() {
 
 			for {
 
-				ls := store.CacheDB.Scan([]byte("access_counter"), []byte{}, uint64(limit)).Hash()
+				ls := store.CacheDB.KvScan([]byte("access_counter"), []byte{}, uint64(limit)).Hash()
 
 				imap := map[string]int{}
 
@@ -68,7 +83,7 @@ func init() {
 						}
 					}
 
-					store.CacheDB.Del(v.Key)
+					store.CacheDB.KvDel(v.Key)
 				}
 
 				for key, num := range imap {
