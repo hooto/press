@@ -78,6 +78,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	ext_captcha.DataConnector = store.CacheDB
+	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
+		logger.Printf("error", "ext_captcha.Config error: %v", err)
+		os.Exit(1)
+	}
+
 	idclient.ServiceUrl = config.Config.IdentityServiceUrl
 
 	httpsrv.GlobalService.Config.UrlBasePath = "ap"

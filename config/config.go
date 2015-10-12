@@ -35,8 +35,8 @@ import (
 
 var (
 	Config        ConfigCommon
-	Version       = "0.1.1.dev"
-	captchaConfig captcha.Options
+	Version       = "0.1.2.dev"
+	CaptchaConfig = captcha.DefaultConfig
 
 	User = &user.User{
 		Uid:      "2048",
@@ -140,14 +140,14 @@ func Initialize(prefix string) error {
 	}
 
 	// Setting CAPTCHA
-	captchaConfig = captcha.DefaultConfig
+	CaptchaConfig = captcha.DefaultConfig
 
-	captchaConfig.FontPath = Config.Prefix + "/vendor/github.com/eryx/hcaptcha/var/fonts/cmr10.ttf"
-	captchaConfig.DataDir = Config.Prefix + "/var/captchadb"
+	CaptchaConfig.FontPath = Config.Prefix + "/vendor/github.com/eryx/hcaptcha/var/fonts/cmr10.ttf"
+	// CaptchaConfig.DataDir = Config.Prefix + "/var/captchadb"
 
-	if err := captcha.Config(captchaConfig); err != nil {
-		return err
-	}
+	// if err := captcha.Config(captchaConfig); err != nil {
+	// 	return err
+	// }
 
 	// Default User
 	if User, err = user.Current(); err != nil {
