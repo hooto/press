@@ -65,7 +65,7 @@ func Worker() {
 
 			for {
 
-				ls := store.CacheDB.KvScan([]byte("access_counter"), []byte{}, uint64(limit)).Hash()
+				ls := store.CacheDB.KvScan([]byte("access_counter"), []byte{}, uint32(limit)).Hash()
 
 				imap := map[string]int{}
 

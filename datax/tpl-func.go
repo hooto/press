@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package datax
 
 import (
-	"path/filepath"
-
 	"github.com/lessos/lessgo/httpsrv"
 )
 
 func init() {
-	httpsrv.GlobalService.Config.TemplateFuncRegister("SysConfig", SysConfigList.FetchString)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("HttpSrvBasePath", HttpSrvBasePath)
-}
-
-func HttpSrvBasePath(uri string) string {
-	return filepath.Clean("/" + httpsrv.GlobalService.Config.UrlBasePath + "/" + uri)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("TimeFormat", TimeFormat)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldDebug", FieldDebug)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldString", FieldString)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubString", FieldSubString)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldHtml", FieldHtml)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubHtml", FieldSubHtml)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("pagelet", Pagelet)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("FilterUri", FilterUri)
 }

@@ -47,24 +47,11 @@ var (
 func init() {
 	//
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// render functions
-	httpsrv.GlobalService.Config.TemplateFuncRegister("TimeFormat", datax.TimeFormat)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldDebug", datax.FieldDebug)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldString", datax.FieldString)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubString", datax.FieldSubString)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldHtml", datax.FieldHtml)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubHtml", datax.FieldSubHtml)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("pagelet", datax.Pagelet)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("FilterUri", datax.FilterUri)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("SysConfig", config.SysConfigList.FetchString)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("HttpSrvBasePath", config.HttpSrvBasePath)
+	//
+	flag.Parse()
 }
 
 func main() {
-
-	//
-	flag.Parse()
 
 	//
 	if err := config.Initialize(*flagPrefix); err != nil {
