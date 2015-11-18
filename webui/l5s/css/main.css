@@ -265,7 +265,7 @@ body {
 }
 
 .l5s-nodev .header {
-  padding: 0 0 20px 0;
+  padding: 0 0 10px 0;
   margin: 0 0 20px 0;
   border-bottom: #eee 1px solid;
   line-height: 100%;
@@ -284,6 +284,7 @@ body {
 }
 
 .l5s-nodev .header .hinfo .section {
+  margin-top: 10px;
   margin-right: 20px;
   font-size: 80%;
 }

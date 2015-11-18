@@ -1,8 +1,9 @@
 {
-  "instance_id": "18a8488ec661",
+  "instance_id": "f9a9f39209ec",
   "app_title": "CMS",
   "http_port": 9533,
-  "identity_service_url": "http://127.0.0.1:1778/ids",
+  "_identity_service_url": "http://127.0.0.1:1778/ids",
+  "identity_service_url": "http://www.lessos.com/ids",
   "database": {
     "driver": "mysql",
     "host": "127.0.0.1",
