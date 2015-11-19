@@ -65,7 +65,6 @@
 {{pagelet . "core/general" "footer.tpl"}}
 
 </body>
-</html>
 <script type="text/javascript">
 {{if .entry.ExtCommentPerEntry}}
 window.onload_hooks.push(function() {
@@ -83,3 +82,4 @@ window.onload_hooks.push(function() {
     l5s.CodeRender();
 });
 </script>
+</html>
