@@ -34,6 +34,9 @@ func (c Index) IndexAction() {
 	c.AutoRender = false
 
 	//
+	status.Locker.RLock()
+	defer status.Locker.RUnlock()
+
 	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
 		c.Redirect(config.HttpSrvBasePath("mgr/setup/index"))
 		return
@@ -57,12 +60,14 @@ func (c Index) IndexAction() {
   <script src="`+config.HttpSrvBasePath("mgr/-/js/main.js")+`"></script>
   <script type="text/javascript">
     window._basepath = "`+config.HttpSrvBasePath("")+`";
-    window.onload = l5sMgr.Boot() ;
   </script>
 </head>
 <body id="body-content">
 loading
 </body>
+<script type="text/javascript">
+window.onload = l5sMgr.Boot();
+</script>
 </html>`)
 
 }

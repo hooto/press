@@ -35,7 +35,7 @@ const (
 var (
 	Uptime                string
 	IdentityServiceStatus int
-	Locker                sync.Mutex
+	Locker                sync.RWMutex
 )
 
 func init() {
