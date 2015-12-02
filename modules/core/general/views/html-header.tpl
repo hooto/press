@@ -13,7 +13,7 @@
   <script type="text/javascript">
     window._basepath = {{HttpSrvBasePath ""}};
     window.onload_hooks = [];
-    window.onload = l5s.Boot();
   </script>
 </head>
+<body>
 

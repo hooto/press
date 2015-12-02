@@ -1,5 +1,5 @@
 {{pagelet . "core/general" "html-header.tpl"}}
-<body>
+
 {{pagelet . "core/general" "nav-header.tpl" "topnav"}}
 
 <div class="container">
@@ -15,5 +15,6 @@
 </div>
 
 {{pagelet . "core/general" "footer.tpl"}}
-</body>
-</html>
+
+{{pagelet . "core/general" "html-footer.tpl"}}
+

@@ -1,5 +1,5 @@
 {{pagelet . "core/general" "html-header.tpl"}}
-<body>
+
 {{pagelet . "core/general" "nav-header.tpl" "topnav"}}
 
 <div class="container">
@@ -64,7 +64,6 @@
 
 {{pagelet . "core/general" "footer.tpl"}}
 
-</body>
 <script type="text/javascript">
 {{if .entry.ExtCommentPerEntry}}
 window.onload_hooks.push(function() {
@@ -82,4 +81,5 @@ window.onload_hooks.push(function() {
     l5s.CodeRender();
 });
 </script>
-</html>
+
+{{pagelet . "core/general" "html-footer.tpl"}}
