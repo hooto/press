@@ -105,6 +105,8 @@ func (c S2) IndexAction() {
 		width, height = 60, 40
 	case "s800":
 		width, height, crop = 800, 800, false
+	case "s800x":
+		width, height, crop = 800, 8000, false
 	case "thumb":
 		width, height = 150, 150
 	case "medium":
