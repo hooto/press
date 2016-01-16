@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>Setup : Registration to Identity Service</title>
-  <link rel="stylesheet" href="/~/bootstrap/3.3/css/bootstrap.min.css" type="text/css">
+  <link rel="stylesheet" href="/~/bs/3.3/css/bootstrap.min.css" type="text/css">
   <link rel="stylesheet" href="/~/css/main.css" type="text/css">
-  <script src="/~/jquery/1.11/jquery.min.js"></script>
+  <script src="/~/l5s/js/jquery.min.js"></script>
   <script src="/~/lessui/js/lessui.js"></script>
   <script src="/~/lessui/js/sea.js"></script>
   <script src="/~/l5s/js/main.js"></script>

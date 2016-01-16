@@ -13,7 +13,7 @@ l5s.Boot = function()
     });
 
     seajs.use([
-        "~/jquery/1.11/jquery.min.js",
+        "~/l5s/js/jquery.min.js",
     ],
     function() {
 
@@ -51,12 +51,12 @@ l5s.CodeRender = function()
         switch (lang) {
 
         case "php":
-            modes.push("~/codemirror/5/mode/php/php.js");
+            modes.push("~/cm/5/mode/php/php.js");
         case "htmlmixed":
-            modes.push("~/codemirror/5/mode/xml/xml.js");
-            modes.push("~/codemirror/5/mode/javascript/javascript.js");
-            modes.push("~/codemirror/5/mode/css/css.js");
-            modes.push("~/codemirror/5/mode/htmlmixed/htmlmixed.js");
+            modes.push("~/cm/5/mode/xml/xml.js");
+            modes.push("~/cm/5/mode/javascript/javascript.js");
+            modes.push("~/cm/5/mode/css/css.js");
+            modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js");
             break;
 
         case "c":
@@ -67,7 +67,7 @@ l5s.CodeRender = function()
             break;
 
         case "json":
-            modes.push("~/codemirror/5/mode/javascript/javascript.js");
+            modes.push("~/cm/5/mode/javascript/javascript.js");
             lang = "application/ld+json";
             break;
 
@@ -84,7 +84,7 @@ l5s.CodeRender = function()
         case "swift":
         case "erlang":
         case "nginx":
-            modes.push("~/codemirror/5/mode/"+ lang +"/"+ lang +".js");
+            modes.push("~/cm/5/mode/"+ lang +"/"+ lang +".js");
             break;
 
         default:
@@ -92,13 +92,13 @@ l5s.CodeRender = function()
         }
 
         seajs.use([
-            "~/codemirror/5/lib/codemirror.css",
-            "~/codemirror/5/lib/codemirror.js",
+            "~/cm/5/lib/codemirror.css",
+            "~/cm/5/lib/codemirror.js",
         ],
         function() {
 
-            modes.push("~/codemirror/5/addon/runmode/runmode.js");
-            modes.push("~/codemirror/5/mode/clike/clike.js");
+            modes.push("~/cm/5/addon/runmode/runmode.js");
+            modes.push("~/cm/5/mode/clike/clike.js");
 
             seajs.use(modes, function() {
 
@@ -146,9 +146,6 @@ l5s.Ajax = function(url, options)
         url += "?_=";
     }
     url += Math.random();
-
-    //
-    // url += "&access_token="+ l4iCookie.Get("access_token");
 
     //
     if (options.method === undefined) {

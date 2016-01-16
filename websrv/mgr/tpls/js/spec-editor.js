@@ -47,27 +47,27 @@ l5sSpecEditor.Index = function(modname)
             l4iTemplate.RenderFromID("lcbind-proj-filenav", "l5s-speceditor-fsnav-tpl");
 
             seajs.use([
-                "~/codemirror/5/lib/codemirror.css",
-                "~/codemirror/5/lib/codemirror.js",
-                "~/codemirror/5/theme/monokai.css",
+                "~/cm/5/lib/codemirror.css",
+                "~/cm/5/lib/codemirror.js",
+                "~/cm/5/theme/monokai.css",
             ],
             function() {
 
                 seajs.use([
-                    "~/codemirror/5/mode/clike/clike.js",
-                    "~/codemirror/5/mode/javascript/javascript.js",
-                    "~/codemirror/5/mode/css/css.js",
-                    "~/codemirror/5/mode/htmlmixed/htmlmixed.js",
-                    "~/codemirror/5/mode/markdown/markdown.js",
-                    "~/codemirror/5/mode/xml/xml.js",
-                    "~/codemirror/5/addon/selection/active-line.js",
-                    "~/codemirror/5/addon/hint/show-hint.js",
-                    "~/codemirror/5/addon/hint/javascript-hint.js",
-                    "~/codemirror/5/addon/selection/active-line.js",
-                    "~/codemirror/5/addon/fold/foldcode.js",
-                    "~/codemirror/5/addon/fold/foldgutter.js",
-                    "~/codemirror/5/addon/edit/closetag.js",
-                    "~/codemirror/5/addon/edit/closebrackets.js",
+                    "~/cm/5/mode/clike/clike.js",
+                    "~/cm/5/mode/javascript/javascript.js",
+                    "~/cm/5/mode/css/css.js",
+                    "~/cm/5/mode/htmlmixed/htmlmixed.js",
+                    "~/cm/5/mode/markdown/markdown.js",
+                    "~/cm/5/mode/xml/xml.js",
+                    "~/cm/5/addon/selection/active-line.js",
+                    "~/cm/5/addon/hint/show-hint.js",
+                    "~/cm/5/addon/hint/javascript-hint.js",
+                    "~/cm/5/addon/selection/active-line.js",
+                    "~/cm/5/addon/fold/foldcode.js",
+                    "~/cm/5/addon/fold/foldgutter.js",
+                    "~/cm/5/addon/edit/closetag.js",
+                    "~/cm/5/addon/edit/closebrackets.js",
                 ],
                 function() {
 

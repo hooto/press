@@ -23,7 +23,7 @@ l5sMgr.Boot = function()
 
     seajs.use([
         "~/lessui/js/BrowserDetect.js",
-        "~/jquery/1.11/jquery.min.js",
+        "~/l5s/js/jquery.min.js",
         "~/lessui/js/eventproxy.js",
     ], function() {
 
@@ -38,8 +38,8 @@ l5sMgr.Boot = function()
         }
 
         seajs.use([
-            "~/bootstrap/3.3/css/bootstrap.min.css",
-            "~/bootstrap/3.3/js/bootstrap.min.js",
+            "~/bs/3.3/css/bootstrap.min.css",
+            "~/bs/3.3/js/bootstrap.min.js",
             "~/lessui/js/lessui.js",
             "~/lessui/css/lessui.css",
             "~/l5s/css/main.css?_="+ Math.random(),
