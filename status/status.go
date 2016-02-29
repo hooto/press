@@ -71,6 +71,7 @@ func Refresh() {
 	}
 
 	err := hc.ReplyJson(&rsjson)
+	hc.Close()
 	if err != nil || rsjson.Status != "OK" {
 		IdentityServiceStatus = IdentityServiceUnavailable
 	} else { // Check if this Registered to ID Service
@@ -85,5 +86,7 @@ func Refresh() {
 		} else {
 			IdentityServiceStatus = IdentityServiceUnRegistered
 		}
+
+		hc.Close()
 	}
 }

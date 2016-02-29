@@ -108,4 +108,6 @@ func (c Setup) AppRegisterPutAction() {
 			reg.Error = &types.ErrorMeta{idsapi.ErrCodeInternalError, err.Error()}
 		}
 	}
+
+	hc.Close()
 }

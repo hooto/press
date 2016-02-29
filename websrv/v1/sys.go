@@ -205,6 +205,8 @@ func (c Sys) IdentityStatusAction() {
 		sets.InstanceRegistered.Error = &types.ErrorMeta{}
 	}
 
+	hc.Close()
+
 	sets.Kind = "SysIdentityStatus"
 
 	c.RenderJson(sets)
