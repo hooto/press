@@ -190,7 +190,7 @@ func (c S2) IndexAction() {
 	}
 
 	if len(out) > 10 {
-		store.CacheSetBytes([]byte(hid), out, uint32(36000+rand.Intn(36000)))
+		store.CacheSetBytes([]byte(hid), out, int64(36000+rand.Intn(36000))*1000)
 	}
 
 	// fmt.Println("rez size", len(out))

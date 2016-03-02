@@ -131,5 +131,5 @@ type ActionData struct {
 	Type     string `json:"type"`
 	Pager    bool   `json:"pager,omitempty"`
 	Query    Query  `json:"query,omitempty"`
-	CacheTTL uint32 `json:"cache_ttl,omitempty"` // cache time to live in seconds
+	CacheTTL int64  `json:"cache_ttl,omitempty"` // cache time to live in milliseconds
 }

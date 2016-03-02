@@ -32,7 +32,7 @@
           <th>Type</th>
           <th>Limit</th>
           <th>Order</th>
-          <th>Cache TTL</th>
+          <th>Cache TTL (ms)</th>
         </tr>
       </thead>
       <tbody id="l5smgr-spec-action-dataxs">

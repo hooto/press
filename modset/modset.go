@@ -479,8 +479,8 @@ func SpecActionSet(modname string, entry api.Action) error {
 			return fmt.Errorf("Invalid Datax Type (%s:%s)", dentry.Name, dentry.Type)
 		}
 
-		if dentry.CacheTTL > (86400 * 30) {
-			entry.Datax[i].CacheTTL = 86400 * 30
+		if dentry.CacheTTL > (86400 * 30000) {
+			entry.Datax[i].CacheTTL = 86400 * 30000
 		}
 
 		switch types[0] {

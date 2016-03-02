@@ -69,7 +69,7 @@
             "table": "entry",
             "limit": 200
           },
-          "cache_ttl": 1
+          "cache_ttl": 1000
         }
       ]
     }

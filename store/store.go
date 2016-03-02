@@ -34,26 +34,26 @@ func Init(cfg skv.Config) error {
 	return nil
 }
 
-func CacheSetBytes(key, value []byte, ttl uint32) *skv.Reply {
+func CacheSetBytes(key, value []byte, ttl int64) *skv.Reply {
 
 	if CacheDB == nil {
 		return errInit
 	}
 
-	return CacheDB.KvPut(key, value, uint32(ttl*1e3))
+	return CacheDB.KvPut(key, value, ttl)
 }
 
-func CacheSet(key, value string, ttl uint32) *skv.Reply {
+func CacheSet(key, value string, ttl int64) *skv.Reply {
 	return CacheSetBytes([]byte(key), []byte(value), ttl)
 }
 
-func CacheSetJson(key string, value interface{}, ttl uint32) *skv.Reply {
+func CacheSetJson(key string, value interface{}, ttl int64) *skv.Reply {
 
 	if CacheDB == nil {
 		return errInit
 	}
 
-	return CacheDB.KvPutJson([]byte(key), value, uint32(ttl*1e3))
+	return CacheDB.KvPutJson([]byte(key), value, ttl)
 }
 
 func CacheGet(key string) *skv.Reply {

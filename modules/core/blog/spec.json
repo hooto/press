@@ -78,7 +78,7 @@
             "table": "entry",
             "limit": 10
           },
-          "cache_ttl": 600
+          "cache_ttl": 600000
         },
         {
           "name": "categories",
@@ -87,7 +87,7 @@
             "table": "categories",
             "limit": 100
           },
-          "cache_ttl": 3600
+          "cache_ttl": 3600000
         }
       ]
     },
@@ -101,7 +101,7 @@
             "table": "entry",
             "limit": 1
           },
-          "cache_ttl": 600
+          "cache_ttl": 600000
         }
       ]
     }
