@@ -27,11 +27,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
 	"../../config"
@@ -51,8 +51,8 @@ func (c ModSetFs) RenameAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -95,8 +95,8 @@ func (c ModSetFs) DelAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -138,8 +138,8 @@ func (c ModSetFs) PutAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -309,8 +309,8 @@ func (c ModSetFs) ListAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -412,8 +412,8 @@ func (c ModSetFs) GetAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 

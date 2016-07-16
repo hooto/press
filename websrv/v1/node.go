@@ -20,14 +20,14 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
 	"../../config"
@@ -50,8 +50,8 @@ func (c Node) ListAction() {
 
 	defer c.RenderJson(&ls)
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
-		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
+		ls.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -90,8 +90,8 @@ func (c Node) EntryAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -113,8 +113,8 @@ func (c Node) SetAction() {
 	node_set_lock.Lock()
 	defer node_set_lock.Unlock()
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -391,8 +391,8 @@ func (c Node) DelAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 

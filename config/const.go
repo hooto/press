@@ -15,39 +15,39 @@
 package config
 
 import (
-	"github.com/lessos/lessids/idsapi"
+	"github.com/lessos/iam/iamapi"
 )
 
 var (
 	coreModules = []string{"core/general", "core/comment", "core/blog", "ruilog/notebook"}
 
-	Perms = []idsapi.AppPrivilege{
-		idsapi.AppPrivilege{
+	Perms = []iamapi.AppPrivilege{
+		{
 			Privilege: "frontend.list",
 			Desc:      "Frontend - List",
 			Roles:     []uint32{100, 1000},
 		},
-		idsapi.AppPrivilege{
+		{
 			Privilege: "frontend.read",
 			Desc:      "Frontend - Read",
 			Roles:     []uint32{100, 1000},
 		},
-		idsapi.AppPrivilege{
+		{
 			Privilege: "editor.list",
 			Desc:      "Editor - List",
 			Roles:     []uint32{100},
 		},
-		idsapi.AppPrivilege{
+		{
 			Privilege: "editor.write",
 			Desc:      "Editor - Write",
 			Roles:     []uint32{100},
 		},
-		idsapi.AppPrivilege{
+		{
 			Privilege: "editor.read",
 			Desc:      "Editor - Read",
 			Roles:     []uint32{100},
 		},
-		idsapi.AppPrivilege{
+		{
 			Privilege: "sys.admin",
 			Desc:      "System Admin",
 			Roles:     []uint32{1},

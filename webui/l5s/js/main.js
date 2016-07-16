@@ -207,7 +207,7 @@ l5s.AuthSessionRefresh = function()
             if (err || !data || data.kind != "AuthSession") {
                 return;
             }
-            
+
             l4iTemplate.Render({
                 dstid: "l5s-topvar-user-box",
                 tplid: "l5s-topvar-user-box-tpl",

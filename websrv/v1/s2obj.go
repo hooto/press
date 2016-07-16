@@ -22,11 +22,11 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
 	"../../config"
@@ -59,8 +59,8 @@ func (c S2Obj) RenameAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -101,8 +101,8 @@ func (c S2Obj) DelAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -132,8 +132,8 @@ func (c S2Obj) PutAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -217,8 +217,8 @@ func (c S2Obj) ListAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -237,7 +237,7 @@ func (c S2Obj) ListAction() {
 	rsp.Path = path
 	rsp.Items = fsDirList(projfp, "", false)
 
-	for i, _ := range rsp.Items {
+	for i := range rsp.Items {
 		rsp.Items[i].SelfLink = fmt.Sprintf("%s/%s",
 			config.SysConfigList.FetchString("ls2_uri"), filepath.Clean(path+"/"+rsp.Items[i].Name))
 	}

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../../config"
 	"../../../status"
@@ -22,8 +22,8 @@ type Setup struct {
 
 func (c Setup) IndexAction() {
 
-	if !idclient.SessionIsLogin(c.Session) {
-		c.Redirect(idclient.LoginUrl(c.Request.RawAbsUrl()))
+	if !iamclient.SessionIsLogin(c.Session) {
+		c.Redirect(iamclient.LoginUrl(c.Request.RawAbsUrl()))
 		return
 	}
 
@@ -34,7 +34,7 @@ func (c Setup) IndexAction() {
 			Value:    token,
 			Path:     "/",
 			HttpOnly: true,
-			Expires:  idclient.Expired(864000),
+			Expires:  iamclient.Expired(864000),
 		}
 		http.SetCookie(c.Response.Out, ck)
 
@@ -42,9 +42,9 @@ func (c Setup) IndexAction() {
 		return
 	}
 
-	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
+	if status.IamServiceStatus == status.IamServiceUnRegistered {
 
-		c.Data["ids_url"] = idclient.ServiceUrl
+		c.Data["iam_url"] = iamclient.ServiceUrl
 
 		host := c.Request.Host
 		if i := strings.Index(host, ":"); i > 0 {
@@ -70,9 +70,9 @@ func (c Setup) IndexAction() {
 
 func (c Setup) AppRegisterPutAction() {
 
-	reg := idsapi.AppInstanceRegister{
-		AccessToken: idclient.SessionAccessToken(c.Session),
-		Instance: idsapi.AppInstance{
+	reg := iamapi.AppInstanceRegister{
+		AccessToken: iamclient.SessionAccessToken(c.Session),
+		Instance: iamapi.AppInstance{
 			Meta: types.ObjectMeta{
 				ID: config.Config.InstanceID,
 			},
@@ -90,22 +90,22 @@ func (c Setup) AppRegisterPutAction() {
 
 	// fmt.Println(regjs)
 
-	hc := httpclient.Put(idclient.ServiceUrl + "/v1/app-auth/register")
+	hc := httpclient.Put(iamclient.ServiceUrl + "/v1/app-auth/register")
 	hc.Body(regjs)
 
 	if err := hc.ReplyJson(&reg); err != nil {
 
-		reg.Error = &types.ErrorMeta{idsapi.ErrCodeInternalError, err.Error()}
+		reg.Error = &types.ErrorMeta{iamapi.ErrCodeInternalError, err.Error()}
 
 	} else if reg.Error == nil && reg.Kind == "AppInstanceRegister" {
 
 		config.Config.InstanceID = reg.Instance.Meta.ID
 		config.Config.AppTitle = reg.Instance.AppTitle
 
-		status.IdentityServiceStatus = status.IdentityServiceOK
+		status.IamServiceStatus = status.IamServiceOK
 
 		if err := config.Save(); err != nil {
-			reg.Error = &types.ErrorMeta{idsapi.ErrCodeInternalError, err.Error()}
+			reg.Error = &types.ErrorMeta{iamapi.ErrCodeInternalError, err.Error()}
 		}
 	}
 

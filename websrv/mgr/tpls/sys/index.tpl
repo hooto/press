@@ -7,7 +7,7 @@
 
 <div id="l5s-sys-nav" class="l5s-subnav">
   <a class="l4i-nav-item active" href="#sys/status">Status</a>
-  <a class="l4i-nav-item" href="#sys/ids-status">User Authentication</a>
+  <a class="l4i-nav-item" href="#sys/iam-status">User Authentication</a>
   <a class="l4i-nav-item" href="#sys/config">Settings</a>
 </div>
 

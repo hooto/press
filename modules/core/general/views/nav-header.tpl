@@ -36,7 +36,7 @@
     <img class="lnum-photo" src="{[=it.photo_url]}">
     <div class="lnum-name">{[=it.name]}</div>
     <a class="btn btn-primary lnum-btn" href="{[=l5s.HttpSrvBasePath("mgr")]}">Content Manage</a>
-    <a class="btn btn-default lnum-btn" href="{[=it.ids_url]}" target="_blank">Account Center</a>
+    <a class="btn btn-default lnum-btn" href="{[=it.iam_url]}" target="_blank">Account Center</a>
     <a class="btn btn-default lnum-btn" href="{[=l5s.HttpSrvBasePath("auth/sign-out")]}">Sign out</a>
   </div>
 </script>

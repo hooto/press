@@ -22,13 +22,13 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
 	"../../config"
@@ -51,8 +51,8 @@ func (c Term) ListAction() {
 
 	defer c.RenderJson(&ls)
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
-		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
+		ls.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -108,8 +108,8 @@ func (c Term) EntryAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -127,8 +127,8 @@ func (c Term) SetAction() {
 
 	defer c.RenderJson(&rsp)
 
-	if !idclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
+		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 

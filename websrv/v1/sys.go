@@ -20,13 +20,13 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
 	"../../config"
@@ -39,9 +39,9 @@ type Sys struct {
 
 func (c Sys) ConfigListAction() {
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
 		c.RenderJson(types.TypeMeta{
-			Error: &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"},
+			Error: &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"},
 		})
 		return
 	}
@@ -55,8 +55,8 @@ func (c Sys) ConfigSetAction() {
 
 	defer c.RenderJson(&ls)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		ls.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -133,8 +133,8 @@ func (c Sys) StatusAction() {
 
 	defer c.RenderJson(&set)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		set.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		set.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -160,12 +160,12 @@ func (c Sys) StatusAction() {
 	set.Kind = "SysStatus"
 }
 
-func (c Sys) IdentityStatusAction() {
+func (c Sys) IamStatusAction() {
 
-	var sets api.SysIdentityStatus
+	var sets api.SysIamStatus
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		sets.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		sets.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 
@@ -179,9 +179,9 @@ func (c Sys) IdentityStatusAction() {
 		insturl += fmt.Sprintf(":%d", config.Config.HttpPort)
 	}
 
-	sets = api.SysIdentityStatus{
-		ServiceUrl: idclient.ServiceUrl,
-		InstanceSelf: idsapi.AppInstance{
+	sets = api.SysIamStatus{
+		ServiceUrl: iamclient.ServiceUrl,
+		InstanceSelf: iamapi.AppInstance{
 			Meta: types.ObjectMeta{
 				ID: config.Config.InstanceID,
 			},
@@ -194,10 +194,10 @@ func (c Sys) IdentityStatusAction() {
 	}
 
 	hc := httpclient.Get(fmt.Sprintf("%s/v1/my-app/inst-entry?instid=%s&%s=%s",
-		idclient.ServiceUrl, config.Config.InstanceID,
-		idclient.AccessTokenKey, idclient.SessionAccessToken(c.Session)))
+		iamclient.ServiceUrl, config.Config.InstanceID,
+		iamclient.AccessTokenKey, iamclient.SessionAccessToken(c.Session)))
 
-	var info idsapi.AppInstance
+	var info iamapi.AppInstance
 
 	if err := hc.ReplyJson(&info); err == nil {
 		sets.InstanceRegistered = info
@@ -207,7 +207,7 @@ func (c Sys) IdentityStatusAction() {
 
 	hc.Close()
 
-	sets.Kind = "SysIdentityStatus"
+	sets.Kind = "SysIamStatus"
 
 	c.RenderJson(sets)
 }

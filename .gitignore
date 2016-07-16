@@ -9,3 +9,5 @@ misc/cm-compress.go
 misc/rhel/pkg-builder
 cm-compress
 modules/ruilog
+etc/main.json
+testgd.go

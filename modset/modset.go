@@ -641,7 +641,7 @@ func SpecRouteSet(modname string, entry api.Route) error {
 		return fmt.Errorf("Invalid Action Path (%s)", entry.Path)
 	}
 
-	for k, _ := range entry.Params {
+	for k := range entry.Params {
 
 		if mat := routeParamNamePattern.MatchString(k); !mat {
 			return fmt.Errorf("Invalid Param Name (%s)", k)

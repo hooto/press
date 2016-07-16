@@ -27,7 +27,6 @@ import (
 	"github.com/eryx/hcaptcha/captcha"
 	"github.com/lessos/lessdb/skv"
 	"github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/utils"
 
 	"../api"
@@ -49,14 +48,14 @@ var (
 )
 
 type ConfigCommon struct {
-	Prefix             string      `json:"prefix,omitempty"`
-	ModuleDir          string      `json:"module_dir,omitempty"`
-	InstanceID         string      `json:"instance_id"`
-	AppTitle           string      `json:"app_title,omitempty"`
-	HttpPort           uint16      `json:"http_port"`
-	IdentityServiceUrl string      `json:"identity_service_url"`
-	Database           base.Config `json:"database"`
-	CacheDB            skv.Config  `json:"cache_db,omitempty"`
+	Prefix        string      `json:"prefix,omitempty"`
+	ModuleDir     string      `json:"module_dir,omitempty"`
+	InstanceID    string      `json:"instance_id"`
+	AppTitle      string      `json:"app_title,omitempty"`
+	HttpPort      uint16      `json:"http_port"`
+	IamServiceUrl string      `json:"iam_service_url"`
+	Database      base.Config `json:"database"`
+	CacheDB       skv.Config  `json:"cache_db,omitempty"`
 }
 
 func init() {
@@ -112,11 +111,11 @@ func Initialize(prefix string) error {
 	}
 
 	//
-	if Config.IdentityServiceUrl == "" {
-		return errors.New("Error: `identity_service_url` can not be null")
+	if Config.IamServiceUrl == "" {
+		return errors.New("Error: `iam_service_url` can not be null")
 	}
 
-	httpsrv.GlobalService.Config.InstanceID = Config.InstanceID
+	// httpsrv.GlobalService.Config.InstanceID = Config.InstanceID
 
 	dcn, err := Config.DatabaseInstance()
 	if err != nil {
@@ -165,11 +164,11 @@ func Initialize(prefix string) error {
 func Save() error {
 
 	cfgExport := ConfigCommon{
-		InstanceID:         Config.InstanceID,
-		AppTitle:           Config.AppTitle,
-		HttpPort:           Config.HttpPort,
-		IdentityServiceUrl: Config.IdentityServiceUrl,
-		Database:           Config.Database,
+		InstanceID:    Config.InstanceID,
+		AppTitle:      Config.AppTitle,
+		HttpPort:      Config.HttpPort,
+		IamServiceUrl: Config.IamServiceUrl,
+		Database:      Config.Database,
 	}
 
 	jsb, _ := utils.JsonEncodeIndent(cfgExport, "  ")
@@ -190,7 +189,7 @@ func Save() error {
 
 	_, err = fp.Write(jsb)
 
-	httpsrv.GlobalService.Config.InstanceID = Config.InstanceID
+	// httpsrv.GlobalService.Config.InstanceID = Config.InstanceID
 
 	return err
 }

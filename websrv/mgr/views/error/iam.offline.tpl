@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>lessIDS Offline</title>
+  <title>IAM Service Offline</title>
 </head>
 
 <body>
@@ -38,7 +38,7 @@ body {
   <div class="">
     <div class="alert alert-danger">{{T . "Service Unavailable"}}</div>
     
-    <p>{{T . "lessids-unavailable-desc" .lessids_url}}</p>    
+    <p>{{T . "iam-unavailable-desc" .iam_url}}</p>    
   </div>
 
 </div>

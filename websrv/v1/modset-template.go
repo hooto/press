@@ -19,9 +19,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../../api"
 	"../../config"
@@ -34,8 +34,8 @@ func (c ModSet) FsTplListAction() {
 
 	defer c.RenderJson(&ls)
 
-	if !idclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		ls.Error = &types.ErrorMeta{idsapi.ErrCodeAccessDenied, "Access Denied"}
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		ls.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
 		return
 	}
 

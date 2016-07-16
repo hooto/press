@@ -23,9 +23,9 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
-	"github.com/lessos/lessids/idclient"
 
 	"./config"
 	"./datax"
@@ -71,7 +71,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	idclient.ServiceUrl = config.Config.IdentityServiceUrl
+	iamclient.ServiceUrl = config.Config.IamServiceUrl
 
 	httpsrv.GlobalService.Config.UrlBasePath = "ap"
 	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort

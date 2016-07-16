@@ -1,7 +1,7 @@
 {
   "app_title": "CMS",
   "http_port": 9627,
-  "identity_service_url": "http://127.0.0.1:9528/ids",
+  "iam_service_url": "http://127.0.0.1:9528/iam",
   "database": {
     "driver": "mysql",
     "engine": "MyISAM",

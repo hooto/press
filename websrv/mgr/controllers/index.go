@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessids/idclient"
 
 	"../../../config"
 	"../../../status"
@@ -37,13 +37,13 @@ func (c Index) IndexAction() {
 	status.Locker.RLock()
 	defer status.Locker.RUnlock()
 
-	if status.IdentityServiceStatus == status.IdentityServiceUnRegistered {
+	if status.IamServiceStatus == status.IamServiceUnRegistered {
 		c.Redirect(config.HttpSrvBasePath("mgr/setup/index"))
 		return
 	}
 
-	if !idclient.SessionIsLogin(c.Session) {
-		c.Redirect(idclient.AuthServiceUrl(
+	if !iamclient.SessionIsLogin(c.Session) {
+		c.Redirect(iamclient.AuthServiceUrl(
 			config.Config.InstanceID,
 			fmt.Sprintf("//%s%s/auth/cb", c.Request.Host, config.HttpSrvBasePath("")),
 			c.Request.RawAbsUrl()))

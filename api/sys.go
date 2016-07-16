@@ -15,8 +15,8 @@
 package api
 
 import (
+	"github.com/lessos/iam/iamapi"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessids/idsapi"
 )
 
 type SysStatus struct {
@@ -57,11 +57,11 @@ type SysStatusInfo struct {
 	Procs     uint16    `json:"procs"`
 }
 
-type SysIdentityStatus struct {
+type SysIamStatus struct {
 	types.TypeMeta     `json:",inline"`
 	ServiceUrl         string             `json:"service_url"`
-	InstanceSelf       idsapi.AppInstance `json:"instance_self"`
-	InstanceRegistered idsapi.AppInstance `json:"instance_registered"`
+	InstanceSelf       iamapi.AppInstance `json:"instance_self"`
+	InstanceRegistered iamapi.AppInstance `json:"instance_registered"`
 }
 
 type SysConfig struct {

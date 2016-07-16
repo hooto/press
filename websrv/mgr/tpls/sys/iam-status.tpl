@@ -15,24 +15,24 @@
 </style>
 
 <div class="panel panel-default">
-  <div class="panel-heading">Identity Service Status</div>
+  <div class="panel-heading">IAM Service Status</div>
   <div class="panel-body">
 
     <table width="100%" style="margin-bottom:20px;">
       <tr>
-        <td width="20%">Identity Service Url</td>
-        <td><input type="text" name="ids_url" class="form-control" placeholder="Enter the Identity Service URL" value="{[=it.service_url]}" readonly></td>
+        <td width="20%">IAM Service Url</td>
+        <td><input type="text" name="iam_url" class="form-control" placeholder="Enter the IAM Service URL" value="{[=it.service_url]}" readonly></td>
       </tr>
     </table>
 
-    <div id="l5s-mgr-sys-ids-alert"></div>
+    <div id="l5s-mgr-sys-iam-alert"></div>
 
-    <form id="l5s-mgr-sys-ids" action="#">
+    <form id="l5s-mgr-sys-iam" action="#">
     <table width="100%" class="table table-hover l5s-sys-table">
       <thead><tr>
         <th width="20%"></th>
         <th width="40%">Local App Info</th>
-        <th>Registered in Identity Service</th>
+        <th>Registered in IAM Service</th>
       </tr></thead>
       
       <tr>
@@ -135,7 +135,7 @@
     </form>
 
     <div class="text-center">
-      <button type="submit" class="btn btn-success" onclick="l5sSys.IdentitySync()">Sync to Identity Service</button>
+      <button type="submit" class="btn btn-success" onclick="l5sSys.IAMSync()">Sync to IAM Service</button>
     </div>
 
   </div>

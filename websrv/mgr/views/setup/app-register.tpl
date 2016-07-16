@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Setup : Registration to Identity Service</title>
+  <title>Setup : Registration to IAM Service</title>
   <link rel="stylesheet" href="/~/bs/3.3/css/bootstrap.min.css" type="text/css">
   <link rel="stylesheet" href="/~/css/main.css" type="text/css">
   <script src="/~/l5s/js/jquery.min.js"></script>
@@ -20,7 +20,7 @@
 
 <div class="panel panel-default">
   
-  <div class="panel-heading"><strong>Setup: Register Application to Identity Service</strong></div>
+  <div class="panel-heading"><strong>Setup: Register Application to IAM Service</strong></div>
   
   <div class="panel-body">
 
@@ -29,8 +29,8 @@
       <div id="l5s-app-reg-alert" class="alert alert-danger hide">...</div>
     
       <div class="form-group">
-        <label>Identity Service Url</label>
-        <input type="text" name="ids_url" class="form-control" placeholder="Enter the Identity Service URL" value="{{.ids_url}}" readonly>
+        <label>IAM Service Url</label>
+        <input type="text" name="iam_url" class="form-control" placeholder="Enter the IAM Service URL" value="{{.iam_url}}" readonly>
       </div>
     
 <!--       <div class="form-group">

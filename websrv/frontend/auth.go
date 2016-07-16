@@ -19,9 +19,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessids/idclient"
 
 	"../../config"
 )
@@ -33,7 +33,7 @@ type Auth struct {
 func (c Auth) CbAction() {
 
 	http.SetCookie(c.Response.Out, &http.Cookie{
-		Name:     idclient.AccessTokenKey,
+		Name:     iamclient.AccessTokenKey,
 		Value:    c.Params.Get("access_token"),
 		Path:     "/",
 		HttpOnly: true,
@@ -56,8 +56,7 @@ func (c Auth) LoginAction() {
 		referer = c.Request.Referer()
 	}
 
-	c.Redirect(idclient.AuthServiceUrl(
-		config.Config.InstanceID,
+	c.Redirect(iamclient.AuthServiceUrl(config.Config.InstanceID,
 		fmt.Sprintf("//%s%s/auth/cb", c.Request.Host, config.HttpSrvBasePath("")), referer))
 }
 
@@ -66,7 +65,7 @@ type AuthSession struct {
 	UserID         string `json:"userid"`
 	UserName       string `json:"username"`
 	Name           string `json:"name"`
-	IDsUrl         string `json:"ids_url"`
+	IamUrl         string `json:"iam_url"`
 	PhotoUrl       string `json:"photo_url"`
 }
 
@@ -75,16 +74,16 @@ func (c Auth) SessionAction() {
 	// fmt.Println("session", c.Session.IsLogin())
 
 	set := AuthSession{
-		IDsUrl:   idclient.ServiceUrl,
-		PhotoUrl: idclient.ServiceUrl + "/v1/service/photo/guest",
+		IamUrl:   iamclient.ServiceUrl,
+		PhotoUrl: iamclient.ServiceUrl + "/v1/service/photo/guest",
 	}
 
-	if session, err := idclient.SessionInstance(c.Session); err == nil {
+	if session, err := iamclient.SessionInstance(c.Session); err == nil {
 
 		set.UserID = session.UserID
 		set.UserName = session.UserName
 		set.Name = session.Name
-		set.PhotoUrl = idclient.ServiceUrl + "/v1/service/photo/" + session.UserID
+		set.PhotoUrl = iamclient.ServiceUrl + "/v1/service/photo/" + session.UserID
 		set.Kind = "AuthSession"
 
 	} else {
@@ -97,7 +96,7 @@ func (c Auth) SessionAction() {
 func (c Auth) SignOutAction() {
 
 	http.SetCookie(c.Response.Out, &http.Cookie{
-		Name:    idclient.AccessTokenKey,
+		Name:    iamclient.AccessTokenKey,
 		Value:   "",
 		Path:    "/",
 		Expires: time.Now().Add(-86400),

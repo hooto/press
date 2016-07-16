@@ -18,24 +18,24 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/utilx"
-	"github.com/lessos/lessids/idclient"
-	"github.com/lessos/lessids/idsapi"
 
 	"../config"
 )
 
 const (
-	IdentityServiceOK           int = 1200
-	IdentityServiceUnavailable  int = 1503
-	IdentityServiceUnRegistered int = 1501
+	IamServiceOK           int = 1200
+	IamServiceUnavailable  int = 1503
+	IamServiceUnRegistered int = 1501
 )
 
 var (
-	Uptime                string
-	IdentityServiceStatus int
-	Locker                sync.RWMutex
+	Uptime           string
+	IamServiceStatus int
+	Locker           sync.RWMutex
 )
 
 func init() {
@@ -49,8 +49,8 @@ func Init() {
 
 			Refresh()
 
-			if IdentityServiceStatus == IdentityServiceUnRegistered ||
-				IdentityServiceStatus == IdentityServiceOK {
+			if IamServiceStatus == IamServiceUnRegistered ||
+				IamServiceStatus == IamServiceOK {
 				break
 			}
 
@@ -65,7 +65,7 @@ func Refresh() {
 	defer Locker.Unlock()
 
 	// Check if Identity Service Available
-	hc := httpclient.Get(idclient.ServiceUrl + "/v1/status/info")
+	hc := httpclient.Get(iamclient.ServiceUrl + "/v1/status/info")
 	var rsjson struct {
 		Status string `json:"status"`
 	}
@@ -73,18 +73,18 @@ func Refresh() {
 	err := hc.ReplyJson(&rsjson)
 	hc.Close()
 	if err != nil || rsjson.Status != "OK" {
-		IdentityServiceStatus = IdentityServiceUnavailable
+		IamServiceStatus = IamServiceUnavailable
 	} else { // Check if this Registered to ID Service
 
-		hc = httpclient.Get(idclient.ServiceUrl +
+		hc = httpclient.Get(iamclient.ServiceUrl +
 			"/v1/app-auth/info?instance_id=" + config.Config.InstanceID)
 
-		var info idsapi.AppAuthInfo
+		var info iamapi.AppAuthInfo
 
 		if err := hc.ReplyJson(&info); err == nil && info.Kind == "AppAuthInfo" {
-			IdentityServiceStatus = IdentityServiceOK
+			IamServiceStatus = IamServiceOK
 		} else {
-			IdentityServiceStatus = IdentityServiceUnRegistered
+			IamServiceStatus = IamServiceUnRegistered
 		}
 
 		hc.Close()
