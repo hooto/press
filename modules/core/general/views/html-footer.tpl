@@ -1,5 +1,5 @@
 <script type="text/javascript">
-window.onload = l5s.Boot();
+window.onload = htap.Boot();
 </script>
 </body>
 </html>

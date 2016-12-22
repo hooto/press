@@ -39,8 +39,8 @@ import (
 
 	"github.com/nfnt/resize"
 
-	"../../config"
-	"../../store"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/store"
 )
 
 var (

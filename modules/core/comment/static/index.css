@@ -1,4 +1,4 @@
-.l5s-comment-embed > header {
+.htap-comment-embed > header {
   margin: 5px 0;
   padding: 0;
   border: 0;
@@ -6,7 +6,7 @@
   display: block;
 }
 
-.l5s-comment-embed > header > .nav-primary {
+.htap-comment-embed > header > .nav-primary {
   padding: 0;
   border-bottom: 2px solid;
   border-bottom-color: rgba(0,0,0,.2);
@@ -15,19 +15,19 @@
   display: block;
 }
 
-.l5s-comment-embed > header > .nav-primary > ul {
+.htap-comment-embed > header > .nav-primary > ul {
   margin: 0 auto;
   padding: 0;
   border: 0;
 }
 
-.l5s-comment-embed > header > .nav-primary > ul > li {
+.htap-comment-embed > header > .nav-primary > ul > li {
   display: inline-block;
   line-height: 0;
   position: relative;
 }
 
-.l5s-comment-embed > header > .nav-primary > ul > li > span {
+.htap-comment-embed > header > .nav-primary > ul > li > span {
   line-height: 1;
   margin: 0 15px;
   padding: 12px 0;
@@ -37,7 +37,7 @@
   font-weight: bold;
 }
 
-.l5s-comment-embed > header > .nav-primary > ul > li > span:after {
+.htap-comment-embed > header > .nav-primary > ul > li > span:after {
   content: " ";
   display: block;
   background-color: #777;
@@ -48,42 +48,42 @@
   left: 0;
 }
 
-.l5s-comment-embed .entry {
+.htap-comment-embed .entry {
   margin: 20px 0;
   position: relative;
   display: block;
   clear: both;
 }
 
-.l5s-comment-embed .entry:after,
-.l5s-comment-embed .entry:before {
+.htap-comment-embed .entry:after,
+.htap-comment-embed .entry:before {
   content: "";
   display: table;
   line-height: 0;
 }
 
-.l5s-comment-embed .entry > .avatar {
+.htap-comment-embed .entry > .avatar {
   float: left;
   margin-right: 12px;
   background-color: #eee;
 }
 
-.l5s-comment-embed .entry > .avatar > img {
+.htap-comment-embed .entry > .avatar > img {
   width: 48px;
   height: 48px;
 }
 
-.l5s-comment-embed .entry > .body {
+.htap-comment-embed .entry > .body {
   margin: 0;
   padding: 0;
   overflow: hidden;
   display: block;
 }
 
-.l5s-comment-embed .new {
+.htap-comment-embed .new {
   margin-bottom: 20px;
 }
 
-#l5s-comment-embed-new-form-alert {
+#htap-comment-embed-new-form-alert {
   margin: 5px 0;
 }

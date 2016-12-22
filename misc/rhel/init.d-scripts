@@ -1,20 +1,20 @@
 #!/bin/bash
 #
-# Startup script for the lesscms
+# Startup script for the hooto-press
 #
 # chkconfig:   345 85 15
-# description: lesscms
-# processname: lesscms
+# description: hooto-press
+# processname: hooto-press
 # config:
 
 # Source function library.
 . /etc/rc.d/init.d/functions
 
 
-DAEMON=/opt/lesscms/bin/lesscms
-DAEMON_ARGS="--prefix=/opt/lesscms"
-NAME=lesscms
-APPUSER=lesscms
+DAEMON=/opt/hooto/press/hooto-press
+DAEMON_ARGS="--prefix=/opt/hooto/press"
+NAME=hooto-press
+APPUSER=hooto-press
 
 set -e
 
@@ -22,7 +22,7 @@ case "$1" in
     start)
         echo -n -e "Starting $NAME ...\n" 
         
-        # Start lesscms!
+        # Start hooto-press!
         su -s /bin/bash -c "$DAEMON $DAEMON_ARGS > /dev/null 2>&1 &" $APPUSER
         sleep 2
         echo -n -e "$NAME PID: "

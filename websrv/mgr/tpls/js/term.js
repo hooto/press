@@ -1,20 +1,20 @@
-var l5sTerm = {
+var htapTerm = {
     taxonomy_ls_cache : null,
 }
 
-l5sTerm.List = function(modname, modelid)
+htapTerm.List = function(modname, modelid)
 {
-    var alertid = "#l5smgr-node-alert",
+    var alertid = "#htapm-node-alert",
         page = 0;
 
-    if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
-        modname = l4iStorage.Get("l5smgr_spec_active");
+    if (!modname && l4iStorage.Get("htapm_spec_active")) {
+        modname = l4iStorage.Get("htapm_spec_active");
     }
-    if (!modelid && l4iStorage.Get("l5smgr_tmodel_active")) {
-        modelid = l4iStorage.Get("l5smgr_tmodel_active");
+    if (!modelid && l4iStorage.Get("htapm_tmodel_active")) {
+        modelid = l4iStorage.Get("htapm_tmodel_active");
     }
-    if (l4iStorage.Get("l5smgr_termls_page")) {
-        page = l4iStorage.Get("l5smgr_termls_page");
+    if (l4iStorage.Get("htapm_termls_page")) {
+        page = l4iStorage.Get("htapm_termls_page");
     }
 
     if (!modname || !modelid) {
@@ -30,28 +30,26 @@ l5sTerm.List = function(modname, modelid)
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, rsj) {
-            
+
             if (tpl) {
                 $("#work-content").html(tpl);
             }
 
-            l4iStorage.Set("l5smgr_tmodel_active", modelid);
+            l4iStorage.Set("htapm_tmodel_active", modelid);
 
-            if (!rsj || rsj.kind != "TermList" 
+            if (!rsj || rsj.kind != "TermList"
                 || !rsj.items || rsj.items.length < 1) {
-                
-                $("#l5smgr-nodels").empty();
-                $("#l5smgr-termls").empty();
-                
+
+                $("#htapm-nodels").empty();
+                $("#htapm-termls").empty();
+
                 return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
             $(alertid).hide();
 
-
-
             for (var i in rsj.items) {
-                
+
                 rsj.items[i].created = l4i.TimeParseFormat(rsj.items[i].created, "Y-m-d");
                 rsj.items[i].updated = l4i.TimeParseFormat(rsj.items[i].updated, "Y-m-d H:i:s");
 
@@ -64,15 +62,15 @@ l5sTerm.List = function(modname, modelid)
                 }
 
                 if (rsj.model.type == "taxonomy" && rsj.items[i].pid == 0) {
-                    rsj.items[i]._subs = l5sTerm.ListSubRange(rsj.items, null, rsj.items[i].id, 0);
-                } 
+                    rsj.items[i]._subs = htapTerm.ListSubRange(rsj.items, null, rsj.items[i].id, 0);
+                }
             }
 
-            l5sTerm.taxonomy_ls_cache = rsj;
+            htapTerm.taxonomy_ls_cache = rsj;
 
             l4iTemplate.Render({
-                dstid: "l5smgr-termls",
-                tplid: "l5smgr-termls-tpl",
+                dstid: "htapm-termls",
+                tplid: "htapm-termls-tpl",
                 data:  {
                     model   : rsj.model,
                     modname : modname,
@@ -85,30 +83,30 @@ l5sTerm.List = function(modname, modelid)
                         rsj.meta.RangeLen = 20;
 
                         l4iTemplate.Render({
-                            dstid  : "l5smgr-termls-pager",
-                            tplid  : "l5smgr-termls-pager-tpl",
-                            data   : l4i.Pager(rsj.meta),
+                            dstid : "htapm-termls-pager",
+                            tplid : "htapm-termls-pager-tpl",
+                            data  : l4i.Pager(rsj.meta),
                         });
                     } else {
-                        $("#l5smgr-termls-pager").empty();
+                        $("#htapm-termls-pager").empty();
                     }
 
-                    
+                    htapNode.OpToolsRefresh("#htapm-node-term-opts");
                 }
             });
         });
-    
+
         ep.fail(function (err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-termlist)");
         });
 
         // template
-        var el = document.getElementById("l5smgr-termls");
+        var el = document.getElementById("htapm-termls");
         if (!el || el.length < 1) {
-            l5sMgr.TplCmd("term/list", {
+            htapMgr.TplCmd("term/list", {
                 callback: function(err, tpl) {
-                    
+
                     if (err) {
                         return ep.emit('error', err);
                     }
@@ -120,13 +118,13 @@ l5sTerm.List = function(modname, modelid)
             ep.emit("tpl", null);
         }
 
-        l5sMgr.ApiCmd("term/list?"+ uri, {
-            callback: ep.done("data"),           
+        htapMgr.ApiCmd("term/list?"+ uri, {
+            callback: ep.done("data"),
         });
     });
 }
 
-l5sTerm.Sprint = function(num)
+htapTerm.Sprint = function(num)
 {
     var s = "";
     for (i = 0; i < num; i++) {
@@ -136,7 +134,7 @@ l5sTerm.Sprint = function(num)
     return s;
 }
 
-l5sTerm.ListSubRange = function(ls, rs, pid, dpnum)
+htapTerm.ListSubRange = function(ls, rs, pid, dpnum)
 {
     if (!rs) {
         rs = [];
@@ -154,11 +152,11 @@ l5sTerm.ListSubRange = function(ls, rs, pid, dpnum)
     }
 
     for (var i in ls) {
-        
+
         if (ls[i].pid == pid) {
             ls[i]._dp = dpnum;
             rs.push(ls[i]);
-            rs = l5sTerm.ListSubRange(ls, rs, ls[i].id, dpnum);
+            rs = htapTerm.ListSubRange(ls, rs, ls[i].id, dpnum);
         }
     }
 
@@ -167,21 +165,21 @@ l5sTerm.ListSubRange = function(ls, rs, pid, dpnum)
     return rs;
 }
 
-l5sTerm.ListPage = function(page)
+htapTerm.ListPage = function(page)
 {
-    l4iStorage.Set("l5smgr_termls_page", parseInt(page));
-    l5sTerm.List();
+    l4iStorage.Set("htapm_termls_page", parseInt(page));
+    htapTerm.List();
 }
 
-l5sTerm.Set = function(modname, modelid, termid)
+htapTerm.Set = function(modname, modelid, termid)
 {
-    var alertid = "#l5smgr-node-alert";
+    var alertid = "#htapm-node-alert";
 
-    if (!modname && l4iStorage.Get("l5smgr_spec_active")) {
-        modname = l4iStorage.Get("l5smgr_spec_active");
+    if (!modname && l4iStorage.Get("htapm_spec_active")) {
+        modname = l4iStorage.Get("htapm_spec_active");
     }
-    if (!modelid && l4iStorage.Get("l5smgr_tmodel_active")) {
-        modelid = l4iStorage.Get("l5smgr_tmodel_active");
+    if (!modelid && l4iStorage.Get("htapm_tmodel_active")) {
+        modelid = l4iStorage.Get("htapm_tmodel_active");
     }
 
     if (!modname || !modelid) {
@@ -194,7 +192,7 @@ l5sTerm.Set = function(modname, modelid, termid)
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, data) {
-            
+
             if (!tpl) {
                 return; // TODO
             }
@@ -215,28 +213,29 @@ l5sTerm.Set = function(modname, modelid, termid)
                 data.pid = 0;
             }
 
-            data._taxonomy_ls = l5sTerm.taxonomy_ls_cache;
+            data._taxonomy_ls = htapTerm.taxonomy_ls_cache;
 
             $(alertid).hide();
+            htapNode.OpToolsRefresh();
 
             l4iTemplate.Render({
-                dstid: "l5smgr-termset",
-                tplid: "l5smgr-termset-tpl",
+                dstid: "htapm-termset",
+                tplid: "htapm-termset-tpl",
                 data:  data,
                 success: function() {
-                    
+
                 },
             });
         });
-    
+
         ep.fail(function (err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
 
-        l5sMgr.TplCmd("term/set", {
+        htapMgr.TplCmd("term/set", {
             callback: function(err, tpl) {
-                    
+
                 if (err) {
                     return ep.emit('error', err);
                 }
@@ -245,11 +244,11 @@ l5sTerm.Set = function(modname, modelid, termid)
         });
 
         if (termid) {
-            l5sMgr.ApiCmd("term/entry?"+ uri +"&id="+ termid, {
-                callback: ep.done("data"),           
+            htapMgr.ApiCmd("term/entry?"+ uri +"&id="+ termid, {
+                callback: ep.done("data"),
             });
         } else {
-            l5sMgr.ApiCmd("term-model/entry?"+ uri, {
+            htapMgr.ApiCmd("term-model/entry?"+ uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
                         kind  : "Term",
@@ -260,16 +259,16 @@ l5sTerm.Set = function(modname, modelid, termid)
                         status : "1",
                         weight: "0",
                     });
-                },           
+                },
             });
         }
     });
 }
 
-l5sTerm.SetCommit = function()
+htapTerm.SetCommit = function()
 {
-    var form = $("#l5smgr-termset"),
-        alertid = "#l5smgr-node-alert";
+    var form = $("#htapm-termset"),
+        alertid = "#htapm-node-alert";
 
     var req = {
         kind   : "Term",
@@ -289,10 +288,10 @@ l5sTerm.SetCommit = function()
     // console.log(JSON.stringify(req));
 
     //
-    var uri = "modname="+ l4iStorage.Get("l5smgr_spec_active") +
-        "&modelid="+ l4iStorage.Get("l5smgr_tmodel_active");
+    var uri = "modname="+ l4iStorage.Get("htapm_spec_active") +
+        "&modelid="+ l4iStorage.Get("htapm_tmodel_active");
 
-    l5sMgr.ApiCmd("term/set?"+ uri, {
+    htapMgr.ApiCmd("term/set?"+ uri, {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
@@ -304,7 +303,7 @@ l5sTerm.SetCommit = function()
             form.find("input[name=id]").val(data.id);
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
-            setTimeout(l5sTerm.List, 500);
+            setTimeout(htapTerm.List, 500);
         }
     });
 }

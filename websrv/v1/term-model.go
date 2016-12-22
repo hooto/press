@@ -22,8 +22,8 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 
-	"../../api"
-	"../../config"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
 )
 
 type TermModel struct {

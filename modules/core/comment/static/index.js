@@ -1,17 +1,17 @@
-var l5sComment = {
+var htapComment = {
 
 }
 
-l5sComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
+htapComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
 {
-    l5s.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
+    htap.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
         "&refer_datax_table="+ ref_table +"&refer_id="+ ref_id );
 }
 
-l5sComment.EmbedCommit = function()
+htapComment.EmbedCommit = function()
 {
-    var form = $("#l5s-comment-embed-new-form"),
-        alertid = "#l5s-comment-embed-new-form-alert";
+    var form = $("#htap-comment-embed-new-form"),
+        alertid = "#htap-comment-embed-new-form-alert";
 
     var req = {
         pid               : "",
@@ -25,7 +25,7 @@ l5sComment.EmbedCommit = function()
     };
 
     // console.log(req);
-    l5s.ApiCmd("+/comment/comment/set", {
+    htap.ApiCmd("+/comment/comment/set", {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
@@ -42,8 +42,8 @@ l5sComment.EmbedCommit = function()
 
                     var captcha_token = Math.random();
                     form.find("input[name=captcha_token]").val(captcha_token);
-                    form.find("#l5s-comment-captcha-url").attr("src", 
-                        l5s.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+                    form.find("#htap-comment-captcha-url").attr("src", 
+                        htap.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
                 }
 
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -59,13 +59,13 @@ l5sComment.EmbedCommit = function()
             };
 
             l4iTemplate.Render({
-                dstid  : "l5s-comment-embed-list",
-                tplid  : "l5s-comment-embed-tpl",
+                dstid  : "htap-comment-embed-list",
+                tplid  : "htap-comment-embed-tpl",
                 data   : req,
                 append : true,
                 success : function() {
 
-                    $("#l5s-comment-embed-list-header").css({"display": "block"});
+                    $("#htap-comment-embed-list-header").css({"display": "block"});
                     
                     $("#entry-"+ req.meta.id).css({
                         "outline": "#5cb85c solid 2px",
@@ -85,7 +85,7 @@ l5sComment.EmbedCommit = function()
             l4i.InnerAlert(alertid, 'alert-success', "Successfully commited");
 
             setTimeout(function() {
-                l5sComment.EmbedFormHidden();
+                htapComment.EmbedFormHidden();
                 $(alertid).hide(500);
             }, 1500);
         },
@@ -93,18 +93,18 @@ l5sComment.EmbedCommit = function()
 }
 
 
-l5sComment.EmbedFormActive = function()
+htapComment.EmbedFormActive = function()
 {
-    $("#l5s-comment-embed-new-form-ctrl").css({"display": "none"});
+    $("#htap-comment-embed-new-form-ctrl").css({"display": "none"});
 
-    var form = $("#l5s-comment-embed-new-form"),
+    var form = $("#htap-comment-embed-new-form"),
         captcha_token = Math.random();
 
     form.css({"display": "block"});
 
     form.find("input[name=captcha_token]").val(captcha_token);
-    form.find("#l5s-comment-captcha-url").attr("src", 
-        l5s.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+    form.find("#htap-comment-captcha-url").attr("src", 
+        htap.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
 
     form.find("textarea[name=content]").focus();
 
@@ -112,8 +112,8 @@ l5sComment.EmbedFormActive = function()
 }
 
 
-l5sComment.EmbedFormHidden = function()
+htapComment.EmbedFormHidden = function()
 {
-    $("#l5s-comment-embed-new-form-ctrl").css({"display": "block"});
-    $("#l5s-comment-embed-new-form").slideUp(500);//css({"display": "none"});
+    $("#htap-comment-embed-new-form-ctrl").css({"display": "block"});
+    $("#htap-comment-embed-new-form").slideUp(500);//css({"display": "none"});
 }

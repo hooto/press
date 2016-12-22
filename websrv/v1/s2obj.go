@@ -24,12 +24,13 @@ import (
 
 	"github.com/lessos/iam/iamapi"
 	"github.com/lessos/iam/iamclient"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 
-	"../../api"
-	"../../config"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
 )
 
 var (
@@ -178,7 +179,7 @@ func (c S2Obj) PutAction() {
 
 		var jsPrev, jsAppend map[string]interface{}
 
-		err := utils.JsonDecode(body, &jsAppend)
+		err := json.Decode([]byte(body), &jsAppend)
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{"400", err.Error()}
 			return
@@ -190,7 +191,7 @@ func (c S2Obj) PutAction() {
 			return
 		}
 
-		err = utils.JsonDecode(file.Body, &jsPrev)
+		err = json.Decode([]byte(file.Body), &jsPrev)
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{"400", err.Error()}
 			return
@@ -199,8 +200,7 @@ func (c S2Obj) PutAction() {
 		jsMerged := utils.JsonMerge(jsPrev, jsAppend)
 		// fmt.Println(jsPrev, "\n\n", jsAppend, "\n\n", jsMerged)
 
-		strMerged, _ := utils.JsonEncode(jsMerged)
-		body = []byte(strMerged)
+		body, _ = json.Encode(jsMerged, "")
 	}
 
 	if err := fsFilePutWrite(projfp, body); err != nil {

@@ -1,30 +1,30 @@
-var l5sSpecEditor = {
+var htapSpecEditor = {
 
 }
 
-l5sSpecEditor.Open = function(modname)
+htapSpecEditor.Open = function(modname)
 {
-    var topnav = $("#l5s-uh-topnav");
+    var topnav = $("#htap-uh-topnav");
     topnav.find("a.active").removeClass("active");
 
     if (topnav.find("a[modname='"+ modname+"']").length > 0) {
         topnav.find("a[modname='"+ modname+"']").addClass("active");
-        l5sSpecEditor.Index(modname);
+        htapSpecEditor.Index(modname);
         return;
     }
 
     l4i.UrlEventRegister("spec-editor/"+ modname, function() {
-        l5sSpecEditor.Index(modname);
+        htapSpecEditor.Index(modname);
     });
-    
-    $("#l5s-uh-topnav").append("<a class=\"l4i-nav-item active\" modname=\""+ modname +"\" href=\"#spec-editor/"+ modname +"\">Spec Editor ("+ modname +")</a>");
+
+    $("#htap-uh-topnav").append("<a class=\"l4i-nav-item active\" modname=\""+ modname +"\" href=\"#spec-editor/"+ modname +"\">Spec Editor ("+ modname +")</a>");
 
     lcData.Init("speceditor", function() {
-        l5sSpecEditor.Index(modname);
+        htapSpecEditor.Index(modname);
     });
 }
 
-l5sSpecEditor.Index = function(modname)
+htapSpecEditor.Index = function(modname)
 {
     if (!modname) {
         return;
@@ -32,19 +32,19 @@ l5sSpecEditor.Index = function(modname)
 
     l9rTab.pool = {};
 
-    l4iSession.Set("l5s-speceditor-modname", modname);
+    l4iSession.Set("htap-speceditor-modname", modname);
     l4iSession.Set("modname_current", "/");
 
-    l5sMgr.TplCmd("spec/editor/desk", {
+    htapMgr.TplCmd("spec/editor/desk", {
         callback: function(err, data) {
-            
+
             if (err) {
                 return alert(err);
             }
 
             $("#com-content").html(data);
 
-            l4iTemplate.RenderFromID("lcbind-proj-filenav", "l5s-speceditor-fsnav-tpl");
+            l4iTemplate.RenderFromID("lcbind-proj-filenav", "htap-speceditor-fsnav-tpl");
 
             seajs.use([
                 "~/cm/5/lib/codemirror.css",
@@ -78,7 +78,7 @@ l5sSpecEditor.Index = function(modname)
 
                     l9rProjFs.OpenHistoryTabs();
                 });
-            });            
+            });
         },
     });
 }
@@ -98,14 +98,14 @@ l9rProjFs.OpenHistoryTabs = function()
 
     // var last_tab_urid = l4iStorage.Set(l4iSession.Get("podid") +"."+ l4iSession.Get("proj_name") +".tab."+ item.target);
 
-    lcData.Query("files", "projdir", l4iSession.Get("l5s-speceditor-modname"), function(ret) {
-    
+    lcData.Query("files", "projdir", l4iSession.Get("htap-speceditor-modname"), function(ret) {
+
         // console.log("Query files");
         if (ret == null) {
             return;
         }
-        
-        if (ret.value.id && ret.value.projdir == l4iSession.Get("l5s-speceditor-modname")) {
+
+        if (ret.value.id && ret.value.projdir == l4iSession.Get("htap-speceditor-modname")) {
 
             var icon = undefined;
             if (ret.value.icon) {
@@ -118,7 +118,7 @@ l9rProjFs.OpenHistoryTabs = function()
                 cab = l9rTab.frame[l9rTab.def];
             }
 
-            var tabLastActive = l4iStorage.Get(l4iSession.Get("l5s-speceditor-modname") +".cab."+ ret.value.cabid);
+            var tabLastActive = l4iStorage.Get(l4iSession.Get("htap-speceditor-modname") +".cab."+ ret.value.cabid);
             // console.log("tabLastActive: "+ tabLastActive);
 
             var titleOnly = true;
@@ -190,12 +190,12 @@ l9rProjFs.UiTreeLoad = function(options)
     // console.log("path reload "+ options.path);
 
     req.success = function(rs) {
-        
+
         var ls = rs.items;
         var lsfs = [];
 
         for (var i in ls) {
-            
+
             if (ls[i].name == "spec.json") {
                 // TODO
                 // continue;
@@ -222,27 +222,27 @@ l9rProjFs.UiTreeLoad = function(options)
                 || ls[i].mime == "inode/x-empty"
                 || ls[i].mime == "application/json") {
 
-                if (ls[i].mime == "text/x-php" 
+                if (ls[i].mime == "text/x-php"
                     || ls[i].name.slice(-4) == ".php") {
                     ico = "page_white_php";
-                } else if (ls[i].name.slice(-2) == ".h" 
+                } else if (ls[i].name.slice(-2) == ".h"
                     || ls[i].name.slice(-4) == ".hpp") {
                     ico = "page_white_h";
                 } else if (ls[i].name.slice(-2) == ".c") {
                     ico = "page_white_c";
-                } else if (ls[i].name.slice(-4) == ".cpp" 
+                } else if (ls[i].name.slice(-4) == ".cpp"
                     || ls[i].name.slice(-3) == ".cc") {
                     ico = "page_white_cplusplus";
-                } else if (ls[i].name.slice(-3) == ".js" 
+                } else if (ls[i].name.slice(-3) == ".js"
                     || ls[i].name.slice(-4) == ".css") {
                     ico = "page_white_code";
-                } else if (ls[i].name.slice(-5) == ".html" 
-                    || ls[i].name.slice(-4) == ".htm" 
+                } else if (ls[i].name.slice(-5) == ".html"
+                    || ls[i].name.slice(-4) == ".htm"
                     || ls[i].name.slice(-6) == ".phtml"
                     || ls[i].name.slice(-6) == ".xhtml"
                     || ls[i].name.slice(-4) == ".tpl") {
                     ico = "page_white_world";
-                } else if (ls[i].name.slice(-3) == ".sh" 
+                } else if (ls[i].name.slice(-3) == ".sh"
                     || ls[i].mime == "text/x-shellscript") {
                     ico = "application_osx_terminal";
                 } else if (ls[i].name.slice(-3) == ".rb") {
@@ -251,7 +251,7 @@ l9rProjFs.UiTreeLoad = function(options)
                     ico = "ht-page_white_golang";
                 } else if (ls[i].name.slice(-5) == ".java") {
                     ico = "page_white_cup";
-                } else if (ls[i].name.slice(-3) == ".py" 
+                } else if (ls[i].name.slice(-3) == ".py"
                     || ls[i].name.slice(-4) == ".yml"
                     || ls[i].name.slice(-5) == ".yaml"
                     || ls[i].name.slice(-3) == ".md"
@@ -260,7 +260,7 @@ l9rProjFs.UiTreeLoad = function(options)
                 }
 
                 // ls[i].href = "javascript:h5cTabOpen('{$p}','w0','editor',{'img':'{$fmi}', 'close':'1'})";
-                
+
                 ls[i].fstype = "text";
 
             } else if (ls[i].mime.slice(-5) == "image"
@@ -281,7 +281,7 @@ l9rProjFs.UiTreeLoad = function(options)
         }
 
         l4iTemplate.RenderFromID("fstd"+ ptdid, "lcx-filenav-tree-tpl", lsfs);
-        
+
         options.success();
 
         setTimeout(function() {
@@ -308,11 +308,11 @@ l9rProjFs.UiTreeEventRefresh = function()
         var h = $("#lcbind-fsnav-rcm").height();
         // h = $(this).find(".hdev-rcmenu").height();
         var t = e.pageY;
-        var bh = $('body').height() - 20;        
+        var bh = $('body').height() - 20;
         if ((t + h) > bh) {
             t = bh - h;
         }
-        
+
         var bw = $('body').width() - 20;
         var l = e.pageX;
         if (l > (bw - 200)) {
@@ -325,7 +325,7 @@ l9rProjFs.UiTreeEventRefresh = function()
         }).show(10);
 
         _fsItemPath = $(this).attr("lc-fspath");
-        
+
         var fstype = $(this).attr("lc-fstype");
         if (fstype == "dir") {
             $(".fsrcm-isdir").show();
@@ -336,11 +336,11 @@ l9rProjFs.UiTreeEventRefresh = function()
         return false;
     });
     $(".lcx-fsitem").bind("click", function() {
-    
+
         var fstype = $(this).attr("lc-fstype");
         var fspath = $(this).attr("lc-fspath");
         var fsicon = $(this).attr("lc-fsico")
-    
+
         switch (fstype) {
         case "dir":
             l9rProjFs.UiTreeLoad({path: fspath, toggle: true});
@@ -359,8 +359,8 @@ l9rProjFs.UiTreeEventRefresh = function()
         }
     });
 
-    // 
-    $(".lcbind-fsrcm-item").unbind(); 
+    //
+    $(".lcbind-fsrcm-item").unbind();
     $(".lcbind-fsrcm-item").bind("click", function() {
 
         var action = $(this).attr("lc-fsnav");
@@ -390,7 +390,7 @@ l9rProjFs.UiTreeEventRefresh = function()
 
         $("#lcbind-fsnav-rcm").hide();
     });
-    
+
     $(document).click(function() {
         $("#lcbind-fsnav-rcm").hide();
     });
@@ -488,12 +488,12 @@ var _fsUploadBind      = null;
 function _fsUploadTraverseTree(reqid, item, path)
 {
     path = path || "";
-  
+
     if (item.isFile) {
-    
+
         // Get file
         item.file(function(file) {
-            
+
             //console.log("File:", path + file.name);
             if (file.size > 10 * 1024 * 1024) {
                 $("#"+ reqid +" .state").show().append("<div>"+ path +" Failed: File is too large to upload</div>");
@@ -533,11 +533,11 @@ function _fsUploadHanderDragOver(evt)
 function _fsUploadCommit(reqid, file)
 {
     var reader = new FileReader();
-    
+
     reader.onload = (function(file) {
-        
+
         return function(e) {
-            
+
             if (e.target.readyState != FileReader.DONE) {
                 return;
             }
@@ -577,13 +577,13 @@ function _fsUploadCommit(reqid, file)
             });
         };
 
-    })(file); 
-    
+    })(file);
+
     reader.readAsDataURL(file);
 }
 
 function _fsUploadHander(evt)
-{            
+{
     evt.stopPropagation();
     evt.preventDefault();
 
@@ -642,7 +642,7 @@ l9rProjFs.FileUpload = function(path)
         ]
     }
 
-    req.success = function() {    
+    req.success = function() {
 
         _fsUploadRequestId = reqid;
 
@@ -731,7 +731,7 @@ l9rProjFs.FileRenameSave = function(formid)
         path    : path,
         pathset : pathset,
         success : function(rsp) {
-            
+
             // hdev_header_alert('success', "{{T . "Successfully Done"}}");
 
             // if (typeof _plugin_yaf_cvlist == 'function') {
@@ -799,7 +799,7 @@ l9rProjFs.FileDelSave = function(formid)
     l9rPodFs.Del({
         path    : path,
         success : function(rsp) {
-            
+
             var fsid = "ptp" + l4iString.CryptoMd5(path);
             $("#"+ fsid).remove();
 
@@ -829,7 +829,7 @@ l9rPodFs.Get = function(options)
     // console.log(options);
     // Force options to be an object
     options = options || {};
-    
+
     if (options.path === undefined) {
         // console.log("undefined");
         return;
@@ -838,27 +838,27 @@ l9rPodFs.Get = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-    
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
 
-    var url = "mod-set-fs/get?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/get?modname="+ l4iSession.Get("htap-speceditor-modname");
     // url += "?access_token="+ l4iCookie.Get("access_token");
     url += "&path="+ options.path;
 
     // console.log("box refresh:"+ url);
-    l5sMgr.ApiCmd(url, {
+    htapMgr.ApiCmd(url, {
         success: function(data) {
-            
+
             if (!data) {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             } else if (data.kind == "FsFile") {
                 options.success(data);
             } else if (data.error) {
                 options.error(data.error.code, data.error.message);
             } else {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             }
         },
         error : function(xhr, textStatus, error) {
@@ -874,7 +874,7 @@ l9rPodFs.Post = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-    
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
@@ -900,22 +900,22 @@ l9rPodFs.Post = function(options)
         sumcheck : options.sumcheck,
     }
 
-    var url = "mod-set-fs/put?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/put?modname="+ l4iSession.Get("htap-speceditor-modname");
 
-    l5sMgr.ApiCmd(url, {
+    htapMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 30000,
         data    : JSON.stringify(req),
         success : function(data) {
-            
+
             if (!data) {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             } else if (data.kind == "FsFile") {
                 options.success(data);
             } else if (data.error) {
                 options.error(data.error.code, data.error.message);
             } else {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             }
         },
         error : function(xhr, textStatus, error) {
@@ -931,7 +931,7 @@ l9rPodFs.Rename = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-    
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
@@ -951,21 +951,21 @@ l9rPodFs.Rename = function(options)
         pathset : options.pathset,
     }
 
-    var url = "mod-set-fs/rename?modname="+ l4iSession.Get("l5s-speceditor-modname");
-    l5sMgr.ApiCmd(url, {
+    var url = "mod-set-fs/rename?modname="+ l4iSession.Get("htap-speceditor-modname");
+    htapMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
         success : function(data) {
-            
+
             if (!data) {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             } else if (data.kind == "FsFile") {
                 options.success(data);
             } else if (data.error) {
                 options.error(data.error.code, data.error.message);
             } else {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             }
         },
         error : function(xhr, textStatus, error) {
@@ -981,7 +981,7 @@ l9rPodFs.Del = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-    
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
@@ -995,22 +995,22 @@ l9rPodFs.Del = function(options)
         path    : options.path,
     }
 
-    var url = "mod-set-fs/del?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/del?modname="+ l4iSession.Get("htap-speceditor-modname");
 
-    l5sMgr.ApiCmd(url, {
+    htapMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
         success : function(data) {
 
             if (!data) {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             } else if (data.kind == "FsFile") {
                 options.success(data);
             } else if (data.error) {
                 options.error(data.error.code, data.error.message);
             } else {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             }
         },
         error : function(xhr, textStatus, error) {
@@ -1023,7 +1023,7 @@ l9rPodFs.List = function(options)
 {
     // Force options to be an object
     options = options || {};
-    
+
     if (options.path === undefined) {
         return;
     }
@@ -1031,27 +1031,27 @@ l9rPodFs.List = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-    
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
 
-    var url = "mod-set-fs/list?modname="+ l4iSession.Get("l5s-speceditor-modname");
+    var url = "mod-set-fs/list?modname="+ l4iSession.Get("htap-speceditor-modname");
     url += "&path="+ options.path;
 
-    l5sMgr.ApiCmd(url, {
+    htapMgr.ApiCmd(url, {
         method  : "GET",
         timeout : 30000,
         success : function(data) {
-            
+
             if (!data) {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             } else if (data.kind == "FsFileList") {
                 options.success(data);
             } else if (data.error) {
                 options.error(data.error.code, data.error.message);
             } else {
-                options.error(500, "Networking Error"); 
+                options.error(500, "Networking Error");
             }
         },
         error : function(xhr, textStatus, error) {
@@ -1092,8 +1092,8 @@ l9rLayout.Initialize = function()
     }
 
     for (var i in l9rLayout.cols) {
-        
-        var wl = l4iStorage.Get(l4iSession.Get("l5s-speceditor-modname") +"_laysize_"+ l9rLayout.cols[i].id);
+
+        var wl = l4iStorage.Get(l4iSession.Get("htap-speceditor-modname") +"_laysize_"+ l9rLayout.cols[i].id);
 
         if (wl !== undefined && parseInt(wl) > 0) {
             l9rLayout.cols[i].width = parseInt(wl);
@@ -1110,7 +1110,7 @@ l9rLayout.Initialize = function()
 l9rLayout.BindRefresh = function()
 {
     $(".lclay-col-resize").bind("mousedown", function(e) {
-        
+
         var layid = $(this).attr("lc-layid");
 
         // console.log("lclay-col-resize mousedown: "+ layid);
@@ -1120,7 +1120,7 @@ l9rLayout.BindRefresh = function()
         var leftWidth = 0, rightWidth = 0;
         var leftMinWidth = 0, rightMinWidth = 0;
         for (var i in l9rLayout.cols) {
-            
+
             rightLayId = l9rLayout.cols[i].id;
             rightWidth = l9rLayout.cols[i].width;
             rightMinWidth = 100 * 200 / l9rLayout.width;
@@ -1152,9 +1152,9 @@ l9rLayout.BindRefresh = function()
         var posLast = e.pageX;
 
         $("#lcbind-layout").bind("mousemove", function(e) {
-            
+
             // console.log("lcbind-layout mousemove: "+ e.pageX);
-            
+
             // $("#lcbind-col-rsline").css({left: e.pageX});
 
             if (Math.abs(posLast - e.pageX) < 4) {
@@ -1165,7 +1165,7 @@ l9rLayout.BindRefresh = function()
             var leftWidthNew = 100 * (e.pageX - 5 - leftStart) / l9rLayout.width;
             // var fixWidthRate = leftWidthNew - leftWidth;
             var rightWidthNew = rightWidth - leftWidthNew + leftWidth;
-            
+
             if (leftWidthNew <= leftMinWidth || rightWidthNew <= rightMinWidth) {
                 return;
             }
@@ -1173,9 +1173,9 @@ l9rLayout.BindRefresh = function()
             l9rLayout.cols[leftIndexId].width = leftWidthNew;
             l9rLayout.cols[rightIndexId].width = rightWidthNew;
 
-            l4iStorage.Set(l4iSession.Get("l5s-speceditor-modname") +"_laysize_"+ leftLayId, leftWidthNew);
+            l4iStorage.Set(l4iSession.Get("htap-speceditor-modname") +"_laysize_"+ leftLayId, leftWidthNew);
             l4iSession.Set("laysize_"+ leftLayId, leftWidthNew);
-            l4iStorage.Set(l4iSession.Get("l5s-speceditor-modname") +"_laysize_"+ rightLayId, rightWidthNew);
+            l4iStorage.Set(l4iSession.Get("htap-speceditor-modname") +"_laysize_"+ rightLayId, rightWidthNew);
             l4iSession.Set("laysize_"+ rightLayId, rightWidthNew);
 
             setTimeout(function() {
@@ -1188,7 +1188,7 @@ l9rLayout.BindRefresh = function()
 
         $("#lcbind-layout").unbind("mousemove");
         // $("#lcbind-col-rsline").remove();
-        
+
         l9rLayout.Resize();
 
         setTimeout(function() {
@@ -1204,7 +1204,7 @@ l9rLayout.ColumnSet = function(options)
     if (typeof options.success !== "function") {
         options.success = function(){};
     }
-        
+
     if (typeof options.error !== "function") {
         options.error = function(){};
     }
@@ -1226,7 +1226,7 @@ l9rLayout.ColumnSet = function(options)
     }
 
     if (!exist) {
-        
+
         colSet = {
             id     : options.id, // Math.random().toString(36).slice(2),
             width  : 15
@@ -1253,7 +1253,7 @@ l9rLayout.Resize = function()
     l9rLayout.Initialize();
 
     var colSep = 10;
-    
+
     //
     var bodyHeight = $("body").height();
     var bodyWidth = $("body").width() - 30;
@@ -1302,21 +1302,21 @@ l9rLayout.Resize = function()
             l9rLayout.cols[i].width = 15;
         } else if (l9rLayout.cols[i].width > 90) {
             l9rLayout.cols[i].width = 80;
-        }        
+        }
 
         rangeUsed += l9rLayout.cols[i].width;
     }
     // console.log("rangeUsed: "+ rangeUsed);
     // for (var i in l9rLayout.cols) {
-    //     console.log("2 id: "+ l9rLayout.cols[i].id +", width: "+ l9rLayout.cols[i].width); 
+    //     console.log("2 id: "+ l9rLayout.cols[i].id +", width: "+ l9rLayout.cols[i].width);
     // }
 
     var fixRate = (100 - colSepAll) / 100;
     var fixRateSpace = rangeUsed / 100;
-    
+
     for (var i in l9rLayout.cols) {
         l9rLayout.cols[i].width = (l9rLayout.cols[i].width / fixRateSpace) * fixRate;
-        
+
         $("#"+ l9rLayout.cols[i].id).width(l9rLayout.cols[i].width + "%");
 
         if (typeof l9rLayout.cols[i].hook === "function") {
@@ -1327,14 +1327,14 @@ l9rLayout.Resize = function()
     // console.log(l9rLayout.cols[0]);
 
     // for (var i in l9rLayout.cols) {
-    //     console.log("3 id: "+ l9rLayout.cols[i].id +", width: "+ l9rLayout.cols[i].width); 
+    //     console.log("3 id: "+ l9rLayout.cols[i].id +", width: "+ l9rLayout.cols[i].width);
     // }
 
     var fsp = $("#lcbind-fsnav-fstree").position();
     if (fsp) {
         $("#lcbind-fsnav-fstree").width((l9rLayout.width * l9rLayout.cols[0].width / 100));
         $("#lcbind-fsnav-fstree").height(l9rLayout.height - (fsp.top - l9rLayout.postop));
-        $("#fstdroot").height(l9rLayout.height - (fsp.top - l9rLayout.postop));      
+        $("#fstdroot").height(l9rLayout.height - (fsp.top - l9rLayout.postop));
     }
 }
 
@@ -1359,7 +1359,7 @@ lcData.schema = [
 ];
 lcData.Init = function(dbname, cb)
 {
-    var req = indexedDB.open(dbname, lcData.version);  
+    var req = indexedDB.open(dbname, lcData.version);
 
     req.onsuccess = function (event) {
         lcData.db = event.target.result;
@@ -1372,13 +1372,13 @@ lcData.Init = function(dbname, cb)
     };
 
     req.onupgradeneeded = function (event) {
-        
+
         lcData.db = event.target.result;
 
         for (var i in lcData.schema) {
-            
+
             var tbl = lcData.schema[i];
-            
+
             if (lcData.db.objectStoreNames.contains(tbl.name)) {
                 lcData.db.deleteObjectStore(tbl.name);
             }
@@ -1394,7 +1394,7 @@ lcData.Init = function(dbname, cb)
 }
 
 lcData.Put = function(tbl, entry, cb)
-{    
+{
     if (lcData.db == null) {
         return;
     }

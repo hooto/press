@@ -22,16 +22,17 @@ import (
 
 	"github.com/lessos/iam/iamapi"
 	"github.com/lessos/iam/iamclient"
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
 
-	"../../api"
-	"../../config"
-	"../../datax"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/datax"
 )
 
 type Node struct {
@@ -70,6 +71,11 @@ func (c Node) ListAction() {
 
 	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 	dqc.Filter("status.gt", 0)
+
+	if c.Params.Get("qry_text") != "" {
+		dq.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
+		dqc.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
+	}
 
 	count, err := dqc.NodeCount()
 	if err != nil {
@@ -149,7 +155,7 @@ func (c Node) SetAction() {
 	)
 
 	//
-	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(c.Params.Get("modname"), 12), c.Params.Get("modelid"))
+	table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 
 	if model.Extensions.Permalink != "" {
 
@@ -173,7 +179,7 @@ func (c Node) SetAction() {
 				permaname = fmt.Sprintf("%s-%d", rsp.ExtPermalinkName, i)
 			}
 
-			permaidx := utils.StringEncode16(permaname, 12)
+			permaidx := idhash.HashToHexString([]byte(permaname), 12)
 
 			q := rdobase.NewQuerySet().From(table).Limit(1)
 			q.Where.And("ext_permalink_idx", permaidx)
@@ -252,10 +258,10 @@ func (c Node) SetAction() {
 						}
 					}
 
-					attrs_js, _ := utils.JsonEncode(attrs)
+					attrs_js, _ := json.Encode(attrs, "  ")
 
-					if attrs_js != rs[0].Field("field_"+modField.Name+"_attrs").String() {
-						set["field_"+modField.Name+"_attrs"] = attrs_js
+					if string(attrs_js) != rs[0].Field("field_"+modField.Name+"_attrs").String() {
+						set["field_"+modField.Name+"_attrs"] = string(attrs_js)
 					}
 				}
 
@@ -292,7 +298,7 @@ func (c Node) SetAction() {
 
 	} else {
 
-		set["id"] = utils.StringNewRand(12)
+		set["id"] = idhash.RandHexString(12)
 		set["title"] = rsp.Title
 		set["status"] = rsp.Status
 		set["created"] = rdobase.TimeNow("datetime")
@@ -318,7 +324,8 @@ func (c Node) SetAction() {
 						}
 					}
 
-					set["field_"+valField.Name+"_attrs"], _ = utils.JsonEncode(attrs)
+					jsb, _ := json.Encode(attrs, "  ")
+					set["field_"+valField.Name+"_attrs"] = string(jsb)
 				}
 
 				break
@@ -414,7 +421,7 @@ func (c Node) DelAction() {
 	}
 
 	//
-	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(c.Params.Get("modname"), 12), c.Params.Get("modelid"))
+	table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 
 	q := rdobase.NewQuerySet().From(table).Limit(1)
 	q.Where.And("id", c.Params.Get("id"))

@@ -1,12 +1,12 @@
 
-<div id="l5smgr-termset" style="box-sizing: border-box;">loading</div>
+<div id="htapm-termset" style="box-sizing: border-box;">loading</div>
 
-<div>
-  <button class="btn btn-default btn-primary" onclick="l5sTerm.SetCommit()">Save</button>
-  <button class="btn btn-default" onclick="l5sTerm.List()">Cancel</button>
+<div style="margin:20px 0;">
+  <button class="pure-button btapm-btn btapm-btn-primary" onclick="htapTerm.SetCommit()">Save</button>
+  <button class="pure-button btapm-btn" onclick="htapTerm.List()">Cancel</button>
 </div>
 
-<script id="l5smgr-termset-tpl" type="text/html">
+<script id="htapm-termset-tpl" type="text/html">
   <input type="hidden" name="model_type" value="{[=it.model.type]}">
   <input type="hidden" name="id" value="{[=it.id]}">
   <input type="hidden" name="status" value="{[=it.status]}">
@@ -28,7 +28,7 @@
           {[? v._subs]}
           {[~v._subs :v2]}
           {[ if (v2.id != it.id) { ]}
-          <option value="{[=v2.id]}" {[ if (it.pid == v2.id) { ]}selected{[ } ]}>{[=l5sTerm.Sprint(v2._dp)]}{[=v2.title]}</option>
+          <option value="{[=v2.id]}" {[ if (it.pid == v2.id) { ]}selected{[ } ]}>{[=htapTerm.Sprint(v2._dp)]}{[=v2.title]}</option>
           {[ } ]}
           {[~]}
           {[?]}

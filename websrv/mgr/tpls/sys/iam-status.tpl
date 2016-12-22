@@ -3,13 +3,13 @@
 	margin: 10px 0;
 	font-height: 100%;
 }
-.l5s-sys-table {
+.htap-sys-table {
   font-size: 14px;
 }
-.l5s-sys-table td {
+.htap-sys-table td {
   padding: 5px !important;
 }
-.l5s-sys-table tr.line {
+.htap-sys-table tr.line {
   border-top: 1px solid #ccc;
 }
 </style>
@@ -25,10 +25,10 @@
       </tr>
     </table>
 
-    <div id="l5s-mgr-sys-iam-alert"></div>
+    <div id="htap-mgr-sys-iam-alert"></div>
 
-    <form id="l5s-mgr-sys-iam" action="#">
-    <table width="100%" class="table table-hover l5s-sys-table">
+    <form id="htap-mgr-sys-iam" action="#">
+    <table width="100%" class="table table-hover htap-sys-table">
       <thead><tr>
         <th width="20%"></th>
         <th width="40%">Local App Info</th>
@@ -135,7 +135,7 @@
     </form>
 
     <div class="text-center">
-      <button type="submit" class="btn btn-success" onclick="l5sSys.IAMSync()">Sync to IAM Service</button>
+      <button type="submit" class="pure-button btapm-btn btapm-btn-primary" onclick="htapSys.IamSync()">Sync to IAM Service</button>
     </div>
 
   </div>

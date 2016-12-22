@@ -3,13 +3,13 @@
 	margin: 10px 0;
 	font-height: 100%;
 }
-.l5s-sys-table {
+.htap-sys-table {
   font-size: 12px;
 }
-.l5s-sys-table td {
+.htap-sys-table td {
   padding: 5px !important;
 }
-.l5s-sys-table tr.line {
+.htap-sys-table tr.line {
   border-top: 1px solid #ccc;
 }
 </style>
@@ -22,7 +22,7 @@
   <div class="panel-heading">System Monitor Status</div>
   <div class="panel-body">
 
-    <table width="100%" class="l5s-sys-table">
+    <table width="100%" class="htap-sys-table">
       
       <tr>
         <td width="30%">App Instance ID</td>
@@ -47,28 +47,28 @@
       </tr>
       <tr>
         <td>Current Memory Allocated</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.memstats.alloc)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.memstats.alloc)]}</td>
       </tr>
       <tr>
         <td>Total Memory Allocated</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.memstats.total_alloc)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.memstats.total_alloc)]}</td>
       </tr>
       <tr>
         <td>Memory obtained from system</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.memstats.sys)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.memstats.sys)]}</td>
       </tr>
 
       <tr class="line">
         <td>Next GC Recycle</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.memstats.next_gc)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.memstats.next_gc)]}</td>
       </tr>
       <tr>
         <td>Since Last GC Time</td>
-        <td>{[=l5sSys.UtilDurationFormat((new Date().getTime()) - (it.memstats.last_gc / 1000000))]}</td>
+        <td>{[=htapSys.UtilDurationFormat((new Date().getTime()) - (it.memstats.last_gc / 1000000))]}</td>
       </tr>
       <tr>
         <td>Total GC Pause</td>
-        <td>{[=l5sSys.UtilDurationFormat(it.memstats.pause_total_ns, 1000000)]}</td>
+        <td>{[=htapSys.UtilDurationFormat(it.memstats.pause_total_ns, 1000000)]}</td>
       </tr>
       <tr>
         <td>Total GC Times</td>
@@ -76,7 +76,7 @@
       </tr>
       <tr>
         <td>Average GC Pause</td>
-        <td>{[=l5sSys.UtilDurationFormat((it.memstats.pause_total_ns / it.memstats.num_gc), 1000000)]}</td>
+        <td>{[=htapSys.UtilDurationFormat((it.memstats.pause_total_ns / it.memstats.num_gc), 1000000)]}</td>
       </tr>
 
 
@@ -86,7 +86,7 @@
       </tr>
       <tr>
         <td>Uptime</td>
-        <td>{[=l5sSys.UtilDurationFormat(it.info.uptime * 1000)]}</td>
+        <td>{[=htapSys.UtilDurationFormat(it.info.uptime * 1000)]}</td>
       </tr>
       <tr>
         <td>Loads</td>
@@ -94,31 +94,31 @@
       </tr>
       <tr>
         <td>MemTotal</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.mem_total)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.mem_total)]}</td>
       </tr>
       <tr>
         <td>MemFree</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.mem_free)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.mem_free)]}</td>
       </tr>
       <tr>
         <td>MemShared</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.mem_shared)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.mem_shared)]}</td>
       </tr>
       <tr>
         <td>MemBuffer</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.mem_buffer)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.mem_buffer)]}</td>
       </tr>
       <tr>
         <td>MemUsed</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.mem_used)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.mem_used)]}</td>
       </tr>
       <tr>
         <td>SwapTotal</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.swap_total)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.swap_total)]}</td>
       </tr>
       <tr>
         <td>SwapFree</td>
-        <td>{[=l5sSys.UtilResourceSizeFormat(it.info.swap_free)]}</td>
+        <td>{[=htapSys.UtilResourceSizeFormat(it.info.swap_free)]}</td>
       </tr>
       <tr>
         <td>Procs</td>

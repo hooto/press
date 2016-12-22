@@ -1,29 +1,26 @@
-<table width="100%">
-  <tr>
-    <td>
-      <form id="lps-infols-qry" action="#" class="form-inlines">
-        <input id="lps-infols-qry-text" type="text"
-          class="form-control l5smgr-query-input" 
-          placeholder="Press Enter to Search" 
-          value="">
-      </form>
-    </td>
-    <td align="right">
-      <button type="button" 
-        class="btn btn-primary btn-sm" 
-        onclick="l5sTerm.Set()">
-        New Term
-      </button>
-    </td>
-  </tr>
-</table>
 
-<div id="l5smgr-termls"></div>
+<div id="htapm-termls"></div>
 
-<div id="l5smgr-termls-pager"></div>
+<div id="htapm-termls-pager"></div>
+
+<div id="htapm-node-term-opts" class="htapm-hide">
+  <li class="pure-button btapm-btn btapm-btn-primary">
+    <a href="#" onclick="htapTerm.Set()">
+      New Term
+    </a>
+  </li>
+  <li>
+    <form onsubmit="htapTerm.List(); return false;" action="#" class="form-inlines">
+      <input id="qry_text" type="text"
+        class="form-control htapm-query-input" 
+        placeholder="Press Enter to Search" 
+        value="">
+    </form>
+  </li>  
+</div>
 
 
-<script id="l5smgr-termls-tpl" type="text/html">  
+<script id="htapm-termls-tpl" type="text/html">  
 <table class="table table-hover">
   <thead>
     <tr>
@@ -41,24 +38,24 @@
   {[~it.items :v]}
   {[ if (v.pid == 0) { ]}
     <tr>
-      <td class="l5smgr-font-wfix">{[=v.id]}</td>
+      <td class="htapm-font-fixspace">{[=v.id]}</td>
       <td>{[=v.title]}</td>
       {[ if (it.model.type == "taxonomy") { ]}
       <td>{[=v.weight]}</td>
       {[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
-      <td align="right"><a class="term-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+      <td align="right"><a class="term-item btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
     </tr>
     {[? v._subs]}
     {[~v._subs :v2]}
     <tr>
-      <td class="l5smgr-font-wfix">{[=v2.id]}</td>
-      <td>{[=l5sTerm.Sprint(v2._dp)]}{[=v2.title]}</td>
-      <td>{[=l5sTerm.Sprint(v2._dp)]}{[=v2.weight]}</td>
+      <td class="htapm-font-fixspace">{[=v2.id]}</td>
+      <td>{[=htapTerm.Sprint(v2._dp)]}{[=v2.title]}</td>
+      <td>{[=htapTerm.Sprint(v2._dp)]}{[=v2.weight]}</td>
       <td>{[=v2.created]}</td>
       <td>{[=v2.updated]}</td>
-      <td align="right"><a class="term-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v2.id]}">Edit</a>
+      <td align="right"><a class="term-item btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v2.id]}">Edit</a>
     </tr>
     {[~]}
     {[?]}
@@ -68,25 +65,27 @@
 </table>
 </script>
 
-<script id="l5smgr-termls-pager-tpl" type="text/html">
-<ul class="pagination pagination-sm">
+<script id="htapm-termls-pager-tpl" type="text/html">
+{[ if (it.RangePages.length > 1) { ]}
+<ul class="htapm-pager">
   {[ if (it.FirstPageNumber > 0) { ]}
-  <li><a href="#{[=it.FirstPageNumber]}" onclick="l5sTerm.ListPage({[=it.FirstPageNumber]})">First</a></li>
+  <li><a href="#{[=it.FirstPageNumber]}" onclick="htapTerm.ListPage({[=it.FirstPageNumber]})">First</a></li>
   {[ } ]}
   {[~it.RangePages :v]}
-  <li {[ if (v == it.CurrentPageNumber) { ]}class="active"{[ } ]}><a href="#{[=v]}" onclick="l5sTerm.ListPage({[=v]})">{[=v]}</a></li>
+  <li {[ if (v == it.CurrentPageNumber) { ]}class="active"{[ } ]}><a href="#{[=v]}" onclick="htapTerm.ListPage({[=v]})">{[=v]}</a></li>
   {[~]}
   {[ if (it.LastPageNumber > 0) { ]}
-  <li><a href="#{[=it.LastPageNumber]}" onclick="l5sTerm.ListPage({[=it.LastPageNumber]})">Last</a></li>
+  <li><a href="#{[=it.LastPageNumber]}" onclick="htapTerm.ListPage({[=it.LastPageNumber]})">Last</a></li>
   {[ } ]}
 </ul>
+{[ } ]}
 </script>
 
 <script type="text/javascript">
 
-$("#l5smgr-termls").on("click", ".term-item", function() {
+$("#htapm-termls").on("click", ".term-item", function() {
     var id = $(this).attr("href").substr(1);
-    l5sTerm.Set($(this).attr("modname"), $(this).attr("modelid"), id);
+    htapTerm.Set($(this).attr("modname"), $(this).attr("modelid"), id);
 });
 
 </script>

@@ -27,16 +27,16 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
 
-	"./config"
-	"./datax"
-	"./status"
-	"./store"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/datax"
+	"code.hooto.com/hooto/alphapress/status"
+	"code.hooto.com/hooto/alphapress/store"
 
-	cdef "./websrv/frontend"
-	cmgr "./websrv/mgr"
-	capi "./websrv/v1"
+	cdef "code.hooto.com/hooto/alphapress/websrv/frontend"
+	cmgr "code.hooto.com/hooto/alphapress/websrv/mgr"
+	capi "code.hooto.com/hooto/alphapress/websrv/v1"
 
-	ext_comment "./modules/core/comment/websrv"
+	ext_comment "code.hooto.com/hooto/alphapress/modules/core/comment/websrv"
 	ext_captcha "github.com/eryx/hcaptcha/captcha"
 )
 
@@ -62,18 +62,21 @@ func main() {
 
 	if err := store.Init(config.Config.CacheDB); err != nil {
 		logger.Printf("error", "store.Init error: %v", err)
+		fmt.Println("error", "store.Init error ", err)
 		os.Exit(1)
 	}
 
 	ext_captcha.DataConnector = store.CacheDB
 	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
 		logger.Printf("error", "ext_captcha.Config error: %v", err)
+		fmt.Println("ext_captcha.Config error", err)
 		os.Exit(1)
 	}
 
 	iamclient.ServiceUrl = config.Config.IamServiceUrl
+	iamclient.InstanceID = config.Config.InstanceID
 
-	httpsrv.GlobalService.Config.UrlBasePath = "ap"
+	httpsrv.GlobalService.Config.UrlBasePath = config.Config.UrlBasePath
 	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort
 
 	// status
@@ -96,7 +99,10 @@ func main() {
 	go http.ListenAndServe(":60001", nil)
 
 	fmt.Println("Running")
-	httpsrv.GlobalService.Start()
+	if err := httpsrv.GlobalService.Start(); err != nil {
+		fmt.Println("httpsrv.GlobalService.Start error", err)
+		os.Exit(1)
+	}
 
 	select {}
 }

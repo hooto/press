@@ -1,5 +1,5 @@
 {{if .categories}}
-<div class="l5s-sidebar-section">
+<div class="htap-sidebar-section">
   <div class="header">
     <h3>{{.categories.Model.Title}}</h3>
   </div>

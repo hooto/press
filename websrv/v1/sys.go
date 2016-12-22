@@ -17,7 +17,6 @@ package v1
 import (
 	"fmt"
 	"runtime"
-	"strings"
 	"syscall"
 
 	"github.com/lessos/iam/iamapi"
@@ -28,9 +27,9 @@ import (
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
 
-	"../../api"
-	"../../config"
-	"../../status"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/status"
 )
 
 type Sys struct {
@@ -169,14 +168,15 @@ func (c Sys) IamStatusAction() {
 		return
 	}
 
-	host := c.Request.Host
-	if i := strings.Index(host, ":"); i > 0 {
-		host = host[:i]
+	inst_url := "://" + c.Request.Host
+	if c.Request.TLS != nil {
+		inst_url = "https" + inst_url
+	} else {
+		inst_url = "http" + inst_url
 	}
 
-	insturl := "http://" + host
-	if config.Config.HttpPort != 80 {
-		insturl += fmt.Sprintf(":%d", config.Config.HttpPort)
+	if len(httpsrv.GlobalService.Config.UrlBasePath) > 0 {
+		inst_url += "/" + httpsrv.GlobalService.Config.UrlBasePath
 	}
 
 	sets = api.SysIamStatus{
@@ -185,11 +185,11 @@ func (c Sys) IamStatusAction() {
 			Meta: types.ObjectMeta{
 				ID: config.Config.InstanceID,
 			},
-			AppID:      "lesscms",
+			AppID:      config.AppName,
 			AppTitle:   config.Config.AppTitle,
 			Version:    config.Version,
 			Privileges: config.Perms,
-			Url:        insturl,
+			Url:        inst_url,
 		},
 	}
 

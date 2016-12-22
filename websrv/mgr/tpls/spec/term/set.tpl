@@ -1,6 +1,6 @@
-<div id="l5smgr-spec-termset-alert"></div>
+<div id="htapm-spec-termset-alert"></div>
 
-<div id="l5smgr-spec-termset">
+<div id="htapm-spec-termset">
 
   <input type="hidden" name="modname" value="{[=it._modname]}">
   {[? it.meta.name]}

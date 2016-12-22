@@ -26,5 +26,10 @@ func init() {
 }
 
 func HttpSrvBasePath(uri string) string {
+
+	if httpsrv.GlobalService.Config.UrlBasePath == "" {
+		return filepath.Clean("/" + uri)
+	}
+
 	return filepath.Clean("/" + httpsrv.GlobalService.Config.UrlBasePath + "/" + uri)
 }

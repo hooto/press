@@ -1,37 +1,37 @@
-var l5sS2 = {
-    
+var htapS2 = {
+
 }
 
-l5sS2.Init = function()
+htapS2.Init = function()
 {
-    l4i.UrlEventRegister("s2/index", l5sS2.Index);
+    l4i.UrlEventRegister("s2/index", htapS2.Index, "htapm-topbar");
 }
 
-l5sS2.Index = function()
+htapS2.Index = function()
 {
-    l4iStorage.Set("l5smgr_nav_last_active", "s2/index");
+    l4iStorage.Set("htapm_nav_last_active", "s2/index");
 
-    l5sMgr.TplCmd("s2/index", {
+    htapMgr.TplCmd("s2/index", {
         callback: function(err, data) {
             $("#com-content").html(data);
-            l5sS2.ObjList();
+            htapS2.ObjList();
         },
     });
 }
 
-l5sS2.ObjList = function(path)
+htapS2.ObjList = function(path)
 {
     if (!path) {
-        path = l4iStorage.Get("l5smgr_s2_obj_path_active");
+        path = l4iStorage.Get("htapm_s2_obj_path_active");
     }
 
     if (!path) {
         path = "/";
     }
 
-    l4iStorage.Set("l5smgr_s2_obj_path_active", path);
+    l4iStorage.Set("htapm_s2_obj_path_active", path);
 
-    l5sMgr.ApiCmd("s2-obj/list?path="+ path, {
+    htapMgr.ApiCmd("s2-obj/list?path="+ path, {
         callback: function(err, data) {
 
             if (err || !data || !data.kind) {
@@ -47,7 +47,7 @@ l5sS2.ObjList = function(path)
             for (var i in data.items) {
 
                 var name = data.items[i].name;
-                
+
                 data.items[i]._id = l4iString.CryptoMd5(path +"/"+ name);
 
                 data.items[i]._abspath = path +"/"+ name;
@@ -61,8 +61,8 @@ l5sS2.ObjList = function(path)
             }
 
             l4iTemplate.Render({
-                dstid: "l5smgr-s2-objls",
-                tplid: "l5smgr-s2-objls-tpl",
+                dstid: "htapm-s2-objls",
+                tplid: "htapm-s2-objls-tpl",
                 data:  data,
             });
 
@@ -70,28 +70,28 @@ l5sS2.ObjList = function(path)
             var dirnav = [];
 
             dirnav.push({
-                path   : "/", 
+                path   : "/",
                 name   : "Home",
             });
 
             //
             path = l4i.StringTrim(path.replace(/\/+/g, "/"), "/");
             if (path.length > 0) {
-                
+
                 var prs = path.split("/");
                 var ppath = "";
                 for (var i in prs) {
                     ppath += "/"+ prs[i];
                     dirnav.push({
-                        path   : ppath, 
+                        path   : ppath,
                         name   : prs[i],
                     });
                 }
             }
 
             l4iTemplate.Render({
-                dstid: "l5smgr-s2-objls-dirnav",
-                tplid: "l5smgr-s2-objls-dirnav-tpl",
+                dstid: "htapm-s2-objls-dirnav",
+                tplid: "htapm-s2-objls-dirnav-tpl",
                 data:  {
                     items: dirnav,
                 },
@@ -100,10 +100,10 @@ l5sS2.ObjList = function(path)
     });
 }
 
-l5sS2.ObjNew = function(type, path, file)
+htapS2.ObjNew = function(type, path, file)
 {
     if (!path) {
-        path = l4iStorage.Get("l5smgr_s2_obj_path_active");
+        path = l4iStorage.Get("htapm_s2_obj_path_active");
 
         if (!path) {
             path = "/";
@@ -116,7 +116,7 @@ l5sS2.ObjNew = function(type, path, file)
         title        : (type == "dir") ? "New Folder" : "New File",
         width        : 700,
         height       : 350,
-        tplid        : "l5smgr-s2-objnew-tpl",
+        tplid        : "htapm-s2-objnew-tpl",
         data         : {
             formid   : formid,
             file     : file,
@@ -125,7 +125,7 @@ l5sS2.ObjNew = function(type, path, file)
         },
         buttons      : [
             {
-                onclick : "l5sS2.ObjNewSave(\""+ formid +"\")",
+                onclick : "htapS2.ObjNewSave(\""+ formid +"\")",
                 title   : "Upload",
                 style   : "btn-primary"
             },
@@ -143,20 +143,20 @@ l5sS2.ObjNew = function(type, path, file)
     l4iModal.Open(req);
 }
 
-l5sS2.ObjNewSave = function(formid)
+htapS2.ObjNewSave = function(formid)
 {
-    var elem = document.getElementById("l5smgr-s2-objnew-files");
+    var elem = document.getElementById("htapm-s2-objnew-files");
 
     for (var i = 0; i < elem.files.length; i++) {
 
-        l5sS2._objNewUpload(formid, elem.files[i]);
+        htapS2._objNewUpload(formid, elem.files[i]);
     }
 }
 
-l5sS2._objNewUpload = function(formid, file)
+htapS2._objNewUpload = function(formid, file)
 {
     var reader = new FileReader();
-    
+
     reader.onload = (function(file) {
 
         return function(e) {
@@ -167,7 +167,7 @@ l5sS2._objNewUpload = function(formid, file)
 
             var ppath = $("#"+ formid +" :input[name=path]").val();
 
-            l5sMgr.ApiCmd("s2-obj/put", {
+            htapMgr.ApiCmd("s2-obj/put", {
                 method  : "POST",
                 data    : JSON.stringify({
                     path    : ppath +"/"+ file.name,
@@ -180,7 +180,7 @@ l5sS2._objNewUpload = function(formid, file)
                     if (rsp && rsp.kind && rsp.kind == "FsFile") {
 
                         $("#"+ formid +"-alert").show().append("<div>"+ file.name +" OK</div>");
-                        l5sS2.ObjList(ppath);
+                        htapS2.ObjList(ppath);
 
                         setTimeout(function() {
                             l4iModal.Close();
@@ -191,7 +191,7 @@ l5sS2._objNewUpload = function(formid, file)
                             $("#"+ formid +"-alert").show().append("<div>"+ file.name +" Failed: "+ rsp.error.message +"</div>");
                         } else {
                             $("#"+ formid +"-alert").show().append("<div>"+ file.name +" Failed</div>");
-                        }                        
+                        }
                     }
                 },
                 error: function(status, message) {
@@ -201,14 +201,14 @@ l5sS2._objNewUpload = function(formid, file)
         };
 
     })(file);
-  
+
     reader.readAsDataURL(file);
 }
 
-l5sS2.ObjDel = function(path)
+htapS2.ObjDel = function(path)
 {
     //
-    l5sMgr.ApiCmd("s2-obj/del?path="+ path, {
+    htapMgr.ApiCmd("s2-obj/del?path="+ path, {
 
         callback: function(err, data) {
             if (data.kind && data.kind == "FsFile") {
@@ -217,10 +217,10 @@ l5sS2.ObjDel = function(path)
                 alert(data.error.message);
             }
         },
-    }); 
+    });
 }
 
-l5sS2.UtilResourceSizeFormat = function(size)
+htapS2.UtilResourceSizeFormat = function(size)
 {
     if (!size) {
         size = 0;

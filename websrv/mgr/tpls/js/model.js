@@ -1,14 +1,14 @@
-var l5sMgrModel = {
+var htapMgrModel = {
 
 }
 
-l5sMgrModel.List = function(tplid)
+htapMgrModel.List = function(tplid)
 {
     if (!tplid) {
-        tplid = "l5smgr-ctnls";
+        tplid = "htapm-ctnls";
     }
 
-    var qry_grpdev = $("#"+ tplid +"-grpdev-qryid").attr("href").substr(1);    
+    var qry_grpdev = $("#"+ tplid +"-grpdev-qryid").attr("href").substr(1);
     var qry_grpdev_dp = "Groups";
     if (qry_grpdev != "") {
         qry_grpdev_dp = $("#"+ tplid +"-grpdev-qrydp").text();
@@ -21,11 +21,11 @@ l5sMgrModel.List = function(tplid)
         items: [
             {
                 name: "groups",
-                uri: l5sMgr.base +"ext/lps/group/list",
+                uri: htapMgr.base +"ext/lps/group/list",
             },
             {
                 name: "info",
-                uri: l5sMgr.base +"ext/lps/pkg-info/list?"+ uri,
+                uri: htapMgr.base +"ext/lps/pkg-info/list?"+ uri,
             },
         ],
     }
@@ -33,11 +33,11 @@ l5sMgrModel.List = function(tplid)
     //
     $.ajax({
         type    : "POST",
-        url     : l5sMgr.base +"v1/mixer",
+        url     : htapMgr.base +"v1/mixer",
         data    : JSON.stringify(req),
         timeout : 3000,
         success : function(rsp) {
-            
+
             var rsj = JSON.parse(rsp);
             if (rsj === undefined || rsj.kind != "Mixer" || rsj.items === undefined) {
                 $("#"+ tplid +"-empty-alert").show();
@@ -70,8 +70,8 @@ l5sMgrModel.List = function(tplid)
             });
 
             if (rsj.items.groups.kind !== undefined &&
-                rsj.items.groups.kind == "PackageGroupList" && 
-                rsj.items.groups.dev !== undefined && 
+                rsj.items.groups.kind == "PackageGroupList" &&
+                rsj.items.groups.dev !== undefined &&
                 rsj.items.groups.dev.length > 0) {
                 lessTemplate.Render({
                     dstid: tplid +"-grpdev",

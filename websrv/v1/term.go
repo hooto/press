@@ -30,9 +30,9 @@ import (
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 
-	"../../api"
-	"../../config"
-	"../../datax"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/datax"
 )
 
 var (
@@ -86,6 +86,10 @@ func (c Term) ListAction() {
 	ls = dq.TermList()
 
 	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+
+	if c.Params.Get("qry_text") != "" {
+		dqc.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
+	}
 
 	count, err := dqc.TermCount()
 	if err != nil {

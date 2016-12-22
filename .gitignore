@@ -3,7 +3,8 @@ _*/
 si.go
 bin/*
 var/*
-webui/l5s/img/src
+webui/htap/img/src
+webui/purecss
 misc/import.go
 misc/cm-compress.go
 misc/rhel/pkg-builder
@@ -11,3 +12,9 @@ cm-compress
 modules/ruilog
 etc/main.json
 testgd.go
+go-rpm
+image.lua
+nginx.conf
+*.txz
+.build
+

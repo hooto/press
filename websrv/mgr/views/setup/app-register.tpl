@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>Setup : Registration to IAM Service</title>
-  <link rel="stylesheet" href="/~/bs/3.3/css/bootstrap.min.css" type="text/css">
-  <link rel="stylesheet" href="/~/css/main.css" type="text/css">
-  <script src="/~/l5s/js/jquery.min.js"></script>
-  <script src="/~/lessui/js/lessui.js"></script>
-  <script src="/~/lessui/js/sea.js"></script>
-  <script src="/~/l5s/js/main.js"></script>
+  <link rel="stylesheet" href="{{HttpSrvBasePath "mgr/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
+  <link rel="stylesheet" href="{{HttpSrvBasePath "mgr/~/css/main.css"}}" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "mgr/~/htap/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "mgr/~/htap/js/jquery.js"}}"></script>
+  <script src="{{HttpSrvBasePath "mgr/~/lessui/js/lessui.js"}}"></script>
+  <script src="{{HttpSrvBasePath "mgr/~/lessui/js/sea.js"}}"></script>
+  <script src="{{HttpSrvBasePath "mgr/~/htap/js/main.js"}}"></script>
   <script type="text/javascript">
     window.onload_hooks = [];
   </script>
@@ -16,20 +17,27 @@
 
 <body>
 
-<div class="container">
+<div class="container" style="width:600px">
+
+<div class="htap-mgr-setup-logo" style="text-align:center;padding:30px;">
+  <img src="{{HttpSrvBasePath "mgr/~/htap/img/alpha2.png"}}">
+</div>
 
 <div class="panel panel-default">
   
-  <div class="panel-heading"><strong>Setup: Register Application to IAM Service</strong></div>
+  <div class="panel-heading">
+    <h3 style="margin: 10px 0;">Setup</h3>
+    <strong>Register Application to IAM (Identity &amp; Access Management) Service</strong>
+  </div>
   
   <div class="panel-body">
 
-    <form id="l5s-app-reg" action="#">
+    <form id="htap-app-reg" action="#">
       
-      <div id="l5s-app-reg-alert" class="alert alert-danger hide">...</div>
+      <div id="htap-app-reg-alert" class="alert alert-danger hide">...</div>
     
       <div class="form-group">
-        <label>IAM Service Url</label>
+        <label>IAM Service URL</label>
         <input type="text" name="iam_url" class="form-control" placeholder="Enter the IAM Service URL" value="{{.iam_url}}" readonly>
       </div>
     
@@ -39,7 +47,7 @@
       </div>
  -->    
       <div class="form-group">
-        <label>Instance URL</label>
+        <label>Instance Frontend URL</label>
         <input type="text" name="instance_url" class="form-control" value="{{.instance_url}}">
       </div>
     
@@ -58,7 +66,7 @@
         <input type="text" name="version" class="form-control" value="{{.version}}" readonly>
       </div>
     
-      <button type="submit" class="btn btn-primary">Commit</button>
+      <button type="submit" class="btn btn-success btn-block" style="margin-top:30px">Commit</button>
     </form>
   </div>
 
@@ -72,15 +80,15 @@
 <script type="text/javascript">
 
 
-$("#l5s-app-reg").submit(function(event) {
+$("#htap-app-reg").submit(function(event) {
 
     event.preventDefault();
 
-    var alertid = "#l5s-app-reg-alert";
+    var alertid = "#htap-app-reg-alert";
 
     $.ajax({
         type    : "POST",
-        url     : "/mgr/setup/app-register-put",
+        url     : "{{HttpSrvBasePath "mgr/setup/app-register-put"}}",
         data    : $(this).serialize(),
         timeout : 3000,
         success : function(data) {
@@ -98,7 +106,7 @@ $("#l5s-app-reg").submit(function(event) {
                 l4i.InnerAlert(alertid, 'alert-success', 'Successfully registered ...');
 
                 window.setTimeout(function(){
-                    window.location = "/mgr";
+                    window.location = "{{HttpSrvBasePath "mgr"}}";
                 }, 1500);
             }
         },

@@ -1,8 +1,8 @@
 
-<div id="l5smgr-specset-alert"></div>
+<div id="htapm-specset-alert"></div>
 
 
-<div id="l5smgr-specset">
+<div id="htapm-specset">
   
   {[? it.meta.name]}
   <input type="hidden" name="name" value="{[=it.meta.name]}">

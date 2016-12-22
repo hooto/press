@@ -1,5 +1,5 @@
 
-<div id="l5smgr-spec-viewls-alert"></div>
+<div id="htapm-spec-viewls-alert"></div>
 
 <table class="table table-hover">
   <thead>
@@ -8,18 +8,18 @@
       <th></th>
     </tr>
   </thead>
-  <tbody id="l5smgr-spec-viewls">
+  <tbody id="htapm-spec-viewls">
 {[~it.items :v]}
 <tr>
   <td><strong>{[=v.path]}</strong></td>
   <td align="right">
-    <button class="btn btn-default" onclick="l5sSpec.RouteSetTemplateSelectOne('{[=v.path]}')">Select</button>
+    <button class="btn btn-default" onclick="htapSpec.RouteSetTemplateSelectOne('{[=v.path]}')">Select</button>
   </td>
 </tr>
 {[~]}
   </tbody>
 </table>
 
-<script id="l5smgr-spec-viewls-tpl" type="text/html">  
+<script id="htapm-spec-viewls-tpl" type="text/html">  
 
 </script>

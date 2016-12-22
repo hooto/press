@@ -1,19 +1,23 @@
-var l5s = {
+var htap = {
     base : "/",
 }
 
-l5s.Boot = function()
+htap.Boot = function()
 {
     if (window._basepath) {
-        l5s.base = window._basepath;
+        htap.base = window._basepath;
+    }
+
+    if (!htap.base || htap.base == "") {
+        htap.base = "/";
     }
 
     seajs.config({
-        base: l5s.base,
+        base: htap.base,
     });
 
     seajs.use([
-        "~/l5s/js/jquery.min.js",
+        "~/htap/js/jquery.js",
     ],
     function() {
 
@@ -25,18 +29,26 @@ l5s.Boot = function()
             setTimeout(function() {
                 for (var i in window.onload_hooks) {
                     window.onload_hooks[i]();
-                } 
-            }, 100);                       
+                }
+            }, 100);
         });
     });
 }
 
-l5s.HttpSrvBasePath = function(uri)
+htap.HttpSrvBasePath = function(url)
 {
-    return l5s.base +"/"+ uri;
+    if (htap.base == "") {
+        return url;
+    }
+
+    if (url.substr(0, 1) == "/") {
+        return url;
+    }
+
+    return htap.base + url;
 }
 
-l5s.CodeRender = function()
+htap.CodeRender = function()
 {
     $("code[class^='language-']").each(function(i, el) {
 
@@ -109,7 +121,7 @@ l5s.CodeRender = function()
     });
 }
 
-l5s.NavActive = function(tplid, path)
+htap.NavActive = function(tplid, path)
 {
     if (!tplid || !path) {
         return;
@@ -126,17 +138,17 @@ l5s.NavActive = function(tplid, path)
                 nav.find("a.active").removeClass("active");
                 $(this).addClass("active");
             }
-        }        
+        }
     });
 }
 
-l5s.Ajax = function(url, options)
+htap.Ajax = function(url, options)
 {
     options = options || {};
 
     //
     if (url.substr(0, 1) != "/" && url.substr(0, 4) != "http") {
-        url = l5s.base +"/"+ url;
+        url = htap.HttpSrvBasePath(url);
     }
 
     //
@@ -148,14 +160,17 @@ l5s.Ajax = function(url, options)
     url += Math.random();
 
     //
-    if (options.method === undefined) {
+    if (!options.method) {
         options.method = "GET";
     }
 
     //
-    if (options.timeout === undefined) {
+    if (!options.timeout) {
         options.timeout = 10000;
     }
+
+    // console.log(url);
+    // console.log(options);
 
     //
     $.ajax({
@@ -172,7 +187,6 @@ l5s.Ajax = function(url, options)
             }
         },
         error: function(xhr, textStatus, error) {
-            // console.log(xhr.responseText);
             if (typeof options.callback === "function") {
                 options.callback(xhr.responseText, null);
             }
@@ -184,9 +198,9 @@ l5s.Ajax = function(url, options)
 }
 
 
-l5s.ActionLoader = function(target, uri)
+htap.ActionLoader = function(target, url)
 {
-    l5s.Ajax(l5s.base +"/"+ uri, {
+    htap.Ajax(htap.HttpSrvBasePath(url), {
         callback: function(err, data) {
             $("#"+ target).html(data);
         }
@@ -194,38 +208,38 @@ l5s.ActionLoader = function(target, uri)
 }
 
 
-l5s.ApiCmd = function(url, options)
+htap.ApiCmd = function(url, options)
 {
-    l5s.Ajax(l5s.base +"/"+ url, options);
+    htap.Ajax(htap.HttpSrvBasePath(url), options);
 }
 
-l5s.AuthSessionRefresh = function()
+htap.AuthSessionRefresh = function()
 {
-    l5s.Ajax("auth/session", {
+    htap.Ajax("auth/session", {
         callback: function(err, data) {
-            
+
             if (err || !data || data.kind != "AuthSession") {
                 return;
             }
 
             l4iTemplate.Render({
-                dstid: "l5s-topvar-user-box",
-                tplid: "l5s-topvar-user-box-tpl",
-                data:  data,
+                dstid:   "htap-topbar-userbar",
+                tplid:   "htap-topbar-user-signed-tpl",
+                data:    data,
                 success: function() {
-    
-                    $("#l5s-topvar-user-box").hover(
+
+                    $("#htap-topbar-userbar").hover(
                         function() {
-                            $("#l5s-topvar-user-modal").fadeIn(300);
+                            $("#htap-topbar-user-signed-modal").fadeIn(200);
                         },
                         function() {
                         }
                     );
-                    $("#l5s-topvar-user-modal").hover(
+                    $("#htap-topbar-user-signed-modal").hover(
                         function() {
                         },
                         function() {
-                            $("#l5s-topvar-user-modal").fadeOut(300);
+                            $("#htap-topbar-user-signed-modal").fadeOut(200);
                         }
                     );
                 },

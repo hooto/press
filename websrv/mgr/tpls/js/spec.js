@@ -1,4 +1,4 @@
-var l5sSpec = {
+var htapSpec = {
 
     specdef : {
         kind : "Spec",
@@ -35,7 +35,7 @@ var l5sSpec = {
     actiondef : {
         kind : "SpecAction",
         name : "",
-        datax : [],        
+        datax : [],
     },
 
     action_dataxdef : {
@@ -60,7 +60,7 @@ var l5sSpec = {
 
     field_idx_typedef : [{
         type : 0,
-        name : "No Index",   
+        name : "No Index",
     }, {
         type : 1,
         name : "General Index",
@@ -74,7 +74,7 @@ var l5sSpec = {
 
     term_typedef : [{
         type : "taxonomy",
-        name : "Categories",   
+        name : "Categories",
     }, {
         type : "tag",
         name : "Tags",
@@ -82,14 +82,14 @@ var l5sSpec = {
 
     // datax_typedef : [{
     //     type : "node.list",
-    //     name : "Node List",   
+    //     name : "Node List",
     // },{
     //     type : "node.entry",
     //     name : "Node Entry",
     // }],
     datax_typedef : [{
         type : "list",
-        name : "List",   
+        name : "List",
     },{
         type : "entry",
         name : "Entry",
@@ -163,26 +163,26 @@ var l5sSpec = {
 }
 
 
-l5sSpec.Init = function()
+htapSpec.Init = function()
 {
-    l4i.UrlEventRegister("spec/index", l5sSpec.Index);
+    l4i.UrlEventRegister("spec/index", htapSpec.Index, "htapm-topbar");
 }
 
-l5sSpec.Index = function()
+htapSpec.Index = function()
 {
-    l4iStorage.Set("l5smgr_nav_last_active", "spec/index");
-    
-    l5sMgr.TplCmd("spec/index", {
+    l4iStorage.Set("htapm_nav_last_active", "spec/index");
+
+    htapMgr.TplCmd("spec/index", {
         callback: function(err, data) {
-                
+
             $("#com-content").html(data);
-                
-            l5sSpec.List();
+
+            htapSpec.List();
         }
     });
 }
 
-l5sSpec.List = function()
+htapSpec.List = function()
 {
 
     var uri = "";
@@ -193,7 +193,7 @@ l5sSpec.List = function()
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, rsj) {
-            
+
             if (tpl) {
                 $("#work-content").html(tpl);
             }
@@ -201,15 +201,15 @@ l5sSpec.List = function()
             // if (data typeof object)
             // var rsj = JSON.parse(data);
 
-            if (rsj === undefined || rsj.kind != "SpecList" 
+            if (rsj === undefined || rsj.kind != "SpecList"
                 || rsj.items === undefined || rsj.items.length < 1) {
-                return l4i.InnerAlert("#l5smgr-specls-alert", 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert("#htapm-specls-alert", 'alert-danger', "Item Not Found");
             }
 
-            $("#l5smgr-specls-alert").hide();
+            $("#htapm-specls-alert").hide();
 
             for (var i in rsj.items) {
-                
+
                 if (rsj.items[i].nodeModels) {
                     rsj.items[i]._nodeModelsNum = rsj.items[i].nodeModels.length;
                 } else {
@@ -246,25 +246,25 @@ l5sSpec.List = function()
             }
 
             l4iTemplate.Render({
-                dstid: "l5smgr-specls",
-                tplid: "l5smgr-specls-tpl",
+                dstid: "htapm-specls",
+                tplid: "htapm-specls-tpl",
                 data:  {
                     items: rsj.items,
                 },
             });
         });
-    
+
         ep.fail(function (err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-speclist)");
         });
 
         // template
-        var el = document.getElementById("l5smgr-specls");
+        var el = document.getElementById("htapm-specls");
         if (!el || el.length < 1) {
-            l5sMgr.TplCmd("spec/list", {
+            htapMgr.TplCmd("spec/list", {
                 callback: function(err, tpl) {
-                    
+
                     if (err) {
                         return ep.emit('error', err);
                     }
@@ -276,17 +276,17 @@ l5sSpec.List = function()
             ep.emit("tpl", null);
         }
 
-        // l5sMgr.Ajax("-/spec/list.tpl", {
+        // htapMgr.Ajax("-/spec/list.tpl", {
         //     callback: ep.done("tpl"),
         // });
-    
-        l5sMgr.ApiCmd("mod-set/spec-list?"+ uri, {
-            callback: ep.done("data"),           
+
+        htapMgr.ApiCmd("mod-set/spec-list?"+ uri, {
+            callback: ep.done("data"),
         });
     });
 }
 
-l5sSpec.InfoSet = function(name)
+htapSpec.InfoSet = function(name)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -308,13 +308,13 @@ l5sSpec.InfoSet = function(name)
                 title  : ptitle,
                 data   : data,
                 success : function() {
-                    
+
                 },
                 buttons : [{
                     onclick : "l4iModal.Close()",
                     title   : "Close",
                 }, {
-                    onclick : "l5sSpec.InfoSetCommit()",
+                    onclick : "htapSpec.InfoSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 }],
@@ -325,28 +325,28 @@ l5sSpec.InfoSet = function(name)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/info-set", {
+        htapMgr.TplCmd("spec/info-set", {
             callback: ep.done('tpl'),
         });
 
         if (name) {
-            
-            l5sMgr.ApiCmd("mod-set/spec-entry?name="+ name, {
+
+            htapMgr.ApiCmd("mod-set/spec-entry?name="+ name, {
                 callback: ep.done('data'),
             });
         } else {
 
-            ep.emit("data", l4i.Clone(l5sSpec.specdef));
+            ep.emit("data", l4i.Clone(htapSpec.specdef));
         }
-        
+
     });
 
 }
 
-l5sSpec.InfoSetCommit = function()
+htapSpec.InfoSetCommit = function()
 {
-    var form = $("#l5smgr-specset");
-    var alertid = "#l5smgr-specset-alert";
+    var form = $("#htapm-specset");
+    var alertid = "#htapm-specset-alert";
 
     var req = {
         meta : {
@@ -358,7 +358,7 @@ l5sSpec.InfoSetCommit = function()
 
     // console.log(req);
 
-    l5sMgr.ApiCmd("mod-set/spec-info-set", {
+    htapMgr.ApiCmd("mod-set/spec-info-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -375,8 +375,8 @@ l5sSpec.InfoSetCommit = function()
             }
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
-            
-            l5sSpec.List();
+
+            htapSpec.List();
 
             window.setTimeout(function() {
                 l4iModal.Close();
@@ -387,7 +387,7 @@ l5sSpec.InfoSetCommit = function()
 
 
 // Spec::Term
-l5sSpec.TermList = function(modname)
+htapSpec.TermList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -414,15 +414,15 @@ l5sSpec.TermList = function(modname)
                 title  : "Term List",
                 // data   : data,
                 success : function() {
-                    
+
                     l4iTemplate.Render({
-                        dstid: "l5smgr-spec-termls",
-                        tplid: "l5smgr-spec-termls-tpl",
+                        dstid: "htapm-spec-termls",
+                        tplid: "htapm-spec-termls-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "l5sSpec.TermSet(\""+ modname +"\")",
+                    onclick : "htapSpec.TermSet(\""+ modname +"\")",
                     title   : "New Term",
                     style   : "btn-primary",
                 }, {
@@ -436,18 +436,18 @@ l5sSpec.TermList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/term/list", {
+        htapMgr.TplCmd("spec/term/list", {
             callback: ep.done('tpl'),
         });
- 
-        l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+
+        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
-        });        
+        });
     });
 }
 
 
-l5sSpec.TermSet = function(modname, modelid)
+htapSpec.TermSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -475,13 +475,13 @@ l5sSpec.TermSet = function(modname, modelid)
                 title  : ptitle,
                 data   : data,
                 success : function() {
-                    
+
                 },
                 buttons : [{
                     onclick : "l4iModal.Close()",
                     title   : "Close",
                 }, {
-                    onclick : "l5sSpec.TermSetCommit()",
+                    onclick : "htapSpec.TermSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 }],
@@ -492,26 +492,26 @@ l5sSpec.TermSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/term/set", {
+        htapMgr.TplCmd("spec/term/set", {
             callback: ep.done('tpl'),
         });
 
         if (modelid) {
-            
-            l5sMgr.ApiCmd("term-model/entry?modname="+ modname +"&modelid="+ modelid, {
+
+            htapMgr.ApiCmd("term-model/entry?modname="+ modname +"&modelid="+ modelid, {
                 callback: ep.done('data'),
             });
         } else {
 
-            ep.emit("data", l4i.Clone(l5sSpec.termdef));
-        }        
+            ep.emit("data", l4i.Clone(htapSpec.termdef));
+        }
     });
 }
 
-l5sSpec.TermSetCommit = function()
+htapSpec.TermSetCommit = function()
 {
-    var form = $("#l5smgr-spec-termset"),
-        alertid = "#l5smgr-spec-termset-alert";
+    var form = $("#htapm-spec-termset"),
+        alertid = "#htapm-spec-termset-alert";
 
     var req = {
         meta : {
@@ -522,7 +522,7 @@ l5sSpec.TermSetCommit = function()
         modname : form.find("input[name=modname]").val(),
     };
 
-    l5sMgr.ApiCmd("mod-set/spec-term-set", {
+    htapMgr.ApiCmd("mod-set/spec-term-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -539,14 +539,14 @@ l5sSpec.TermSetCommit = function()
             }
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
-            
+
             window.setTimeout(function() {
 
                 l4iModal.Prev(function() {
 
-                    l5sSpec.List();
+                    htapSpec.List();
 
-                    l5sMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -554,8 +554,8 @@ l5sSpec.TermSetCommit = function()
                             }
 
                             l4iTemplate.Render({
-                                dstid: "l5smgr-spec-termls",
-                                tplid: "l5smgr-spec-termls-tpl",
+                                dstid: "htapm-spec-termls",
+                                tplid: "htapm-spec-termls-tpl",
                                 data:  data,
                             });
                         },
@@ -570,7 +570,7 @@ l5sSpec.TermSetCommit = function()
 
 
 // Spec::Node
-l5sSpec.NodeList = function(modname)
+htapSpec.NodeList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -612,15 +612,15 @@ l5sSpec.NodeList = function(modname)
                 title  : "Node List",
                 // data   : data,
                 success : function() {
-                    
+
                     l4iTemplate.Render({
-                        dstid: "l5smgr-spec-nodels",
-                        tplid: "l5smgr-spec-nodels-tpl",
+                        dstid: "htapm-spec-nodels",
+                        tplid: "htapm-spec-nodels-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "l5sSpec.NodeSet(\""+ modname +"\")",
+                    onclick : "htapSpec.NodeSet(\""+ modname +"\")",
                     title   : "New Node",
                     style   : "btn-primary",
                 }, {
@@ -634,18 +634,18 @@ l5sSpec.NodeList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/node/list", {
+        htapMgr.TplCmd("spec/node/list", {
             callback: ep.done('tpl'),
         });
- 
-        l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+
+        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
-        });        
+        });
     });
 }
 
 
-l5sSpec.NodeSet = function(modname, modelid)
+htapSpec.NodeSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -694,10 +694,10 @@ l5sSpec.NodeSet = function(modname, modelid)
                 data.extensions.comment_perentry = false;
             }
 
-            data._field_idx_typedef = l5sSpec.field_idx_typedef;
-            data._field_typedef = l5sSpec.field_typedef;
-            data._general_onoff = l5sSpec.general_onoff;
-            data._permalink_def = l5sSpec.permalink_def;
+            data._field_idx_typedef = htapSpec.field_idx_typedef;
+            data._field_typedef = htapSpec.field_typedef;
+            data._general_onoff = htapSpec.general_onoff;
+            data._permalink_def = htapSpec.permalink_def;
 
             //
             if (!data.terms) {
@@ -708,8 +708,8 @@ l5sSpec.NodeSet = function(modname, modelid)
                 data.terms[i]._seqid = Math.random().toString(16).slice(2);
             }
 
-            data._term_typedef = l5sSpec.term_typedef;
-            // data._field_termdef = l5sSpec.termdef;
+            data._term_typedef = htapSpec.term_typedef;
+            // data._field_termdef = htapSpec.termdef;
 
 
             l4iModal.Open({
@@ -720,18 +720,18 @@ l5sSpec.NodeSet = function(modname, modelid)
                 width  : 980,
                 height : 600,
                 success : function() {
-                    
+
                 },
                 buttons : [{
-                    onclick : "l5sSpec.NodeSetFieldAppend()",
+                    onclick : "htapSpec.NodeSetFieldAppend()",
                     title   : "New Field",
                     style   : "btn-primary",
                 },{
-                    onclick : "l5sSpec.NodeSetTermAppend()",
+                    onclick : "htapSpec.NodeSetTermAppend()",
                     title   : "New Term",
                     style   : "btn-primary",
                 },{
-                    onclick : "l5sSpec.NodeSetCommit()",
+                    onclick : "htapSpec.NodeSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 },{
@@ -745,31 +745,31 @@ l5sSpec.NodeSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/node/set", {
+        htapMgr.TplCmd("spec/node/set", {
             callback: ep.done('tpl'),
         });
 
         if (modelid) {
-            
-            l5sMgr.ApiCmd("node-model/entry?modname="+ modname +"&modelid="+ modelid, {
+
+            htapMgr.ApiCmd("node-model/entry?modname="+ modname +"&modelid="+ modelid, {
                 callback: ep.done('data'),
             });
         } else {
 
-            ep.emit("data", l4i.Clone(l5sSpec.nodedef));
-        }        
+            ep.emit("data", l4i.Clone(htapSpec.nodedef));
+        }
     });
 }
 
-l5sSpec.NodeSetFieldAppend = function()
+htapSpec.NodeSetFieldAppend = function()
 {
     l4iTemplate.Render({
-        dstid: "l5smgr-spec-node-fields",
-        tplid: "l5smgr-spec-node-field-item-tpl",
+        dstid: "htapm-spec-node-fields",
+        tplid: "htapm-spec-node-field-item-tpl",
         append : true,
         data:  {
-            _field_typedef : l5sSpec.field_typedef,
-            _field_idx_typedef : l5sSpec.field_idx_typedef,
+            _field_typedef : htapSpec.field_typedef,
+            _field_idx_typedef : htapSpec.field_idx_typedef,
             _type : "bool",
             _indexType : 0,
             _seqid : Math.random().toString(16).slice(2),
@@ -777,35 +777,35 @@ l5sSpec.NodeSetFieldAppend = function()
     });
 }
 
-l5sSpec.NodeSetFieldAttrAppend = function(seqid)
+htapSpec.NodeSetFieldAttrAppend = function(seqid)
 {
-    var dst = document.getElementById("l5smgr-spec-node-field-attr-item-tpl");
+    var dst = document.getElementById("htapm-spec-node-field-attr-item-tpl");
     if (!dst) {
         return;
     }
     var source = dst.value || dst.innerHTML;
 
-    $("#field-seq-"+ seqid).find(".l5smgr-spec-node-field-attrs").append(source);
+    $("#field-seq-"+ seqid).find(".htapm-spec-node-field-attrs").append(source);
 }
 
-l5sSpec.NodeSetTermAppend = function(seqid)
+htapSpec.NodeSetTermAppend = function(seqid)
 {
     l4iTemplate.Render({
-        dstid: "l5smgr-spec-node-terms",
-        tplid: "l5smgr-spec-node-term-item-tpl",
+        dstid: "htapm-spec-node-terms",
+        tplid: "htapm-spec-node-term-item-tpl",
         append : true,
         data:  {
-            _term_typedef : l5sSpec.term_typedef,
+            _term_typedef : htapSpec.term_typedef,
             _type : "taxonomy",
             _seqid : Math.random().toString(16).slice(2),
         },
     });
 }
 
-l5sSpec.NodeSetCommit = function()
+htapSpec.NodeSetCommit = function()
 {
-    var form = $("#l5smgr-spec-nodeset"),
-        alertid = "#l5smgr-spec-nodeset-alert",
+    var form = $("#htapm-spec-nodeset"),
+        alertid = "#htapm-spec-nodeset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;
 
     var req = {
@@ -838,8 +838,8 @@ l5sSpec.NodeSetCommit = function()
     req.extensions.permalink = form.find("select[name=ext_permalink]").val();
 
     try {
-        
-        form.find(".l5smgr-spec-node-field-item").each(function() {
+
+        form.find(".htapm-spec-node-field-item").each(function() {
 
             var field = {
                 name : $(this).find("input[name=field_name]").val(),
@@ -858,12 +858,12 @@ l5sSpec.NodeSetCommit = function()
                 throw "Invalid Field Name : "+ field.name;
             }
 
-            $(this).find(".l5smgr-spec-node-field-attrs").each(function() {
+            $(this).find(".htapm-spec-node-field-attrs").each(function() {
 
                 var attr_key = $(this).find("input[name=field_attr_key]").val();
-                
+
                 if (attr_key) {
-                    
+
                     if (!namereg.test(attr_key)) {
                         throw "Invalid Field Attribute Key : "+ attr_key;
                     }
@@ -878,7 +878,7 @@ l5sSpec.NodeSetCommit = function()
             req.fields.push(field);
         });
 
-        form.find(".l5smgr-spec-node-term-item").each(function() {
+        form.find(".htapm-spec-node-term-item").each(function() {
 
             var term = {
                 meta: {
@@ -907,7 +907,7 @@ l5sSpec.NodeSetCommit = function()
     // console.log(req);
 
 
-    l5sMgr.ApiCmd("mod-set/spec-node-set", {
+    htapMgr.ApiCmd("mod-set/spec-node-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -924,14 +924,14 @@ l5sSpec.NodeSetCommit = function()
             }
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
-            
+
             window.setTimeout(function() {
 
                 l4iModal.Prev(function() {
 
-                    l5sSpec.List();
+                    htapSpec.List();
 
-                    l5sMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -958,8 +958,8 @@ l5sSpec.NodeSetCommit = function()
             				}
 
                             l4iTemplate.Render({
-                                dstid: "l5smgr-spec-nodels",
-                                tplid: "l5smgr-spec-nodels-tpl",
+                                dstid: "htapm-spec-nodels",
+                                tplid: "htapm-spec-nodels-tpl",
                                 data:  data,
                             });
                         },
@@ -973,7 +973,7 @@ l5sSpec.NodeSetCommit = function()
 
 
 // Spec::Action
-l5sSpec.ActionList = function(modname)
+htapSpec.ActionList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1011,15 +1011,15 @@ l5sSpec.ActionList = function(modname)
                 title  : "Action List",
                 // data   : data,
                 success : function() {
-                    
+
                     l4iTemplate.Render({
-                        dstid: "l5smgr-spec-actionls",
-                        tplid: "l5smgr-spec-actionls-tpl",
+                        dstid: "htapm-spec-actionls",
+                        tplid: "htapm-spec-actionls-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "l5sSpec.ActionSet(\""+ modname +"\")",
+                    onclick : "htapSpec.ActionSet(\""+ modname +"\")",
                     title   : "New Action",
                     style   : "btn-primary",
                 }, {
@@ -1033,18 +1033,18 @@ l5sSpec.ActionList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/action/list", {
+        htapMgr.TplCmd("spec/action/list", {
             callback: ep.done('tpl'),
         });
- 
-        l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+
+        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
-        });        
+        });
     });
 }
 
 
-l5sSpec.ActionSet = function(modname, modelid)
+htapSpec.ActionSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1076,17 +1076,17 @@ l5sSpec.ActionSet = function(modname, modelid)
 
             //
             for (var i in data.datax) {
-                
+
                 data.datax[i]._seqid = Math.random().toString(16).slice(2);
-                
+
                 if (!data.datax[i].pager) {
                     data.datax[i].pager = false;
                 }
-                
+
                 if (!data.datax[i].query.limit) {
                     data.datax[i].query.limit = 1;
                 }
-                
+
                 if (!data.datax[i].query.order) {
                     data.datax[i].query.order = "";
                 }
@@ -1099,7 +1099,7 @@ l5sSpec.ActionSet = function(modname, modelid)
             data._nodeModels = nodeModels;
             data._termModels = termModels;
 
-            data._datax_typedef = l4i.Clone(l5sSpec.datax_typedef);
+            data._datax_typedef = l4i.Clone(htapSpec.datax_typedef);
 
             // console.log(data);
             // return;
@@ -1112,17 +1112,17 @@ l5sSpec.ActionSet = function(modname, modelid)
                 width  : 980,
                 height : 550,
                 success : function() {
-                    
+
                     if (!modelid) {
-                        l5sSpec.ActionSetDataxAppend(modname);
+                        htapSpec.ActionSetDataxAppend(modname);
                     }
                 },
                 buttons : [{
-                    onclick : "l5sSpec.ActionSetDataxAppend(\""+ modname +"\")",
+                    onclick : "htapSpec.ActionSetDataxAppend(\""+ modname +"\")",
                     title   : "New Datax",
                     style   : "btn-primary",
                 },{
-                    onclick : "l5sSpec.ActionSetCommit()",
+                    onclick : "htapSpec.ActionSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 },{
@@ -1136,13 +1136,13 @@ l5sSpec.ActionSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/action/set", {
+        htapMgr.TplCmd("spec/action/set", {
             callback: ep.done('tpl'),
         });
 
-        l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: function(err, data) {
-                
+
                 if (err) {
                     ep.emit("error", err);
                     return;
@@ -1182,18 +1182,18 @@ l5sSpec.ActionSet = function(modname, modelid)
                     ep.emit("error", "Spec Not Found");
 
                 } else {
-                    ep.emit("data", l4i.Clone(l5sSpec.actiondef));
+                    ep.emit("data", l4i.Clone(htapSpec.actiondef));
                 }
             },
         });
     });
 }
 
-l5sSpec.ActionSetDataxAppend = function(modname)
+htapSpec.ActionSetDataxAppend = function(modname)
 {
-    l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+    htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
         callback: function(err, data) {
-                
+
             if (err) {
                 return alert(err);
             }
@@ -1212,27 +1212,27 @@ l5sSpec.ActionSetDataxAppend = function(modname)
                 data.termModels = [];
             }
 
-            var action = l4i.Clone(l5sSpec.actiondef);
+            var action = l4i.Clone(htapSpec.actiondef);
 
             action._nodeModels = data.nodeModels;
             action._termModels = data.termModels;
-            action._datax_typedef = l5sSpec.datax_typedef;
+            action._datax_typedef = htapSpec.datax_typedef;
             action._seqid = Math.random().toString(16).slice(2);
 
             l4iTemplate.Render({
-                dstid: "l5smgr-spec-action-dataxs",
-                tplid: "l5smgr-spec-action-datax-item-tpl",
+                dstid: "htapm-spec-action-dataxs",
+                tplid: "htapm-spec-action-datax-item-tpl",
                 append : true,
                 data   : action,
             });
     	},
-    });    
+    });
 }
 
-l5sSpec.ActionSetCommit = function()
+htapSpec.ActionSetCommit = function()
 {
-    var form = $("#l5smgr-spec-actionset"),
-        alertid = "#l5smgr-spec-actionset-alert",
+    var form = $("#htapm-spec-actionset"),
+        alertid = "#htapm-spec-actionset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;
 
     var req = {
@@ -1250,8 +1250,8 @@ l5sSpec.ActionSetCommit = function()
     }
 
     try {
-        
-        form.find(".l5smgr-spec-action-datax-item").each(function() {
+
+        form.find(".htapm-spec-action-datax-item").each(function() {
 
             var datax = {
                 name : $(this).find("input[name=datax_name]").val(),
@@ -1305,7 +1305,7 @@ l5sSpec.ActionSetCommit = function()
         return;
     }
 
-    l5sMgr.ApiCmd("mod-set/spec-action-set", {
+    htapMgr.ApiCmd("mod-set/spec-action-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -1322,14 +1322,14 @@ l5sSpec.ActionSetCommit = function()
             }
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
-            
+
             window.setTimeout(function() {
 
                 l4iModal.Prev(function() {
 
-                    l5sSpec.List();
+                    htapSpec.List();
 
-                    l5sMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -1352,8 +1352,8 @@ l5sSpec.ActionSetCommit = function()
                             data._modname = req.modname;
 
                             l4iTemplate.Render({
-                                dstid: "l5smgr-spec-actionls",
-                                tplid: "l5smgr-spec-actionls-tpl",
+                                dstid: "htapm-spec-actionls",
+                                tplid: "htapm-spec-actionls-tpl",
                                 data:  data,
                             });
                         },
@@ -1368,7 +1368,7 @@ l5sSpec.ActionSetCommit = function()
 
 
 // Spec::Router
-l5sSpec.RouteList = function(modname)
+htapSpec.RouteList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1412,15 +1412,15 @@ l5sSpec.RouteList = function(modname)
                 height : 500,
                 title  : "Route List",
                 success : function() {
-                    
+
                     l4iTemplate.Render({
-                        dstid: "l5smgr-spec-routels",
-                        tplid: "l5smgr-spec-routels-tpl",
+                        dstid: "htapm-spec-routels",
+                        tplid: "htapm-spec-routels-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "l5sSpec.RouteSet(\""+ modname +"\")",
+                    onclick : "htapSpec.RouteSet(\""+ modname +"\")",
                     title   : "New Route",
                     style   : "btn-primary",
                 }, {
@@ -1434,19 +1434,19 @@ l5sSpec.RouteList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/router/list", {
+        htapMgr.TplCmd("spec/router/list", {
             callback: ep.done('tpl'),
         });
- 
-        l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+
+        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
-        });        
+        });
     });
 }
 
 
-l5sSpec.RouteSet = function(modname, modelid)
-{   
+htapSpec.RouteSet = function(modname, modelid)
+{
     seajs.use(["ep"], function(EventProxy) {
 
         var ep = EventProxy.create('tpl', 'actions', 'data', function (tpl, actions, data) {
@@ -1479,15 +1479,15 @@ l5sSpec.RouteSet = function(modname, modelid)
                 success : function() {
 
                     l4iTemplate.Render({
-                        dstid: "l5smgr-spec-routeset",
-                        tplid: "l5smgr-spec-routeset-tpl",
+                        dstid: "htapm-spec-routeset",
+                        tplid: "htapm-spec-routeset-tpl",
                         data : data,
                         success: function() {
-                            
+
                             for (var i in data.params) {
                                 l4iTemplate.Render({
-                                dstid: "l5smgr-spec-route-params",
-                                tplid: "l5smgr-spec-route-param-item-tpl",
+                                dstid: "htapm-spec-route-params",
+                                tplid: "htapm-spec-route-param-item-tpl",
                                 append : true,
                                 data : {
                                     _key:   i,
@@ -1502,11 +1502,11 @@ l5sSpec.RouteSet = function(modname, modelid)
                     onclick : "l4iModal.Close()",
                     title   : "Close",
                 }, {
-                    onclick : "l5sSpec.RouteSetParamAppend()",
+                    onclick : "htapSpec.RouteSetParamAppend()",
                     title   : "New Param",
                     style   : "btn-primary",
                 }, {
-                    onclick : "l5sSpec.RouteSetCommit()",
+                    onclick : "htapSpec.RouteSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 }],
@@ -1517,13 +1517,13 @@ l5sSpec.RouteSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/router/set", {
+        htapMgr.TplCmd("spec/router/set", {
             callback: ep.done('tpl'),
         });
 
-        l5sMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: function(err, data) {
-                
+
                 if (err) {
                     ep.emit("error", err);
                     return;
@@ -1554,18 +1554,18 @@ l5sSpec.RouteSet = function(modname, modelid)
                     ep.emit("error", "Spec Not Found");
 
                 } else {
-                    ep.emit("data", l4i.Clone(l5sSpec.routedef));
+                    ep.emit("data", l4i.Clone(htapSpec.routedef));
                 }
             },
-        });        
+        });
     });
 }
 
-l5sSpec.RouteSetParamAppend = function()
+htapSpec.RouteSetParamAppend = function()
 {
     l4iTemplate.Render({
-        dstid: "l5smgr-spec-route-params",
-        tplid: "l5smgr-spec-route-param-item-tpl",
+        dstid: "htapm-spec-route-params",
+        tplid: "htapm-spec-route-param-item-tpl",
         append : true,
         data: {
             _seqid: Math.random().toString(16).slice(2),
@@ -1575,10 +1575,10 @@ l5sSpec.RouteSetParamAppend = function()
     });
 }
 
-l5sSpec.RouteSetCommit = function()
+htapSpec.RouteSetCommit = function()
 {
-    var form = $("#l5smgr-spec-routeset"),
-        alertid = "#l5smgr-spec-routeset-alert",
+    var form = $("#htapm-spec-routeset"),
+        alertid = "#htapm-spec-routeset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;;
 
     var req = {
@@ -1590,8 +1590,8 @@ l5sSpec.RouteSetCommit = function()
     };
 
     try {
-        
-        form.find(".l5smgr-spec-route-param-item").each(function() {
+
+        form.find(".htapm-spec-route-param-item").each(function() {
 
             var param_key = $(this).find("input[name=param_key]").val(),
                 param_value = $(this).find("input[name=param_value]").val();
@@ -1612,7 +1612,7 @@ l5sSpec.RouteSetCommit = function()
         return;
     }
 
-    l5sMgr.ApiCmd("mod-set/spec-route-set", {
+    htapMgr.ApiCmd("mod-set/spec-route-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -1627,14 +1627,14 @@ l5sSpec.RouteSetCommit = function()
             }
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
-            
+
             window.setTimeout(function() {
 
                 l4iModal.Prev(function() {
 
-                    l5sSpec.List();
+                    htapSpec.List();
 
-                    l5sMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -1660,8 +1660,8 @@ l5sSpec.RouteSetCommit = function()
                             }
 
                             l4iTemplate.Render({
-                                dstid: "l5smgr-spec-routels",
-                                tplid: "l5smgr-spec-routels-tpl",
+                                dstid: "htapm-spec-routels",
+                                tplid: "htapm-spec-routels-tpl",
                                 data:  data,
                             });
                         },
@@ -1674,7 +1674,7 @@ l5sSpec.RouteSetCommit = function()
 }
 
 
-l5sSpec.RouteSetTemplateSelect = function(modname)
+htapSpec.RouteSetTemplateSelect = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1697,7 +1697,7 @@ l5sSpec.RouteSetTemplateSelect = function(modname)
                 title  : "Select a Template",
                 data   : data,
                 success : function() {
-                    
+
                 },
                 buttons : [{
                     onclick : "l4iModal.Close()",
@@ -1710,19 +1710,19 @@ l5sSpec.RouteSetTemplateSelect = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        l5sMgr.TplCmd("spec/view/list", {
+        htapMgr.TplCmd("spec/view/list", {
             callback: ep.done('tpl'),
         });
 
-        l5sMgr.ApiCmd("mod-set/fs-tpl-list?modname="+ modname , {
+        htapMgr.ApiCmd("mod-set/fs-tpl-list?modname="+ modname , {
             callback: ep.done('data'),
-        });       
+        });
     });
 }
 
-l5sSpec.RouteSetTemplateSelectOne = function(path)
+htapSpec.RouteSetTemplateSelectOne = function(path)
 {
     l4iModal.Prev(function() {
-        $("#l5smgr-spec-routeset-template").attr("value", path);
+        $("#htapm-spec-routeset-template").attr("value", path);
     });
 }

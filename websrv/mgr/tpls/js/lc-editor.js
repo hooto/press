@@ -70,7 +70,7 @@ lcEditor.TabletOpen = function(urid, callback)
         //$("#lctab-body"+ item.target).prepend(t);
 
         // var req = {
-        //     "access_token" : l4iCookie.Get("access_token"), 
+        //     "access_token" : l4iCookie.Get("access_token"),
         //     "data" : {
         //         "path" : l4iSession.Get("ProjPath") +"/"+ item.url
         //     }
@@ -96,8 +96,8 @@ lcEditor.TabletOpen = function(urid, callback)
 
             var entry = {
                 id       : urid,
-                modname  : l4iSession.Get("l5s-speceditor-modname"),
-                projdir  : l4iSession.Get("l5s-speceditor-modname"),
+                modname  : l4iSession.Get("htap-speceditor-modname"),
+                projdir  : l4iSession.Get("htap-speceditor-modname"),
                 filepth  : item.url,
                 ctn0_src : file.body,
                 ctn0_sum : l4iString.CryptoMd5(file.body),
@@ -111,7 +111,7 @@ lcEditor.TabletOpen = function(urid, callback)
             }
 
             lcData.Put("files", entry, function(ret) {
-                
+
                 if (ret) {
                     $("#lctab-bar"+ item.target).empty();
                     $("#lctab-body"+ item.target).empty();
@@ -141,7 +141,7 @@ lcEditor.LoadInstance = function(entry)
         return;
     }
 
-    if (item.modname != l4iSession.Get("l5s-speceditor-modname")) {
+    if (item.modname != l4iSession.Get("htap-speceditor-modname")) {
         return;
     }
 
@@ -196,7 +196,7 @@ lcEditor.LoadInstance = function(entry)
     default:
         mode = "htmlmixed";
     }
-    
+
     switch (entry.mime) {
     case "text/x-php":
         mode = "php";
@@ -208,7 +208,7 @@ lcEditor.LoadInstance = function(entry)
 
     //l9rTab.frame[item.target].urid = entry.id;
 
-    if (l9rTab.frame[item.target].editor != null) {        
+    if (l9rTab.frame[item.target].editor != null) {
         $("#lctab-body"+ item.target).empty();
         $("#lctab-bar"+ item.target).empty();
     }
@@ -235,16 +235,16 @@ lcEditor.LoadInstance = function(entry)
     if (!lcEditor.isInited) {
 
         CodeMirror.defineInitHook(function(cminst) {
-    
+
             l9rLayout.Resize();
 
             if (lcEditor.Config.TmpLine2Str != null) {
-                
+
                 //console.log("line to"+ lcEditor.Config.TmpLine2Str);
                 var crs = cminst.getSearchCursor(lcEditor.Config.TmpLine2Str, cminst.getCursor(), null);
-                
+
                 if (crs.findNext()) {
-                
+
                     var lineto = crs.from().line + 3;
                     if (lineto > cminst.lineCount()) {
                         lineto = cminst.lineCount() - 1;
@@ -263,7 +263,7 @@ lcEditor.LoadInstance = function(entry)
                 cminst.setCursor(lcEditor.Config.TmpCursorLine, lcEditor.Config.TmpCursorCH);
             }
         });
-        
+
         lcEditor.isInited = true;
     }
 
@@ -280,7 +280,7 @@ lcEditor.LoadInstance = function(entry)
 
     l9rTab.frame[item.target].editor = CodeMirror(
         document.getElementById("lctab-body"+ item.target), {
-        
+
         value         : src,
         lineNumbers   : true,
         matchBrackets : true,
@@ -297,7 +297,7 @@ lcEditor.LoadInstance = function(entry)
         autoCloseTags : true,
         autoCloseBrackets       : true,
         showCursorWhenSelecting : true,
-        styleActiveLine         : true,        
+        styleActiveLine         : true,
         extraKeys : {
             Tab : function(cm) {
                 if (lcEditor.Config.tabs2spaces) {
@@ -347,7 +347,7 @@ lcEditor.Changed = function(urid)
     }
 
     lcData.Get("files", urid, function(entry) {
-                        
+
         if (!entry || entry.id != urid) {
             return;
         }
@@ -360,7 +360,7 @@ lcEditor.Changed = function(urid)
             // console.log(entry);
         });
     });
-    
+
     $("#pgtab"+ urid +" .chg").show();
     $("#pgtab"+ urid +" .pgtabtitle").addClass("chglight");
 }
@@ -404,7 +404,7 @@ lcEditor.EntrySave = function(options)
 
             var ctn = l9rTab.frame[item.target].editor.getValue();
             if (ctn == ret.ctn0_src) {
-                
+
                 $("#pgtab"+ options.urid +" .chg").hide();
                 $("#pgtab"+ options.urid +" .pgtabtitle").removeClass("chglight");
 
@@ -416,7 +416,7 @@ lcEditor.EntrySave = function(options)
             req.sumcheck = l4iString.CryptoMd5(ctn);
 
         } else if (ret.ctn1_sum.length < 30) {
-            
+
             options.success(options);
             return; // 200
 
@@ -424,7 +424,7 @@ lcEditor.EntrySave = function(options)
 
             req.data = ret.ctn1_src;
             req.sumcheck = ret.ctn1_sum;
-        
+
         } else if (ret.ctn1_src == ret.ctn0_src) {
 
             $("#pgtab"+ options.urid +" .chg").hide();
@@ -435,9 +435,9 @@ lcEditor.EntrySave = function(options)
         }
 
         req.success = function(rsp) {
-            
+
             lcData.Get("files", options.urid, function(entry) {
-                
+
                 if (!entry || entry.id != options.urid) {
                     options.error(options);
                     return;
@@ -504,8 +504,8 @@ lcEditor.IsSaved = function(urid, cb)
             return;
         }
 
-        if (ret.id == urid 
-            && ret.ctn1_sum.length > 30 
+        if (ret.id == urid
+            && ret.ctn1_sum.length > 30
             && ret.ctn0_sum != ret.ctn1_sum) {
             cb(false);
         } else {
@@ -517,9 +517,9 @@ lcEditor.IsSaved = function(urid, cb)
 
 lcEditor.HookOnBeforeUnload = function()
 {
-    if (l9rTab.frame[lcEditor.TabDefault].editor != null 
+    if (l9rTab.frame[lcEditor.TabDefault].editor != null
         && l9rTab.frame[lcEditor.TabDefault].urid == lcEditor.Config.TmpUrid) {
-        
+
         var prevEditorScrollInfo = l9rTab.frame[lcEditor.TabDefault].editor.getScrollInfo();
         var prevEditorCursorInfo = l9rTab.frame[lcEditor.TabDefault].editor.getCursor();
 

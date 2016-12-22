@@ -1,5 +1,5 @@
 
-<div id="l5smgr-spec-nodels-alert"></div>
+<div id="htapm-spec-nodels-alert"></div>
 
 <table class="table table-hover">
   <thead>
@@ -11,18 +11,18 @@
       <th></th>
     </tr>
   </thead>
-  <tbody id="l5smgr-spec-nodels"></tbody>
+  <tbody id="htapm-spec-nodels"></tbody>
 </table>
 
-<script id="l5smgr-spec-nodels-tpl" type="text/html">  
+<script id="htapm-spec-nodels-tpl" type="text/html">  
 {[~it.nodeModels :v]}
 <tr>
-  <td class="l5smgr-font-fixspace">{[=v.meta.name]}</td>
+  <td class="htapm-font-fixspace">{[=v.meta.name]}</td>
   <td>{[=v.title]}</td>
   <td>{[=v._fieldsNum]}</td>
   <td>{[=v._termsNum]}</td>
   <td align="right">
-    <button class="btn btn-default" onclick="l5sSpec.NodeSet('{[=it.meta.name]}', '{[=v.meta.name]}')">Setting</button>
+    <button class="btn btn-default" onclick="htapSpec.NodeSet('{[=it.meta.name]}', '{[=v.meta.name]}')">Setting</button>
   </td>
 </tr>
 {[~]}

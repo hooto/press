@@ -15,9 +15,10 @@
 package frontend
 
 import (
+	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 
-	"../../config"
+	"code.hooto.com/hooto/alphapress/config"
 )
 
 func NewModule() httpsrv.Module {
@@ -33,7 +34,7 @@ func NewModule() httpsrv.Module {
 	module.ControllerRegister(new(Index))
 	module.ControllerRegister(new(Error))
 	module.ControllerRegister(new(S2))
-	module.ControllerRegister(new(Auth))
+	module.ControllerRegister(new(iamclient.Auth))
 
 	return module
 }

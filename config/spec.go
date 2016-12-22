@@ -24,13 +24,14 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
-	"github.com/lessos/lessgo/utils"
 
-	"../api"
+	"code.hooto.com/hooto/alphapress/api"
 )
 
 var (
@@ -134,7 +135,7 @@ func module_init() error {
 		}
 
 		var spec api.Spec
-		if err := utils.JsonDecode(cfgstr, &spec); err != nil {
+		if err := json.Decode([]byte(cfgstr), &spec); err != nil {
 			return err
 		}
 
@@ -160,7 +161,7 @@ func module_init() error {
 		}
 
 		//
-		jsb, _ := utils.JsonEncodeIndent(spec, "  ")
+		jsb, _ := json.Encode(spec, "  ")
 		set := map[string]interface{}{
 			"status":  1,
 			"title":   spec.Title,
@@ -246,11 +247,11 @@ func _instance_schema_sync(spec *api.Spec) error {
 
 		var tbl rdobase.Table
 
-		if err := utils.JsonDecode(dsTplNodeModels, &tbl); err != nil {
+		if err := json.Decode([]byte(dsTplNodeModels), &tbl); err != nil {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("nx%s_%s", utils.StringEncode16(spec.Meta.Name, 12), nodeModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
 
 		if nodeModel.Extensions.AccessCounter {
 			tbl.AddColumn(&rdobase.Column{
@@ -383,11 +384,11 @@ func _instance_schema_sync(spec *api.Spec) error {
 
 		var tbl rdobase.Table
 
-		if err := utils.JsonDecode(dsTplTermModels, &tbl); err != nil {
+		if err := json.Decode([]byte(dsTplTermModels), &tbl); err != nil {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("tx%s_%s", utils.StringEncode16(spec.Meta.Name, 12), termModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
 
 		switch termModel.Type {
 

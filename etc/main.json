@@ -1,6 +1,6 @@
 {
-  "instance_id": "35ba1029219b",
-  "app_title": "CMS",
+  "instance_id": "67de0330e28f",
+  "app_title": "AP",
   "http_port": 9533,
   "iam_service_url": "http://dev.local.net/iam",
   "database": {

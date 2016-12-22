@@ -23,7 +23,7 @@ import (
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/utilx"
 
-	"../config"
+	"code.hooto.com/hooto/alphapress/config"
 )
 
 const (

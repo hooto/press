@@ -1,29 +1,32 @@
-var l5sMgr = {
+var htapMgr = {
     frtbase : "/",
     base    : "/mgr/",
     api     : "/v1/",
     basetpl : "/mgr/-/",
 }
 
-l5sMgr.Boot = function()
+htapMgr.Boot = function()
 {
     if (window._basepath) {
-        l5sMgr.frtbase = window._basepath;
-        l5sMgr.base    = window._basepath +"/mgr/";
-        l5sMgr.api     = window._basepath +"/v1/";
-        l5sMgr.basetpl = window._basepath +"/mgr/-/";
+        htapMgr.frtbase = window._basepath;
+        if (!htapMgr.frtbase || htapMgr.frtbase == "") {
+            htapMgr.frtbase = "/";
+        }
+        htapMgr.base    = htapMgr.frtbase +"mgr/";
+        htapMgr.api     = htapMgr.frtbase +"v1/";
+        htapMgr.basetpl = htapMgr.frtbase +"mgr/-/";
     }
 
     seajs.config({
-        base: l5sMgr.base,
+        base: htapMgr.base,
         alias: {
             ep: '~/lessui/js/eventproxy.js'
         },
     });
 
     seajs.use([
-        "~/lessui/js/BrowserDetect.js",
-        "~/l5s/js/jquery.min.js",
+        "~/lessui/js/browser-detect.js",
+        "~/htap/js/jquery.js",
         "~/lessui/js/eventproxy.js",
     ], function() {
 
@@ -32,17 +35,18 @@ l5sMgr.Boot = function()
         var OS      = BrowserDetect.OS;
 
         if (!((browser == 'Chrome' && version >= 22)
-            || (browser == 'Firefox' && version >= 31.0))) { 
+            || (browser == 'Firefox' && version >= 31.0))) {
             $('body').load(window._basepath +"/error/browser");
             return;
         }
 
         seajs.use([
-            "~/bs/3.3/css/bootstrap.min.css",
-            "~/bs/3.3/js/bootstrap.min.js",
+            "~/bs/3.3/css/bootstrap.css",
+            "~/purecss/pure.css",
             "~/lessui/js/lessui.js",
             "~/lessui/css/lessui.css",
-            "~/l5s/css/main.css?_="+ Math.random(),
+            "~/htap/css/main.css?_="+ Math.random(),
+            "~/htap/js/marked.js",
             "-/css/main.css?_="+ Math.random(),
             "-/css/defx.css",
             "-/js/spec.js?_="+ Math.random(),
@@ -55,62 +59,69 @@ l5sMgr.Boot = function()
             "-/js/sys.js?_="+ Math.random(),
             "-/js/s2.js?_="+ Math.random(),
             "-/js/editor.js?_="+ Math.random(),
-            "~/l5s/js/marked.min.js",
         ], function() {
 
-            l5sSys.Init();
-
-            marked.setOptions({
-                renderer: new marked.Renderer(),
-                gfm: true,
-                tables: true,
-                breaks: false,
-                pedantic: false,
-                sanitize: true,
-                smartLists: true,
-                smartypants: true
-            });
-
-            $(window).resize(function() {
-                l5sEditor.sizeRefresh();
-            });
-
-            l5sMgr.TplCmd("body", {
-                callback: function(err, data) {
-                
-                    l5sSys.Init();
-                    l5sNode.Init();
-                    l5sSpec.Init();
-                    l5sS2.Init();
-
-                    $("#body-content").html(data);
-
-                    var navlast = l4iStorage.Get("l5smgr_nav_last_active");
-                    if (!navlast) {
-                        navlast = "node/index";
-                    }
-
-                    $("#l5s-uh-topnav").find("a[href='#"+navlast+"']").addClass("active");
-
-                    l4i.UrlEventHandler(navlast);
-                }
-            });
+            setTimeout(htapMgr.BootInit, 300);
         });
     });
 }
 
-l5sMgr.HttpSrvBasePath = function(uri)
+htapMgr.BootInit = function()
 {
-    return l5sMgr.base +"/"+ uri;
+    $("#htapm-topbar").css({"display": "block"});
+
+    htapSys.Init();
+
+    marked.setOptions({
+        renderer: new marked.Renderer(),
+        gfm: true,
+        tables: true,
+        breaks: false,
+        pedantic: false,
+        sanitize: true,
+        smartLists: true,
+        smartypants: true
+    });
+
+    $(window).resize(function() {
+        htapEditor.sizeRefresh();
+    });
+
+
+    htapSys.Init();
+    htapSpec.Init();
+    htapS2.Init();
+
+    htapNode.Init(function() {
+
+        var navlast = l4iStorage.Get("htapm_nav_last_active");
+        if (!navlast) {
+            navlast = "sys/index"
+        }
+        l4i.UrlEventHandler(navlast);
+    });
 }
 
-l5sMgr.Ajax = function(url, options)
+htapMgr.HttpSrvBasePath = function(url)
+{
+    if (htapMgr.base == "") {
+        return url;
+    }
+
+    if (url.substr(0, 1) == "/") {
+        return url;
+    }
+
+    return htapMgr.base + url;
+}
+
+htapMgr.Ajax = function(url, options)
 {
     options = options || {};
 
     //
     if (url.substr(0, 1) != "/" && url.substr(0, 4) != "http") {
-        url = l5sMgr.base + url;
+        url = htapMgr.HttpSrvBasePath(url);
     }
 
     //
@@ -122,17 +133,12 @@ l5sMgr.Ajax = function(url, options)
     url += Math.random();
 
     //
-    if (l4iCookie.Get("access_token")) {
-        url += "&access_token="+ l4iCookie.Get("access_token");
-    }
-
-    //
-    if (options.method === undefined) {
+    if (!options.method) {
         options.method = "GET";
     }
 
     //
-    if (options.timeout === undefined) {
+    if (!options.timeout) {
         options.timeout = 10000;
     }
 
@@ -151,7 +157,6 @@ l5sMgr.Ajax = function(url, options)
             }
         },
         error: function(xhr, textStatus, error) {
-            // console.log(xhr.responseText);
             if (typeof options.callback === "function") {
                 options.callback(xhr.responseText, null);
             }
@@ -163,37 +168,41 @@ l5sMgr.Ajax = function(url, options)
 }
 
 
-
-l5sMgr.ApiCmd = function(url, options)
+htapMgr.ApiCmd = function(url, options)
 {
-    l5sMgr.Ajax(l5sMgr.api + url, options);
+    htapMgr.Ajax(htapMgr.api + url, options);
 }
 
-l5sMgr.TplCmd = function(url, options)
+
+htapMgr.TplCmd = function(url, options)
 {
-    l5sMgr.Ajax(l5sMgr.basetpl + url +".tpl", options);
+    htapMgr.Ajax(htapMgr.basetpl + url +".tpl", options);
 }
 
-l5sMgr.Loader = function(target, uri)
+
+htapMgr.Loader = function(target, uri)
 {
-    l5sMgr.Ajax(l5sMgr.basetpl + uri +".tpl", {
+    htapMgr.Ajax(htapMgr.basetpl + uri +".tpl", {
         callback: function(err, data) {
             $(target).html(data);
         }
     });
 }
 
-l5sMgr.BodyLoader = function(uri)
+
+htapMgr.BodyLoader = function(uri)
 {
-    l5sMgr.Loader("#body-content", uri);
+    htapMgr.Loader("#body-content", uri);
 }
 
-l5sMgr.ComLoader = function(uri)
+
+htapMgr.ComLoader = function(uri)
 {
-    l5sMgr.Loader("#com-content", uri);
+    htapMgr.Loader("#com-content", uri);
 }
 
-l5sMgr.WorkLoader = function(uri)
+
+htapMgr.WorkLoader = function(uri)
 {
-    l5sMgr.Loader("#work-content", uri);
+    htapMgr.Loader("#work-content", uri);
 }

@@ -4,7 +4,7 @@
 
 <div class="container">
 
-  <div class="l5s-ctn-header">
+  <div class="htap-ctn-header">
     <h2>Hello, world</h2>
   </div>
 

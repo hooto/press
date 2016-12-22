@@ -1,19 +1,32 @@
+// Copyright 2015 lessOS.com, All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package controllers
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
-	"github.com/lessos/iam/iamapi"
-	"github.com/lessos/iam/iamclient"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessgo/utils"
 
-	"../../../config"
-	"../../../status"
+	"github.com/lessos/iam/iamapi"
+	"github.com/lessos/iam/iamclient"
+
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/status"
 )
 
 type Setup struct {
@@ -27,10 +40,9 @@ func (c Setup) IndexAction() {
 		return
 	}
 
-	if token := c.Params.Get("access_token"); token != "" {
-
+	if token := c.Params.Get(iamclient.AccessTokenKey); len(token) >= 16 {
 		ck := &http.Cookie{
-			Name:     "access_token",
+			Name:     iamclient.AccessTokenKey,
 			Value:    token,
 			Path:     "/",
 			HttpOnly: true,
@@ -38,26 +50,16 @@ func (c Setup) IndexAction() {
 		}
 		http.SetCookie(c.Response.Out, ck)
 
-		c.Redirect("/mgr")
+		c.Redirect("mgr")
 		return
 	}
 
 	if status.IamServiceStatus == status.IamServiceUnRegistered {
-
 		c.Data["iam_url"] = iamclient.ServiceUrl
 
-		host := c.Request.Host
-		if i := strings.Index(host, ":"); i > 0 {
-			host = host[:i]
-		}
+		c.Data["instance_url"] = c.UrlBase("")
 
-		insturl := "http://" + host
-		if config.Config.HttpPort != 80 {
-			insturl += fmt.Sprintf(":%d", config.Config.HttpPort)
-		}
-		c.Data["instance_url"] = insturl
-
-		c.Data["app_id"] = "lesscms"
+		c.Data["app_id"] = config.AppName
 		c.Data["app_title"] = config.Config.AppTitle
 		c.Data["version"] = config.Version
 
@@ -65,7 +67,7 @@ func (c Setup) IndexAction() {
 		return
 	}
 
-	c.Redirect("/mgr")
+	c.Redirect("mgr")
 }
 
 func (c Setup) AppRegisterPutAction() {
@@ -76,7 +78,7 @@ func (c Setup) AppRegisterPutAction() {
 			Meta: types.ObjectMeta{
 				ID: config.Config.InstanceID,
 			},
-			AppID:      "lesscms",
+			AppID:      config.AppName,
 			AppTitle:   c.Params.Get("app_title"),
 			Version:    config.Version,
 			Url:        c.Params.Get("instance_url"),
@@ -86,9 +88,7 @@ func (c Setup) AppRegisterPutAction() {
 
 	defer c.RenderJson(&reg)
 
-	regjs, _ := utils.JsonEncode(reg)
-
-	// fmt.Println(regjs)
+	regjs, _ := json.Encode(reg, "")
 
 	hc := httpclient.Put(iamclient.ServiceUrl + "/v1/app-auth/register")
 	hc.Body(regjs)
@@ -100,6 +100,8 @@ func (c Setup) AppRegisterPutAction() {
 	} else if reg.Error == nil && reg.Kind == "AppInstanceRegister" {
 
 		config.Config.InstanceID = reg.Instance.Meta.ID
+		iamclient.InstanceID = reg.Instance.Meta.ID
+
 		config.Config.AppTitle = reg.Instance.AppTitle
 
 		status.IamServiceStatus = status.IamServiceOK

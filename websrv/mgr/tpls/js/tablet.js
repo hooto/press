@@ -53,7 +53,7 @@ l9rTab.Open = function(options)
         options.target = l9rTab.def;
     }
 
-    var urid = l4iString.CryptoMd5(l4iSession.Get("l5s-speceditor-modname") + options.uri);
+    var urid = l4iString.CryptoMd5(l4iSession.Get("htap-speceditor-modname") + options.uri);
 
     if (!l9rTab.frame[options.target]) {
         l9rTab.frame[options.target] = {
@@ -67,7 +67,7 @@ l9rTab.Open = function(options)
     if (!l9rTab.pool[urid]) {
 
         l9rTab.pool[urid] = {
-            modname   : l4iSession.Get("l5s-speceditor-modname"),
+            modname   : l4iSession.Get("htap-speceditor-modname"),
             url       : options.uri,
             colid     : options.colid,
             target    : options.target,
@@ -96,7 +96,7 @@ l9rTab.Open = function(options)
     if (document.getElementById("lctab-box"+ options.target) == null) {
 
         var tpl = l4iTemplate.RenderByID("lctab-tpl", {tabid: l9rTab.def});
-        
+
         if (tpl == "") {
             return;
         }
@@ -133,7 +133,7 @@ l9rTab.Switch = function(urid)
         return;
     }
 
-    if (item.modname != l4iSession.Get("l5s-speceditor-modname")) {
+    if (item.modname != l4iSession.Get("htap-speceditor-modname")) {
         return;
     }
 
@@ -178,7 +178,7 @@ l9rTab.Switch = function(urid)
     }
 
     $("#lctab-body"+ item.target).removeClass("lctab-body-bg-light");
-    
+
 
 
     switch (item.type) {
@@ -186,12 +186,12 @@ l9rTab.Switch = function(urid)
     case "editor":
 
         lcEditor.TabletOpen(urid, function(ret) {
-            
+
             if (!ret) {
                 return;
             }
 
-            // if (item.modname != l4iSession.Get("l5s-speceditor-modname")) {
+            // if (item.modname != l4iSession.Get("htap-speceditor-modname")) {
             //     // return;
             // }
 
@@ -199,8 +199,8 @@ l9rTab.Switch = function(urid)
             l9rTab.TabletTitleImage(urid);
             l9rTab.frame[item.target].urid = urid;
             // l4iStorage.Set("tab.fra.urid."+ item.target, urid);
-            l4iStorage.Set(l4iSession.Get("l5s-speceditor-modname") +".cab."+ item.target, urid);
-        
+            l4iStorage.Set(l4iSession.Get("htap-speceditor-modname") +".cab."+ item.target, urid);
+
             item.success();
         });
 
@@ -216,11 +216,11 @@ l9rTab.TabletTitleImage = function(urid, imgsrc)
     var item = l9rTab.pool[urid];
 
     if (imgsrc === undefined && item.icon !== undefined) {
-        
+
         if (item.icon.slice(0, 1) == "/") {
             imgsrc = item.icon;
         } else {
-            imgsrc = l5sMgr.base + "-/img/"+ item.icon +".png";
+            imgsrc = htapMgr.base + "-/img/"+ item.icon +".png";
         }
     }
 
@@ -232,7 +232,7 @@ l9rTab.TabletTitleImage = function(urid, imgsrc)
 l9rTab.TabletTitle = function(urid, loading)
 {
     var item = l9rTab.pool[urid];
-    
+
     if (!item.target) {
         return;
     }
@@ -244,13 +244,13 @@ l9rTab.TabletTitle = function(urid, loading)
         }
 
         var entry  = '<table id="pgtab'+ urid +'" class="pgtab" style="display:none"><tr>';
-        
+
         if (item.icon) {
 
             if (loading) {
-                var imgsrc = l5sMgr.base + "-/img/loading4.gif";
+                var imgsrc = htapMgr.base + "-/img/loading4.gif";
             } else {
-                var imgsrc = l5sMgr.base + "-/img/"+ item.icon +".png";
+                var imgsrc = htapMgr.base + "-/img/"+ item.icon +".png";
             }
 
             //
@@ -264,14 +264,14 @@ l9rTab.TabletTitle = function(urid, loading)
 
         entry += '<td class="chg">*</td>';
         entry += "<td class=\"pgtabtitle\" onclick=\"l9rTab.Switch('"+ urid +"')\">"+item.title+"</td>";
-        
+
         if (item.close) {
             // entry += '<td><div class="pgtabclose" onclick="l9rTab.Close(\''+ urid +'\', 0)"><div class="pgtabcloseitem">&times;</div></div></td>';
             entry += '<td><span class="pgtabclose" onclick="l9rTab.Close(\''+ urid +'\', 0)"></span></td>';
         }
 
         entry += '</tr></table>';
-        
+
         $("#lctab-navtabs"+ item.target).append(entry);
         $("#pgtab"+ urid).show(200);
     }
@@ -283,18 +283,18 @@ l9rTab.TabletTitle = function(urid, loading)
 
     var pg = $('#lctab-nav'+ item.target +' .lctab-navm').innerWidth();
     //console.log("h5c-tablet-tabs t*"+ pg);
-    
+
     var tabp = $('#pgtab'+ urid).position();
     //console.log("tab pos left:"+ tabp.left);
-    
+
     var mov = tabp.left + $('#pgtab'+ urid).outerWidth(true) - pg;
     if (mov < 0) {
         mov = 0;
     }
-    
-    var pgl = $('#lctab-navtabs'+ item.target +' .pgtab').last().position().left 
+
+    var pgl = $('#lctab-navtabs'+ item.target +' .pgtab').last().position().left
             + $('#lctab-navtabs'+ item.target +' .pgtab').last().outerWidth(true);
-    
+
     if (pgl > pg) {
         //$('#lctab-nav'+ item.target +' .lcpg-tab-more').show();
         $('#lctab-nav'+ item.target +' .lcpg-tab-more').html("»");
@@ -319,17 +319,17 @@ l9rTab.TabletMore = function(tg)
 
         var href = "javascript:l9rTab.Switch('"+ i +"')";
         ol += '<div class="ltm-item lctab-nav-moreitem">';
-        ol += '<div class="ltm-ico"><img src="'+ l5sMgr.base + '-/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
+        ol += '<div class="ltm-ico"><img src="'+ htapMgr.base + '-/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
         ol += '<div class="ltm-ctn"><a href="'+ href +'">'+ l9rTab.pool[i].title +'</a></div>';
         ol += '</div>';
     }
     $("#lctab-openfiles-ol").empty().html(ol);
-    
+
     e = l4i.PosGet();
     w = 100;
     h = 100;
     //console.log("event top:"+e.top+", left:"+e.left);
-    
+
     $("#lctab-openfiles-ol").css({
         width: w +'px',
         height: 'auto',
@@ -337,7 +337,7 @@ l9rTab.TabletMore = function(tg)
         left: (e.left - w - 10)+'px'
     }).toggle();
 
-    rw = $("#lctab-openfiles-ol").outerWidth(true);   
+    rw = $("#lctab-openfiles-ol").outerWidth(true);
     if (rw > 400) {
         $("#lctab-openfiles-ol").css({
             width: '400px',
@@ -349,7 +349,7 @@ l9rTab.TabletMore = function(tg)
             left: (e.left - rw - 10)+'px'
         });
     }
-    
+
     rh = $("#lctab-openfiles-ol").height();
     bh = $('body').height();
     hmax = bh - e.top - 30;
@@ -357,7 +357,7 @@ l9rTab.TabletMore = function(tg)
     if (rh > hmax) {
         $("#lctab-openfiles-ol").css({height: hmax+"px"});
     }
-    
+
     $(".lctab-openfiles-ol").find(".lctab-nav-moreitem").click(function() {
         $("#lctab-openfiles-ol").hide();
     });
@@ -386,13 +386,13 @@ l9rTab.Close = function(urid, force)
     case 'editor':
 
         if (force == 1) {
-        
+
             l9rTab.CloseClean(urid);
 
         } else {
 
             lcEditor.IsSaved(urid, function(ret) {
-                
+
                 if (ret) {
                     l9rTab.CloseClean(urid);
                     return;
@@ -400,7 +400,7 @@ l9rTab.Close = function(urid, force)
 
                 l4iModal.Open({
                     title        : "Save changes before closing",
-                    tpluri       : l5sMgr.base + "-/editor/changes2save.tpl",
+                    tpluri       : htapMgr.base + "-/editor/changes2save.tpl",
                     width        : 500,
                     height       : 180,
                     data         : {urid: urid},
@@ -450,7 +450,7 @@ l9rTab.CloseClean = function(urid)
         }
 
         if (i == urid) {
-            
+
             lcData.Del("files", urid, function(rs) {
                 //console.log("del: "+ rs);
             });
@@ -474,14 +474,14 @@ l9rTab.CloseClean = function(urid)
                 break;
             }
 
-        } else {            
-            j = i;            
+        } else {
+            j = i;
             if (l9rTab.frame[item.target].urid == 0) {
                 break;
             }
         }
     }
-    
+
     if (j != 0) {
         l9rTab.Switch(j);
         l9rTab.frame[item.target].urid = j;

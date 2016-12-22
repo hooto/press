@@ -17,7 +17,7 @@ package websrv
 import (
 	"github.com/lessos/lessgo/httpsrv"
 
-	"../../../../config"
+	"code.hooto.com/hooto/alphapress/config"
 )
 
 func NewModule() httpsrv.Module {

@@ -34,7 +34,7 @@
 <div id="lctab-openfiles-ol" class="less_scroll"></div>
 
 
-<script id="l5s-speceditor-fsnav-tpl" type="text/html">
+<script id="htap-speceditor-fsnav-tpl" type="text/html">
 <div class="lcx-fsnav">
 
     <span class="lfn-title">Files</span>
@@ -81,7 +81,7 @@
 {[~it :v]}
 <div id="ptp{[=v.fsid]}" class="lcx-fsitem" 
   lc-fspath="{[=v.path]}" lc-fstype="{[=v.fstype]}" lc-fsico="{[=v.ico]}">
-    <img src="{[=l5sMgr.base]}-/img/{[=v.ico]}.png" align="absmiddle">
+    <img src="{[=htapMgr.base]}-/img/{[=v.ico]}.png" align="absmiddle">
     <a href="#" class="anoline">{[=v.name]}</a>
 </div>
 {[~]}
@@ -125,7 +125,7 @@
 <form id="{[=it.formid]}" action="#" onsubmit="l9rProjFs.FileNewSave('{[=it.formid]}');return false;">
   <div class="input-prepend" style="margin-left:2px">
     <span class="add-on">
-        <img src="{[=l5sMgr.base]}-/img/folder_add.png" class="h5c_icon">
+        <img src="{[=htapMgr.base]}-/img/folder_add.png" class="h5c_icon">
         {[=it.path]}
     </span>
     <input type="text" name="name" value="{[=it.file]}" class="span2">
@@ -141,7 +141,7 @@
 <form id="{[=it.formid]}" action="#" onsubmit="l9rProjFs.FileRenameSave('{[=it.formid]}');return false;">
   <div class="input-prepend" style="margin-left:2px">
     <span class="add-on">
-        <img src="{[=l5sMgr.base]}-/img/folder_edit.png" class="h5c_icon">
+        <img src="{[=htapMgr.base]}-/img/folder_edit.png" class="h5c_icon">
     </span>
     <input type="text" name="pathset" value="{[=it.path]}" style="width:500px;">
     <input type="hidden" name="path" value="{[=it.path]}">
@@ -190,7 +190,7 @@
 <div id="{[=it.reqid]}">
   <div>The target of Upload directory</div>
   <div class="input-prepend">
-    <span class="add-on"><img src="{[=l5sMgr.base]}-/img/page_white_get.png" align="absmiddle"></span>
+    <span class="add-on"><img src="{[=htapMgr.base]}-/img/page_white_get.png" align="absmiddle"></span>
     <input style="width:400px;" name="path" type="text" value="{[=it.path]}">
     <button class="btn hide" type="button" onclick="_fs_upl_chgdir()">Change directory</button>
   </div>

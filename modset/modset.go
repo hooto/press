@@ -24,13 +24,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/utilx"
 
-	"../api"
-	"../config"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
 )
 
 var (
@@ -106,7 +107,7 @@ func SpecFetch(modname string) (api.Spec, error) {
 		return entry, err
 	}
 
-	if err := utils.JsonDecode(str, &entry); err != nil {
+	if err := json.Decode([]byte(str), &entry); err != nil {
 		return entry, err
 	}
 
@@ -699,7 +700,7 @@ func SpecRouteSet(modname string, entry api.Route) error {
 
 func _specSet(entry api.Spec) error {
 
-	jsb, _ := utils.JsonEncodeIndent(entry, "  ")
+	jsb, _ := json.Encode(entry, "  ")
 
 	//
 	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Config.Prefix, entry.Meta.Name)
@@ -743,7 +744,7 @@ func SpecSchemaSync(spec api.Spec) error {
 		spec.SrvName = spec.Meta.Name
 	}
 
-	jsb, _ := utils.JsonEncodeIndent(spec, "  ")
+	jsb, _ := json.Encode(spec, "  ")
 	set := map[string]interface{}{
 		"srvname": spec.SrvName,
 		"status":  1,
@@ -780,11 +781,11 @@ func SpecSchemaSync(spec api.Spec) error {
 
 		var tbl rdobase.Table
 
-		if err := utils.JsonDecode(dsTplNodeModels, &tbl); err != nil {
+		if err := json.Decode([]byte(dsTplNodeModels), &tbl); err != nil {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("nx%s_%s", utils.StringEncode16(spec.Meta.Name, 12), nodeModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
 
 		if nodeModel.Extensions.AccessCounter {
 			tbl.AddColumn(&rdobase.Column{
@@ -915,11 +916,11 @@ func SpecSchemaSync(spec api.Spec) error {
 
 		var tbl rdobase.Table
 
-		if err := utils.JsonDecode(dsTplTermModels, &tbl); err != nil {
+		if err := json.Decode([]byte(dsTplTermModels), &tbl); err != nil {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("tx%s_%s", utils.StringEncode16(spec.Meta.Name, 12), termModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
 
 		switch termModel.Type {
 

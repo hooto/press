@@ -23,9 +23,9 @@ import (
 	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/types"
 
-	"../../api"
-	"../../config"
-	"../../modset"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/modset"
 )
 
 func (c ModSet) FsTplListAction() {

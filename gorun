@@ -1,13 +1,11 @@
 #!/bin/bash
 
-files=`find . -type f -name "*.go" ! -path "vendor/*" |xargs`
-for file in $files; do
-    gofmt -w=true ${file}
-done
+# export GOPATH=$GOPATH:/opt/gopath/src/code.hooto.com/hooto/alphapress/vendor
 
-rm -f ./bin/lesscms
+rm -f ./bin/hooto-alphapress
 
-go build -race -o ./bin/lesscms ./main.go
+#go build -race -o ./bin/hooto-alphapress ./main.go
+go build -o ./bin/hooto-alphapress ./main.go
 
-./bin/lesscms -logtostderr=true 
+./bin/hooto-alphapress -logtostderr=true 
 

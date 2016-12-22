@@ -17,24 +17,22 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
-	"regexp"
-	"strings"
 
 	"github.com/eryx/hcaptcha/captcha"
 	"github.com/lessos/lessdb/skv"
 	"github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/utils"
+	"github.com/lessos/lessgo/encoding/json"
 
-	"../api"
+	"code.hooto.com/hooto/alphapress/api"
 )
 
 var (
 	Config        ConfigCommon
-	Version       = "0.1.6.dev"
+	AppName       = "hooto-alphapress"
+	Version       = "0.1.7.dev"
 	CaptchaConfig = captcha.DefaultConfig
 
 	User = &user.User{
@@ -49,6 +47,7 @@ var (
 
 type ConfigCommon struct {
 	Prefix        string      `json:"prefix,omitempty"`
+	UrlBasePath   string      `json:"url_base_path,omitempty"`
 	ModuleDir     string      `json:"module_dir,omitempty"`
 	InstanceID    string      `json:"instance_id"`
 	AppTitle      string      `json:"app_title,omitempty"`
@@ -62,17 +61,40 @@ func init() {
 
 	SysConfigList.Kind = "SysConfigList"
 
-	SysConfigList.Insert(api.SysConfig{"frontend_header_site_name", "CMS", "Site's Name", ""})
-	SysConfigList.Insert(api.SysConfig{"frontend_header_site_logo_url", "", "", ""})
-	SysConfigList.Insert(api.SysConfig{"frontend_footer_copyright", "2015 Demo", "", ""})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_header_site_name", "CMS",
+		"Site's Name", "",
+	})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_header_site_logo_url", "",
+		"", "",
+	})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_footer_copyright", "2016 Demo",
+		"", "",
+	})
 
-	SysConfigList.Insert(api.SysConfig{"frontend_html_head_subtitle", "CMS", "Sub Title for HTML Head Title", ""})
-	SysConfigList.Insert(api.SysConfig{"frontend_html_head_meta_keywords", "", "Meta Keywords in HTML Head for Search engine optimization", ""})
-	SysConfigList.Insert(api.SysConfig{"frontend_html_head_meta_description", "", "Meta Description in HTML Head for Search engine optimization", ""})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_html_head_subtitle", "CMS",
+		"Sub Title for HTML Head Title", "",
+	})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_html_head_meta_keywords", "",
+		"Meta Keywords in HTML Head for Search engine optimization", "",
+	})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_html_head_meta_description", "",
+		"Meta Description in HTML Head for Search engine optimization", "",
+	})
 
-	SysConfigList.Insert(api.SysConfig{"frontend_footer_analytics_scripts", "",
-		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text"})
-	SysConfigList.Insert(api.SysConfig{"ls2_uri", "//127.0.0.1/bucket-name", "Storage Service URI", ""})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_footer_analytics_scripts", "",
+		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text",
+	})
+	SysConfigList.Insert(api.SysConfig{
+		"ls2_uri", "//127.0.0.1/bucket-name",
+		"Storage Service URI", "",
+	})
 }
 
 func Initialize(prefix string) error {
@@ -80,42 +102,27 @@ func Initialize(prefix string) error {
 	var err error
 
 	if prefix == "" {
-		prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/..")
-		if err != nil {
-			prefix = "/opt/lesscms"
+		if prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/.."); err != nil {
+			prefix = "/opt/hooto/alphapress"
 		}
 	}
-	reg, _ := regexp.Compile("/+")
-	Config.Prefix = "/" + strings.Trim(reg.ReplaceAllString(prefix, "/"), "/")
+
+	Config.Prefix = filepath.Clean(prefix)
 	Config.ModuleDir = Config.Prefix + "/modules"
 
 	file := Config.Prefix + "/etc/main.json"
 	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
-		return errors.New("Error: config file is not exists")
+		return fmt.Errorf("Error: config file is not exists")
 	}
 
-	fp, err := os.Open(file)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error: Can not open (%s)", file))
-	}
-	defer fp.Close()
-
-	cfgstr, err := ioutil.ReadAll(fp)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error: Can not read (%s)", file))
-	}
-
-	if err = utils.JsonDecode(cfgstr, &Config); err != nil {
-		return errors.New(fmt.Sprintf("Error: "+
-			"config file invalid. (%s)", err.Error()))
+	if err := json.DecodeFile(file, &Config); err != nil {
+		return err
 	}
 
 	//
 	if Config.IamServiceUrl == "" {
 		return errors.New("Error: `iam_service_url` can not be null")
 	}
-
-	// httpsrv.GlobalService.Config.InstanceID = Config.InstanceID
 
 	dcn, err := Config.DatabaseInstance()
 	if err != nil {
@@ -135,18 +142,15 @@ func Initialize(prefix string) error {
 	}
 
 	if Config.AppTitle == "" {
-		Config.AppTitle = "less CMS"
+		Config.AppTitle = "hooto AlphaPress"
 	}
 
 	// Setting CAPTCHA
-	CaptchaConfig = captcha.DefaultConfig
+	CaptchaConfig.DataDir = Config.Prefix + "/var/captchadb"
 
-	CaptchaConfig.FontPath = Config.Prefix + "/vendor/github.com/eryx/hcaptcha/var/fonts/cmr10.ttf"
-	// CaptchaConfig.DataDir = Config.Prefix + "/var/captchadb"
-
-	// if err := captcha.Config(captchaConfig); err != nil {
-	// 	return err
-	// }
+	if err := captcha.Config(CaptchaConfig); err != nil {
+		return err
+	}
 
 	// Default User
 	if User, err = user.Current(); err != nil {
@@ -163,33 +167,19 @@ func Initialize(prefix string) error {
 
 func Save() error {
 
-	cfgExport := ConfigCommon{
-		InstanceID:    Config.InstanceID,
-		AppTitle:      Config.AppTitle,
-		HttpPort:      Config.HttpPort,
-		IamServiceUrl: Config.IamServiceUrl,
-		Database:      Config.Database,
-	}
-
-	jsb, _ := utils.JsonEncodeIndent(cfgExport, "  ")
-
 	file := Config.Prefix + "/etc/main.json"
 	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
 		return errors.New("Error: config file is not exists")
 	}
 
-	fp, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE, 0640)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error: Can not open (%s)", file))
+	cfgExport := ConfigCommon{
+		InstanceID:    Config.InstanceID,
+		AppTitle:      Config.AppTitle,
+		HttpPort:      Config.HttpPort,
+		UrlBasePath:   Config.UrlBasePath,
+		IamServiceUrl: Config.IamServiceUrl,
+		Database:      Config.Database,
 	}
-	defer fp.Close()
 
-	fp.Seek(0, 0)
-	fp.Truncate(int64(len(jsb)))
-
-	_, err = fp.Write(jsb)
-
-	// httpsrv.GlobalService.Config.InstanceID = Config.InstanceID
-
-	return err
+	return json.EncodeToFile(cfgExport, file, "  ")
 }

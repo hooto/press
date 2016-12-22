@@ -1,5 +1,5 @@
 
-<div id="l5smgr-spec-routels-alert"></div>
+<div id="htapm-spec-routels-alert"></div>
 
 <table class="table table-hover">
   <thead>
@@ -11,18 +11,18 @@
       <th></th>
     </tr>
   </thead>
-  <tbody id="l5smgr-spec-routels"></tbody>
+  <tbody id="htapm-spec-routels"></tbody>
 </table>
 
-<script id="l5smgr-spec-routels-tpl" type="text/html">  
+<script id="htapm-spec-routels-tpl" type="text/html">  
 {[~it.router.routes :v]}
 <tr>
-  <td class="l5smgr-font-fixspace">{[=v.path]}</td>
+  <td class="htapm-font-fixspace">{[=v.path]}</td>
   <td>{[=v.dataAction]}</td>
   <td>{[=v.template]}</td>
   <td>{[=v._paramsNum]}</td>
   <td align="right">
-    <button class="btn btn-default" onclick="l5sSpec.RouteSet('{[=it._modname]}', '{[=v.path]}')">Setting</button>
+    <button class="btn btn-default" onclick="htapSpec.RouteSet('{[=it._modname]}', '{[=v.path]}')">Setting</button>
   </td>
 </tr>
 {[~]}

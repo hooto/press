@@ -1,11 +1,11 @@
 <style>
-.l5s-sys-table {
+.htap-sys-table {
   font-size: 12px;
 }
-.l5s-sys-table td {
+.htap-sys-table td {
   padding: 5px !important;
 }
-.l5s-sys-table tr.line {
+.htap-sys-table tr.line {
   border-top: 1px solid #ccc;
 }
 </style>
@@ -13,9 +13,9 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">System Config</div>
-  <div id="l5smgr-sys-configset" class="panel-body">
+  <div id="htapm-sys-configset" class="panel-body">
 
-    <div id="l5smgr-sys-configset-alert"></div>
+    <div id="htapm-sys-configset-alert"></div>
 
     <table width="100%" class="table table-striped">
       <thead>
@@ -31,9 +31,9 @@
         <td width="20%">{[=v.key]}</td>
         <td width="40%">
           {[ if (v.type !== undefined && v.type == "text") { ]}
-          <textarea class="form-control l5smgr-sys-config-item" name="{[=v.key]}" rows="3">{[=v.value]}</textarea>
+          <textarea class="form-control htapm-sys-config-item" name="{[=v.key]}" rows="3">{[=v.value]}</textarea>
           {[ } else { ]}
-          <input type="text" class="form-control l5smgr-sys-config-item" name="{[=v.key]}" value="{[=v.value]}">
+          <input type="text" class="form-control htapm-sys-config-item" name="{[=v.key]}" value="{[=v.value]}">
           {[ } ]}
         </td>
         <td>{[=v.comment]}</td>
@@ -42,6 +42,6 @@
       </tbody>
     </table>
 
-    <button class="btn btn-default" onclick="l5sSys.ConfigSetCommit()">Save</button>
+    <button class="pure-button btapm-btn btapm-btn-primary" onclick="htapSys.ConfigSetCommit()">Save</button>
   </div>
 </div>

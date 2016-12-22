@@ -1,4 +1,4 @@
-var l5sSys = {
+var htapSys = {
     roles : {
         items: [{
             idxid: 100,
@@ -14,29 +14,30 @@ var l5sSys = {
     },
 }
 
-l5sSys.Init = function()
+htapSys.Init = function()
 {
-    l4i.UrlEventRegister("sys/index", l5sSys.Index);
-    l4i.UrlEventRegister("sys/status", l5sSys.Status);
-    l4i.UrlEventRegister("sys/iam-status", l5sSys.IamStatus);
-    l4i.UrlEventRegister("sys/config", l5sSys.Config);
+    l4i.UrlEventRegister("sys/index", htapSys.Index, "htapm-topbar");
+
+    l4i.UrlEventRegister("sys/status", htapSys.Status, "htapm-sys-nav");
+    l4i.UrlEventRegister("sys/iam-status", htapSys.IamStatus, "htapm-sys-nav");
+    l4i.UrlEventRegister("sys/config", htapSys.Config, "htapm-sys-nav");
 }
 
-l5sSys.Index = function()
+htapSys.Index = function()
 {
-    l4iStorage.Set("l5smgr_nav_last_active", "sys/index");
-    
-    l5sMgr.TplCmd("sys/index", {
+    l4iStorage.Set("htapm_nav_last_active", "sys/index");
+
+    htapMgr.TplCmd("sys/index", {
         callback: function(err, data) {
             $("#com-content").html(data);
-            l5sSys.Status();
-            // l5sSys.IamStatus();
-            // l5sSys.Config();
+            htapSys.Status();
+            // htapSys.IamStatus();
+            // htapSys.Config();
         },
     });
 }
 
-l5sSys.Config = function()
+htapSys.Config = function()
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -62,22 +63,22 @@ l5sSys.Config = function()
         ep.fail(function(err) {
             alert("Error: Please try again later");
         });
-    
-        l5sMgr.ApiCmd("sys/config-list", {
+
+        htapMgr.ApiCmd("sys/config-list", {
             callback: ep.done('data'),
         });
 
-        l5sMgr.TplCmd("sys/config", {
-            callback: ep.done('tpl'),           
+        htapMgr.TplCmd("sys/config", {
+            callback: ep.done('tpl'),
         });
     });
 }
 
-l5sSys.ConfigSetCommit = function()
+htapSys.ConfigSetCommit = function()
 {
-    
-    var form = $("#l5smgr-sys-configset"),
-        alertid = "#l5smgr-sys-configset-alert",
+
+    var form = $("#htapm-sys-configset"),
+        alertid = "#htapm-sys-configset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;
 
     var req = {
@@ -86,8 +87,8 @@ l5sSys.ConfigSetCommit = function()
 
     try {
 
-        form.find(".l5smgr-sys-config-item").each(function() {
-            
+        form.find(".htapm-sys-config-item").each(function() {
+
             req.items.push({
                 key: $(this).attr("name"),
                 value: $(this).val(),
@@ -99,11 +100,11 @@ l5sSys.ConfigSetCommit = function()
         return;
     }
 
-    l5sMgr.ApiCmd("sys/config-set", {
+    htapMgr.ApiCmd("sys/config-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
-            
+
             if (!data || !data.kind || data.kind != "SysConfigList") {
 
                 if (data.error) {
@@ -119,7 +120,7 @@ l5sSys.ConfigSetCommit = function()
 }
 
 
-l5sSys.Status = function()
+htapSys.Status = function()
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -144,18 +145,18 @@ l5sSys.Status = function()
         ep.fail(function(err) {
             alert("Error: Please try again later");
         });
-    
-        l5sMgr.ApiCmd("sys/status", {
+
+        htapMgr.ApiCmd("sys/status", {
             callback: ep.done('data'),
         });
 
-        l5sMgr.TplCmd("sys/status", {
-            callback: ep.done('tpl'),           
+        htapMgr.TplCmd("sys/status", {
+            callback: ep.done('tpl'),
         });
     });
 }
 
-l5sSys.IamStatus = function()
+htapSys.IamStatus = function()
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -165,7 +166,7 @@ l5sSys.IamStatus = function()
                 return;
             }
 
-            data._roles = l5sSys.roles;
+            data._roles = htapSys.roles;
 
             l4iTemplate.Render({
                 dstid  : "work-content",
@@ -178,45 +179,45 @@ l5sSys.IamStatus = function()
             alert("Error: Please try again later");
         });
 
-        l5sMgr.ApiCmd("sys/iam-status", {
+        htapMgr.ApiCmd("sys/iam-status", {
             callback: ep.done('data'),
         });
 
-        l5sMgr.TplCmd("sys/iam-status", {
-            callback: ep.done('tpl'),           
+        htapMgr.TplCmd("sys/iam-status", {
+            callback: ep.done('tpl'),
         });
     });
 }
 
 
-l5sSys.IamSync = function()
+htapSys.IamSync = function()
 {
-    var form = $("#l5s-mgr-sys-iam");
+    var form = $("#htap-mgr-sys-iam");
 
-    l5sMgr.Ajax("setup/app-register-put", {
+    htapMgr.Ajax("setup/app-register-put", {
         method : "POST",
         data   : form.serialize(),
         success: function(data) {
-            
+
             if (data === undefined || data.kind != "AppInstanceRegister") {
                 if (data.error) {
-                    return l4i.InnerAlert("#l5s-mgr-sys-iam-alert", 'alert-danger', data.error.message);
+                    return l4i.InnerAlert("#htap-mgr-sys-iam-alert", 'alert-danger', data.error.message);
                 }
 
-                return l4i.InnerAlert("#l5s-mgr-sys-iam-alert", 'alert-danger', "Network Connection Exception");
+                return l4i.InnerAlert("#htap-mgr-sys-iam-alert", 'alert-danger', "Network Connection Exception");
             }
 
-            l4i.InnerAlert("#l5s-mgr-sys-iam-alert", 'alert-success', "Successful registered");
-            
+            l4i.InnerAlert("#htap-mgr-sys-iam-alert", 'alert-success', "Successful registered");
+
             window.setTimeout(function() {
-                l5sSys.IamStatus();
+                htapSys.IamStatus();
             }, 1000);
         },
     });
 }
 
 
-l5sSys.UtilResourceSizeFormat = function(size)
+htapSys.UtilResourceSizeFormat = function(size)
 {
     var ms = [
         [6, "EB"],
@@ -240,7 +241,7 @@ l5sSys.UtilResourceSizeFormat = function(size)
 }
 
 
-l5sSys.UtilDurationFormat = function(timems, fix)
+htapSys.UtilDurationFormat = function(timems, fix)
 {
     var ms = [
         [86400000, "day"],
@@ -260,13 +261,13 @@ l5sSys.UtilDurationFormat = function(timems, fix)
     for (var i in ms) {
 
         if (timems >= ms[i][0]) {
-            
+
             var t = parseInt(timems / ms[i][0]);
-        
+
             if (t > 0) {
 
                 ts += t + " "+ ms[i][1];
-        
+
                 if (t > 1) {
                     ts += "s";
                 }
@@ -275,7 +276,7 @@ l5sSys.UtilDurationFormat = function(timems, fix)
 
                 timems = parseInt(timems % ms[i][0]);
             }
-        }        
+        }
     }
 
     if (ts.length > 2) {

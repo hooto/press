@@ -4,7 +4,7 @@
 
 <div class="container">
   
-  <div class="l5s-ctn-header">
+  <div class="htap-ctn-header">
     <h2>Content Explore</h2>
   </div>
 
@@ -12,11 +12,11 @@
 
     <div class="col-md-9">
     
-    <ul class="l5s-nodels">
+    <ul class="htap-nodels">
       {{range $v := .list.Items}}
-      <li class="l5s-nodels-item">
-        <h4 class="l5s-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
-        <span class="l5s-nodels-info">
+      <li class="htap-nodels-item">
+        <h4 class="htap-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
+        <span class="htap-nodels-info">
             
             <span class="section">
               <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
@@ -51,7 +51,7 @@
 
         </span>
 
-        <div class="l5s-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
+        <div class="htap-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
       </li>
       {{end}}
     </ul>

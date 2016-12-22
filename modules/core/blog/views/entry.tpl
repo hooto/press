@@ -1,17 +1,18 @@
+
 {{pagelet . "core/general" "html-header.tpl"}}
 
 {{pagelet . "core/general" "nav-header.tpl" "topnav"}}
 
 <div class="container">
   
-  <div class="l5s-ctn-header">
+  <div class="htap-ctn-header">
     <h2>Content Entry</h2>
   </div>
 
   <div class="row">
     <div class="col-md-12">
     
-      <div class="l5s-nodev">
+      <div class="htap-nodev">
         
         <div class="header">
           <h2>{{.entry.Title}}</h2>
@@ -72,14 +73,15 @@ window.onload_hooks.push(function() {
         "+/comment/~/index.css",
     ],
     function() {
-        l5sComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
+        htapComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
     });
 });
 {{end}}
 
 window.onload_hooks.push(function() {
-    l5s.CodeRender();
+    htap.CodeRender();
 });
 </script>
 
 {{pagelet . "core/general" "html-footer.tpl"}}
+

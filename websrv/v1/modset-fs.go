@@ -29,13 +29,14 @@ import (
 
 	"github.com/lessos/iam/iamapi"
 	"github.com/lessos/iam/iamclient"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 
-	"../../api"
-	"../../config"
-	"../../modset"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/modset"
 )
 
 type ModSetFs struct {
@@ -186,8 +187,7 @@ func (c ModSetFs) PutAction() {
 
 		var jsPrev, jsAppend map[string]interface{}
 
-		err := utils.JsonDecode(body, &jsAppend)
-		if err != nil {
+		if err := json.Decode([]byte(body), &jsAppend); err != nil {
 			rsp.Error = &types.ErrorMeta{"400", err.Error()}
 			return
 		}
@@ -198,8 +198,7 @@ func (c ModSetFs) PutAction() {
 			return
 		}
 
-		err = utils.JsonDecode(file.Body, &jsPrev)
-		if err != nil {
+		if err = json.Decode([]byte(file.Body), &jsPrev); err != nil {
 			rsp.Error = &types.ErrorMeta{"400", err.Error()}
 			return
 		}
@@ -207,8 +206,7 @@ func (c ModSetFs) PutAction() {
 		jsMerged := utils.JsonMerge(jsPrev, jsAppend)
 		// fmt.Println(jsPrev, "\n\n", jsAppend, "\n\n", jsMerged)
 
-		strMerged, _ := utils.JsonEncode(jsMerged)
-		body = []byte(strMerged)
+		body, _ = json.Encode(jsMerged, "  ")
 	}
 
 	if err := fsFilePutWrite(projfp, body); err != nil {

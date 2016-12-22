@@ -15,14 +15,11 @@
 package controllers
 
 import (
-	"fmt"
-	"io"
-
 	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 
-	"../../../config"
-	"../../../status"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/status"
 )
 
 type Index struct {
@@ -31,43 +28,27 @@ type Index struct {
 
 func (c Index) IndexAction() {
 
-	c.AutoRender = false
-
-	//
 	status.Locker.RLock()
 	defer status.Locker.RUnlock()
 
-	if status.IamServiceStatus == status.IamServiceUnRegistered {
-		c.Redirect(config.HttpSrvBasePath("mgr/setup/index"))
+	if c.Params.Get("_iam_out") != "" {
+		c.Redirect(c.UrlBase(""))
 		return
 	}
 
 	if !iamclient.SessionIsLogin(c.Session) {
 		c.Redirect(iamclient.AuthServiceUrl(
 			config.Config.InstanceID,
-			fmt.Sprintf("//%s%s/auth/cb", c.Request.Host, config.HttpSrvBasePath("")),
-			c.Request.RawAbsUrl()))
+			c.UrlBase("auth/cb"),
+			c.Request.RawAbsUrl(),
+		))
 		return
 	}
 
-	//
-	io.WriteString(c.Response.Out, `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>CMS</title>
-  <script src="`+config.HttpSrvBasePath("mgr/~/lessui/js/sea.js")+`"></script>
-  <script src="`+config.HttpSrvBasePath("mgr/-/js/main.js")+`"></script>
-  <script type="text/javascript">
-    window._basepath = "`+config.HttpSrvBasePath("")+`";
-  </script>
-</head>
-<body id="body-content">
-loading
-</body>
-<script type="text/javascript">
-window.onload = l5sMgr.Boot();
-</script>
-</html>`)
+	if status.IamServiceStatus == status.IamServiceUnRegistered {
+		c.Redirect("mgr/setup/index")
+		return
+	}
 
+	c.Render("index.tpl")
 }

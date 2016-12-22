@@ -26,9 +26,9 @@ import (
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
 
-	"../api"
-	"../config"
-	"../store"
+	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/alphapress/store"
 )
 
 var (
@@ -125,10 +125,7 @@ func (q *QuerySet) NodeCount() (int64, error) {
 
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	fr := rdobase.NewFilter()
-	fr.And("status", 1)
-
-	return dcn.Base.Count(table, fr)
+	return dcn.Base.Count(table, q.filter)
 }
 
 func (q *QuerySet) NodeList() api.NodeList {
