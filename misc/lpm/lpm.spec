@@ -20,12 +20,15 @@ websrv/mgr/tpls/
 webui/htap/img/alpha2.png
 webui/htap/img/search-16.png
 webui/htap/img/ap.ico
+webui/bs/3.3/fonts/
 
 
 %js_compress
 webui/bs/3.3/js/bootstrap.js
 webui/cm/5/
 webui/lessui/js/lessui.js
+webui/lessui/js/browser-detect.js
+webui/lessui/js/eventproxy.js
 webui/lessui/js/sea.js
 webui/htap/js/
 websrv/mgr/tpls/js/
@@ -47,3 +50,5 @@ modules/
 websrv/mgr/tpls/
 websrv/mgr/views/
 
+%png_compress
+webui/htap/img/
