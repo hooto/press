@@ -97,6 +97,7 @@ func (c Term) ListAction() {
 		return
 	}
 
+	ls.Kind = "TermList"
 	ls.Meta.TotalResults = uint64(count)
 	ls.Meta.StartIndex = uint64((page - 1) * limit)
 	ls.Meta.ItemsPerList = uint64(limit)
