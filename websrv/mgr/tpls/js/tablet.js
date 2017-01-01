@@ -53,7 +53,7 @@ l9rTab.Open = function(options)
         options.target = l9rTab.def;
     }
 
-    var urid = l4iString.CryptoMd5(l4iSession.Get("htap-speceditor-modname") + options.uri);
+    var urid = l4iString.CryptoMd5(l4iSession.Get("htp-speceditor-modname") + options.uri);
 
     if (!l9rTab.frame[options.target]) {
         l9rTab.frame[options.target] = {
@@ -67,7 +67,7 @@ l9rTab.Open = function(options)
     if (!l9rTab.pool[urid]) {
 
         l9rTab.pool[urid] = {
-            modname   : l4iSession.Get("htap-speceditor-modname"),
+            modname   : l4iSession.Get("htp-speceditor-modname"),
             url       : options.uri,
             colid     : options.colid,
             target    : options.target,
@@ -133,7 +133,7 @@ l9rTab.Switch = function(urid)
         return;
     }
 
-    if (item.modname != l4iSession.Get("htap-speceditor-modname")) {
+    if (item.modname != l4iSession.Get("htp-speceditor-modname")) {
         return;
     }
 
@@ -191,7 +191,7 @@ l9rTab.Switch = function(urid)
                 return;
             }
 
-            // if (item.modname != l4iSession.Get("htap-speceditor-modname")) {
+            // if (item.modname != l4iSession.Get("htp-speceditor-modname")) {
             //     // return;
             // }
 
@@ -199,7 +199,7 @@ l9rTab.Switch = function(urid)
             l9rTab.TabletTitleImage(urid);
             l9rTab.frame[item.target].urid = urid;
             // l4iStorage.Set("tab.fra.urid."+ item.target, urid);
-            l4iStorage.Set(l4iSession.Get("htap-speceditor-modname") +".cab."+ item.target, urid);
+            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") +".cab."+ item.target, urid);
 
             item.success();
         });
@@ -220,7 +220,7 @@ l9rTab.TabletTitleImage = function(urid, imgsrc)
         if (item.icon.slice(0, 1) == "/") {
             imgsrc = item.icon;
         } else {
-            imgsrc = htapMgr.base + "-/img/"+ item.icon +".png";
+            imgsrc = htpMgr.base + "-/img/"+ item.icon +".png";
         }
     }
 
@@ -248,9 +248,9 @@ l9rTab.TabletTitle = function(urid, loading)
         if (item.icon) {
 
             if (loading) {
-                var imgsrc = htapMgr.base + "-/img/loading4.gif";
+                var imgsrc = htpMgr.base + "-/img/loading4.gif";
             } else {
-                var imgsrc = htapMgr.base + "-/img/"+ item.icon +".png";
+                var imgsrc = htpMgr.base + "-/img/"+ item.icon +".png";
             }
 
             //
@@ -319,7 +319,7 @@ l9rTab.TabletMore = function(tg)
 
         var href = "javascript:l9rTab.Switch('"+ i +"')";
         ol += '<div class="ltm-item lctab-nav-moreitem">';
-        ol += '<div class="ltm-ico"><img src="'+ htapMgr.base + '-/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
+        ol += '<div class="ltm-ico"><img src="'+ htpMgr.base + '-/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
         ol += '<div class="ltm-ctn"><a href="'+ href +'">'+ l9rTab.pool[i].title +'</a></div>';
         ol += '</div>';
     }
@@ -400,7 +400,7 @@ l9rTab.Close = function(urid, force)
 
                 l4iModal.Open({
                     title        : "Save changes before closing",
-                    tpluri       : htapMgr.base + "-/editor/changes2save.tpl",
+                    tpluri       : htpMgr.base + "-/editor/changes2save.tpl",
                     width        : 500,
                     height       : 180,
                     data         : {urid: urid},

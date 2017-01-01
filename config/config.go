@@ -26,12 +26,12 @@ import (
 	"github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 
-	"code.hooto.com/hooto/alphapress/api"
+	"code.hooto.com/hooto/hootopress/api"
 )
 
 var (
 	Config        ConfigCommon
-	AppName       = "hooto-alphapress"
+	AppName       = "hooto-hootopress"
 	Version       = "0.1.7.dev"
 	CaptchaConfig = captcha.DefaultConfig
 
@@ -103,7 +103,7 @@ func Initialize(prefix string) error {
 
 	if prefix == "" {
 		if prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/.."); err != nil {
-			prefix = "/opt/hooto/alphapress"
+			prefix = "/opt/hooto/hootopress"
 		}
 	}
 

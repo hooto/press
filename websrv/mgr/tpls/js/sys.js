@@ -1,4 +1,4 @@
-var htapSys = {
+var htpSys = {
     roles : {
         items: [{
             idxid: 100,
@@ -14,30 +14,30 @@ var htapSys = {
     },
 }
 
-htapSys.Init = function()
+htpSys.Init = function()
 {
-    l4i.UrlEventRegister("sys/index", htapSys.Index, "htapm-topbar");
+    l4i.UrlEventRegister("sys/index", htpSys.Index, "htpm-topbar");
 
-    l4i.UrlEventRegister("sys/status", htapSys.Status, "htapm-sys-nav");
-    l4i.UrlEventRegister("sys/iam-status", htapSys.IamStatus, "htapm-sys-nav");
-    l4i.UrlEventRegister("sys/config", htapSys.Config, "htapm-sys-nav");
+    l4i.UrlEventRegister("sys/status", htpSys.Status, "htpm-sys-nav");
+    l4i.UrlEventRegister("sys/iam-status", htpSys.IamStatus, "htpm-sys-nav");
+    l4i.UrlEventRegister("sys/config", htpSys.Config, "htpm-sys-nav");
 }
 
-htapSys.Index = function()
+htpSys.Index = function()
 {
-    l4iStorage.Set("htapm_nav_last_active", "sys/index");
+    l4iStorage.Set("htpm_nav_last_active", "sys/index");
 
-    htapMgr.TplCmd("sys/index", {
+    htpMgr.TplCmd("sys/index", {
         callback: function(err, data) {
             $("#com-content").html(data);
-            htapSys.Status();
-            // htapSys.IamStatus();
-            // htapSys.Config();
+            htpSys.Status();
+            // htpSys.IamStatus();
+            // htpSys.Config();
         },
     });
 }
 
-htapSys.Config = function()
+htpSys.Config = function()
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -64,21 +64,21 @@ htapSys.Config = function()
             alert("Error: Please try again later");
         });
 
-        htapMgr.ApiCmd("sys/config-list", {
+        htpMgr.ApiCmd("sys/config-list", {
             callback: ep.done('data'),
         });
 
-        htapMgr.TplCmd("sys/config", {
+        htpMgr.TplCmd("sys/config", {
             callback: ep.done('tpl'),
         });
     });
 }
 
-htapSys.ConfigSetCommit = function()
+htpSys.ConfigSetCommit = function()
 {
 
-    var form = $("#htapm-sys-configset"),
-        alertid = "#htapm-sys-configset-alert",
+    var form = $("#htpm-sys-configset"),
+        alertid = "#htpm-sys-configset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;
 
     var req = {
@@ -87,7 +87,7 @@ htapSys.ConfigSetCommit = function()
 
     try {
 
-        form.find(".htapm-sys-config-item").each(function() {
+        form.find(".htpm-sys-config-item").each(function() {
 
             req.items.push({
                 key: $(this).attr("name"),
@@ -100,7 +100,7 @@ htapSys.ConfigSetCommit = function()
         return;
     }
 
-    htapMgr.ApiCmd("sys/config-set", {
+    htpMgr.ApiCmd("sys/config-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -120,7 +120,7 @@ htapSys.ConfigSetCommit = function()
 }
 
 
-htapSys.Status = function()
+htpSys.Status = function()
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -146,17 +146,17 @@ htapSys.Status = function()
             alert("Error: Please try again later");
         });
 
-        htapMgr.ApiCmd("sys/status", {
+        htpMgr.ApiCmd("sys/status", {
             callback: ep.done('data'),
         });
 
-        htapMgr.TplCmd("sys/status", {
+        htpMgr.TplCmd("sys/status", {
             callback: ep.done('tpl'),
         });
     });
 }
 
-htapSys.IamStatus = function()
+htpSys.IamStatus = function()
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -166,7 +166,7 @@ htapSys.IamStatus = function()
                 return;
             }
 
-            data._roles = htapSys.roles;
+            data._roles = htpSys.roles;
 
             l4iTemplate.Render({
                 dstid  : "work-content",
@@ -179,45 +179,45 @@ htapSys.IamStatus = function()
             alert("Error: Please try again later");
         });
 
-        htapMgr.ApiCmd("sys/iam-status", {
+        htpMgr.ApiCmd("sys/iam-status", {
             callback: ep.done('data'),
         });
 
-        htapMgr.TplCmd("sys/iam-status", {
+        htpMgr.TplCmd("sys/iam-status", {
             callback: ep.done('tpl'),
         });
     });
 }
 
 
-htapSys.IamSync = function()
+htpSys.IamSync = function()
 {
-    var form = $("#htap-mgr-sys-iam");
+    var form = $("#htp-mgr-sys-iam");
 
-    htapMgr.Ajax("setup/app-register-put", {
+    htpMgr.Ajax("setup/app-register-put", {
         method : "POST",
         data   : form.serialize(),
         success: function(data) {
 
             if (data === undefined || data.kind != "AppInstanceRegister") {
                 if (data.error) {
-                    return l4i.InnerAlert("#htap-mgr-sys-iam-alert", 'alert-danger', data.error.message);
+                    return l4i.InnerAlert("#htp-mgr-sys-iam-alert", 'alert-danger', data.error.message);
                 }
 
-                return l4i.InnerAlert("#htap-mgr-sys-iam-alert", 'alert-danger', "Network Connection Exception");
+                return l4i.InnerAlert("#htp-mgr-sys-iam-alert", 'alert-danger', "Network Connection Exception");
             }
 
-            l4i.InnerAlert("#htap-mgr-sys-iam-alert", 'alert-success', "Successful registered");
+            l4i.InnerAlert("#htp-mgr-sys-iam-alert", 'alert-success', "Successful registered");
 
             window.setTimeout(function() {
-                htapSys.IamStatus();
+                htpSys.IamStatus();
             }, 1000);
         },
     });
 }
 
 
-htapSys.UtilResourceSizeFormat = function(size)
+htpSys.UtilResourceSizeFormat = function(size)
 {
     var ms = [
         [6, "EB"],
@@ -241,7 +241,7 @@ htapSys.UtilResourceSizeFormat = function(size)
 }
 
 
-htapSys.UtilDurationFormat = function(timems, fix)
+htpSys.UtilDurationFormat = function(timems, fix)
 {
     var ms = [
         [86400000, "day"],

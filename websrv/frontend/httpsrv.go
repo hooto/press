@@ -18,7 +18,7 @@ import (
 	"github.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 
-	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/hootopress/config"
 )
 
 func NewModule() httpsrv.Module {

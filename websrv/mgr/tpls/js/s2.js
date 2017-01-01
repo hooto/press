@@ -1,37 +1,37 @@
-var htapS2 = {
+var htpS2 = {
 
 }
 
-htapS2.Init = function()
+htpS2.Init = function()
 {
-    l4i.UrlEventRegister("s2/index", htapS2.Index, "htapm-topbar");
+    l4i.UrlEventRegister("s2/index", htpS2.Index, "htpm-topbar");
 }
 
-htapS2.Index = function()
+htpS2.Index = function()
 {
-    l4iStorage.Set("htapm_nav_last_active", "s2/index");
+    l4iStorage.Set("htpm_nav_last_active", "s2/index");
 
-    htapMgr.TplCmd("s2/index", {
+    htpMgr.TplCmd("s2/index", {
         callback: function(err, data) {
             $("#com-content").html(data);
-            htapS2.ObjList();
+            htpS2.ObjList();
         },
     });
 }
 
-htapS2.ObjList = function(path)
+htpS2.ObjList = function(path)
 {
     if (!path) {
-        path = l4iStorage.Get("htapm_s2_obj_path_active");
+        path = l4iStorage.Get("htpm_s2_obj_path_active");
     }
 
     if (!path) {
         path = "/";
     }
 
-    l4iStorage.Set("htapm_s2_obj_path_active", path);
+    l4iStorage.Set("htpm_s2_obj_path_active", path);
 
-    htapMgr.ApiCmd("s2-obj/list?path="+ path, {
+    htpMgr.ApiCmd("s2-obj/list?path="+ path, {
         callback: function(err, data) {
 
             if (err || !data || !data.kind) {
@@ -61,8 +61,8 @@ htapS2.ObjList = function(path)
             }
 
             l4iTemplate.Render({
-                dstid: "htapm-s2-objls",
-                tplid: "htapm-s2-objls-tpl",
+                dstid: "htpm-s2-objls",
+                tplid: "htpm-s2-objls-tpl",
                 data:  data,
             });
 
@@ -90,8 +90,8 @@ htapS2.ObjList = function(path)
             }
 
             l4iTemplate.Render({
-                dstid: "htapm-s2-objls-dirnav",
-                tplid: "htapm-s2-objls-dirnav-tpl",
+                dstid: "htpm-s2-objls-dirnav",
+                tplid: "htpm-s2-objls-dirnav-tpl",
                 data:  {
                     items: dirnav,
                 },
@@ -100,10 +100,10 @@ htapS2.ObjList = function(path)
     });
 }
 
-htapS2.ObjNew = function(type, path, file)
+htpS2.ObjNew = function(type, path, file)
 {
     if (!path) {
-        path = l4iStorage.Get("htapm_s2_obj_path_active");
+        path = l4iStorage.Get("htpm_s2_obj_path_active");
 
         if (!path) {
             path = "/";
@@ -116,7 +116,7 @@ htapS2.ObjNew = function(type, path, file)
         title        : (type == "dir") ? "New Folder" : "New File",
         width        : 700,
         height       : 350,
-        tplid        : "htapm-s2-objnew-tpl",
+        tplid        : "htpm-s2-objnew-tpl",
         data         : {
             formid   : formid,
             file     : file,
@@ -125,7 +125,7 @@ htapS2.ObjNew = function(type, path, file)
         },
         buttons      : [
             {
-                onclick : "htapS2.ObjNewSave(\""+ formid +"\")",
+                onclick : "htpS2.ObjNewSave(\""+ formid +"\")",
                 title   : "Upload",
                 style   : "btn-primary"
             },
@@ -143,17 +143,17 @@ htapS2.ObjNew = function(type, path, file)
     l4iModal.Open(req);
 }
 
-htapS2.ObjNewSave = function(formid)
+htpS2.ObjNewSave = function(formid)
 {
-    var elem = document.getElementById("htapm-s2-objnew-files");
+    var elem = document.getElementById("htpm-s2-objnew-files");
 
     for (var i = 0; i < elem.files.length; i++) {
 
-        htapS2._objNewUpload(formid, elem.files[i]);
+        htpS2._objNewUpload(formid, elem.files[i]);
     }
 }
 
-htapS2._objNewUpload = function(formid, file)
+htpS2._objNewUpload = function(formid, file)
 {
     var reader = new FileReader();
 
@@ -167,7 +167,7 @@ htapS2._objNewUpload = function(formid, file)
 
             var ppath = $("#"+ formid +" :input[name=path]").val();
 
-            htapMgr.ApiCmd("s2-obj/put", {
+            htpMgr.ApiCmd("s2-obj/put", {
                 method  : "POST",
                 data    : JSON.stringify({
                     path    : ppath +"/"+ file.name,
@@ -180,7 +180,7 @@ htapS2._objNewUpload = function(formid, file)
                     if (rsp && rsp.kind && rsp.kind == "FsFile") {
 
                         $("#"+ formid +"-alert").show().append("<div>"+ file.name +" OK</div>");
-                        htapS2.ObjList(ppath);
+                        htpS2.ObjList(ppath);
 
                         setTimeout(function() {
                             l4iModal.Close();
@@ -205,10 +205,10 @@ htapS2._objNewUpload = function(formid, file)
     reader.readAsDataURL(file);
 }
 
-htapS2.ObjDel = function(path)
+htpS2.ObjDel = function(path)
 {
     //
-    htapMgr.ApiCmd("s2-obj/del?path="+ path, {
+    htpMgr.ApiCmd("s2-obj/del?path="+ path, {
 
         callback: function(err, data) {
             if (data.kind && data.kind == "FsFile") {
@@ -220,7 +220,7 @@ htapS2.ObjDel = function(path)
     });
 }
 
-htapS2.UtilResourceSizeFormat = function(size)
+htpS2.UtilResourceSizeFormat = function(size)
 {
     if (!size) {
         size = 0;

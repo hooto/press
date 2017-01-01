@@ -30,8 +30,8 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/utilx"
 
-	"code.hooto.com/hooto/alphapress/api"
-	"code.hooto.com/hooto/alphapress/config"
+	"code.hooto.com/hooto/hootopress/api"
+	"code.hooto.com/hooto/hootopress/config"
 )
 
 var (

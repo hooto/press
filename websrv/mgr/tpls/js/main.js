@@ -1,24 +1,24 @@
-var htapMgr = {
+var htpMgr = {
     frtbase : "/",
     base    : "/mgr/",
     api     : "/v1/",
     basetpl : "/mgr/-/",
 }
 
-htapMgr.Boot = function()
+htpMgr.Boot = function()
 {
     if (window._basepath) {
-        htapMgr.frtbase = window._basepath;
-        if (!htapMgr.frtbase || htapMgr.frtbase == "") {
-            htapMgr.frtbase = "/";
+        htpMgr.frtbase = window._basepath;
+        if (!htpMgr.frtbase || htpMgr.frtbase == "") {
+            htpMgr.frtbase = "/";
         }
-        htapMgr.base    = htapMgr.frtbase +"mgr/";
-        htapMgr.api     = htapMgr.frtbase +"v1/";
-        htapMgr.basetpl = htapMgr.frtbase +"mgr/-/";
+        htpMgr.base    = htpMgr.frtbase +"mgr/";
+        htpMgr.api     = htpMgr.frtbase +"v1/";
+        htpMgr.basetpl = htpMgr.frtbase +"mgr/-/";
     }
 
     seajs.config({
-        base: htapMgr.base,
+        base: htpMgr.base,
         alias: {
             ep: '~/lessui/js/eventproxy.js'
         },
@@ -26,7 +26,7 @@ htapMgr.Boot = function()
 
     seajs.use([
         "~/lessui/js/browser-detect.js",
-        "~/htap/js/jquery.js",
+        "~/htp/js/jquery.js",
         "~/lessui/js/eventproxy.js",
     ], function() {
 
@@ -45,8 +45,8 @@ htapMgr.Boot = function()
             "~/purecss/pure.css",
             "~/lessui/js/lessui.js",
             "~/lessui/css/lessui.css",
-            "~/htap/css/main.css?_="+ Math.random(),
-            "~/htap/js/marked.js",
+            "~/htp/css/main.css?_="+ Math.random(),
+            "~/htp/js/marked.js",
             "-/css/main.css?_="+ Math.random(),
             "-/css/defx.css",
             "-/js/spec.js?_="+ Math.random(),
@@ -61,16 +61,16 @@ htapMgr.Boot = function()
             "-/js/editor.js?_="+ Math.random(),
         ], function() {
 
-            setTimeout(htapMgr.BootInit, 300);
+            setTimeout(htpMgr.BootInit, 300);
         });
     });
 }
 
-htapMgr.BootInit = function()
+htpMgr.BootInit = function()
 {
-    $("#htapm-topbar").css({"display": "block"});
+    $("#htpm-topbar").css({"display": "block"});
 
-    htapSys.Init();
+    htpSys.Init();
 
     marked.setOptions({
         renderer: new marked.Renderer(),
@@ -84,17 +84,17 @@ htapMgr.BootInit = function()
     });
 
     $(window).resize(function() {
-        htapEditor.sizeRefresh();
+        htpEditor.sizeRefresh();
     });
 
 
-    htapSys.Init();
-    htapSpec.Init();
-    htapS2.Init();
+    htpSys.Init();
+    htpSpec.Init();
+    htpS2.Init();
 
-    htapNode.Init(function() {
+    htpNode.Init(function() {
 
-        var navlast = l4iStorage.Get("htapm_nav_last_active");
+        var navlast = l4iStorage.Get("htpm_nav_last_active");
         if (!navlast) {
             navlast = "sys/index"
         }
@@ -102,9 +102,9 @@ htapMgr.BootInit = function()
     });
 }
 
-htapMgr.HttpSrvBasePath = function(url)
+htpMgr.HttpSrvBasePath = function(url)
 {
-    if (htapMgr.base == "") {
+    if (htpMgr.base == "") {
         return url;
     }
 
@@ -112,16 +112,16 @@ htapMgr.HttpSrvBasePath = function(url)
         return url;
     }
 
-    return htapMgr.base + url;
+    return htpMgr.base + url;
 }
 
-htapMgr.Ajax = function(url, options)
+htpMgr.Ajax = function(url, options)
 {
     options = options || {};
 
     //
     if (url.substr(0, 1) != "/" && url.substr(0, 4) != "http") {
-        url = htapMgr.HttpSrvBasePath(url);
+        url = htpMgr.HttpSrvBasePath(url);
     }
 
     //
@@ -168,21 +168,21 @@ htapMgr.Ajax = function(url, options)
 }
 
 
-htapMgr.ApiCmd = function(url, options)
+htpMgr.ApiCmd = function(url, options)
 {
-    htapMgr.Ajax(htapMgr.api + url, options);
+    htpMgr.Ajax(htpMgr.api + url, options);
 }
 
 
-htapMgr.TplCmd = function(url, options)
+htpMgr.TplCmd = function(url, options)
 {
-    htapMgr.Ajax(htapMgr.basetpl + url +".tpl", options);
+    htpMgr.Ajax(htpMgr.basetpl + url +".tpl", options);
 }
 
 
-htapMgr.Loader = function(target, uri)
+htpMgr.Loader = function(target, uri)
 {
-    htapMgr.Ajax(htapMgr.basetpl + uri +".tpl", {
+    htpMgr.Ajax(htpMgr.basetpl + uri +".tpl", {
         callback: function(err, data) {
             $(target).html(data);
         }
@@ -190,19 +190,19 @@ htapMgr.Loader = function(target, uri)
 }
 
 
-htapMgr.BodyLoader = function(uri)
+htpMgr.BodyLoader = function(uri)
 {
-    htapMgr.Loader("#body-content", uri);
+    htpMgr.Loader("#body-content", uri);
 }
 
 
-htapMgr.ComLoader = function(uri)
+htpMgr.ComLoader = function(uri)
 {
-    htapMgr.Loader("#com-content", uri);
+    htpMgr.Loader("#com-content", uri);
 }
 
 
-htapMgr.WorkLoader = function(uri)
+htpMgr.WorkLoader = function(uri)
 {
-    htapMgr.Loader("#work-content", uri);
+    htpMgr.Loader("#work-content", uri);
 }

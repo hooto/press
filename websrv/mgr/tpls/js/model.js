@@ -1,11 +1,11 @@
-var htapMgrModel = {
+var htpMgrModel = {
 
 }
 
-htapMgrModel.List = function(tplid)
+htpMgrModel.List = function(tplid)
 {
     if (!tplid) {
-        tplid = "htapm-ctnls";
+        tplid = "htpm-ctnls";
     }
 
     var qry_grpdev = $("#"+ tplid +"-grpdev-qryid").attr("href").substr(1);
@@ -21,11 +21,11 @@ htapMgrModel.List = function(tplid)
         items: [
             {
                 name: "groups",
-                uri: htapMgr.base +"ext/lps/group/list",
+                uri: htpMgr.base +"ext/lps/group/list",
             },
             {
                 name: "info",
-                uri: htapMgr.base +"ext/lps/pkg-info/list?"+ uri,
+                uri: htpMgr.base +"ext/lps/pkg-info/list?"+ uri,
             },
         ],
     }
@@ -33,7 +33,7 @@ htapMgrModel.List = function(tplid)
     //
     $.ajax({
         type    : "POST",
-        url     : htapMgr.base +"v1/mixer",
+        url     : htpMgr.base +"v1/mixer",
         data    : JSON.stringify(req),
         timeout : 3000,
         success : function(rsp) {

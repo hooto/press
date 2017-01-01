@@ -1,5 +1,5 @@
 <script type="text/javascript">
-window.onload = htap.Boot();
+window.onload = htp.Boot();
 </script>
 </body>
 </html>

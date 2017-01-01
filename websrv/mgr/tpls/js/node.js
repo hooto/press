@@ -1,4 +1,4 @@
-var htapNode = {
+var htpNode = {
     navPrefix: "node/index/",
     speclsCurrent: [],
     specCurrent: null,
@@ -25,43 +25,43 @@ var htapNode = {
     nodeOpToolsRefreshCurrent : null,
 }
 
-htapNode.Init = function(cb)
+htpNode.Init = function(cb)
 {
-    htapNode.navRefresh(cb);
+    htpNode.navRefresh(cb);
 }
 
-htapNode.navRefresh = function(cb)
+htpNode.navRefresh = function(cb)
 {
     cb = cb || function(){};
 
-    if (htapNode.speclsCurrent.length > 0) {
+    if (htpNode.speclsCurrent.length > 0) {
 
-        // if (!l4iStorage.Get("htapm_spec_active")) {
-        //     for (var i in htapNode.speclsCurrent) {
-        //         l4iStorage.Set("htapm_spec_active", htapNode.speclsCurrent[i].meta.name);
+        // if (!l4iStorage.Get("htpm_spec_active")) {
+        //     for (var i in htpNode.speclsCurrent) {
+        //         l4iStorage.Set("htpm_spec_active", htpNode.speclsCurrent[i].meta.name);
         //         break;
         //     }
         // }
 
-        // if (!l4iStorage.Get("htapm_spec_active")) {
+        // if (!l4iStorage.Get("htpm_spec_active")) {
         //     return cb();
         // }
 
-        // console.log(htapNode.speclsCurrent);
+        // console.log(htpNode.speclsCurrent);
 
         l4iTemplate.Render({
-            dstid: "htapm-topbar-nav-node-specls",
-            tplid: "htapm-topbar-nav-node-specls-tpl",
+            dstid: "htpm-topbar-nav-node-specls",
+            tplid: "htpm-topbar-nav-node-specls-tpl",
             data:  {
-                active : l4iStorage.Get("htapm_spec_active"),
-                items  : htapNode.speclsCurrent,
+                active : l4iStorage.Get("htpm_spec_active"),
+                items  : htpNode.speclsCurrent,
             },
         });
 
         return cb();
     }
 
-    htapMgr.ApiCmd("mod-set/spec-list", {
+    htpMgr.ApiCmd("mod-set/spec-list", {
         callback: function(err, data) {
 
             if (err || data.error || data.kind != "SpecList") {
@@ -70,31 +70,31 @@ htapNode.navRefresh = function(cb)
 
             //
             for (var i in data.items) {
-                htapNode.speclsCurrent.push(data.items[i]);
+                htpNode.speclsCurrent.push(data.items[i]);
                 l4i.UrlEventRegister(
-                    htapNode.navPrefix + data.items[i].meta.name,
-                    htapNode.Index,
-                    "htapm-topbar"
+                    htpNode.navPrefix + data.items[i].meta.name,
+                    htpNode.Index,
+                    "htpm-topbar"
                 );
             }
 
             //
-            if (!l4iStorage.Get("htapm_spec_active")) {
-                for (var i in htapNode.speclsCurrent) {
-                    l4iStorage.Set("htapm_spec_active", htapNode.speclsCurrent[i].meta.name);
+            if (!l4iStorage.Get("htpm_spec_active")) {
+                for (var i in htpNode.speclsCurrent) {
+                    l4iStorage.Set("htpm_spec_active", htpNode.speclsCurrent[i].meta.name);
                     break;
                 }
             }
-            if (!l4iStorage.Get("htapm_spec_active")) {
+            if (!l4iStorage.Get("htpm_spec_active")) {
                 return cb();
             }
 
             l4iTemplate.Render({
-                dstid: "htapm-topbar-nav-node-specls",
-                tplid: "htapm-topbar-nav-node-specls-tpl",
+                dstid: "htpm-topbar-nav-node-specls",
+                tplid: "htpm-topbar-nav-node-specls-tpl",
                 data:  {
-                    // active : l4iStorage.Get("htapm_spec_active"),
-                    items  : htapNode.speclsCurrent,
+                    // active : l4iStorage.Get("htpm_spec_active"),
+                    items  : htpNode.speclsCurrent,
                 },
             });
 
@@ -103,42 +103,42 @@ htapNode.navRefresh = function(cb)
     });
 }
 
-htapNode.OpToolsRefresh = function(div_target)
+htpNode.OpToolsRefresh = function(div_target)
 {
-    if (typeof div_target == "string" && div_target == htapNode.nodeOpToolsRefreshCurrent) {
+    if (typeof div_target == "string" && div_target == htpNode.nodeOpToolsRefreshCurrent) {
         return;
     }
 
-    $("#htapm-node-optools").empty();
+    $("#htpm-node-optools").empty();
 
     if (typeof div_target == "string") {
 
         var opt = $("#work-content").find(div_target);
         if (opt) {
-            $("#htapm-node-optools").html(opt.html());
-            htapNode.nodeOpToolsRefreshCurrent = div_target;
+            $("#htpm-node-optools").html(opt.html());
+            htpNode.nodeOpToolsRefreshCurrent = div_target;
         }
     }
 }
 
-htapNode.Index = function(nav_href)
+htpNode.Index = function(nav_href)
 {
-    if (!nav_href || nav_href.length <= htapNode.navPrefix.length) {
+    if (!nav_href || nav_href.length <= htpNode.navPrefix.length) {
         return;
     }
 
-    if (htapNode.speclsCurrent.length < 1) {
+    if (htpNode.speclsCurrent.length < 1) {
         return;
     }
 
-    l4iStorage.Del("htapm_nodels_page");
-    l4iStorage.Del("htapm_termls_page");
+    l4iStorage.Del("htpm_nodels_page");
+    l4iStorage.Del("htpm_termls_page");
 
-    htapNode.nodeOpToolsRefreshCurrent = null;
-    l4iStorage.Set("htapm_nav_last_active", nav_href);
-    l4iStorage.Set("htapm_spec_active", nav_href.substr(htapNode.navPrefix.length));
+    htpNode.nodeOpToolsRefreshCurrent = null;
+    l4iStorage.Set("htpm_nav_last_active", nav_href);
+    l4iStorage.Set("htpm_spec_active", nav_href.substr(htpNode.navPrefix.length));
 
-    var alertid = "#htapm-node-alert";
+    var alertid = "#htpm-node-alert";
 
     seajs.use(["ep"], function (EventProxy) {
 
@@ -150,10 +150,10 @@ htapNode.Index = function(nav_href)
 
             var current = null;
 
-            for (var i in htapNode.speclsCurrent) {
+            for (var i in htpNode.speclsCurrent) {
 
-                if (htapNode.speclsCurrent[i].meta.name == l4iStorage.Get("htapm_spec_active")) {
-                    current = htapNode.speclsCurrent[i];
+                if (htpNode.speclsCurrent[i].meta.name == l4iStorage.Get("htpm_spec_active")) {
+                    current = htpNode.speclsCurrent[i];
                     break;
                 }
             }
@@ -162,70 +162,70 @@ htapNode.Index = function(nav_href)
                 return;
             }
 
-            htapNode.specCurrent = current;
+            htpNode.specCurrent = current;
 
-            if (!htapNode.specCurrent.nodeModels) {
-                htapNode.specCurrent.nodeModels = [];
+            if (!htpNode.specCurrent.nodeModels) {
+                htpNode.specCurrent.nodeModels = [];
             }
-            if (!htapNode.specCurrent.termModels) {
-                htapNode.specCurrent.termModels = [];
+            if (!htpNode.specCurrent.termModels) {
+                htpNode.specCurrent.termModels = [];
             }
 
             var node_model_active = null;
 
-            for (var i in htapNode.specCurrent.nodeModels) {
+            for (var i in htpNode.specCurrent.nodeModels) {
 
                 if (!node_model_active) {
-                    node_model_active = htapNode.specCurrent.nodeModels[i].meta.name;
+                    node_model_active = htpNode.specCurrent.nodeModels[i].meta.name;
                 }
 
-                if (l4iStorage.Get("htapm_nmodel_active") == htapNode.specCurrent.nodeModels[i].meta.name) {
-                    node_model_active = htapNode.specCurrent.nodeModels[i].meta.name;
+                if (l4iStorage.Get("htpm_nmodel_active") == htpNode.specCurrent.nodeModels[i].meta.name) {
+                    node_model_active = htpNode.specCurrent.nodeModels[i].meta.name;
                     break;
                 }
             }
 
-            // console.log(l4iStorage.Get("htapm_nmodel_active"));
+            // console.log(l4iStorage.Get("htpm_nmodel_active"));
 
             if (!node_model_active) {
                 return; // TODO
             }
 
                     //
-            if (node_model_active != l4iStorage.Get("htapm_nmodel_active")) {
-                l4iStorage.Set("htapm_nmodel_active", node_model_active);
+            if (node_model_active != l4iStorage.Get("htpm_nmodel_active")) {
+                l4iStorage.Set("htpm_nmodel_active", node_model_active);
             }
 
             //
-            for (var i in htapNode.specCurrent.nodeModels) {
-                if (node_model_active == htapNode.specCurrent.nodeModels[i].meta.name) {
-                    htapNode.List(l4iStorage.Get("htapm_spec_active"), node_model_active);
+            for (var i in htpNode.specCurrent.nodeModels) {
+                if (node_model_active == htpNode.specCurrent.nodeModels[i].meta.name) {
+                    htpNode.List(l4iStorage.Get("htpm_spec_active"), node_model_active);
                 }
             }
 
-            if (htapNode.specCurrent.nodeModels.length > 0) {
+            if (htpNode.specCurrent.nodeModels.length > 0) {
                 l4iTemplate.Render({
-                    dstid: "htapm-node-nmodels",
-                    tplid: "htapm-node-nmodels-tpl",
+                    dstid: "htpm-node-nmodels",
+                    tplid: "htpm-node-nmodels-tpl",
                     data:  {
                         active: node_model_active,
-                        items: htapNode.specCurrent.nodeModels,
+                        items: htpNode.specCurrent.nodeModels,
                     },
                 });
             } else {
-                $("#htapm-node-nmodels").addClass("htapm-hide");
+                $("#htpm-node-nmodels").addClass("htpm-hide");
             }
 
-            if (htapNode.specCurrent.termModels.length > 0) {
+            if (htpNode.specCurrent.termModels.length > 0) {
                 l4iTemplate.Render({
-                    dstid: "htapm-node-tmodels",
-                    tplid: "htapm-node-tmodels-tpl",
+                    dstid: "htpm-node-tmodels",
+                    tplid: "htpm-node-tmodels-tpl",
                     data:  {
-                        items: htapNode.specCurrent.termModels,
+                        items: htpNode.specCurrent.termModels,
                     },
                 });
             } else {
-                $("#htapm-node-tmodels").addClass("htapm-hide");
+                $("#htpm-node-tmodels").addClass("htpm-hide");
             }
         });
 
@@ -235,9 +235,9 @@ htapNode.Index = function(nav_href)
         });
 
         // template
-        var el = document.getElementById("htapm-node-nmodels");
+        var el = document.getElementById("htpm-node-nmodels");
         if (!el || !el.length || el.length < 1) {
-            htapMgr.TplCmd("node/index", {
+            htpMgr.TplCmd("node/index", {
                 callback: function(err, tpl) {
 
                     if (err) {
@@ -253,21 +253,21 @@ htapNode.Index = function(nav_href)
     });
 }
 
-htapNode.List = function(modname, modelid)
+htpNode.List = function(modname, modelid)
 {
-    var alertid = "#htapm-node-alert",
+    var alertid = "#htpm-node-alert",
         page = 0;
 
-    if (!modname && l4iStorage.Get("htapm_spec_active")) {
-        modname = l4iStorage.Get("htapm_spec_active");
+    if (!modname && l4iStorage.Get("htpm_spec_active")) {
+        modname = l4iStorage.Get("htpm_spec_active");
     }
 
-    if (!modelid && l4iStorage.Get("htapm_nmodel_active")) {
-        modelid = l4iStorage.Get("htapm_nmodel_active");
+    if (!modelid && l4iStorage.Get("htpm_nmodel_active")) {
+        modelid = l4iStorage.Get("htpm_nmodel_active");
     }
 
-    if (l4iStorage.Get("htapm_nodels_page")) {
-        page = l4iStorage.Get("htapm_nodels_page");
+    if (l4iStorage.Get("htpm_nodels_page")) {
+        page = l4iStorage.Get("htpm_nodels_page");
     }
 
     if (!modname || !modelid) {
@@ -290,8 +290,8 @@ htapNode.List = function(modname, modelid)
             if (!rsj || rsj.kind != "NodeList"
                 || !rsj.items || rsj.items.length < 1) {
 
-                $("#htapm-nodels").empty();
-                $("#htapm-termls").empty();
+                $("#htpm-nodels").empty();
+                $("#htpm-termls").empty();
                 return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
             }
 
@@ -312,26 +312,26 @@ htapNode.List = function(modname, modelid)
             }
 
             l4iTemplate.Render({
-                dstid: "htapm-nodels",
-                tplid: "htapm-nodels-tpl",
+                dstid: "htpm-nodels",
+                tplid: "htpm-nodels-tpl",
                 data:  {
                     model   : rsj.model,
                     modname : modname,
                     modelid : modelid,
                     items   : rsj.items,
-                    _status_def : htapNode.status_def,
+                    _status_def : htpNode.status_def,
                 },
                 success: function() {
 
                     rsj.meta.RangeLen = 20;
 
                     l4iTemplate.Render({
-                        dstid : "htapm-nodels-pager",
-                        tplid : "htapm-nodels-pager-tpl",
+                        dstid : "htpm-nodels-pager",
+                        tplid : "htpm-nodels-pager-tpl",
                         data  : l4i.Pager(rsj.meta),
                     });
 
-                    htapNode.OpToolsRefresh("#htapm-node-list-opts");
+                    htpNode.OpToolsRefresh("#htpm-node-list-opts");
                 }
             });
         });
@@ -342,9 +342,9 @@ htapNode.List = function(modname, modelid)
         });
 
         // template
-        var el = document.getElementById("htapm-nodels");
+        var el = document.getElementById("htpm-nodels");
         if (!el || el.length < 1) {
-            htapMgr.TplCmd("node/list", {
+            htpMgr.TplCmd("node/list", {
                 callback: function(err, tpl) {
 
                     if (err) {
@@ -358,27 +358,27 @@ htapNode.List = function(modname, modelid)
             ep.emit("tpl", null);
         }
 
-        htapMgr.ApiCmd("node/list?"+ uri, {
+        htpMgr.ApiCmd("node/list?"+ uri, {
             callback: ep.done("data"),
         });
     });
 }
 
-htapNode.ListPage = function(page)
+htpNode.ListPage = function(page)
 {
-    l4iStorage.Set("htapm_nodels_page", parseInt(page));
-    htapNode.List();
+    l4iStorage.Set("htpm_nodels_page", parseInt(page));
+    htpNode.List();
 }
 
-htapNode.Set = function(modname, modelid, nodeid)
+htpNode.Set = function(modname, modelid, nodeid)
 {
-    var alertid = "#htapm-node-alert";
+    var alertid = "#htpm-node-alert";
 
-    if (!modname && l4iStorage.Get("htapm_spec_active")) {
-        modname = l4iStorage.Get("htapm_spec_active");
+    if (!modname && l4iStorage.Get("htpm_spec_active")) {
+        modname = l4iStorage.Get("htpm_spec_active");
     }
-    if (!modelid && l4iStorage.Get("htapm_nmodel_active")) {
-        modelid = l4iStorage.Get("htapm_nmodel_active");
+    if (!modelid && l4iStorage.Get("htpm_nmodel_active")) {
+        modelid = l4iStorage.Get("htpm_nmodel_active");
     }
 
     // console.log(modname +","+ modelid +","+ nodeid);
@@ -387,8 +387,8 @@ htapNode.Set = function(modname, modelid, nodeid)
         return;
     }
 
-    htapEditor.Clean();
-    htapNode.nodeOpToolsRefreshCurrent = null;
+    htpEditor.Clean();
+    htpNode.nodeOpToolsRefreshCurrent = null;
 
     var uri = "modname="+ modname +"&modelid="+ modelid;
 
@@ -425,14 +425,14 @@ htapNode.Set = function(modname, modelid, nodeid)
 
             $(alertid).hide();
 
-            htapNode.setCurrent = data;
-            data._status_def = htapNode.status_def;
+            htpNode.setCurrent = data;
+            data._status_def = htpNode.status_def;
 
             // console.log(data);
 
             l4iTemplate.Render({
-                dstid: "htapm-nodeset-laymain",
-                tplid: "htapm-nodeset-tpl",
+                dstid: "htpm-nodeset-laymain",
+                tplid: "htpm-nodeset-tpl",
                 data:  data,
                 success: function() {
 
@@ -467,11 +467,11 @@ htapNode.Set = function(modname, modelid, nodeid)
                         main_len += 1;
                     }
 
-                    var field_layout_target = "htapm-nodeset-fields";
+                    var field_layout_target = "htpm-nodeset-fields";
                     if (side_len > 0 && main_len > side_len) {
-                        field_layout_target = "htapm-nodeset-layside";
+                        field_layout_target = "htpm-nodeset-layside";
                     } else {
-                        $("#htapm-nodeset-layside").addClass("htapm-hide");
+                        $("#htpm-nodeset-layside").addClass("htpm-hide");
                     }
 
                     //
@@ -500,7 +500,7 @@ htapNode.Set = function(modname, modelid, nodeid)
                                 field.value = "";
                             }
 
-                            tplid = "htapm-nodeset-tplstring";
+                            tplid = "htpm-nodeset-tplstring";
                             break;
 
                         case "text":
@@ -526,10 +526,10 @@ htapNode.Set = function(modname, modelid, nodeid)
                             }
 
                             cb = function() {
-                                htapEditor.Open(field.name, field.attr_format);
+                                htpEditor.Open(field.name, field.attr_format);
                             };
 
-                            tplid = "htapm-nodeset-tpltext";
+                            tplid = "htpm-nodeset-tpltext";
                             break;
 
                         case "int8":
@@ -545,7 +545,7 @@ htapNode.Set = function(modname, modelid, nodeid)
                                 field.value = "0";
                             }
 
-                            tplid = "htapm-nodeset-tplint";
+                            tplid = "htpm-nodeset-tplint";
                             break;
 
                         default:
@@ -553,7 +553,7 @@ htapNode.Set = function(modname, modelid, nodeid)
                         }
 
                         l4iTemplate.Render({
-                            dstid  : "htapm-nodeset-fields",
+                            dstid  : "htpm-nodeset-fields",
                             tplid  : tplid,
                             append : true,
                             data   : field,
@@ -582,7 +582,7 @@ htapNode.Set = function(modname, modelid, nodeid)
                                 term.value = "";
                             }
 
-                            tplid = "htapm-nodeset-tplterm_tag";
+                            tplid = "htpm-nodeset-tplterm_tag";
 
                             l4iTemplate.Render({
                                 dstid  : field_layout_target,
@@ -599,7 +599,7 @@ htapNode.Set = function(modname, modelid, nodeid)
                                 term.value = "0";
                             }
 
-                            htapMgr.ApiCmd("term/list?modname="+ modname +"&modelid="+ term.meta.name, {
+                            htpMgr.ApiCmd("term/list?modname="+ modname +"&modelid="+ term.meta.name, {
                                 callback: function(err, data) {
 
                                     if (data.kind != "TermList") {
@@ -615,11 +615,11 @@ htapNode.Set = function(modname, modelid, nodeid)
                                         }
 
                                         if (data.items[i].pid == 0) {
-                                            data.items[i]._subs = htapTerm.ListSubRange(data.items, null, data.items[i].id, 0);
+                                            data.items[i]._subs = htpTerm.ListSubRange(data.items, null, data.items[i].id, 0);
                                         }
                                     }
 
-                                    tplid = "htapm-nodeset-tplterm_taxonomy";
+                                    tplid = "htpm-nodeset-tplterm_taxonomy";
 
                                     l4iTemplate.Render({
                                         dstid  : field_layout_target,
@@ -641,10 +641,10 @@ htapNode.Set = function(modname, modelid, nodeid)
                     if (data.model.extensions.comment_perentry) {
                         l4iTemplate.Render({
                             dstid  : field_layout_target,
-                            tplid  : "htapm-nodeset-tplext_comment_perentry",
+                            tplid  : "htpm-nodeset-tplext_comment_perentry",
                             append : true,
                             data   : {
-                                _general_onoff: htapNode.general_onoff,
+                                _general_onoff: htpNode.general_onoff,
                                 ext_comment_perentry: data.ext_comment_perentry,
                             },
                         });
@@ -652,8 +652,8 @@ htapNode.Set = function(modname, modelid, nodeid)
 
                     if (data.model.extensions.permalink && data.model.extensions.permalink != "") {
                         l4iTemplate.Render({
-                            dstid  : "htapm-nodeset-tops",
-                            tplid  : "htapm-nodeset-tplext_permalink",
+                            dstid  : "htpm-nodeset-tops",
+                            tplid  : "htpm-nodeset-tplext_permalink",
                             append : true,
                             data   : {
                                 ext_permalink_name: data.ext_permalink_name,
@@ -663,20 +663,20 @@ htapNode.Set = function(modname, modelid, nodeid)
 
                     l4iTemplate.Render({
                         dstid  : field_layout_target,
-                        tplid  : "htapm-nodeset-tplstatus",
+                        tplid  : "htpm-nodeset-tplstatus",
                         append : true,
                         data   : {
-                            _status_def: htapNode.status_def,
+                            _status_def: htpNode.status_def,
                             status:      data.status,
                         },
                     });
 
-                    htapNode.OpToolsRefresh("#htapm-node-set-opts");
+                    htpNode.OpToolsRefresh("#htpm-node-set-opts");
 
                     if (data.create_new) {
-                        $("#htapm-node-set-opts-label").text("Create new Content");
+                        $("#htpm-node-set-opts-label").text("Create new Content");
                     } else {
-                        $("#htapm-node-set-opts-label").text("Editing");
+                        $("#htpm-node-set-opts-label").text("Editing");
                     }
                 },
             });
@@ -687,7 +687,7 @@ htapNode.Set = function(modname, modelid, nodeid)
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
 
-        htapMgr.TplCmd("node/set", {
+        htpMgr.TplCmd("node/set", {
             callback: function(err, tpl) {
 
                 if (err) {
@@ -698,11 +698,11 @@ htapNode.Set = function(modname, modelid, nodeid)
         });
 
         if (nodeid) {
-            htapMgr.ApiCmd("node/entry?"+ uri +"&id="+ nodeid, {
+            htpMgr.ApiCmd("node/entry?"+ uri +"&id="+ nodeid, {
                 callback: ep.done("data"),
             });
         } else {
-            htapMgr.ApiCmd("node-model/entry?"+ uri, {
+            htpMgr.ApiCmd("node-model/entry?"+ uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
                         kind  : "Node",
@@ -719,16 +719,16 @@ htapNode.Set = function(modname, modelid, nodeid)
 }
 
 
-htapNode.SetCommit = function()
+htpNode.SetCommit = function()
 {
-    var form = $("#htapm-nodeset-laymain"),
-        alertid = "#htapm-node-alert";
+    var form = $("#htpm-nodeset-laymain"),
+        alertid = "#htpm-node-alert";
 
-    if (!htapNode.setCurrent) {
+    if (!htpNode.setCurrent) {
         return;
     }
 
-    htapNode.setCurrent.title = form.find("input[name=title]").val();
+    htpNode.setCurrent.title = form.find("input[name=title]").val();
 
     var req = {
         id     : form.find("input[name=id]").val(),
@@ -748,9 +748,9 @@ htapNode.SetCommit = function()
 
     // console.log("DDD");
     // console.log(req);
-    for (var i in htapNode.setCurrent.model.fields) {
+    for (var i in htpNode.setCurrent.model.fields) {
 
-        var field = htapNode.setCurrent.model.fields[i];
+        var field = htpNode.setCurrent.model.fields[i];
 
         var field_set = {
             name: field.name,
@@ -768,7 +768,7 @@ htapNode.SetCommit = function()
             }
 
             field_set.attrs.push({key: "format", value: format});
-            field_set.value = htapEditor.Content(field.name);
+            field_set.value = htpEditor.Content(field.name);
 
             // console.log(format);
 
@@ -778,7 +778,7 @@ htapNode.SetCommit = function()
 
             //         if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
 
-            //             field_set.value = htapEditor.Content(field.name);
+            //             field_set.value = htpEditor.Content(field.name);
 
             //             field_set.attrs.push({key: "format", value: "md"});
 
@@ -815,9 +815,9 @@ htapNode.SetCommit = function()
         }
     }
 
-    for (var i in htapNode.setCurrent.model.terms) {
+    for (var i in htpNode.setCurrent.model.terms) {
 
-        var term = htapNode.setCurrent.model.terms[i];
+        var term = htpNode.setCurrent.model.terms[i];
 
         var val = null;
 
@@ -836,14 +836,14 @@ htapNode.SetCommit = function()
         }
     }
 
-    // console.log(htapNode.setCurrent.model.terms);
+    // console.log(htpNode.setCurrent.model.terms);
     // console.log(JSON.stringify(req));
 
     //
-    var uri = "modname="+ l4iStorage.Get("htapm_spec_active");
-    uri += "&modelid="+ l4iStorage.Get("htapm_nmodel_active");
+    var uri = "modname="+ l4iStorage.Get("htpm_spec_active");
+    uri += "&modelid="+ l4iStorage.Get("htpm_nmodel_active");
 
-    htapMgr.ApiCmd("node/set?"+ uri, {
+    htpMgr.ApiCmd("node/set?"+ uri, {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
@@ -857,23 +857,23 @@ htapNode.SetCommit = function()
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
             setTimeout(function() {
-                htapNode.List();
-                htapEditor.Clean();
+                htpNode.List();
+                htpEditor.Clean();
             }, 500);
         }
     });
 }
 
 
-htapNode.Del = function(modname, modelid, id)
+htpNode.Del = function(modname, modelid, id)
 {
     l4iModal.Open({
         title  : "Delete",
-        tplsrc : '<div id="htapm-node-del" class="alert alert-danger">Are you sure to delete this?</div>',
+        tplsrc : '<div id="htpm-node-del" class="alert alert-danger">Are you sure to delete this?</div>',
         height : "200px",
         buttons: [{
             title: "Confirm to delete",
-            onclick : 'htapNode.DelCommit("'+modname+'","'+modelid+'","'+id+'")',
+            onclick : 'htpNode.DelCommit("'+modname+'","'+modelid+'","'+id+'")',
             style: "btn-danger",
         },{
             title: "Cancel",
@@ -882,12 +882,12 @@ htapNode.Del = function(modname, modelid, id)
     });
 }
 
-htapNode.DelCommit = function(modname, modelid, id)
+htpNode.DelCommit = function(modname, modelid, id)
 {
-    var alertid = "#htapm-node-del";
+    var alertid = "#htpm-node-del";
     var uri = "modname="+ modname + "&modelid="+ modelid +"&id="+ id;
 
-    htapMgr.ApiCmd("node/del?"+ uri, {
+    htpMgr.ApiCmd("node/del?"+ uri, {
         callback : function(err, data) {
 
             if (!data || data.kind != "Node") {
@@ -896,7 +896,7 @@ htapNode.DelCommit = function(modname, modelid, id)
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful deleted");
             setTimeout(function() {
-                htapNode.List();
+                htpNode.List();
                 l4iModal.Close();
             }, 500);
         }

@@ -24,10 +24,10 @@ import (
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/x/webui"
 
-	"code.hooto.com/hooto/alphapress/api"
-	"code.hooto.com/hooto/alphapress/config"
-	"code.hooto.com/hooto/alphapress/datax"
-	"code.hooto.com/hooto/alphapress/store"
+	"code.hooto.com/hooto/hootopress/api"
+	"code.hooto.com/hooto/hootopress/config"
+	"code.hooto.com/hooto/hootopress/datax"
+	"code.hooto.com/hooto/hootopress/store"
 )
 
 type Index struct {

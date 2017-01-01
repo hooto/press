@@ -23,9 +23,9 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
 
-	"code.hooto.com/hooto/alphapress/api"
-	"code.hooto.com/hooto/alphapress/config"
-	"code.hooto.com/hooto/alphapress/store"
+	"code.hooto.com/hooto/hootopress/api"
+	"code.hooto.com/hooto/hootopress/config"
+	"code.hooto.com/hooto/hootopress/store"
 )
 
 func FilterUri(data map[string]interface{}, args ...interface{}) template.URL {

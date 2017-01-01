@@ -27,9 +27,9 @@ import (
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
 
-	"code.hooto.com/hooto/alphapress/api"
-	"code.hooto.com/hooto/alphapress/config"
-	"code.hooto.com/hooto/alphapress/status"
+	"code.hooto.com/hooto/hootopress/api"
+	"code.hooto.com/hooto/hootopress/config"
+	"code.hooto.com/hooto/hootopress/status"
 )
 
 type Sys struct {

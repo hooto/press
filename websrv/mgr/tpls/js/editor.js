@@ -1,8 +1,8 @@
-var htapEditor = {
+var htpEditor = {
     editors: {},
 }
 
-htapEditor.Open = function(name, format)
+htpEditor.Open = function(name, format)
 {
     seajs.use([
         "~/cm/5/lib/codemirror.css",
@@ -31,15 +31,15 @@ htapEditor.Open = function(name, format)
             $("#field_"+ name +"_editor_nav").find("a.active").removeClass("active");
             $("#field_"+ name +"_editor_nav").find("a.editor-nav-"+ format).addClass("active");
 
-            var editor = htapEditor.editors[name];
+            var editor = htpEditor.editors[name];
             if (editor) {
 
                 $("#field_"+ name +"_attr_format").val(format);
 
-                htapEditor.editors[name].setOption("lineNumbers", lineNumbers);
+                htpEditor.editors[name].setOption("lineNumbers", lineNumbers);
 
                 if (format != "md") {
-                    htapEditor.PreviewClose(name);
+                    htpEditor.PreviewClose(name);
                 }
 
                 return;
@@ -48,7 +48,7 @@ htapEditor.Open = function(name, format)
             var height = $("#field_"+ name +"_layout").height(),
                 width = $("#field_"+ name +"_layout").width();
 
-            htapEditor.editors[name] = CodeMirror.fromTextArea(document.getElementById("field_"+ name), {
+            htpEditor.editors[name] = CodeMirror.fromTextArea(document.getElementById("field_"+ name), {
                 mode            : "markdown",
                 lineNumbers     : lineNumbers,
                 theme           : "default",
@@ -57,25 +57,25 @@ htapEditor.Open = function(name, format)
                 // viewportMargin  : Infinity,
             });
 
-            htapEditor.editors[name].setSize(width, height);
+            htpEditor.editors[name].setSize(width, height);
 
-            htapEditor.editors[name].on("change", function(cm) {
-                htapEditor.previewChanged(name);
+            htpEditor.editors[name].on("change", function(cm) {
+                htpEditor.previewChanged(name);
             });
 
             // console.log("post width: "+ $("#field_"+ name +"_layout").width());
-            $("#field_"+ name +"_layout").addClass("htapm-editor-cm");
+            $("#field_"+ name +"_layout").addClass("htpm-editor-cm");
             $("#field_"+ name +"_tools").find(".preview_open").show();
         });
     });
 }
 
-htapEditor.sizeRefresh = function()
+htpEditor.sizeRefresh = function()
 {
-    // console.log("htapEditor.sizeRefresh");
+    // console.log("htpEditor.sizeRefresh");
 
     var dels = [];
-    for (var name in htapEditor.editors) {
+    for (var name in htpEditor.editors) {
 
         var ok = document.getElementById("field_"+ name +"_layout");
         if (!ok) {
@@ -88,15 +88,15 @@ htapEditor.sizeRefresh = function()
             continue;
         }
 
-        htapEditor.PreviewOpen(name);
+        htpEditor.PreviewOpen(name);
     }
 
     for (var i in dels) {
-        delete htapEditor.editors[dels[i]];
+        delete htpEditor.editors[dels[i]];
     }
 }
 
-htapEditor.PreviewOpen = function(name)
+htpEditor.PreviewOpen = function(name)
 {
     // console.log($("#field_"+ name +"_preview"));
 
@@ -114,27 +114,27 @@ htapEditor.PreviewOpen = function(name)
     $("#field_"+ name +"_colpreview").show();
 
     $("#field_"+ name +"_editor").find(".CodeMirror").hover(function() {
-        htapEditor.editorBindScroll(name);
+        htpEditor.editorBindScroll(name);
     }, function() {
-        htapEditor.editorUnBindScroll(name);
+        htpEditor.editorUnBindScroll(name);
     });
 
     $("#field_"+ name +"_preview").hover(function() {
-        htapEditor.previewBindScroll(name);
+        htpEditor.previewBindScroll(name);
     }, function() {
-        htapEditor.previewUnBindScroll(name);
+        htpEditor.previewUnBindScroll(name);
     });
 
-    htapEditor.previewChanged(name);
+    htpEditor.previewChanged(name);
 
     $("#field_"+ name +"_tools").find(".preview_close").show();
     $("#field_"+ name +"_tools").find(".preview_open").hide();
 }
 
-htapEditor.PreviewClose = function(name)
+htpEditor.PreviewClose = function(name)
 {
-    htapEditor.editorUnBindScroll(name);
-    htapEditor.previewUnBindScroll(name);
+    htpEditor.editorUnBindScroll(name);
+    htpEditor.previewUnBindScroll(name);
 
     $("#field_"+ name +"_preview").empty();
 
@@ -147,13 +147,13 @@ htapEditor.PreviewClose = function(name)
     $("#field_"+ name +"_tools").find(".preview_open").show();
 }
 
-htapEditor.previewChanged = function(name)
+htpEditor.previewChanged = function(name)
 {
     if (!$("#field_"+ name +"_colpreview").is(":visible")) {
         return;
     }
 
-    var editor = htapEditor.editors[name];
+    var editor = htpEditor.editors[name];
     if (!editor) {
         return;
     }
@@ -164,7 +164,7 @@ htapEditor.previewChanged = function(name)
     $("#field_"+ name +"_preview").html(marked(text));
 
     // // backend markdown render
-    // htapMgr.ApiCmd("/text/markdown-render", {
+    // htpMgr.ApiCmd("/text/markdown-render", {
     //     method : "POST",
     //     data   : text,
     //     callback : function(err, data) {
@@ -173,9 +173,9 @@ htapEditor.previewChanged = function(name)
     // });
 }
 
-htapEditor.editorBindScroll = function(name)
+htpEditor.editorBindScroll = function(name)
 {
-    htapEditor.previewUnBindScroll(name);
+    htpEditor.previewUnBindScroll(name);
 
     $("#field_"+ name +"_editor").find(".CodeMirror-scroll").on("scroll", function() {
 
@@ -194,14 +194,14 @@ htapEditor.editorBindScroll = function(name)
     });
 }
 
-htapEditor.editorUnBindScroll = function(name)
+htpEditor.editorUnBindScroll = function(name)
 {
     $("#field_"+ name +"_editor").find(".CodeMirror-scroll").unbind("scroll");
 }
 
-htapEditor.previewBindScroll = function(name)
+htpEditor.previewBindScroll = function(name)
 {
-    htapEditor.editorUnBindScroll(name);
+    htpEditor.editorUnBindScroll(name);
 
     $("#field_"+ name +"_preview").on("scroll", function() {
 
@@ -220,14 +220,14 @@ htapEditor.previewBindScroll = function(name)
     });
 }
 
-htapEditor.previewUnBindScroll = function(name)
+htpEditor.previewUnBindScroll = function(name)
 {
     $("#field_"+ name +"_preview").unbind("scroll");
 }
 
-htapEditor.Content = function(name)
+htpEditor.Content = function(name)
 {
-    var editor = htapEditor.editors[name];
+    var editor = htpEditor.editors[name];
     if (editor) {
         return editor.getValue();
     }
@@ -235,19 +235,19 @@ htapEditor.Content = function(name)
     return null;
 }
 
-htapEditor.Close = function(name)
+htpEditor.Close = function(name)
 {
-    var edr = htapEditor.editors[name];
+    var edr = htpEditor.editors[name];
     if (edr) {
-        htapEditor.editors[name] = null;
-        delete htapEditor.editors[name];
+        htpEditor.editors[name] = null;
+        delete htpEditor.editors[name];
     }
 }
 
-htapEditor.Clean = function()
+htpEditor.Clean = function()
 {
-    for (var i in htapEditor.editors) {
-        htapEditor.editors[i] = null;
-        delete htapEditor.editors[i];
+    for (var i in htpEditor.editors) {
+        htpEditor.editors[i] = null;
+        delete htpEditor.editors[i];
     }
 }

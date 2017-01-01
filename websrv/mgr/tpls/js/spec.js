@@ -1,4 +1,4 @@
-var htapSpec = {
+var htpSpec = {
 
     specdef : {
         kind : "Spec",
@@ -163,26 +163,26 @@ var htapSpec = {
 }
 
 
-htapSpec.Init = function()
+htpSpec.Init = function()
 {
-    l4i.UrlEventRegister("spec/index", htapSpec.Index, "htapm-topbar");
+    l4i.UrlEventRegister("spec/index", htpSpec.Index, "htpm-topbar");
 }
 
-htapSpec.Index = function()
+htpSpec.Index = function()
 {
-    l4iStorage.Set("htapm_nav_last_active", "spec/index");
+    l4iStorage.Set("htpm_nav_last_active", "spec/index");
 
-    htapMgr.TplCmd("spec/index", {
+    htpMgr.TplCmd("spec/index", {
         callback: function(err, data) {
 
             $("#com-content").html(data);
 
-            htapSpec.List();
+            htpSpec.List();
         }
     });
 }
 
-htapSpec.List = function()
+htpSpec.List = function()
 {
 
     var uri = "";
@@ -203,10 +203,10 @@ htapSpec.List = function()
 
             if (rsj === undefined || rsj.kind != "SpecList"
                 || rsj.items === undefined || rsj.items.length < 1) {
-                return l4i.InnerAlert("#htapm-specls-alert", 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert("#htpm-specls-alert", 'alert-danger', "Item Not Found");
             }
 
-            $("#htapm-specls-alert").hide();
+            $("#htpm-specls-alert").hide();
 
             for (var i in rsj.items) {
 
@@ -246,8 +246,8 @@ htapSpec.List = function()
             }
 
             l4iTemplate.Render({
-                dstid: "htapm-specls",
-                tplid: "htapm-specls-tpl",
+                dstid: "htpm-specls",
+                tplid: "htpm-specls-tpl",
                 data:  {
                     items: rsj.items,
                 },
@@ -260,9 +260,9 @@ htapSpec.List = function()
         });
 
         // template
-        var el = document.getElementById("htapm-specls");
+        var el = document.getElementById("htpm-specls");
         if (!el || el.length < 1) {
-            htapMgr.TplCmd("spec/list", {
+            htpMgr.TplCmd("spec/list", {
                 callback: function(err, tpl) {
 
                     if (err) {
@@ -276,17 +276,17 @@ htapSpec.List = function()
             ep.emit("tpl", null);
         }
 
-        // htapMgr.Ajax("-/spec/list.tpl", {
+        // htpMgr.Ajax("-/spec/list.tpl", {
         //     callback: ep.done("tpl"),
         // });
 
-        htapMgr.ApiCmd("mod-set/spec-list?"+ uri, {
+        htpMgr.ApiCmd("mod-set/spec-list?"+ uri, {
             callback: ep.done("data"),
         });
     });
 }
 
-htapSpec.InfoSet = function(name)
+htpSpec.InfoSet = function(name)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -314,7 +314,7 @@ htapSpec.InfoSet = function(name)
                     onclick : "l4iModal.Close()",
                     title   : "Close",
                 }, {
-                    onclick : "htapSpec.InfoSetCommit()",
+                    onclick : "htpSpec.InfoSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 }],
@@ -325,28 +325,28 @@ htapSpec.InfoSet = function(name)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/info-set", {
+        htpMgr.TplCmd("spec/info-set", {
             callback: ep.done('tpl'),
         });
 
         if (name) {
 
-            htapMgr.ApiCmd("mod-set/spec-entry?name="+ name, {
+            htpMgr.ApiCmd("mod-set/spec-entry?name="+ name, {
                 callback: ep.done('data'),
             });
         } else {
 
-            ep.emit("data", l4i.Clone(htapSpec.specdef));
+            ep.emit("data", l4i.Clone(htpSpec.specdef));
         }
 
     });
 
 }
 
-htapSpec.InfoSetCommit = function()
+htpSpec.InfoSetCommit = function()
 {
-    var form = $("#htapm-specset");
-    var alertid = "#htapm-specset-alert";
+    var form = $("#htpm-specset");
+    var alertid = "#htpm-specset-alert";
 
     var req = {
         meta : {
@@ -358,7 +358,7 @@ htapSpec.InfoSetCommit = function()
 
     // console.log(req);
 
-    htapMgr.ApiCmd("mod-set/spec-info-set", {
+    htpMgr.ApiCmd("mod-set/spec-info-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -376,7 +376,7 @@ htapSpec.InfoSetCommit = function()
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
 
-            htapSpec.List();
+            htpSpec.List();
 
             window.setTimeout(function() {
                 l4iModal.Close();
@@ -387,7 +387,7 @@ htapSpec.InfoSetCommit = function()
 
 
 // Spec::Term
-htapSpec.TermList = function(modname)
+htpSpec.TermList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -416,13 +416,13 @@ htapSpec.TermList = function(modname)
                 success : function() {
 
                     l4iTemplate.Render({
-                        dstid: "htapm-spec-termls",
-                        tplid: "htapm-spec-termls-tpl",
+                        dstid: "htpm-spec-termls",
+                        tplid: "htpm-spec-termls-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "htapSpec.TermSet(\""+ modname +"\")",
+                    onclick : "htpSpec.TermSet(\""+ modname +"\")",
                     title   : "New Term",
                     style   : "btn-primary",
                 }, {
@@ -436,18 +436,18 @@ htapSpec.TermList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/term/list", {
+        htpMgr.TplCmd("spec/term/list", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
         });
     });
 }
 
 
-htapSpec.TermSet = function(modname, modelid)
+htpSpec.TermSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -481,7 +481,7 @@ htapSpec.TermSet = function(modname, modelid)
                     onclick : "l4iModal.Close()",
                     title   : "Close",
                 }, {
-                    onclick : "htapSpec.TermSetCommit()",
+                    onclick : "htpSpec.TermSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 }],
@@ -492,26 +492,26 @@ htapSpec.TermSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/term/set", {
+        htpMgr.TplCmd("spec/term/set", {
             callback: ep.done('tpl'),
         });
 
         if (modelid) {
 
-            htapMgr.ApiCmd("term-model/entry?modname="+ modname +"&modelid="+ modelid, {
+            htpMgr.ApiCmd("term-model/entry?modname="+ modname +"&modelid="+ modelid, {
                 callback: ep.done('data'),
             });
         } else {
 
-            ep.emit("data", l4i.Clone(htapSpec.termdef));
+            ep.emit("data", l4i.Clone(htpSpec.termdef));
         }
     });
 }
 
-htapSpec.TermSetCommit = function()
+htpSpec.TermSetCommit = function()
 {
-    var form = $("#htapm-spec-termset"),
-        alertid = "#htapm-spec-termset-alert";
+    var form = $("#htpm-spec-termset"),
+        alertid = "#htpm-spec-termset-alert";
 
     var req = {
         meta : {
@@ -522,7 +522,7 @@ htapSpec.TermSetCommit = function()
         modname : form.find("input[name=modname]").val(),
     };
 
-    htapMgr.ApiCmd("mod-set/spec-term-set", {
+    htpMgr.ApiCmd("mod-set/spec-term-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -544,9 +544,9 @@ htapSpec.TermSetCommit = function()
 
                 l4iModal.Prev(function() {
 
-                    htapSpec.List();
+                    htpSpec.List();
 
-                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htpMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -554,8 +554,8 @@ htapSpec.TermSetCommit = function()
                             }
 
                             l4iTemplate.Render({
-                                dstid: "htapm-spec-termls",
-                                tplid: "htapm-spec-termls-tpl",
+                                dstid: "htpm-spec-termls",
+                                tplid: "htpm-spec-termls-tpl",
                                 data:  data,
                             });
                         },
@@ -570,7 +570,7 @@ htapSpec.TermSetCommit = function()
 
 
 // Spec::Node
-htapSpec.NodeList = function(modname)
+htpSpec.NodeList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -614,13 +614,13 @@ htapSpec.NodeList = function(modname)
                 success : function() {
 
                     l4iTemplate.Render({
-                        dstid: "htapm-spec-nodels",
-                        tplid: "htapm-spec-nodels-tpl",
+                        dstid: "htpm-spec-nodels",
+                        tplid: "htpm-spec-nodels-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "htapSpec.NodeSet(\""+ modname +"\")",
+                    onclick : "htpSpec.NodeSet(\""+ modname +"\")",
                     title   : "New Node",
                     style   : "btn-primary",
                 }, {
@@ -634,18 +634,18 @@ htapSpec.NodeList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/node/list", {
+        htpMgr.TplCmd("spec/node/list", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
         });
     });
 }
 
 
-htapSpec.NodeSet = function(modname, modelid)
+htpSpec.NodeSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -694,10 +694,10 @@ htapSpec.NodeSet = function(modname, modelid)
                 data.extensions.comment_perentry = false;
             }
 
-            data._field_idx_typedef = htapSpec.field_idx_typedef;
-            data._field_typedef = htapSpec.field_typedef;
-            data._general_onoff = htapSpec.general_onoff;
-            data._permalink_def = htapSpec.permalink_def;
+            data._field_idx_typedef = htpSpec.field_idx_typedef;
+            data._field_typedef = htpSpec.field_typedef;
+            data._general_onoff = htpSpec.general_onoff;
+            data._permalink_def = htpSpec.permalink_def;
 
             //
             if (!data.terms) {
@@ -708,8 +708,8 @@ htapSpec.NodeSet = function(modname, modelid)
                 data.terms[i]._seqid = Math.random().toString(16).slice(2);
             }
 
-            data._term_typedef = htapSpec.term_typedef;
-            // data._field_termdef = htapSpec.termdef;
+            data._term_typedef = htpSpec.term_typedef;
+            // data._field_termdef = htpSpec.termdef;
 
 
             l4iModal.Open({
@@ -723,15 +723,15 @@ htapSpec.NodeSet = function(modname, modelid)
 
                 },
                 buttons : [{
-                    onclick : "htapSpec.NodeSetFieldAppend()",
+                    onclick : "htpSpec.NodeSetFieldAppend()",
                     title   : "New Field",
                     style   : "btn-primary",
                 },{
-                    onclick : "htapSpec.NodeSetTermAppend()",
+                    onclick : "htpSpec.NodeSetTermAppend()",
                     title   : "New Term",
                     style   : "btn-primary",
                 },{
-                    onclick : "htapSpec.NodeSetCommit()",
+                    onclick : "htpSpec.NodeSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 },{
@@ -745,31 +745,31 @@ htapSpec.NodeSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/node/set", {
+        htpMgr.TplCmd("spec/node/set", {
             callback: ep.done('tpl'),
         });
 
         if (modelid) {
 
-            htapMgr.ApiCmd("node-model/entry?modname="+ modname +"&modelid="+ modelid, {
+            htpMgr.ApiCmd("node-model/entry?modname="+ modname +"&modelid="+ modelid, {
                 callback: ep.done('data'),
             });
         } else {
 
-            ep.emit("data", l4i.Clone(htapSpec.nodedef));
+            ep.emit("data", l4i.Clone(htpSpec.nodedef));
         }
     });
 }
 
-htapSpec.NodeSetFieldAppend = function()
+htpSpec.NodeSetFieldAppend = function()
 {
     l4iTemplate.Render({
-        dstid: "htapm-spec-node-fields",
-        tplid: "htapm-spec-node-field-item-tpl",
+        dstid: "htpm-spec-node-fields",
+        tplid: "htpm-spec-node-field-item-tpl",
         append : true,
         data:  {
-            _field_typedef : htapSpec.field_typedef,
-            _field_idx_typedef : htapSpec.field_idx_typedef,
+            _field_typedef : htpSpec.field_typedef,
+            _field_idx_typedef : htpSpec.field_idx_typedef,
             _type : "bool",
             _indexType : 0,
             _seqid : Math.random().toString(16).slice(2),
@@ -777,35 +777,35 @@ htapSpec.NodeSetFieldAppend = function()
     });
 }
 
-htapSpec.NodeSetFieldAttrAppend = function(seqid)
+htpSpec.NodeSetFieldAttrAppend = function(seqid)
 {
-    var dst = document.getElementById("htapm-spec-node-field-attr-item-tpl");
+    var dst = document.getElementById("htpm-spec-node-field-attr-item-tpl");
     if (!dst) {
         return;
     }
     var source = dst.value || dst.innerHTML;
 
-    $("#field-seq-"+ seqid).find(".htapm-spec-node-field-attrs").append(source);
+    $("#field-seq-"+ seqid).find(".htpm-spec-node-field-attrs").append(source);
 }
 
-htapSpec.NodeSetTermAppend = function(seqid)
+htpSpec.NodeSetTermAppend = function(seqid)
 {
     l4iTemplate.Render({
-        dstid: "htapm-spec-node-terms",
-        tplid: "htapm-spec-node-term-item-tpl",
+        dstid: "htpm-spec-node-terms",
+        tplid: "htpm-spec-node-term-item-tpl",
         append : true,
         data:  {
-            _term_typedef : htapSpec.term_typedef,
+            _term_typedef : htpSpec.term_typedef,
             _type : "taxonomy",
             _seqid : Math.random().toString(16).slice(2),
         },
     });
 }
 
-htapSpec.NodeSetCommit = function()
+htpSpec.NodeSetCommit = function()
 {
-    var form = $("#htapm-spec-nodeset"),
-        alertid = "#htapm-spec-nodeset-alert",
+    var form = $("#htpm-spec-nodeset"),
+        alertid = "#htpm-spec-nodeset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;
 
     var req = {
@@ -839,7 +839,7 @@ htapSpec.NodeSetCommit = function()
 
     try {
 
-        form.find(".htapm-spec-node-field-item").each(function() {
+        form.find(".htpm-spec-node-field-item").each(function() {
 
             var field = {
                 name : $(this).find("input[name=field_name]").val(),
@@ -858,7 +858,7 @@ htapSpec.NodeSetCommit = function()
                 throw "Invalid Field Name : "+ field.name;
             }
 
-            $(this).find(".htapm-spec-node-field-attrs").each(function() {
+            $(this).find(".htpm-spec-node-field-attrs").each(function() {
 
                 var attr_key = $(this).find("input[name=field_attr_key]").val();
 
@@ -878,7 +878,7 @@ htapSpec.NodeSetCommit = function()
             req.fields.push(field);
         });
 
-        form.find(".htapm-spec-node-term-item").each(function() {
+        form.find(".htpm-spec-node-term-item").each(function() {
 
             var term = {
                 meta: {
@@ -907,7 +907,7 @@ htapSpec.NodeSetCommit = function()
     // console.log(req);
 
 
-    htapMgr.ApiCmd("mod-set/spec-node-set", {
+    htpMgr.ApiCmd("mod-set/spec-node-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -929,9 +929,9 @@ htapSpec.NodeSetCommit = function()
 
                 l4iModal.Prev(function() {
 
-                    htapSpec.List();
+                    htpSpec.List();
 
-                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htpMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -958,8 +958,8 @@ htapSpec.NodeSetCommit = function()
             				}
 
                             l4iTemplate.Render({
-                                dstid: "htapm-spec-nodels",
-                                tplid: "htapm-spec-nodels-tpl",
+                                dstid: "htpm-spec-nodels",
+                                tplid: "htpm-spec-nodels-tpl",
                                 data:  data,
                             });
                         },
@@ -973,7 +973,7 @@ htapSpec.NodeSetCommit = function()
 
 
 // Spec::Action
-htapSpec.ActionList = function(modname)
+htpSpec.ActionList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1013,13 +1013,13 @@ htapSpec.ActionList = function(modname)
                 success : function() {
 
                     l4iTemplate.Render({
-                        dstid: "htapm-spec-actionls",
-                        tplid: "htapm-spec-actionls-tpl",
+                        dstid: "htpm-spec-actionls",
+                        tplid: "htpm-spec-actionls-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "htapSpec.ActionSet(\""+ modname +"\")",
+                    onclick : "htpSpec.ActionSet(\""+ modname +"\")",
                     title   : "New Action",
                     style   : "btn-primary",
                 }, {
@@ -1033,18 +1033,18 @@ htapSpec.ActionList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/action/list", {
+        htpMgr.TplCmd("spec/action/list", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
         });
     });
 }
 
 
-htapSpec.ActionSet = function(modname, modelid)
+htpSpec.ActionSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1099,7 +1099,7 @@ htapSpec.ActionSet = function(modname, modelid)
             data._nodeModels = nodeModels;
             data._termModels = termModels;
 
-            data._datax_typedef = l4i.Clone(htapSpec.datax_typedef);
+            data._datax_typedef = l4i.Clone(htpSpec.datax_typedef);
 
             // console.log(data);
             // return;
@@ -1114,15 +1114,15 @@ htapSpec.ActionSet = function(modname, modelid)
                 success : function() {
 
                     if (!modelid) {
-                        htapSpec.ActionSetDataxAppend(modname);
+                        htpSpec.ActionSetDataxAppend(modname);
                     }
                 },
                 buttons : [{
-                    onclick : "htapSpec.ActionSetDataxAppend(\""+ modname +"\")",
+                    onclick : "htpSpec.ActionSetDataxAppend(\""+ modname +"\")",
                     title   : "New Datax",
                     style   : "btn-primary",
                 },{
-                    onclick : "htapSpec.ActionSetCommit()",
+                    onclick : "htpSpec.ActionSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 },{
@@ -1136,11 +1136,11 @@ htapSpec.ActionSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/action/set", {
+        htpMgr.TplCmd("spec/action/set", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: function(err, data) {
 
                 if (err) {
@@ -1182,16 +1182,16 @@ htapSpec.ActionSet = function(modname, modelid)
                     ep.emit("error", "Spec Not Found");
 
                 } else {
-                    ep.emit("data", l4i.Clone(htapSpec.actiondef));
+                    ep.emit("data", l4i.Clone(htpSpec.actiondef));
                 }
             },
         });
     });
 }
 
-htapSpec.ActionSetDataxAppend = function(modname)
+htpSpec.ActionSetDataxAppend = function(modname)
 {
-    htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+    htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
         callback: function(err, data) {
 
             if (err) {
@@ -1212,16 +1212,16 @@ htapSpec.ActionSetDataxAppend = function(modname)
                 data.termModels = [];
             }
 
-            var action = l4i.Clone(htapSpec.actiondef);
+            var action = l4i.Clone(htpSpec.actiondef);
 
             action._nodeModels = data.nodeModels;
             action._termModels = data.termModels;
-            action._datax_typedef = htapSpec.datax_typedef;
+            action._datax_typedef = htpSpec.datax_typedef;
             action._seqid = Math.random().toString(16).slice(2);
 
             l4iTemplate.Render({
-                dstid: "htapm-spec-action-dataxs",
-                tplid: "htapm-spec-action-datax-item-tpl",
+                dstid: "htpm-spec-action-dataxs",
+                tplid: "htpm-spec-action-datax-item-tpl",
                 append : true,
                 data   : action,
             });
@@ -1229,10 +1229,10 @@ htapSpec.ActionSetDataxAppend = function(modname)
     });
 }
 
-htapSpec.ActionSetCommit = function()
+htpSpec.ActionSetCommit = function()
 {
-    var form = $("#htapm-spec-actionset"),
-        alertid = "#htapm-spec-actionset-alert",
+    var form = $("#htpm-spec-actionset"),
+        alertid = "#htpm-spec-actionset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;
 
     var req = {
@@ -1251,7 +1251,7 @@ htapSpec.ActionSetCommit = function()
 
     try {
 
-        form.find(".htapm-spec-action-datax-item").each(function() {
+        form.find(".htpm-spec-action-datax-item").each(function() {
 
             var datax = {
                 name : $(this).find("input[name=datax_name]").val(),
@@ -1305,7 +1305,7 @@ htapSpec.ActionSetCommit = function()
         return;
     }
 
-    htapMgr.ApiCmd("mod-set/spec-action-set", {
+    htpMgr.ApiCmd("mod-set/spec-action-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -1327,9 +1327,9 @@ htapSpec.ActionSetCommit = function()
 
                 l4iModal.Prev(function() {
 
-                    htapSpec.List();
+                    htpSpec.List();
 
-                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htpMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -1352,8 +1352,8 @@ htapSpec.ActionSetCommit = function()
                             data._modname = req.modname;
 
                             l4iTemplate.Render({
-                                dstid: "htapm-spec-actionls",
-                                tplid: "htapm-spec-actionls-tpl",
+                                dstid: "htpm-spec-actionls",
+                                tplid: "htpm-spec-actionls-tpl",
                                 data:  data,
                             });
                         },
@@ -1368,7 +1368,7 @@ htapSpec.ActionSetCommit = function()
 
 
 // Spec::Router
-htapSpec.RouteList = function(modname)
+htpSpec.RouteList = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1414,13 +1414,13 @@ htapSpec.RouteList = function(modname)
                 success : function() {
 
                     l4iTemplate.Render({
-                        dstid: "htapm-spec-routels",
-                        tplid: "htapm-spec-routels-tpl",
+                        dstid: "htpm-spec-routels",
+                        tplid: "htpm-spec-routels-tpl",
                         data:  data,
                     });
                 },
                 buttons : [{
-                    onclick : "htapSpec.RouteSet(\""+ modname +"\")",
+                    onclick : "htpSpec.RouteSet(\""+ modname +"\")",
                     title   : "New Route",
                     style   : "btn-primary",
                 }, {
@@ -1434,18 +1434,18 @@ htapSpec.RouteList = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/router/list", {
+        htpMgr.TplCmd("spec/router/list", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: ep.done('data'),
         });
     });
 }
 
 
-htapSpec.RouteSet = function(modname, modelid)
+htpSpec.RouteSet = function(modname, modelid)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1479,15 +1479,15 @@ htapSpec.RouteSet = function(modname, modelid)
                 success : function() {
 
                     l4iTemplate.Render({
-                        dstid: "htapm-spec-routeset",
-                        tplid: "htapm-spec-routeset-tpl",
+                        dstid: "htpm-spec-routeset",
+                        tplid: "htpm-spec-routeset-tpl",
                         data : data,
                         success: function() {
 
                             for (var i in data.params) {
                                 l4iTemplate.Render({
-                                dstid: "htapm-spec-route-params",
-                                tplid: "htapm-spec-route-param-item-tpl",
+                                dstid: "htpm-spec-route-params",
+                                tplid: "htpm-spec-route-param-item-tpl",
                                 append : true,
                                 data : {
                                     _key:   i,
@@ -1502,11 +1502,11 @@ htapSpec.RouteSet = function(modname, modelid)
                     onclick : "l4iModal.Close()",
                     title   : "Close",
                 }, {
-                    onclick : "htapSpec.RouteSetParamAppend()",
+                    onclick : "htpSpec.RouteSetParamAppend()",
                     title   : "New Param",
                     style   : "btn-primary",
                 }, {
-                    onclick : "htapSpec.RouteSetCommit()",
+                    onclick : "htpSpec.RouteSetCommit()",
                     title   : "Save",
                     style   : "btn-primary",
                 }],
@@ -1517,11 +1517,11 @@ htapSpec.RouteSet = function(modname, modelid)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/router/set", {
+        htpMgr.TplCmd("spec/router/set", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
+        htpMgr.ApiCmd("mod-set/spec-entry?name="+ modname, {
             callback: function(err, data) {
 
                 if (err) {
@@ -1554,18 +1554,18 @@ htapSpec.RouteSet = function(modname, modelid)
                     ep.emit("error", "Spec Not Found");
 
                 } else {
-                    ep.emit("data", l4i.Clone(htapSpec.routedef));
+                    ep.emit("data", l4i.Clone(htpSpec.routedef));
                 }
             },
         });
     });
 }
 
-htapSpec.RouteSetParamAppend = function()
+htpSpec.RouteSetParamAppend = function()
 {
     l4iTemplate.Render({
-        dstid: "htapm-spec-route-params",
-        tplid: "htapm-spec-route-param-item-tpl",
+        dstid: "htpm-spec-route-params",
+        tplid: "htpm-spec-route-param-item-tpl",
         append : true,
         data: {
             _seqid: Math.random().toString(16).slice(2),
@@ -1575,10 +1575,10 @@ htapSpec.RouteSetParamAppend = function()
     });
 }
 
-htapSpec.RouteSetCommit = function()
+htpSpec.RouteSetCommit = function()
 {
-    var form = $("#htapm-spec-routeset"),
-        alertid = "#htapm-spec-routeset-alert",
+    var form = $("#htpm-spec-routeset"),
+        alertid = "#htpm-spec-routeset-alert",
         namereg = /^[a-z][a-z0-9_]+$/;;
 
     var req = {
@@ -1591,7 +1591,7 @@ htapSpec.RouteSetCommit = function()
 
     try {
 
-        form.find(".htapm-spec-route-param-item").each(function() {
+        form.find(".htpm-spec-route-param-item").each(function() {
 
             var param_key = $(this).find("input[name=param_key]").val(),
                 param_value = $(this).find("input[name=param_value]").val();
@@ -1612,7 +1612,7 @@ htapSpec.RouteSetCommit = function()
         return;
     }
 
-    htapMgr.ApiCmd("mod-set/spec-route-set", {
+    htpMgr.ApiCmd("mod-set/spec-route-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
         success : function(data) {
@@ -1632,9 +1632,9 @@ htapSpec.RouteSetCommit = function()
 
                 l4iModal.Prev(function() {
 
-                    htapSpec.List();
+                    htpSpec.List();
 
-                    htapMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
+                    htpMgr.ApiCmd("mod-set/spec-entry?name="+ req.modname, {
                         callback: function(err, data) {
 
                             if (err || !data || !data.kind || data.kind != "Spec") {
@@ -1660,8 +1660,8 @@ htapSpec.RouteSetCommit = function()
                             }
 
                             l4iTemplate.Render({
-                                dstid: "htapm-spec-routels",
-                                tplid: "htapm-spec-routels-tpl",
+                                dstid: "htpm-spec-routels",
+                                tplid: "htpm-spec-routels-tpl",
                                 data:  data,
                             });
                         },
@@ -1674,7 +1674,7 @@ htapSpec.RouteSetCommit = function()
 }
 
 
-htapSpec.RouteSetTemplateSelect = function(modname)
+htpSpec.RouteSetTemplateSelect = function(modname)
 {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1710,19 +1710,19 @@ htapSpec.RouteSetTemplateSelect = function(modname)
             alert("Error, Please try again later "+ err);
         });
 
-        htapMgr.TplCmd("spec/view/list", {
+        htpMgr.TplCmd("spec/view/list", {
             callback: ep.done('tpl'),
         });
 
-        htapMgr.ApiCmd("mod-set/fs-tpl-list?modname="+ modname , {
+        htpMgr.ApiCmd("mod-set/fs-tpl-list?modname="+ modname , {
             callback: ep.done('data'),
         });
     });
 }
 
-htapSpec.RouteSetTemplateSelectOne = function(path)
+htpSpec.RouteSetTemplateSelectOne = function(path)
 {
     l4iModal.Prev(function() {
-        $("#htapm-spec-routeset-template").attr("value", path);
+        $("#htpm-spec-routeset-template").attr("value", path);
     });
 }

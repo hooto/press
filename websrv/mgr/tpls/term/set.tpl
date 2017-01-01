@@ -1,12 +1,12 @@
 
-<div id="htapm-termset" style="box-sizing: border-box;">loading</div>
+<div id="htpm-termset" style="box-sizing: border-box;">loading</div>
 
 <div style="margin:20px 0;">
-  <button class="pure-button btapm-btn btapm-btn-primary" onclick="htapTerm.SetCommit()">Save</button>
-  <button class="pure-button btapm-btn" onclick="htapTerm.List()">Cancel</button>
+  <button class="pure-button btapm-btn btapm-btn-primary" onclick="htpTerm.SetCommit()">Save</button>
+  <button class="pure-button btapm-btn" onclick="htpTerm.List()">Cancel</button>
 </div>
 
-<script id="htapm-termset-tpl" type="text/html">
+<script id="htpm-termset-tpl" type="text/html">
   <input type="hidden" name="model_type" value="{[=it.model.type]}">
   <input type="hidden" name="id" value="{[=it.id]}">
   <input type="hidden" name="status" value="{[=it.status]}">
@@ -28,7 +28,7 @@
           {[? v._subs]}
           {[~v._subs :v2]}
           {[ if (v2.id != it.id) { ]}
-          <option value="{[=v2.id]}" {[ if (it.pid == v2.id) { ]}selected{[ } ]}>{[=htapTerm.Sprint(v2._dp)]}{[=v2.title]}</option>
+          <option value="{[=v2.id]}" {[ if (it.pid == v2.id) { ]}selected{[ } ]}>{[=htpTerm.Sprint(v2._dp)]}{[=v2.title]}</option>
           {[ } ]}
           {[~]}
           {[?]}

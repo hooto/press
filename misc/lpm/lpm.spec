@@ -1,17 +1,19 @@
-project.name = hooto-alphapress
+project.name = hootopress
 project.version = 0.1.7.dev
-
+project.vendor = hooto.com
+project.homepage = https://www.hooto.com/p/hootopress
+project.grp_app = 50
 
 %build
 export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{cachedb,captchadb,log,storage}
-go build -ldflags "-s -w" -o {{.buildroot}}/bin/hooto-alphapress main.go
+go build -ldflags "-s -w" -o {{.buildroot}}/bin/hootopress main.go
 
 
 %files
-bin/hooto-alphapress
+bin/hootopress
 bin/keeper
 etc/main.json.tpl
 i18n/

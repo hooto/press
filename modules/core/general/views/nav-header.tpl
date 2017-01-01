@@ -1,41 +1,41 @@
-<div id="htap-topbar">
-  <div class="container htap-topbar-collapse">
-    <ul class="htap-nav">
+<div id="htp-topbar">
+  <div class="container htp-topbar-collapse">
+    <ul class="htp-nav">
       {{if SysConfig "frontend_header_site_logo_url"}}
-      <li><img class="htap-topbar-logo" src="{{SysConfig "frontend_header_site_logo_url"}}"></li>
+      <li><img class="htp-topbar-logo" src="{{SysConfig "frontend_header_site_logo_url"}}"></li>
       {{end}}
-      <li class="htap-topbar-brand">{{SysConfig "frontend_header_site_name"}}</li>
+      <li class="htp-topbar-brand">{{SysConfig "frontend_header_site_name"}}</li>
     </ul>
 
-    <ul class="htap-nav htap-topbar-nav" id="htap-topbar-nav-main">
+    <ul class="htp-nav htp-topbar-nav" id="htp-topbar-nav-main">
       {{range $v := .topnav.Items}}
       <li><a class="" href="{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
       {{end}}
     </ul>
 
-    <ul class="htap-nav htap-nav-right" id="htap-topbar-userbar">
+    <ul class="htp-nav htp-nav-right" id="htp-topbar-userbar">
       <li class="iam-name"><a href="{{HttpSrvBasePath "auth/login"}}">Login</a></li>
     </ul>
   </div>
 </div>
 
-<script id="htap-topbar-user-signed-tpl" type="text/html">
+<script id="htp-topbar-user-signed-tpl" type="text/html">
 
 <li class="iam-name">{[=it.name]}</li>
-<li class="iam-photo" id="htap-topbar-user-signed"><img src="{[=it.photo_url]}"/></li>
+<li class="iam-photo" id="htp-topbar-user-signed"><img src="{[=it.photo_url]}"/></li>
 
-<div id="htap-topbar-user-signed-modal" style="display:none;">
+<div id="htp-topbar-user-signed-modal" style="display:none;">
   <img class="iam-photo" src="{[=it.photo_url]}">
   <div class="iam-name">{[=it.name]}</div>
-  <a class="btn btn-primary iam-btn" href="{[=htap.HttpSrvBasePath("mgr")]}">Content Manage</a>
+  <a class="btn btn-primary iam-btn" href="{[=htp.HttpSrvBasePath("mgr")]}">Content Manage</a>
   <a class="btn btn-default iam-btn" href="{[=it.iam_url]}" target="_blank">Account Center</a>
-  <a class="btn btn-default iam-btn" href="{[=htap.HttpSrvBasePath("auth/sign-out")]}">Sign out</a>
+  <a class="btn btn-default iam-btn" href="{[=htp.HttpSrvBasePath("auth/sign-out")]}">Sign out</a>
 </div>
 </script>
 
 <script type="text/javascript">
 window.onload_hooks.push(function() {
-    htap.NavActive("htap-topbar-nav-main", "{{.baseuri}}");
-    htap.AuthSessionRefresh();
+    htp.NavActive("htp-topbar-nav-main", "{{.baseuri}}");
+    htp.AuthSessionRefresh();
 });
 </script>

@@ -96,8 +96,8 @@ lcEditor.TabletOpen = function(urid, callback)
 
             var entry = {
                 id       : urid,
-                modname  : l4iSession.Get("htap-speceditor-modname"),
-                projdir  : l4iSession.Get("htap-speceditor-modname"),
+                modname  : l4iSession.Get("htp-speceditor-modname"),
+                projdir  : l4iSession.Get("htp-speceditor-modname"),
                 filepth  : item.url,
                 ctn0_src : file.body,
                 ctn0_sum : l4iString.CryptoMd5(file.body),
@@ -141,7 +141,7 @@ lcEditor.LoadInstance = function(entry)
         return;
     }
 
-    if (item.modname != l4iSession.Get("htap-speceditor-modname")) {
+    if (item.modname != l4iSession.Get("htp-speceditor-modname")) {
         return;
     }
 

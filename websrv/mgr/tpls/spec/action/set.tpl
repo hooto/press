@@ -1,12 +1,12 @@
 <style>
-.htapm-spec-action-datax-attr-item td {
+.htpm-spec-action-datax-attr-item td {
   padding: 0 2px 4px;
 }
 </style>
 
-<div id="htapm-spec-actionset-alert"></div>
+<div id="htpm-spec-actionset-alert"></div>
 
-<div id="htapm-spec-actionset">
+<div id="htpm-spec-actionset">
 
   <input type="hidden" name="modname" value="{[=it._modname]}">
 
@@ -35,9 +35,9 @@
           <th>Cache TTL (ms)</th>
         </tr>
       </thead>
-      <tbody id="htapm-spec-action-dataxs">
+      <tbody id="htpm-spec-action-dataxs">
         {[~it.datax :v]}
-        <tr id="datax-seq-{[=v._seqid]}" class="htapm-spec-action-datax-item">
+        <tr id="datax-seq-{[=v._seqid]}" class="htpm-spec-action-datax-item">
           <td><input type="text" class="form-control input-sm" name="datax_name" size="10" value="{[=v.name]}" readonly></td>
           <td>
             <select class="form-control input-sm" name="datax_query_table">
@@ -84,8 +84,8 @@
 
 </div>
 
-<script id="htapm-spec-action-datax-item-tpl" type="text/html">
-  <tr id="datax-seq-{[=it._seqid]}" class="htapm-spec-action-datax-item">
+<script id="htpm-spec-action-datax-item-tpl" type="text/html">
+  <tr id="datax-seq-{[=it._seqid]}" class="htpm-spec-action-datax-item">
     <td><input type="text" class="form-control input-sm" name="datax_name" size="10" value=""></td>
     <td>
       <select class="form-control input-sm" name="datax_query_table">

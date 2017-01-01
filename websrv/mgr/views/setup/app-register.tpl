@@ -5,11 +5,11 @@
   <title>Setup : Registration to IAM Service</title>
   <link rel="stylesheet" href="{{HttpSrvBasePath "mgr/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
   <link rel="stylesheet" href="{{HttpSrvBasePath "mgr/~/css/main.css"}}" type="text/css">
-  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "mgr/~/htap/img/ap.ico"}}">
-  <script src="{{HttpSrvBasePath "mgr/~/htap/js/jquery.js"}}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "mgr/~/htp/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "mgr/~/htp/js/jquery.js"}}"></script>
   <script src="{{HttpSrvBasePath "mgr/~/lessui/js/lessui.js"}}"></script>
   <script src="{{HttpSrvBasePath "mgr/~/lessui/js/sea.js"}}"></script>
-  <script src="{{HttpSrvBasePath "mgr/~/htap/js/main.js"}}"></script>
+  <script src="{{HttpSrvBasePath "mgr/~/htp/js/main.js"}}"></script>
   <script type="text/javascript">
     window.onload_hooks = [];
   </script>
@@ -19,8 +19,8 @@
 
 <div class="container" style="width:600px">
 
-<div class="htap-mgr-setup-logo" style="text-align:center;padding:30px;">
-  <img src="{{HttpSrvBasePath "mgr/~/htap/img/alpha2.png"}}">
+<div class="htp-mgr-setup-logo" style="text-align:center;padding:30px;">
+  <img src="{{HttpSrvBasePath "mgr/~/htp/img/alpha2.png"}}">
 </div>
 
 <div class="panel panel-default">
@@ -32,9 +32,9 @@
   
   <div class="panel-body">
 
-    <form id="htap-app-reg" action="#">
+    <form id="htp-app-reg" action="#">
       
-      <div id="htap-app-reg-alert" class="alert alert-danger hide">...</div>
+      <div id="htp-app-reg-alert" class="alert alert-danger hide">...</div>
     
       <div class="form-group">
         <label>IAM Service URL</label>
@@ -80,11 +80,11 @@
 <script type="text/javascript">
 
 
-$("#htap-app-reg").submit(function(event) {
+$("#htp-app-reg").submit(function(event) {
 
     event.preventDefault();
 
-    var alertid = "#htap-app-reg-alert";
+    var alertid = "#htp-app-reg-alert";
 
     $.ajax({
         type    : "POST",

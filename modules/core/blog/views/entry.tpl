@@ -5,14 +5,14 @@
 
 <div class="container">
   
-  <div class="htap-ctn-header">
+  <div class="htp-ctn-header">
     <h2>Content Entry</h2>
   </div>
 
   <div class="row">
     <div class="col-md-12">
     
-      <div class="htap-nodev">
+      <div class="htp-nodev">
         
         <div class="header">
           <h2>{{.entry.Title}}</h2>
@@ -73,13 +73,13 @@ window.onload_hooks.push(function() {
         "+/comment/~/index.css",
     ],
     function() {
-        htapComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
+        htpComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
     });
 });
 {{end}}
 
 window.onload_hooks.push(function() {
-    htap.CodeRender();
+    htp.CodeRender();
 });
 </script>
 

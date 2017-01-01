@@ -1,12 +1,12 @@
 <style>
-.htapm-spec-node-field-attr-item td {
+.htpm-spec-node-field-attr-item td {
   padding: 0 2px 4px;
 }
 </style>
 
-<div id="htapm-spec-nodeset-alert"></div>
+<div id="htpm-spec-nodeset-alert"></div>
 
-<div id="htapm-spec-nodeset">
+<div id="htpm-spec-nodeset">
 
   <input type="hidden" name="modname" value="{[=it._modname]}">
 
@@ -41,9 +41,9 @@
           <th></th>
         </tr>
       </thead>
-      <tbody id="htapm-spec-node-fields">
+      <tbody id="htpm-spec-node-fields">
         {[~it.fields :v]}
-        <tr id="field-seq-{[=v._seqid]}" class="htapm-spec-node-field-item">
+        <tr id="field-seq-{[=v._seqid]}" class="htpm-spec-node-field-item">
           <td><input type="text" class="form-control input-sm" name="field_name" size="10" value="{[=v.name]}" readonly></td>
           <td><input type="text" class="form-control input-sm" name="field_title" size="20" value="{[=v.title]}"></td>
           <td>
@@ -62,9 +62,9 @@
             </select>
           </td>
           <td>
-            <table class="htapm-spec-node-field-attrs">
+            <table class="htpm-spec-node-field-attrs">
               {[~v.attrs :atv]}
-              <tr class="htapm-spec-node-field-attr-item">
+              <tr class="htpm-spec-node-field-attr-item">
                 <td><input type="text" class="form-control input-sm" name="field_attr_key" size="8" value="{[=atv.key]}"></td>
                 <td><input type="text" class="form-control input-sm" name="field_attr_value" size="16" value="{[=atv.value]}"></td>
               </tr>
@@ -72,7 +72,7 @@
             </table>
           </td>
           <td>
-            <button class="btn btn-default btn-sm" onclick="htapSpec.NodeSetFieldAttrAppend('{[=v._seqid]}')">+ Attribute</button>
+            <button class="btn btn-default btn-sm" onclick="htpSpec.NodeSetFieldAttrAppend('{[=v._seqid]}')">+ Attribute</button>
           </td>
         </tr>
         {[~]}
@@ -92,9 +92,9 @@
           <th>Type</th>
         </tr>
       </thead>
-      <tbody id="htapm-spec-node-terms">
+      <tbody id="htpm-spec-node-terms">
         {[~it.terms :v]}
-        <tr id="field-seq-{[=v._seqid]}" class="htapm-spec-node-term-item">
+        <tr id="field-seq-{[=v._seqid]}" class="htpm-spec-node-term-item">
           <td><input type="text" class="form-control input-sm" name="term_name" size="20" value="{[=v.meta.name]}" readonly></td>
           <td><input type="text" class="form-control input-sm" name="term_title" size="30" value="{[=v.title]}"></td>
           <td>
@@ -119,7 +119,7 @@
           <th>Attributes</th>
         </tr>
       </thead>
-      <tbody id="htapm-spec-node-exts">
+      <tbody id="htpm-spec-node-exts">
         <tr>
           <td>Access Counter</td>
           <td>
@@ -167,8 +167,8 @@
 
 </div>
 
-<script id="htapm-spec-node-field-item-tpl" type="text/html">
-  <tr id="field-seq-{[=it._seqid]}" class="htapm-spec-node-field-item">
+<script id="htpm-spec-node-field-item-tpl" type="text/html">
+  <tr id="field-seq-{[=it._seqid]}" class="htpm-spec-node-field-item">
     <td><input type="text" class="form-control input-sm" name="field_name" size="10" value=""></td>
     <td><input type="text" class="form-control input-sm" name="field_title" size="16" value=""></td>
     <td>
@@ -187,23 +187,23 @@
       </select>
     </td>
     <td>
-      <table class="htapm-spec-node-field-attrs"></table>
+      <table class="htpm-spec-node-field-attrs"></table>
     </td>
     <td>
-      <button class="btn btn-default btn-sm" onclick="htapSpec.NodeSetFieldAttrAppend('{[=it._seqid]}')">+ Attribute</button>
+      <button class="btn btn-default btn-sm" onclick="htpSpec.NodeSetFieldAttrAppend('{[=it._seqid]}')">+ Attribute</button>
     </td>
   </tr>
 </script>
 
-<script id="htapm-spec-node-field-attr-item-tpl" type="text/html">
-  <tr class="htapm-spec-node-field-attr-item">
+<script id="htpm-spec-node-field-attr-item-tpl" type="text/html">
+  <tr class="htpm-spec-node-field-attr-item">
     <td><input type="text" class="form-control input-sm" name="field_attr_key" size="8" value=""></td>
     <td><input type="text" class="form-control input-sm" name="field_attr_value" size="12" value=""></td>
   </tr>
 </script>
 
-<script id="htapm-spec-node-term-item-tpl" type="text/html">
-  <tr id="field-seq-{[=it._seqid]}" class="htapm-spec-node-term-item">
+<script id="htpm-spec-node-term-item-tpl" type="text/html">
+  <tr id="field-seq-{[=it._seqid]}" class="htpm-spec-node-term-item">
     <td><input type="text" class="form-control input-sm" name="term_name" size="20" value=""></td>
     <td><input type="text" class="form-control input-sm" name="term_title" size="30" value=""></td>
     <td>

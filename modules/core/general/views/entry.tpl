@@ -4,13 +4,13 @@
 
 <div class="container">
   
-  <div class="htap-ctn-header">
+  <div class="htp-ctn-header">
     <h2>{{.page.Title}}</h2>
   </div>
 
   <div class="row">
     <div class="col-md-12">    
-      <div class="htap-nodev">
+      <div class="htp-nodev">
         <div class="content">{{FieldHtml .page.Fields "content"}}</div>
       </div>      
     </div>

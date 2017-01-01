@@ -1,17 +1,17 @@
-var htapComment = {
+var htpComment = {
 
 }
 
-htapComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
+htpComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
 {
-    htap.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
+    htp.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
         "&refer_datax_table="+ ref_table +"&refer_id="+ ref_id );
 }
 
-htapComment.EmbedCommit = function()
+htpComment.EmbedCommit = function()
 {
-    var form = $("#htap-comment-embed-new-form"),
-        alertid = "#htap-comment-embed-new-form-alert";
+    var form = $("#htp-comment-embed-new-form"),
+        alertid = "#htp-comment-embed-new-form-alert";
 
     var req = {
         pid               : "",
@@ -25,7 +25,7 @@ htapComment.EmbedCommit = function()
     };
 
     // console.log(req);
-    htap.ApiCmd("+/comment/comment/set", {
+    htp.ApiCmd("+/comment/comment/set", {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
@@ -42,8 +42,8 @@ htapComment.EmbedCommit = function()
 
                     var captcha_token = Math.random();
                     form.find("input[name=captcha_token]").val(captcha_token);
-                    form.find("#htap-comment-captcha-url").attr("src", 
-                        htap.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+                    form.find("#htp-comment-captcha-url").attr("src", 
+                        htp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
                 }
 
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -59,13 +59,13 @@ htapComment.EmbedCommit = function()
             };
 
             l4iTemplate.Render({
-                dstid  : "htap-comment-embed-list",
-                tplid  : "htap-comment-embed-tpl",
+                dstid  : "htp-comment-embed-list",
+                tplid  : "htp-comment-embed-tpl",
                 data   : req,
                 append : true,
                 success : function() {
 
-                    $("#htap-comment-embed-list-header").css({"display": "block"});
+                    $("#htp-comment-embed-list-header").css({"display": "block"});
                     
                     $("#entry-"+ req.meta.id).css({
                         "outline": "#5cb85c solid 2px",
@@ -85,7 +85,7 @@ htapComment.EmbedCommit = function()
             l4i.InnerAlert(alertid, 'alert-success', "Successfully commited");
 
             setTimeout(function() {
-                htapComment.EmbedFormHidden();
+                htpComment.EmbedFormHidden();
                 $(alertid).hide(500);
             }, 1500);
         },
@@ -93,18 +93,18 @@ htapComment.EmbedCommit = function()
 }
 
 
-htapComment.EmbedFormActive = function()
+htpComment.EmbedFormActive = function()
 {
-    $("#htap-comment-embed-new-form-ctrl").css({"display": "none"});
+    $("#htp-comment-embed-new-form-ctrl").css({"display": "none"});
 
-    var form = $("#htap-comment-embed-new-form"),
+    var form = $("#htp-comment-embed-new-form"),
         captcha_token = Math.random();
 
     form.css({"display": "block"});
 
     form.find("input[name=captcha_token]").val(captcha_token);
-    form.find("#htap-comment-captcha-url").attr("src", 
-        htap.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+    form.find("#htp-comment-captcha-url").attr("src", 
+        htp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
 
     form.find("textarea[name=content]").focus();
 
@@ -112,8 +112,8 @@ htapComment.EmbedFormActive = function()
 }
 
 
-htapComment.EmbedFormHidden = function()
+htpComment.EmbedFormHidden = function()
 {
-    $("#htap-comment-embed-new-form-ctrl").css({"display": "block"});
-    $("#htap-comment-embed-new-form").slideUp(500);//css({"display": "none"});
+    $("#htp-comment-embed-new-form-ctrl").css({"display": "block"});
+    $("#htp-comment-embed-new-form").slideUp(500);//css({"display": "none"});
 }

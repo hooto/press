@@ -4,7 +4,7 @@
 
 <div class="container">
   
-  <div class="htap-ctn-header">
+  <div class="htp-ctn-header">
     <h2>Content Explore</h2>
   </div>
 
@@ -12,11 +12,11 @@
 
     <div class="col-md-9">
     
-    <ul class="htap-nodels">
+    <ul class="htp-nodels">
       {{range $v := .list.Items}}
-      <li class="htap-nodels-item">
-        <h4 class="htap-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
-        <span class="htap-nodels-info">
+      <li class="htp-nodels-item">
+        <h4 class="htp-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
+        <span class="htp-nodels-info">
             
             <span class="section">
               <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
@@ -51,7 +51,7 @@
 
         </span>
 
-        <div class="htap-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
+        <div class="htp-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
       </li>
       {{end}}
     </ul>

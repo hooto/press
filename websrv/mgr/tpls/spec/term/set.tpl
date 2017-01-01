@@ -1,6 +1,6 @@
-<div id="htapm-spec-termset-alert"></div>
+<div id="htpm-spec-termset-alert"></div>
 
-<div id="htapm-spec-termset">
+<div id="htpm-spec-termset">
 
   <input type="hidden" name="modname" value="{[=it._modname]}">
   {[? it.meta.name]}

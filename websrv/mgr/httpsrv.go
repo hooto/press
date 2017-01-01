@@ -17,13 +17,13 @@ package v1
 import (
 	"github.com/lessos/lessgo/httpsrv"
 
-	"code.hooto.com/hooto/alphapress/config"
-	"code.hooto.com/hooto/alphapress/websrv/mgr/controllers"
+	"code.hooto.com/hooto/hootopress/config"
+	"code.hooto.com/hooto/hootopress/websrv/mgr/controllers"
 )
 
 func NewModule() httpsrv.Module {
 
-	module := httpsrv.NewModule("htap_mgr")
+	module := httpsrv.NewModule("htp_mgr")
 
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,

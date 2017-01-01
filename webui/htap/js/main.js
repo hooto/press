@@ -1,23 +1,23 @@
-var htap = {
+var htp = {
     base : "/",
 }
 
-htap.Boot = function()
+htp.Boot = function()
 {
     if (window._basepath) {
-        htap.base = window._basepath;
+        htp.base = window._basepath;
     }
 
-    if (!htap.base || htap.base == "") {
-        htap.base = "/";
+    if (!htp.base || htp.base == "") {
+        htp.base = "/";
     }
 
     seajs.config({
-        base: htap.base,
+        base: htp.base,
     });
 
     seajs.use([
-        "~/htap/js/jquery.js",
+        "~/htp/js/jquery.js",
     ],
     function() {
 
@@ -35,9 +35,9 @@ htap.Boot = function()
     });
 }
 
-htap.HttpSrvBasePath = function(url)
+htp.HttpSrvBasePath = function(url)
 {
-    if (htap.base == "") {
+    if (htp.base == "") {
         return url;
     }
 
@@ -45,10 +45,10 @@ htap.HttpSrvBasePath = function(url)
         return url;
     }
 
-    return htap.base + url;
+    return htp.base + url;
 }
 
-htap.CodeRender = function()
+htp.CodeRender = function()
 {
     $("code[class^='language-']").each(function(i, el) {
 
@@ -121,7 +121,7 @@ htap.CodeRender = function()
     });
 }
 
-htap.NavActive = function(tplid, path)
+htp.NavActive = function(tplid, path)
 {
     if (!tplid || !path) {
         return;
@@ -142,13 +142,13 @@ htap.NavActive = function(tplid, path)
     });
 }
 
-htap.Ajax = function(url, options)
+htp.Ajax = function(url, options)
 {
     options = options || {};
 
     //
     if (url.substr(0, 1) != "/" && url.substr(0, 4) != "http") {
-        url = htap.HttpSrvBasePath(url);
+        url = htp.HttpSrvBasePath(url);
     }
 
     //
@@ -198,9 +198,9 @@ htap.Ajax = function(url, options)
 }
 
 
-htap.ActionLoader = function(target, url)
+htp.ActionLoader = function(target, url)
 {
-    htap.Ajax(htap.HttpSrvBasePath(url), {
+    htp.Ajax(htp.HttpSrvBasePath(url), {
         callback: function(err, data) {
             $("#"+ target).html(data);
         }
@@ -208,14 +208,14 @@ htap.ActionLoader = function(target, url)
 }
 
 
-htap.ApiCmd = function(url, options)
+htp.ApiCmd = function(url, options)
 {
-    htap.Ajax(htap.HttpSrvBasePath(url), options);
+    htp.Ajax(htp.HttpSrvBasePath(url), options);
 }
 
-htap.AuthSessionRefresh = function()
+htp.AuthSessionRefresh = function()
 {
-    htap.Ajax("auth/session", {
+    htp.Ajax("auth/session", {
         callback: function(err, data) {
 
             if (err || !data || data.kind != "AuthSession") {
@@ -223,23 +223,23 @@ htap.AuthSessionRefresh = function()
             }
 
             l4iTemplate.Render({
-                dstid:   "htap-topbar-userbar",
-                tplid:   "htap-topbar-user-signed-tpl",
+                dstid:   "htp-topbar-userbar",
+                tplid:   "htp-topbar-user-signed-tpl",
                 data:    data,
                 success: function() {
 
-                    $("#htap-topbar-userbar").hover(
+                    $("#htp-topbar-userbar").hover(
                         function() {
-                            $("#htap-topbar-user-signed-modal").fadeIn(200);
+                            $("#htp-topbar-user-signed-modal").fadeIn(200);
                         },
                         function() {
                         }
                     );
-                    $("#htap-topbar-user-signed-modal").hover(
+                    $("#htp-topbar-user-signed-modal").hover(
                         function() {
                         },
                         function() {
-                            $("#htap-topbar-user-signed-modal").fadeOut(200);
+                            $("#htp-topbar-user-signed-modal").fadeOut(200);
                         }
                     );
                 },

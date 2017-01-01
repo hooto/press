@@ -1,10 +1,10 @@
-<footer class="htap-footer ">
+<footer class="htp-footer ">
   <div class="container text-center">
     <div class="pull-left">
       &copy;{{SysConfig "frontend_footer_copyright"}}
     </div>
 	<div class="pull-right">
-      Powered by <strong><a href="https://www.hooto.com/p/alphapress" target="_blank">Alpha Press</a></strong>
+      Powered by <strong><a href="https://www.hooto.com/p/hootopress" target="_blank">HootoPress</a></strong>
     </div>
   </div>
 </footer>

@@ -1,24 +1,24 @@
-<table class="table table-hover" id="htapm-nodels"></table>
+<table class="table table-hover" id="htpm-nodels"></table>
 
-<div id="htapm-nodels-pager"></div>
+<div id="htpm-nodels-pager"></div>
 
-<div id="htapm-node-list-opts" class="htapm-hide">
+<div id="htpm-node-list-opts" class="htpm-hide">
   <li class="pure-button btapm-btn btapm-btn-primary">
-    <a href="#" onclick="htapNode.Set()">
+    <a href="#" onclick="htpNode.Set()">
       New Content
     </a>
   </li>
   <li>
-    <form onsubmit="htapNode.List(); return false;" action="#" class="form-inlines">
+    <form onsubmit="htpNode.List(); return false;" action="#" class="form-inlines">
       <input id="qry_text" type="text"
-        class="form-control htapm-query-input" 
+        class="form-control htpm-query-input" 
         placeholder="Press Enter to Search" 
         value="">
     </form>
   </li>
 </div>
 
-<script id="htapm-nodels-tpl" type="text/html">  
+<script id="htpm-nodels-tpl" type="text/html">  
   <thead>
     <tr>
       <th>Title</th>
@@ -52,17 +52,17 @@
   </tbody>
 </script>
 
-<script id="htapm-nodels-pager-tpl" type="text/html">
+<script id="htpm-nodels-pager-tpl" type="text/html">
 {[ if (it.RangePages.length > 1) { ]}
-<ul class="htapm-pager">
+<ul class="htpm-pager">
   {[ if (it.FirstPageNumber > 0) { ]}
-  <li><a href="#{[=it.FirstPageNumber]}" onclick="htapNode.ListPage({[=it.FirstPageNumber]})">First</a></li>
+  <li><a href="#{[=it.FirstPageNumber]}" onclick="htpNode.ListPage({[=it.FirstPageNumber]})">First</a></li>
   {[ } ]}
   {[~it.RangePages :v]}
-  <li {[ if (v == it.CurrentPageNumber) { ]}class="active"{[ } ]}><a href="#{[=v]}" onclick="htapNode.ListPage({[=v]})">{[=v]}</a></li>
+  <li {[ if (v == it.CurrentPageNumber) { ]}class="active"{[ } ]}><a href="#{[=v]}" onclick="htpNode.ListPage({[=v]})">{[=v]}</a></li>
   {[~]}
   {[ if (it.LastPageNumber > 0) { ]}
-  <li><a href="#{[=it.LastPageNumber]}" onclick="htapNode.ListPage({[=it.LastPageNumber]})">Last</a></li>
+  <li><a href="#{[=it.LastPageNumber]}" onclick="htpNode.ListPage({[=it.LastPageNumber]})">Last</a></li>
   {[ } ]}
 </ul>
 {[ } ]}
@@ -70,13 +70,13 @@
 
 <script type="text/javascript">
 
-$("#htapm-nodels").on("click", ".node-item", function() {
+$("#htpm-nodels").on("click", ".node-item", function() {
     var id = $(this).attr("href").substr(1);
-    htapNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
+    htpNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
 });
 
-$("#htapm-nodels").on("click", ".node-item-del", function() {
+$("#htpm-nodels").on("click", ".node-item-del", function() {
     var id = $(this).attr("href").substr(1);
-    htapNode.Del($(this).attr("modname"), $(this).attr("modelid"), id);
+    htpNode.Del($(this).attr("modname"), $(this).attr("modelid"), id);
 });
 </script>

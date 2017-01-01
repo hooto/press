@@ -1,13 +1,13 @@
 <style type="text/css">
-#htapm-spec-route-params td {
+#htpm-spec-route-params td {
   padding: 0 10px 10px 0;
 }
 </style>
 
-<div id="htapm-spec-routeset-alert"></div>
-<div id="htapm-spec-routeset"></div>
+<div id="htpm-spec-routeset-alert"></div>
+<div id="htpm-spec-routeset"></div>
 
-<script id="htapm-spec-routeset-tpl" type="text/html">
+<script id="htpm-spec-routeset-tpl" type="text/html">
   <input type="hidden" name="modname" value="{[=it._modname]}">
 
   {[? it.path]}
@@ -32,21 +32,21 @@
   <div class="form-group">
     <label>Template</label>   
     <div class="input-group">
-      <input id="htapm-spec-routeset-template" type="text" class="form-control" name="template" placeholder="Template Path" value="{[=it.template]}">
+      <input id="htpm-spec-routeset-template" type="text" class="form-control" name="template" placeholder="Template Path" value="{[=it.template]}">
       <span class="input-group-btn">
-        <button class="btn btn-default" type="button" onclick="htapSpec.RouteSetTemplateSelect('{[=it._modname]}')">Select a Template</button>
+        <button class="btn btn-default" type="button" onclick="htpSpec.RouteSetTemplateSelect('{[=it._modname]}')">Select a Template</button>
       </span>
     </div>
   </div>
 
   <div class="form-group">
     <label>Params</label>
-    <table id="htapm-spec-route-params" width="100%"></table>
+    <table id="htpm-spec-route-params" width="100%"></table>
   </div>
 </script>
 
-<script id="htapm-spec-route-param-item-tpl" type="text/html">
-<tr class="htapm-spec-route-param-item">
+<script id="htpm-spec-route-param-item-tpl" type="text/html">
+<tr class="htpm-spec-route-param-item">
   <td>
     <input type="text" class="form-control input-sm" name="param_key" size="16" placeholder="Param Name" value="{[=it._key]}">
   </td>

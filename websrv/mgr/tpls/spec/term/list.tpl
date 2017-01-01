@@ -1,5 +1,5 @@
 
-<div id="htapm-spec-termls-alert"></div>
+<div id="htpm-spec-termls-alert"></div>
 
 <table class="table table-hover">
   <thead>
@@ -10,17 +10,17 @@
       <th></th>
     </tr>
   </thead>
-  <tbody id="htapm-spec-termls"></tbody>
+  <tbody id="htpm-spec-termls"></tbody>
 </table>
 
-<script id="htapm-spec-termls-tpl" type="text/html">  
+<script id="htpm-spec-termls-tpl" type="text/html">  
 {[~it.termModels :v]}
 <tr>
   <td>{[=v.title]}</td>
-  <td class="htapm-font-fixspace">{[=v.meta.name]}</td>
+  <td class="htpm-font-fixspace">{[=v.meta.name]}</td>
   <td>{[=v.type]}</td>
   <td align="right">
-    <button class="btn btn-default" onclick="htapSpec.TermSet('{[=it.meta.name]}', '{[=v.meta.name]}')">Setting</button>
+    <button class="btn btn-default" onclick="htpSpec.TermSet('{[=it.meta.name]}', '{[=v.meta.name]}')">Setting</button>
   </td>
 </tr>
 {[~]}

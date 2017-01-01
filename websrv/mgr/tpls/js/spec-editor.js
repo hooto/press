@@ -1,30 +1,30 @@
-var htapSpecEditor = {
+var htpSpecEditor = {
 
 }
 
-htapSpecEditor.Open = function(modname)
+htpSpecEditor.Open = function(modname)
 {
-    var topnav = $("#htap-uh-topnav");
+    var topnav = $("#htp-uh-topnav");
     topnav.find("a.active").removeClass("active");
 
     if (topnav.find("a[modname='"+ modname+"']").length > 0) {
         topnav.find("a[modname='"+ modname+"']").addClass("active");
-        htapSpecEditor.Index(modname);
+        htpSpecEditor.Index(modname);
         return;
     }
 
     l4i.UrlEventRegister("spec-editor/"+ modname, function() {
-        htapSpecEditor.Index(modname);
+        htpSpecEditor.Index(modname);
     });
 
-    $("#htap-uh-topnav").append("<a class=\"l4i-nav-item active\" modname=\""+ modname +"\" href=\"#spec-editor/"+ modname +"\">Spec Editor ("+ modname +")</a>");
+    $("#htp-uh-topnav").append("<a class=\"l4i-nav-item active\" modname=\""+ modname +"\" href=\"#spec-editor/"+ modname +"\">Spec Editor ("+ modname +")</a>");
 
     lcData.Init("speceditor", function() {
-        htapSpecEditor.Index(modname);
+        htpSpecEditor.Index(modname);
     });
 }
 
-htapSpecEditor.Index = function(modname)
+htpSpecEditor.Index = function(modname)
 {
     if (!modname) {
         return;
@@ -32,10 +32,10 @@ htapSpecEditor.Index = function(modname)
 
     l9rTab.pool = {};
 
-    l4iSession.Set("htap-speceditor-modname", modname);
+    l4iSession.Set("htp-speceditor-modname", modname);
     l4iSession.Set("modname_current", "/");
 
-    htapMgr.TplCmd("spec/editor/desk", {
+    htpMgr.TplCmd("spec/editor/desk", {
         callback: function(err, data) {
 
             if (err) {
@@ -44,7 +44,7 @@ htapSpecEditor.Index = function(modname)
 
             $("#com-content").html(data);
 
-            l4iTemplate.RenderFromID("lcbind-proj-filenav", "htap-speceditor-fsnav-tpl");
+            l4iTemplate.RenderFromID("lcbind-proj-filenav", "htp-speceditor-fsnav-tpl");
 
             seajs.use([
                 "~/cm/5/lib/codemirror.css",
@@ -98,14 +98,14 @@ l9rProjFs.OpenHistoryTabs = function()
 
     // var last_tab_urid = l4iStorage.Set(l4iSession.Get("podid") +"."+ l4iSession.Get("proj_name") +".tab."+ item.target);
 
-    lcData.Query("files", "projdir", l4iSession.Get("htap-speceditor-modname"), function(ret) {
+    lcData.Query("files", "projdir", l4iSession.Get("htp-speceditor-modname"), function(ret) {
 
         // console.log("Query files");
         if (ret == null) {
             return;
         }
 
-        if (ret.value.id && ret.value.projdir == l4iSession.Get("htap-speceditor-modname")) {
+        if (ret.value.id && ret.value.projdir == l4iSession.Get("htp-speceditor-modname")) {
 
             var icon = undefined;
             if (ret.value.icon) {
@@ -118,7 +118,7 @@ l9rProjFs.OpenHistoryTabs = function()
                 cab = l9rTab.frame[l9rTab.def];
             }
 
-            var tabLastActive = l4iStorage.Get(l4iSession.Get("htap-speceditor-modname") +".cab."+ ret.value.cabid);
+            var tabLastActive = l4iStorage.Get(l4iSession.Get("htp-speceditor-modname") +".cab."+ ret.value.cabid);
             // console.log("tabLastActive: "+ tabLastActive);
 
             var titleOnly = true;
@@ -843,12 +843,12 @@ l9rPodFs.Get = function(options)
         options.error = function(){};
     }
 
-    var url = "mod-set-fs/get?modname="+ l4iSession.Get("htap-speceditor-modname");
+    var url = "mod-set-fs/get?modname="+ l4iSession.Get("htp-speceditor-modname");
     // url += "?access_token="+ l4iCookie.Get("access_token");
     url += "&path="+ options.path;
 
     // console.log("box refresh:"+ url);
-    htapMgr.ApiCmd(url, {
+    htpMgr.ApiCmd(url, {
         success: function(data) {
 
             if (!data) {
@@ -900,9 +900,9 @@ l9rPodFs.Post = function(options)
         sumcheck : options.sumcheck,
     }
 
-    var url = "mod-set-fs/put?modname="+ l4iSession.Get("htap-speceditor-modname");
+    var url = "mod-set-fs/put?modname="+ l4iSession.Get("htp-speceditor-modname");
 
-    htapMgr.ApiCmd(url, {
+    htpMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 30000,
         data    : JSON.stringify(req),
@@ -951,8 +951,8 @@ l9rPodFs.Rename = function(options)
         pathset : options.pathset,
     }
 
-    var url = "mod-set-fs/rename?modname="+ l4iSession.Get("htap-speceditor-modname");
-    htapMgr.ApiCmd(url, {
+    var url = "mod-set-fs/rename?modname="+ l4iSession.Get("htp-speceditor-modname");
+    htpMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
@@ -995,9 +995,9 @@ l9rPodFs.Del = function(options)
         path    : options.path,
     }
 
-    var url = "mod-set-fs/del?modname="+ l4iSession.Get("htap-speceditor-modname");
+    var url = "mod-set-fs/del?modname="+ l4iSession.Get("htp-speceditor-modname");
 
-    htapMgr.ApiCmd(url, {
+    htpMgr.ApiCmd(url, {
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
@@ -1036,10 +1036,10 @@ l9rPodFs.List = function(options)
         options.error = function(){};
     }
 
-    var url = "mod-set-fs/list?modname="+ l4iSession.Get("htap-speceditor-modname");
+    var url = "mod-set-fs/list?modname="+ l4iSession.Get("htp-speceditor-modname");
     url += "&path="+ options.path;
 
-    htapMgr.ApiCmd(url, {
+    htpMgr.ApiCmd(url, {
         method  : "GET",
         timeout : 30000,
         success : function(data) {
@@ -1093,7 +1093,7 @@ l9rLayout.Initialize = function()
 
     for (var i in l9rLayout.cols) {
 
-        var wl = l4iStorage.Get(l4iSession.Get("htap-speceditor-modname") +"_laysize_"+ l9rLayout.cols[i].id);
+        var wl = l4iStorage.Get(l4iSession.Get("htp-speceditor-modname") +"_laysize_"+ l9rLayout.cols[i].id);
 
         if (wl !== undefined && parseInt(wl) > 0) {
             l9rLayout.cols[i].width = parseInt(wl);
@@ -1173,9 +1173,9 @@ l9rLayout.BindRefresh = function()
             l9rLayout.cols[leftIndexId].width = leftWidthNew;
             l9rLayout.cols[rightIndexId].width = rightWidthNew;
 
-            l4iStorage.Set(l4iSession.Get("htap-speceditor-modname") +"_laysize_"+ leftLayId, leftWidthNew);
+            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") +"_laysize_"+ leftLayId, leftWidthNew);
             l4iSession.Set("laysize_"+ leftLayId, leftWidthNew);
-            l4iStorage.Set(l4iSession.Get("htap-speceditor-modname") +"_laysize_"+ rightLayId, rightWidthNew);
+            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") +"_laysize_"+ rightLayId, rightWidthNew);
             l4iSession.Set("laysize_"+ rightLayId, rightWidthNew);
 
             setTimeout(function() {

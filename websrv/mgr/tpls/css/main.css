@@ -2,15 +2,15 @@ body {
     padding: 0px;
 }
 
-.htapm-font-fixspace {
+.htpm-font-fixspace {
     font-family: 'Courier New', Courier, monospace, sans-serif;
 }
 
-.htapm-hide {
+.htpm-hide {
   display: none !important;
 }
 
-#htapm-topbar {
+#htpm-topbar {
   padding: 0 15px;
   margin-bottom: 10px;
   background-color: #fff;
@@ -22,7 +22,7 @@ body {
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
-.htapm-topbar-collapse {
+.htpm-topbar-collapse {
   position: relative;
   display: block !important;
   height: auto !important;
@@ -32,7 +32,7 @@ body {
 }
 
 
-.htapm-nav {
+.htpm-nav {
   position: relative;
   list-style: none;
   padding: 0;
@@ -43,16 +43,16 @@ body {
   vertical-align: middle;
 }
 
-.htapm-nav:first-child {
+.htpm-nav:first-child {
   margin-left: 0;
 }
 
-.htapm-nav-right {
+.htpm-nav-right {
   float: right !important;
   margin-right: 2px;
 }
 
-.htapm-nav > li {
+.htpm-nav > li {
   position: relative;
   padding: 0;
   display: inline-block;
@@ -61,11 +61,11 @@ body {
   line-height: 50px;
 }
 
-.htapm-nav > li:first-child {
+.htpm-nav > li:first-child {
   margin-left: 0;
 }
 
-.htapm-nav > li > a {
+.htpm-nav > li > a {
   padding: 0 10px;
   display: block;
   text-decoration: none;
@@ -74,22 +74,22 @@ body {
   font-size: 16px;
 }
 
-.htapm-nav > li > a:hover {
+.htpm-nav > li > a:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-.htapm-nav > li > a.active {
+.htpm-nav > li > a.active {
   color: #000;
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.htapm-topbar-logo {
+.htpm-topbar-logo {
   margin-right: 10px;
   max-height: 30px;
   max-width: 100px;
 }
 
-.htapm-topbar-brand {
+.htpm-topbar-brand {
   font-size: 16px;
   font-weight: bold;
 }
@@ -99,41 +99,41 @@ body {
   margin: 0 auto;
 }
 
-.htapm-query-input {
+.htpm-query-input {
     padding-left: 30px !important;
     background: url(../img/search-16.png) no-repeat 8px;
     width: 200px;
 }
 
-.htapm-editor-cm {
+.htpm-editor-cm {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
-#htapm-node-workspace {
+#htpm-node-workspace {
   clear: both;
   /*padding: 0 10px;*/
   /*background-color: #fff;*/
   margin: 0 10px 10px 10px;
 }
 
-#htapm-nodels {
+#htpm-nodels {
   background-color: #fff;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
-#htapm-nodels-pager {
+#htpm-nodels-pager {
   margin: 0;
   padding: 0;
   text-align: center;
 }
 
-#htapm-nodels-pager ul {
+#htpm-nodels-pager ul {
   margin: 0;
   padding: 0 !important;
 }
 
-#htapm-node-navbar {
+#htpm-node-navbar {
   clear: both;
   height: 30px;
   padding: 0 10px;
@@ -141,7 +141,7 @@ body {
   display: block;
 }
 
-.htapm-node-nav {
+.htpm-node-nav {
   position: relative;
   list-style: none;
   padding: 0;
@@ -152,11 +152,11 @@ body {
   vertical-align: middle;
 }
 
-.htapm-node-nav:first-child {
+.htpm-node-nav:first-child {
   margin-left: 0 !important;
 }
 
-.htapm-node-nav > li {
+.htpm-node-nav > li {
   position: relative;
   padding: 0;
   margin: 0 0 0 10px;
@@ -167,11 +167,11 @@ body {
   float: left;
 }
 
-.htapm-node-nav > li:first-child {
+.htpm-node-nav > li:first-child {
   margin-left: 0;
 }
 
-.htapm-node-nav > li > a {
+.htpm-node-nav > li > a {
   padding: 0 10px;
   display: block;
   text-decoration: none;
@@ -180,7 +180,7 @@ body {
   font-size: 12px;
 }
 
-.htapm-node-nav > li > a:hover {
+.htpm-node-nav > li > a:hover {
   padding: 0 10px;
   display: block;
   text-decoration: none;
@@ -190,21 +190,21 @@ body {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.htapm-node-nav > li.active,
-.htapm-node-nav > li > a.active {
+.htpm-node-nav > li.active,
+.htpm-node-nav > li > a.active {
   background-color: #333;
   color: #fff;
 }
 
-.htapm-node-nav > li.active > a {
+.htpm-node-nav > li.active > a {
   color: #fff;
 }
 
-#htapm-node-optools button {
+#htpm-node-optools button {
   font-size: 10px;
 }
 
-#htapm-node-optools input {
+#htpm-node-optools input {
   margin: 0;
   padding: 2px;
   height: 30px;
@@ -238,11 +238,11 @@ body {
   color: #fff !important;
 }
 
-#htapm-nodeset-fields div:last-child {
+#htpm-nodeset-fields div:last-child {
   margin-bottom: 0;
 }
 
-#htapm-nodeset .CodeMirror {
+#htpm-nodeset .CodeMirror {
     clear: both;
     border-right: 1px solid #ccc;
     font-size: 13px;
@@ -250,61 +250,61 @@ body {
     /*height: auto;*/
 }
 
-.htapm-div-light {
+.htpm-div-light {
   clear: both;
   background-color: #fff;
   margin: 0 10px;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
-#htapm-nodeset-laymain {
+#htpm-nodeset-laymain {
   background-color: #fff;
   padding: 10px;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
-#htapm-nodeset-layside {
+#htpm-nodeset-layside {
   margin: 0 0 0 10px;
   background-color: transparent;
 }
 
-.htapm-nodeset-tpltext label {
+.htpm-nodeset-tpltext label {
   margin: 0;
   width: 100%;
   border-bottom: 1px solid #666;
 }
 
-.htapm-nodeset-tpltext label a {
+.htpm-nodeset-tpltext label a {
   text-decoration: none;
 }
 
-.htapm-nodeset-tpltext label span.editor-nav {
+.htpm-nodeset-tpltext label span.editor-nav {
   height: 28px;
 }
 
-.htapm-nodeset-tpltext label a.tpltext-editor-item {
+.htpm-nodeset-tpltext label a.tpltext-editor-item {
   margin-left: 5px;
   font-size: 12px;
   padding: 5px 20px;
 }
 
-.htapm-nodeset-tpltext label a.active {
+.htpm-nodeset-tpltext label a.active {
   background-color: #666;
   color: #fff;
 }
 
-.htapm-nodeset-tpltext label a:hover {
+.htpm-nodeset-tpltext label a:hover {
   background-color: #888;
   color: #fff;
   cursor: pointer;
 }
 
-.htapm-nodeset-tpltext table.editor-fra {
+.htpm-nodeset-tpltext table.editor-fra {
   margin: 0;
 }
 
-#htapm-termls,
-#htapm-termset {
+#htpm-termls,
+#htpm-termset {
   background-color: #fff;
   padding: 10px;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
@@ -361,7 +361,7 @@ body {
   background-color: #444;
 }
 
-.htap-subnav {
+.htp-subnav {
   position: relative;
   list-style: none;
   padding: 0;
@@ -370,7 +370,7 @@ body {
   display: table;
 }
 
-.htap-subnav > a {
+.htp-subnav > a {
   display: table-cell;
   margin-right: 20px;
   vertical-align:middle;
@@ -381,25 +381,25 @@ body {
   border-radius: 3px;
 }
 
-.htap-subnav > a:hover {
+.htp-subnav > a:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.htap-subnav > a.active {
+.htp-subnav > a.active {
   color: #fff;
   background-color: #428bca;
 }
 
-.htapm-pager {
+.htpm-pager {
   display: inline-block;
   padding-left: 0;
   margin: 10px 0;
   border-radius: 4px;
 }
-.htapm-pager > li {
+.htpm-pager > li {
   display: inline;
 }
-.htapm-pager > li > a {
+.htpm-pager > li > a {
   position: relative;
   float: left;
   padding: 5px 10px;
@@ -412,24 +412,24 @@ body {
   border: 1px solid #ddd;
   line-height: 20px;
 }
-.htapm-pager > li:first-child > a {
+.htpm-pager > li:first-child > a {
   margin-left: 0;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
-.htapm-pager > li:last-child > a {
+.htpm-pager > li:last-child > a {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.htapm-pager > li > a:hover,
-.htapm-pager > li > a:focus {
+.htpm-pager > li > a:hover,
+.htpm-pager > li > a:focus {
   z-index: 2;
   background-color: #eee;
   border-color: #ddd;
 }
-.htapm-pager > .active > a,
-.htapm-pager > .active > a:hover,
-.htapm-pager > .active > a:focus {
+.htpm-pager > .active > a,
+.htpm-pager > .active > a:hover,
+.htpm-pager > .active > a:focus {
   z-index: 3;
   color: #fff;
   cursor: default;
@@ -437,15 +437,15 @@ body {
   border-color: #333;
 }
 
-#htapm-s2-objls-navbar {
+#htpm-s2-objls-navbar {
   padding: 0 10px;
 }
 
-#htapm-s2-objls-navbar .htapm-breadcrumb:first-child {
+#htpm-s2-objls-navbar .htpm-breadcrumb:first-child {
   margin-left: 0 !important;
 }
 
-.htapm-breadcrumb {
+.htpm-breadcrumb {
   position: relative;
   list-style: none;
   background-color: #f5f5f5;
@@ -455,7 +455,7 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
-.htapm-breadcrumb > li {
+.htpm-breadcrumb > li {
   position: relative;
   padding: 0;
   margin: 0 0 0 10px;
@@ -465,14 +465,14 @@ body {
   line-height: 30px;
   float: left;
 }
-.htapm-breadcrumb > li + li:before {
+.htpm-breadcrumb > li + li:before {
   padding: 0 5px;
   color: #ccc;
   content: "/\00a0";
 }
-.htapm-breadcrumb > li.active {
+.htpm-breadcrumb > li.active {
   color: #777;
 }
-.htapm-breadcrumb > li:first-child {
+.htpm-breadcrumb > li:first-child {
   margin-left: 0 !important;
 }
