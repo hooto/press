@@ -1,4 +1,4 @@
-// Copyright 2015 lessOS.com, All rights reserved.
+// Copyright 2015~2017 hooto Author, All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,28 +15,26 @@
 package frontend
 
 import (
-	// "bufio"
-	"crypto/md5"
-	"fmt"
+	"bytes"
 	"image"
-	// "image/gif"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"io"
-	// "math/rand"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	gd "github.com/eryx/go-gd"
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/sync"
+
 	// "github.com/shanemhansen/gogd"
-
-	"github.com/disintegration/imaging"
-
+	// "github.com/bamiaux/rez"
+	// "github.com/disintegration/imaging"
+	// gd "github.com/eryx/go-gd"
 	"github.com/nfnt/resize"
 
 	"code.hooto.com/hooto/hootopress/config"
@@ -51,277 +49,179 @@ type S2 struct {
 	*httpsrv.Controller
 }
 
-func (c S2) Index4Action() {
-
-	c.AutoRender = false
-
-	var (
-		ipn         = c.Params.Get("ipn")
-		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
-		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
-	)
-
-	if ipn == "" {
-
-		if objfp, err := os.Open(abs_path); err == nil {
-
-			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-			http.ServeContent(c.Response.Out, c.Request.Request, object_path, time.Now(), objfp)
-			objfp.Close()
-
-		} else {
-			c.RenderError(404, "Object Not Found")
-		}
-
-		return
-	}
+// // rez
+// func (c S2) Index_rezAction() {
+
+// 	c.AutoRender = false
+
+// 	var (
+// 		ipn         = c.Params.Get("ipn")
+// 		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
+// 		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
+// 	)
+
+// 	if ipn == "" {
+
+// 		if objfp, err := os.Open(abs_path); err == nil {
+
+// 			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+// 			http.ServeContent(c.Response.Out, c.Request.Request, object_path, time.Now(), objfp)
+// 			objfp.Close()
+
+// 		} else {
+// 			c.RenderError(404, "Object Not Found")
+// 		}
+
+// 		return
+// 	}
+
+// 	ext := strings.ToLower(filepath.Ext(object_path))
+
+// 	switch ext {
+
+// 	case ".jpg", ".jpeg", ".png", ".gif":
+// 		//
+
+// 	default:
+// 		c.RenderError(400, "Bad Request #01")
+// 		return
+// 	}
+
+// 	h1 := md5.New()
+// 	io.WriteString(h1, object_path+"."+ipn)
+// 	hid := fmt.Sprintf("%x", h1.Sum(nil))[0:12]
+// 	if rs := store.CacheGet(hid); rs.Status == "OK" {
+
+// 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+
+// 		switch ext {
+// 		case ".jpg", ".jpeg":
+// 			c.Response.Out.Header().Set("Content-type", "image/jpeg")
+// 		case ".png":
+// 			c.Response.Out.Header().Set("Content-type", "image/png")
+// 		case ".git":
+// 			c.Response.Out.Header().Set("Content-type", "image/gif")
+// 		}
+
+// 		c.Response.Out.Write(rs.Bytes())
+// 		return
+// 	}
+
+// 	width, height, crop := 200, 200, true
 
-	ext := strings.ToLower(filepath.Ext(object_path))
+// 	switch ipn {
+// 	case "i6040":
+// 		width, height = 60, 40
+// 	case "s800":
+// 		width, height, crop = 800, 800, false
+// 	case "s800x":
+// 		width, height, crop = 800, 8000, false
+// 	case "thumb":
+// 		width, height = 150, 150
+// 	case "medium":
+// 		width, height = 300, 168
+// 	case "large":
+// 		width, height = 800, 450
+// 	}
+
+// 	pn := rezlocker.Pull()
+// 	defer rezlocker.Push(pn)
+
+// 	defer func() {
+// 		if x := recover(); x != nil {
+// 			fmt.Println(x)
+// 			c.RenderError(404, "Object Not Found")
+// 		}
+// 	}()
+
+// 	fp, err := os.Open(abs_path)
+// 	if err != nil {
+// 		return
+// 	}
+// 	defer fp.Close()
+
+// 	//
+// 	var imgs image.Image
+
+// 	switch ext {
+
+// 	case ".jpg", ".jpeg":
+// 		imgs, err = jpeg.Decode(fp)
+// 	case ".png":
+// 		imgs, err = png.Decode(fp)
+
+// 	default:
+// 		fmt.Println("error format")
+// 		return
+// 	}
 
-	switch ext {
+// 	if err != nil {
+// 		return
+// 	}
 
-	case ".jpg", ".jpeg", ".png", ".gif":
-		//
+// 	//
+// 	// var imgd image.Image
 
-	default:
-		c.RenderError(400, "Bad Request #01")
-		return
-	}
+// 	if crop {
+// 		// imgd = resize.Thumbnail(uint(width), uint(height), imgs, resize.Lanczos3)
+// 	} else {
+// 		// imgd = resize.Resize(uint(width), uint(height), imgs, resize.Lanczos3)
+// 	}
 
-	h1 := md5.New()
-	io.WriteString(h1, object_path+"."+ipn)
-	hid := fmt.Sprintf("%x", h1.Sum(nil))[0:12]
-	if rs := store.CacheGet(hid); rs.Status == "OK" {
+// 	// src, ok := imgs.(*image.YCbCr)
+// 	// if !ok {
+// 	// 	fmt.Println("001")
+// 	// 	return
+// 	// }
 
-		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+// 	p := imgs.Bounds().Size()
+// 	w, h := width, getSize(width, p.Y, p.X)
+// 	if p.X < p.Y {
+// 		w, h = getSize(height, p.X, p.Y), height
+// 	}
 
-		switch ext {
-		case ".jpg", ".jpeg":
-			c.Response.Out.Header().Set("Content-type", "image/jpeg")
-		case ".png":
-			c.Response.Out.Header().Set("Content-type", "image/png")
-		case ".git":
-			c.Response.Out.Header().Set("Content-type", "image/gif")
-		}
+// 	imgd := image.NewYCbCr(image.Rect(0, 0, w, h), image.YCbCrSubsampleRatio444)
 
-		c.Response.Out.Write(rs.Bytes())
-		return
-	}
+// 	if err := rez.Convert(imgd, imgs, rez.NewBilinearFilter()); err != nil {
+// 		fmt.Println("002", err)
+// 		return
+// 	}
 
-	width, height, crop := 200, 200, true
+// 	// buf := new(bytes.Buffer)
 
-	switch ipn {
-	case "i6040":
-		width, height = 60, 40
-	case "s800":
-		width, height, crop = 800, 800, false
-	case "s800x":
-		width, height, crop = 800, 8000, false
-	case "thumb":
-		width, height = 150, 150
-	case "medium":
-		width, height = 300, 168
-	case "large":
-		width, height = 800, 450
-	}
+// 	switch ext {
 
-	pn := rezlocker.Pull()
-	defer rezlocker.Push(pn)
+// 	case ".jpg", ".jpeg":
 
-	defer func() {
-		if x := recover(); x != nil {
-			c.RenderError(404, "Object Not Found")
-		}
-	}()
+// 		c.Response.Out.Header().Set("Content-type", "image/jpeg")
+// 		// jpeg.Encode(buf, imgd, &jpeg.Options{90})
+// 		jpeg.Encode(c.Response.Out, imgd, &jpeg.Options{90})
 
-	fp, err := os.Open(abs_path)
-	if err != nil {
-		return
-	}
-	defer fp.Close()
+// 	case ".png":
 
-	//
-	var imgs image.Image
+// 		c.Response.Out.Header().Set("Content-type", "image/png")
+// 		png.Encode(c.Response.Out, imgd)
 
-	switch ext {
+// 	case ".gif":
 
-	case ".jpg", ".jpeg":
-		imgs, err = jpeg.Decode(fp)
-	case ".png":
-		imgs, err = png.Decode(fp)
-	}
+// 		c.Response.Out.Header().Set("Content-type", "image/gif")
+// 		// gif.Encode(buf, imgd, &gif.Options{NumColors: 256})
+// 	}
 
-	if err != nil {
-		return
-	}
+// 	// if len(buf) > 10 {
+// 	// 	// store.CacheSetBytes([]byte(hid), buf, int64(36000+rand.Intn(36000))*1000)
+// 	// }
 
-	//
-	var imgd image.Image
+// 	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+// 	// c.Response.Out.Write(buf.Bytes())
+// }
 
-	if crop {
-		imgd = resize.Thumbnail(uint(width), uint(height), imgs, resize.Lanczos3)
-	} else {
-		imgd = resize.Resize(uint(width), uint(height), imgs, resize.Lanczos3)
-	}
+// func getSize(a, b, c int) int {
+// 	d := a * b / c
+// 	return (d + 1) & -1
+// }
 
-	// buf := new(bytes.Buffer)
-
-	switch ext {
-
-	case ".jpg", ".jpeg":
-
-		c.Response.Out.Header().Set("Content-type", "image/jpeg")
-		// jpeg.Encode(buf, imgd, &jpeg.Options{90})
-		jpeg.Encode(c.Response.Out, imgd, &jpeg.Options{90})
-
-	case ".png":
-
-		c.Response.Out.Header().Set("Content-type", "image/png")
-		png.Encode(c.Response.Out, imgd)
-
-	case ".gif":
-
-		c.Response.Out.Header().Set("Content-type", "image/gif")
-		// gif.Encode(buf, imgd, &gif.Options{NumColors: 256})
-	}
-
-	// if len(buf) > 10 {
-	// 	// store.CacheSetBytes([]byte(hid), buf, int64(36000+rand.Intn(36000))*1000)
-	// }
-
-	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-	// c.Response.Out.Write(buf.Bytes())
-}
-
-func (c S2) Index3Action() {
-
-	c.AutoRender = false
-
-	var (
-		ipn         = c.Params.Get("ipn")
-		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
-		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
-	)
-
-	if ipn == "" {
-
-		if objfp, err := os.Open(abs_path); err == nil {
-
-			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-			http.ServeContent(c.Response.Out, c.Request.Request, object_path, time.Now(), objfp)
-			objfp.Close()
-
-		} else {
-			c.RenderError(404, "Object Not Found")
-		}
-
-		return
-	}
-
-	ext := strings.ToLower(filepath.Ext(object_path))
-
-	switch ext {
-
-	case ".jpg", ".jpeg", ".png", ".gif":
-		//
-
-	default:
-		c.RenderError(400, "Bad Request #01")
-		return
-	}
-
-	h1 := md5.New()
-	io.WriteString(h1, object_path+"."+ipn)
-	hid := fmt.Sprintf("%x", h1.Sum(nil))[0:12]
-	if rs := store.CacheGet(hid); rs.Status == "OK" {
-
-		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-
-		switch ext {
-		case ".jpg", ".jpeg":
-			c.Response.Out.Header().Set("Content-type", "image/jpeg")
-		case ".png":
-			c.Response.Out.Header().Set("Content-type", "image/png")
-		case ".git":
-			c.Response.Out.Header().Set("Content-type", "image/gif")
-		}
-
-		c.Response.Out.Write(rs.Bytes())
-		return
-	}
-
-	width, height, crop := 200, 200, true
-
-	switch ipn {
-	case "i6040":
-		width, height = 60, 40
-	case "s800":
-		width, height, crop = 800, 800, false
-	case "s800x":
-		width, height, crop = 800, 8000, false
-	case "thumb":
-		width, height = 150, 150
-	case "medium":
-		width, height = 300, 168
-	case "large":
-		width, height = 800, 450
-	}
-
-	pn := rezlocker.Pull()
-	defer rezlocker.Push(pn)
-
-	defer func() {
-		if x := recover(); x != nil {
-			c.RenderError(404, "Object Not Found")
-		}
-	}()
-
-	imgs, err := imaging.Open(abs_path)
-	if err != nil {
-		return
-	}
-
-	var imgd *image.NRGBA
-
-	if crop {
-		imgd = imaging.Thumbnail(imgs, width, height, imaging.Box)
-	} else {
-		imgd = imaging.Resize(imgs, width, height, imaging.Box)
-	}
-
-	if imgd == nil {
-		return
-	}
-
-	// buf := new(bytes.Buffer)
-
-	switch ext {
-
-	case ".jpg", ".jpeg":
-
-		c.Response.Out.Header().Set("Content-type", "image/jpeg")
-		// jpeg.Encode(buf, imgd, &jpeg.Options{90})
-		jpeg.Encode(c.Response.Out, imgd, &jpeg.Options{90})
-
-	case ".png":
-
-		c.Response.Out.Header().Set("Content-type", "image/png")
-		// png.Encode(buf, imgd)
-
-	case ".gif":
-
-		c.Response.Out.Header().Set("Content-type", "image/gif")
-		// gif.Encode(buf, imgd, &gif.Options{NumColors: 256})
-	}
-
-	// if len(buf) > 10 {
-	// 	// store.CacheSetBytes([]byte(hid), buf, int64(36000+rand.Intn(36000))*1000)
-	// }
-
-	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-	// c.Response.Out.Write(buf.Bytes())
-}
-
+// resize
 func (c S2) IndexAction() {
 
 	c.AutoRender = false
@@ -347,60 +247,66 @@ func (c S2) IndexAction() {
 		return
 	}
 
-	ext := strings.ToLower(filepath.Ext(object_path))
+	var (
+		ext       = strings.ToLower(filepath.Ext(object_path))
+		meta_type = ""
+	)
 
 	switch ext {
 
-	case ".jpg", ".jpeg", ".png", ".gif":
-		//
+	case ".jpg", ".jpeg":
+		meta_type = "image/jpeg"
+
+	case ".png":
+		meta_type = "image/png"
+
+	case ".gif":
+		meta_type = "image/gif"
 
 	default:
 		c.RenderError(400, "Bad Request #01")
 		return
 	}
 
-	// h1 := md5.New()
-	// io.WriteString(h1, object_path+"."+ipn)
-	// hid := fmt.Sprintf("%x", h1.Sum(nil))[0:12]
-	// if rs := store.CacheGet(hid); rs.Status == "OK" {
+	hid := "s2." + idhash.HashToHexString([]byte(object_path+"."+ipn), 12)
 
-	// 	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+	if rs := store.CacheGet(hid); rs.Status == "OK" {
 
-	// 	switch ext {
-	// 	case ".jpg", ".jpeg":
-	// 		c.Response.Out.Header().Set("Content-type", "image/jpeg")
-	// 	case ".png":
-	// 		c.Response.Out.Header().Set("Content-type", "image/png")
-	// 	case ".git":
-	// 		c.Response.Out.Header().Set("Content-type", "image/gif")
-	// 	}
+		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+		c.Response.Out.Header().Set("Content-type", meta_type)
+		c.Response.Out.Write(rs.Bytes())
 
-	// 	c.Response.Out.Write(rs.Bytes())
-	// 	return
-	// }
+		return
+	}
 
-	width, height, crop := 2000, 2000, true
+	width, height, crop := 200, 200, true
 
 	switch ipn {
 	case "i6040":
 		width, height = 60, 40
+
 	case "s800":
 		width, height, crop = 800, 800, false
+
 	case "s800x":
 		width, height, crop = 800, 8000, false
+
 	case "thumb":
 		width, height = 150, 150
+
 	case "medium":
 		width, height = 300, 168
+
 	case "large":
 		width, height = 800, 450
+
+	default:
+		c.RenderError(400, "Bad Request (ipn)")
+		return
 	}
 
 	pn := rezlocker.Pull()
 	defer rezlocker.Push(pn)
-
-	// buf := new(bytes.Buffer)
-	// buf.ReadFrom(objfp)
 
 	defer func() {
 		if x := recover(); x != nil {
@@ -408,35 +314,205 @@ func (c S2) IndexAction() {
 		}
 	}()
 
-	out := _img_resize(ext, abs_path, width, height, crop)
-	if len(out) < 10 {
-		c.RenderError(404, "Object Not Found")
+	fp, err := os.Open(abs_path)
+	if err != nil {
+		c.RenderError(400, "Bad Request (invalid object path)")
+		return
+	}
+	defer fp.Close()
+
+	//
+	var src_img image.Image
+
+	switch ext {
+
+	case ".jpg", ".jpeg":
+		src_img, err = jpeg.Decode(fp)
+
+	case ".png":
+		src_img, err = png.Decode(fp)
+
+	case ".gif":
+		src_img, err = gif.Decode(fp)
+	}
+
+	if err != nil {
+		c.RenderError(400, "Bad Request (invalid object format)")
 		return
 	}
 
-	// store.CacheSetBytes([]byte(hid), _bytes_clone(out), int64(864000+rand.Intn(864000))*1000)
+	//
+	var (
+		dst_img image.Image
+		dst_buf = new(bytes.Buffer)
+	)
+
+	if crop {
+		dst_img = resize.Thumbnail(uint(width), uint(height), src_img, resize.Lanczos3)
+	} else {
+		dst_img = resize.Resize(uint(width), uint(height), src_img, resize.Lanczos3)
+	}
 
 	//
 	switch ext {
 
 	case ".jpg", ".jpeg":
-
-		c.Response.Out.Header().Set("Content-type", "image/jpeg")
+		err = jpeg.Encode(dst_buf, dst_img, &jpeg.Options{90})
 
 	case ".png":
-
-		c.Response.Out.Header().Set("Content-type", "image/jpeg")
+		err = png.Encode(dst_buf, dst_img)
 
 	case ".gif":
-
-		c.Response.Out.Header().Set("Content-type", "image/gif")
+		err = gif.Encode(dst_buf, dst_img, &gif.Options{NumColors: 256})
+	}
+	if err != nil {
+		c.RenderError(400, "Bad Request : "+err.Error())
+		return
 	}
 
+	//
+	if dst_buf.Len() > 10 {
+		store.CacheSetBytes([]byte(hid), dst_buf.Bytes(), int64(36000+rand.Intn(36000))*1000)
+	}
+
+	//
+	c.Response.Out.Header().Set("Content-type", meta_type)
 	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-	c.Response.Out.Write(_bytes_clone(out))
+	c.Response.Out.Write(dst_buf.Bytes())
 }
 
-// func (c S2) IndexAction() {
+// // imaging
+// func (c S2) Index_imagingAction() {
+
+// 	c.AutoRender = false
+
+// 	var (
+// 		ipn         = c.Params.Get("ipn")
+// 		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
+// 		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
+// 	)
+
+// 	if ipn == "" {
+
+// 		if objfp, err := os.Open(abs_path); err == nil {
+
+// 			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+// 			http.ServeContent(c.Response.Out, c.Request.Request, object_path, time.Now(), objfp)
+// 			objfp.Close()
+
+// 		} else {
+// 			c.RenderError(404, "Object Not Found")
+// 		}
+
+// 		return
+// 	}
+
+// 	ext := strings.ToLower(filepath.Ext(object_path))
+
+// 	switch ext {
+
+// 	case ".jpg", ".jpeg", ".png", ".gif":
+// 		//
+
+// 	default:
+// 		c.RenderError(400, "Bad Request #01")
+// 		return
+// 	}
+
+// 	h1 := md5.New()
+// 	io.WriteString(h1, object_path+"."+ipn)
+// 	hid := fmt.Sprintf("%x", h1.Sum(nil))[0:12]
+// 	if rs := store.CacheGet(hid); rs.Status == "OK" {
+
+// 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+
+// 		switch ext {
+// 		case ".jpg", ".jpeg":
+// 			c.Response.Out.Header().Set("Content-type", "image/jpeg")
+// 		case ".png":
+// 			c.Response.Out.Header().Set("Content-type", "image/png")
+// 		case ".git":
+// 			c.Response.Out.Header().Set("Content-type", "image/gif")
+// 		}
+
+// 		c.Response.Out.Write(rs.Bytes())
+// 		return
+// 	}
+
+// 	width, height, crop := 200, 200, true
+
+// 	switch ipn {
+// 	case "i6040":
+// 		width, height = 60, 40
+// 	case "s800":
+// 		width, height, crop = 800, 800, false
+// 	case "s800x":
+// 		width, height, crop = 800, 8000, false
+// 	case "thumb":
+// 		width, height = 150, 150
+// 	case "medium":
+// 		width, height = 300, 168
+// 	case "large":
+// 		width, height = 800, 450
+// 	}
+
+// 	pn := rezlocker.Pull()
+// 	defer rezlocker.Push(pn)
+
+// 	defer func() {
+// 		if x := recover(); x != nil {
+// 			c.RenderError(404, "Object Not Found")
+// 		}
+// 	}()
+
+// 	imgs, err := imaging.Open(abs_path)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	var imgd *image.NRGBA
+
+// 	if crop {
+// 		imgd = imaging.Thumbnail(imgs, width, height, imaging.Box)
+// 	} else {
+// 		imgd = imaging.Resize(imgs, width, height, imaging.Box)
+// 	}
+
+// 	if imgd == nil {
+// 		return
+// 	}
+
+// 	// buf := new(bytes.Buffer)
+
+// 	switch ext {
+
+// 	case ".jpg", ".jpeg":
+
+// 		c.Response.Out.Header().Set("Content-type", "image/jpeg")
+// 		// jpeg.Encode(buf, imgd, &jpeg.Options{90})
+// 		jpeg.Encode(c.Response.Out, imgd, &jpeg.Options{90})
+
+// 	case ".png":
+
+// 		c.Response.Out.Header().Set("Content-type", "image/png")
+// 		png.Encode(c.Response.Out, imgd)
+
+// 	case ".gif":
+
+// 		c.Response.Out.Header().Set("Content-type", "image/gif")
+// 		// gif.Encode(buf, imgd, &gif.Options{NumColors: 256})
+// 	}
+
+// 	// if len(buf) > 10 {
+// 	// 	// store.CacheSetBytes([]byte(hid), buf, int64(36000+rand.Intn(36000))*1000)
+// 	// }
+
+// 	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+// 	// c.Response.Out.Write(buf.Bytes())
+// }
+
+// // gd
+// func (c S2) Index_gdAction() {
 
 // 	c.AutoRender = false
 
@@ -516,54 +592,17 @@ func (c S2) IndexAction() {
 // 	// buf := new(bytes.Buffer)
 // 	// buf.ReadFrom(objfp)
 
-// 	// defer func() {
-// 	// 	if x := recover(); x != nil {
-// 	// 		fmt.Println(x)
-// 	// 		c.RenderError(404, "Object Not Found 2")
-// 	// 	}
-// 	// }()
+// 	defer func() {
+// 		if x := recover(); x != nil {
+// 			c.RenderError(404, "Object Not Found")
+// 		}
+// 	}()
 
-// 	var imageio gogd.ImageWriter
-// 	switch ext {
-
-// 	case ".jpg", ".jpeg":
-// 		imageio = &gogd.JpegIO{Quality: 90}
-
-// 	case ".png":
-// 		imageio = new(gogd.PngIO)
-
-// 	case ".gif":
-// 		imageio = new(gogd.GifIO)
-
-// 	default:
-// 		c.RenderError(400, "Bad Request #01")
+// 	out := _img_resize(ext, abs_path, width, height, crop)
+// 	if len(out) < 10 {
+// 		c.RenderError(404, "Object Not Found")
 // 		return
 // 	}
-
-// 	fp, err := os.Open(abs_path)
-// 	if err != nil {
-// 		c.RenderError(400, "Bad Request #01")
-// 		return
-// 	}
-// 	defer fp.Close()
-
-// 	id := bufio.NewReader(fp)
-
-// 	srcimg := imageio.Decode(id)
-// 	if !srcimg.Valid() {
-// 		c.RenderError(400, "Bad Request #01")
-// 		return
-// 	}
-// 	defer srcimg.Destroy()
-
-// 	simw, simh := srcimg.Size()
-
-// 	sx, sy, sw, sh, dstw, dsth, _ := _resize_dimensions(simw, simh, width, height, crop)
-
-// 	dstimg := gogd.ImageCreateTrueColor(dstw, dsth)
-// 	defer dstimg.Destroy()
-
-// 	srcimg.CopyResampled(dstimg, 0, 0, sx, sy, dstw, dsth, sw, sh)
 
 // 	// store.CacheSetBytes([]byte(hid), _bytes_clone(out), int64(864000+rand.Intn(864000))*1000)
 
@@ -584,116 +623,116 @@ func (c S2) IndexAction() {
 // 	}
 
 // 	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-// 	imageio.Encode(dstimg, c.Response.Out)
+// 	c.Response.Out.Write(_bytes_clone(out))
 // }
 
-func _bytes_clone(src []byte) []byte {
+// func _bytes_clone(src []byte) []byte {
 
-	dst := make([]byte, len(src))
-	copy(dst, src)
+// 	dst := make([]byte, len(src))
+// 	copy(dst, src)
 
-	return dst
-}
+// 	return dst
+// }
 
-func _img_resize(ext, abs_path string, width, height int, crop bool) []byte {
+// func _img_resize(ext, abs_path string, width, height int, crop bool) []byte {
 
-	var out []byte
+// 	var out []byte
 
-	ims := create_image(ext, abs_path)
-	if ims == nil {
-		return out
-	}
-	defer ims.Destroy()
+// 	ims := create_image(ext, abs_path)
+// 	if ims == nil {
+// 		return out
+// 	}
+// 	defer ims.Destroy()
 
-	sx, sy, sw, sh, dstw, dsth, _ := _resize_dimensions(ims.Sx(), ims.Sy(), width, height, crop)
+// 	sx, sy, sw, sh, dstw, dsth, _ := _resize_dimensions(ims.Sx(), ims.Sy(), width, height, crop)
 
-	imd := gd.CreateTrueColor(dstw, dsth)
-	defer imd.Destroy()
+// 	imd := gd.CreateTrueColor(dstw, dsth)
+// 	defer imd.Destroy()
 
-	if ext == ".png" {
-		imd.AlphaBlending(false)
-		imd.SaveAlpha(true)
-	}
+// 	if ext == ".png" {
+// 		imd.AlphaBlending(false)
+// 		imd.SaveAlpha(true)
+// 	}
 
-	ims.CopyResampled(imd, 0, 0, sx, sy, dstw, dsth, sw, sh)
+// 	ims.CopyResampled(imd, 0, 0, sx, sy, dstw, dsth, sw, sh)
 
-	switch ext {
+// 	switch ext {
 
-	case ".jpg", ".jpeg":
-		out = gd.ImageToJpegBuffer(imd, 85)
+// 	case ".jpg", ".jpeg":
+// 		out = gd.ImageToJpegBuffer(imd, 85)
 
-	case ".png":
-		out = gd.ImageToPngBuffer(imd)
+// 	case ".png":
+// 		out = gd.ImageToPngBuffer(imd)
 
-	case ".gif":
-		out = gd.ImageToGifBuffer(imd)
+// 	case ".gif":
+// 		out = gd.ImageToGifBuffer(imd)
 
-	}
+// 	}
 
-	return _bytes_clone(out)
-}
+// 	return _bytes_clone(out)
+// }
 
-func create_image(ext, abs_path string) *gd.Image {
+// func create_image(ext, abs_path string) *gd.Image {
 
-	switch ext {
+// 	switch ext {
 
-	case ".jpg", ".jpeg":
+// 	case ".jpg", ".jpeg":
 
-		return gd.CreateFromJpeg(abs_path)
+// 		return gd.CreateFromJpeg(abs_path)
 
-	case ".png":
+// 	case ".png":
 
-		return gd.CreateFromPng(abs_path)
+// 		return gd.CreateFromPng(abs_path)
 
-	case ".gif":
+// 	case ".gif":
 
-		return gd.CreateFromGif(abs_path)
-	}
+// 		return gd.CreateFromGif(abs_path)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func _resize_dimensions(srcw, srch, dstw, dsth int, crop bool) (sx, sy, sw, sh, dw, dh int, do bool) {
+// func _resize_dimensions(srcw, srch, dstw, dsth int, crop bool) (sx, sy, sw, sh, dw, dh int, do bool) {
 
-	if dstw > srcw && dsth > srch {
-		return 0, 0, srcw, srch, srcw, srch, true
-	}
+// 	if dstw > srcw && dsth > srch {
+// 		return 0, 0, srcw, srch, srcw, srch, true
+// 	}
 
-	if !crop {
+// 	if !crop {
 
-		cropw_ratio := float32(dstw) / float32(srcw)
-		croph_ratio := float32(dsth) / float32(srch)
+// 		cropw_ratio := float32(dstw) / float32(srcw)
+// 		croph_ratio := float32(dsth) / float32(srch)
 
-		if cropw_ratio < croph_ratio {
-			dsth = int(cropw_ratio * float32(srch))
-		} else {
-			dstw = int(croph_ratio * float32(srcw))
-		}
-	}
+// 		if cropw_ratio < croph_ratio {
+// 			dsth = int(cropw_ratio * float32(srch))
+// 		} else {
+// 			dstw = int(croph_ratio * float32(srcw))
+// 		}
+// 	}
 
-	dst_ratio := float32(dstw) / float32(dsth)
-	sdw := int(_float_min(float32(srch)*dst_ratio, float32(srcw)))
-	sdh := int(_float_min(float32(srcw)/dst_ratio, float32(srch)))
+// 	dst_ratio := float32(dstw) / float32(dsth)
+// 	sdw := int(_float_min(float32(srch)*dst_ratio, float32(srcw)))
+// 	sdh := int(_float_min(float32(srcw)/dst_ratio, float32(srch)))
 
-	if dstw > sdw {
-		dstw = sdw
-	}
+// 	if dstw > sdw {
+// 		dstw = sdw
+// 	}
 
-	if dsth > sdh {
-		dsth = sdh
-	}
+// 	if dsth > sdh {
+// 		dsth = sdh
+// 	}
 
-	sdx := int((srcw - sdw) / 2)
-	sdy := int((srch - sdh) / 2)
+// 	sdx := int((srcw - sdw) / 2)
+// 	sdy := int((srch - sdh) / 2)
 
-	return sdx, sdy, sdw, sdh, dstw, dsth, true
-}
+// 	return sdx, sdy, sdw, sdh, dstw, dsth, true
+// }
 
-func _float_min(a, b float32) float32 {
+// func _float_min(a, b float32) float32 {
 
-	if a < b {
-		return a
-	}
+// 	if a < b {
+// 		return a
+// 	}
 
-	return b
-}
+// 	return b
+// }

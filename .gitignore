@@ -3,7 +3,7 @@ _*/
 si.go
 bin/*
 var/*
-webui/htap/img/src
+webui/htp/img/src
 webui/purecss
 misc/import.go
 misc/cm-compress.go

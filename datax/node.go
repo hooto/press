@@ -1,4 +1,4 @@
-// Copyright 2015 lessOS.com, All rights reserved.
+// Copyright 2015~2017 hooto Author, All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ func Worker() {
 
 			for {
 
-				ls := store.CacheDB.KvScan([]byte("access_counter"), []byte{}, uint32(limit)).Hash()
+				ls := store.CacheDB.KvScan([]byte("access_counter"), []byte("access_counter"), uint32(limit)).Hash()
 
 				imap := map[string]int{}
 

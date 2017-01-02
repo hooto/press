@@ -1,4 +1,4 @@
-// Copyright 2015 lessOS.com, All rights reserved.
+// Copyright 2015~2017 hooto Author, All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ func init() {
 		"", "",
 	})
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_footer_copyright", "2016 Demo",
+		"frontend_footer_copyright", "2015~2017 hooto.com",
 		"", "",
 	})
 
@@ -142,7 +142,7 @@ func Initialize(prefix string) error {
 	}
 
 	if Config.AppTitle == "" {
-		Config.AppTitle = "hooto AlphaPress"
+		Config.AppTitle = "HootoPress"
 	}
 
 	// Setting CAPTCHA

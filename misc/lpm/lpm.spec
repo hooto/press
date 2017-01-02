@@ -19,9 +19,9 @@ etc/main.json.tpl
 i18n/
 modules/
 websrv/mgr/tpls/
-webui/htap/img/alpha2.png
-webui/htap/img/search-16.png
-webui/htap/img/ap.ico
+webui/htp/img/alpha2.png
+webui/htp/img/search-16.png
+webui/htp/img/ap.ico
 webui/bs/3.3/fonts/
 
 
@@ -32,7 +32,7 @@ webui/lessui/js/lessui.js
 webui/lessui/js/browser-detect.js
 webui/lessui/js/eventproxy.js
 webui/lessui/js/sea.js
-webui/htap/js/
+webui/htp/js/
 websrv/mgr/tpls/js/
 modules/
 
@@ -42,7 +42,7 @@ webui/bs/3.3/css/
 webui/cm/5/
 webui/purecss/pure.css
 webui/lessui/css/lessui.css
-webui/htap/css/
+webui/htp/css/
 websrv/mgr/tpls/css/
 modules/
 
@@ -53,4 +53,4 @@ websrv/mgr/tpls/
 websrv/mgr/views/
 
 %png_compress
-webui/htap/img/
+webui/htp/img/
