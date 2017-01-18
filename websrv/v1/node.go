@@ -421,43 +421,46 @@ func (c Node) DelAction() {
 	}
 
 	//
-	table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
-
-	q := rdobase.NewQuerySet().From(table).Limit(1)
-	q.Where.And("id", c.Params.Get("id"))
-
-	rs, err := dcn.Base.Query(q)
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	if len(rs) < 1 {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "404",
-			Message: "Node Not Found",
-		}
-		return
-	}
-
 	set := map[string]interface{}{
 		"updated": rdobase.TimeNow("datetime"),
 		"status":  0,
 	}
 
-	ft := rdobase.NewFilter()
-	ft.And("id", c.Params.Get("id"))
-	_, err = dcn.Base.Update(table, set, ft)
+	//
+	table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "500",
-			Message: err.Error(),
+	//
+	ids := strings.Split(c.Params.Get("id"), ",")
+
+	for _, id := range ids {
+
+		q := rdobase.NewQuerySet().From(table).Limit(1)
+		q.Where.And("id", id)
+
+		if rs, err := dcn.Base.Query(q); err != nil {
+			rsp.Error = &types.ErrorMeta{
+				Code:    "500",
+				Message: "Can not pull database instance",
+			}
+			return
+		} else if len(rs) < 1 {
+			rsp.Error = &types.ErrorMeta{
+				Code:    "404",
+				Message: "Node Not Found",
+			}
+			return
 		}
-		return
+
+		ft := rdobase.NewFilter()
+		ft.And("id", id)
+
+		if _, err = dcn.Base.Update(table, set, ft); err != nil {
+			rsp.Error = &types.ErrorMeta{
+				Code:    "500",
+				Message: fmt.Sprintf("id:%s err:%s", id, err.Error()),
+			}
+			return
+		}
 	}
 
 	rsp.Kind = "Node"

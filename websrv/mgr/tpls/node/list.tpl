@@ -16,11 +16,20 @@
         value="">
     </form>
   </li>
+  <li id="htpm-nodels-batch-select-todo-btn" 
+    class="pure-button btapm-btn btapm-btn-primary" style="display:none">
+    <a href="#" onclick="htpNode.ListBatchSelectTodo()">
+      Select Contents todo ...
+    </a>
+  </li>
 </div>
 
 <script id="htpm-nodels-tpl" type="text/html">  
   <thead>
     <tr>
+      <th width="20">
+        <input class="row-checkbox htpm-nodels-chk-all" type="checkbox" onclick="htpNode.ListBatchSelectAll()">
+      </th>
       <th>Title</th>
       <th>Status</th>
       {[if (it.model.extensions.access_counter) { ]}<th>Access</th>{[ } ]}
@@ -32,6 +41,10 @@
   <tbody>
   {[~it.items :v]}
     <tr>
+      <td>
+        <input class="row-checkbox htpm-nodels-chk-item" type="checkbox" value="{[=v.id]}"
+          onclick="htpNode.ListBatchSelectTodoBtnRefresh()">
+      </td>
       <td>
         <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
       </td>

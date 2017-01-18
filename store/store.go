@@ -15,8 +15,6 @@
 package store
 
 import (
-	"fmt"
-
 	"github.com/lessos/lessdb/skv"
 	skvdrv "github.com/lessos/lessdb/skv/goleveldb"
 )
@@ -46,8 +44,6 @@ func CacheSetBytes(key, value []byte, ttl int64) *skv.Reply {
 		return errInit
 	}
 
-	fmt.Println(key, ttl)
-
 	return CacheDB.KvPut(key, value, ttl)
 }
 
@@ -56,8 +52,6 @@ func CacheSetJson(key string, value interface{}, ttl int64) *skv.Reply {
 	if CacheDB == nil {
 		return errInit
 	}
-
-	fmt.Println(key, ttl)
 
 	return CacheDB.KvPutJson([]byte(key), value, ttl)
 }

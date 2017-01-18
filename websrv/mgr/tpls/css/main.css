@@ -122,6 +122,12 @@ body {
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
+#htpm-nodels .row-checkbox {
+  margin: 0;
+  padding: 0;
+  vertical-align: middle !important;
+}
+
 #htpm-nodels-pager {
   margin: 0;
   padding: 0;

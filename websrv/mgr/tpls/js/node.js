@@ -370,6 +370,139 @@ htpNode.ListPage = function(page)
     htpNode.List();
 }
 
+htpNode.ListBatchSelectAll = function()
+{
+    var form = $("#htpm-nodels");
+    if (!form) {
+        return;
+    }
+
+    var checked = false;
+    if (form.find(".htpm-nodels-chk-all").is(':checked')) {
+        checked = true;
+    }
+
+    form.find(".htpm-nodels-chk-item").each(function() {
+        if (checked) {
+            $(this).prop("checked", true);
+        } else {
+            $(this).prop("checked", false);
+        }
+    });
+
+    htpNode.ListBatchSelectTodoBtnRefresh(checked);
+}
+
+htpNode.ListBatchSelectTodoBtnRefresh = function(onoff)
+{
+    if (onoff !== true && onoff !== false) {
+
+        onoff = false;
+
+        $("#htpm-nodels").find(".htpm-nodels-chk-item").each(function() {
+
+            if ($(this).is(":checked")) {
+                onoff = true;
+                return(false);
+            }
+        });
+    }
+
+    if (onoff === true) {
+        $("#htpm-nodels-batch-select-todo-btn").css({"display": "block"});
+    } else {
+        $("#htpm-nodels-batch-select-todo-btn").css({"display": "none"});
+    }
+}
+
+htpNode.ListBatchSelectTodo = function()
+{
+    var form = $("#htpm-nodels");
+    if (!form) {
+        return;
+    }
+
+    var select_num = 0;
+
+    form.find(".htpm-nodels-chk-item").each(function() {
+
+        if ($(this).is(":checked")) {
+            select_num++;
+        }
+    });
+
+    var params = {
+        select_num: select_num,
+    };
+
+    htpMgr.TplCmd("node/list-batch-set", {
+        callback: function(err, data) {
+            
+            if (err) {
+                return;
+            }
+
+            l4iModal.Open({
+                title  : "Batch operation",
+                tplsrc : data,
+                data   : params,
+                width  : 800,
+                height : 300,
+                buttons: [{
+                    title: "Confirm to delete",
+                    onclick : "htpNode.ListBatchSelectTodoDelete()",
+                    style: "btn-danger",
+                }, {
+                    title: "Cancel",
+                    onclick : "l4iModal.Close()",
+                }],
+            });
+        },
+    })
+}
+
+htpNode.ListBatchSelectTodoDelete = function(modname, modelid)
+{
+    if (!modname && l4iStorage.Get("htpm_spec_active")) {
+        modname = l4iStorage.Get("htpm_spec_active");
+    }
+    if (!modelid && l4iStorage.Get("htpm_nmodel_active")) {
+        modelid = l4iStorage.Get("htpm_nmodel_active");
+    }
+
+    if (!modname || !modelid) {
+        return;
+    }
+
+    var ids = [];
+
+    $("#htpm-nodels").find(".htpm-nodels-chk-item").each(function() {
+
+        if ($(this).is(":checked")) {
+            ids.push($(this).val());
+        }
+    });
+
+    var alertid = "#htpm-nodels-batch-set-alert";
+
+    htpNode.DelBatch(modname, modelid, ids, function(err, data) {
+
+        if (err) {
+            l4i.InnerAlert(alertid, 'alert-danger', err);
+        } else if (data && data.error) {
+            l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
+        } else if (data && data.kind == "Node") {
+            l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
+            htpNode.List();
+            setTimeout(function() {
+                l4iModal.Close();
+            }, 500);
+        } else {
+            l4i.InnerAlert(alertid, 'alert-danger', "unknown error");
+        }
+    });
+}
+
 htpNode.Set = function(modname, modelid, nodeid)
 {
     var alertid = "#htpm-node-alert";
@@ -900,5 +1033,14 @@ htpNode.DelCommit = function(modname, modelid, id)
                 l4iModal.Close();
             }, 500);
         }
+    });
+}
+
+htpNode.DelBatch = function(modname, modelid, ids, cb)
+{
+    var uri = "modname="+ modname + "&modelid="+ modelid +"&id="+ ids.join(",");
+
+    htpMgr.ApiCmd("node/del?"+ uri, {
+        callback : cb,
     });
 }
