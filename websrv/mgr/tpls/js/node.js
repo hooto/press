@@ -854,7 +854,7 @@ htpNode.Set = function(modname, modelid, nodeid)
 
 htpNode.SetCommit = function()
 {
-    var form = $("#htpm-nodeset-laymain"),
+    var form = $("#htpm-nodeset-layout"),
         alertid = "#htpm-node-alert";
 
     if (!htpNode.setCurrent) {
