@@ -22,8 +22,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lessos/iam/iamapi"
-	"github.com/lessos/iam/iamclient"
+	"code.hooto.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"

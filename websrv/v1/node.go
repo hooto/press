@@ -20,8 +20,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lessos/iam/iamapi"
-	"github.com/lessos/iam/iamclient"
+	"code.hooto.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"

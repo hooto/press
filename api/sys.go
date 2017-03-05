@@ -15,7 +15,7 @@
 package api
 
 import (
-	"github.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/iam/iamapi"
 	"github.com/lessos/lessgo/types"
 )
 

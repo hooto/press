@@ -315,7 +315,7 @@ body {
 }
 
 .htp-nodev .content {
-  line-height: 160% !important;
+  line-height: 200% !important;
 }
 
 .htp-nodev .content a {
@@ -331,6 +331,7 @@ body {
   padding: 10px !important;
   border: 0 !important;
   background-color: rgba(0,0,0,0.05);
+  line-height: 160% !important;
   /*border-left: 0px solid #ccc !important;*/
   /*border-radius: 0px !important;*/
 }

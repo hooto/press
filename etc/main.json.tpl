@@ -9,6 +9,6 @@
     "port": "3306",
     "user": "root",
     "pass": "123456",
-    "dbname": "lesscms"
+    "dbname": "hootopress"
   }
 }

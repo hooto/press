@@ -17,4 +17,5 @@ image.lua
 nginx.conf
 *.txz
 .build
+.build_src
 

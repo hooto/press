@@ -15,7 +15,7 @@
 package config
 
 import (
-	"github.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/iam/iamapi"
 )
 
 var (

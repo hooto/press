@@ -22,8 +22,8 @@ import (
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
 
-	"github.com/lessos/iam/iamapi"
-	"github.com/lessos/iam/iamclient"
+	"code.hooto.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/iam/iamclient"
 
 	"code.hooto.com/hooto/hootopress/config"
 	"code.hooto.com/hooto/hootopress/status"

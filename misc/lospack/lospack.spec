@@ -1,8 +1,8 @@
 project.name = hootopress
 project.version = 0.1.7.dev
 project.vendor = hooto.com
-project.homepage = https://www.hooto.com/p/hootopress
-project.grp_app = 50
+project.homepage = https://code.hooto.com/hooto/hootopress
+project.groups = app/other
 
 %build
 export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin

@@ -15,7 +15,7 @@
 package controllers
 
 import (
-	"github.com/lessos/iam/iamclient"
+	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 
 	"code.hooto.com/hooto/hootopress/config"

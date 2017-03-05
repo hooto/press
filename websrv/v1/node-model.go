@@ -15,8 +15,8 @@
 package v1
 
 import (
-	"github.com/lessos/iam/iamapi"
-	"github.com/lessos/iam/iamclient"
+	"code.hooto.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 
