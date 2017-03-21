@@ -27,6 +27,7 @@ import (
 	"strings"
 	"time"
 
+	"code.hooto.com/lynkdb/iomix/skv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/sync"
@@ -57,7 +58,7 @@ type S2 struct {
 // 	var (
 // 		ipn         = c.Params.Get("ipn")
 // 		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
-// 		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
+// 		abs_path    = config.Prefix + "/var/storage/" + object_path
 // 	)
 
 // 	if ipn == "" {
@@ -229,7 +230,7 @@ func (c S2) IndexAction() {
 	var (
 		ipn         = c.Params.Get("ipn")
 		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
-		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
+		abs_path    = config.Prefix + "/var/storage/" + object_path
 	)
 
 	if ipn == "" {
@@ -270,11 +271,11 @@ func (c S2) IndexAction() {
 
 	hid := "s2." + idhash.HashToHexString([]byte(object_path+"."+ipn), 12)
 
-	if rs := store.CacheGet(hid); rs.Status == "OK" {
+	if rs := store.LocalCache.KvGet([]byte(hid)); rs.OK() {
 
 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
 		c.Response.Out.Header().Set("Content-type", meta_type)
-		c.Response.Out.Write(rs.Bytes())
+		c.Response.Out.Write(rs.Bytex().Bytes())
 
 		return
 	}
@@ -372,7 +373,9 @@ func (c S2) IndexAction() {
 
 	//
 	if dst_buf.Len() > 10 {
-		store.CacheSetBytes([]byte(hid), dst_buf.Bytes(), int64(36000+rand.Intn(36000))*1000)
+		store.LocalCache.KvPut([]byte(hid), dst_buf.Bytes(), &skv.KvWriteOptions{
+			TimeToLive: int64(36000+rand.Intn(36000)) * 1000,
+		})
 	}
 
 	//
@@ -389,7 +392,7 @@ func (c S2) IndexAction() {
 // 	var (
 // 		ipn         = c.Params.Get("ipn")
 // 		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
-// 		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
+// 		abs_path    = config.Prefix + "/var/storage/" + object_path
 // 	)
 
 // 	if ipn == "" {
@@ -519,7 +522,7 @@ func (c S2) IndexAction() {
 // 	var (
 // 		ipn         = c.Params.Get("ipn")
 // 		object_path = strings.Trim(filepath.Clean(c.Request.RequestPath), "/")[3:]
-// 		abs_path    = config.Config.Prefix + "/var/storage/" + object_path
+// 		abs_path    = config.Prefix + "/var/storage/" + object_path
 // 	)
 
 // 	if ipn == "" {

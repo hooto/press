@@ -27,7 +27,7 @@ func NewModule() httpsrv.Module {
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
 		Path:       "~",
-		StaticPath: config.Config.Prefix + "/modules/core/comment/static/",
+		StaticPath: config.Prefix + "/modules/core/comment/static/",
 	})
 
 	module.ControllerRegister(new(Comment))

@@ -45,7 +45,7 @@ func (c ModSet) FsTplListAction() {
 		return
 	}
 
-	basepath := config.Config.Prefix + "/modules/" + spec.Meta.Name + "/views/"
+	basepath := config.Prefix + "/modules/" + spec.Meta.Name + "/views/"
 	_ = filepath.Walk(basepath, func(path string, info os.FileInfo, err error) error {
 
 		path = strings.TrimPrefix(path, basepath)

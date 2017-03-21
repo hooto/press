@@ -118,7 +118,7 @@ func module_init() error {
 	for _, modname := range coreModules {
 
 		//
-		file := fmt.Sprintf("%s/modules/%s/spec.json", Config.Prefix, modname)
+		file := fmt.Sprintf("%s/modules/%s/spec.json", Prefix, modname)
 		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
 			return errors.New("Error: config file is not exists")
 		}
@@ -229,7 +229,7 @@ func SpecSrvRefresh(srvname string) {
 
 	httpsrv.GlobalService.TemplateLoader.Clean(spec.Meta.Name)
 	httpsrv.GlobalService.TemplateLoader.Set(spec.Meta.Name,
-		[]string{fmt.Sprintf("%s/modules/%s/views", Config.Prefix, spec.Meta.Name)})
+		[]string{fmt.Sprintf("%s/modules/%s/views", Prefix, spec.Meta.Name)})
 }
 
 func _instance_schema_sync(spec *api.Spec) error {

@@ -76,10 +76,10 @@ func (c S2Obj) RenameAction() {
 		return
 	}
 
-	path = filepath.Clean(config.Config.Prefix + "/var/storage/" + path)
+	path = filepath.Clean(config.Prefix + "/var/storage/" + path)
 
 	pathset := filepath.Clean(req.PathSet)
-	pathset = filepath.Clean(config.Config.Prefix + "/var/storage/" + pathset)
+	pathset = filepath.Clean(config.Prefix + "/var/storage/" + pathset)
 
 	dir := filepath.Dir(pathset)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -113,7 +113,7 @@ func (c S2Obj) DelAction() {
 		rsp.Error = &types.ErrorMeta{"400", err.Error()}
 		return
 	}
-	path = filepath.Clean(config.Config.Prefix + "/var/storage/" + path)
+	path = filepath.Clean(config.Prefix + "/var/storage/" + path)
 
 	if err := os.Remove(path); err != nil {
 		rsp.Error = &types.ErrorMeta{"500", err.Error()}
@@ -149,7 +149,7 @@ func (c S2Obj) PutAction() {
 		return
 	}
 
-	path = filepath.Clean(config.Config.Prefix + "/var/storage/" + path)
+	path = filepath.Clean(config.Prefix + "/var/storage/" + path)
 
 	var body []byte
 	if req.Encode == "base64" {
@@ -232,7 +232,7 @@ func (c S2Obj) ListAction() {
 		path = ""
 	}
 
-	projfp := filepath.Clean(config.Config.Prefix + "/var/storage/" + path)
+	projfp := filepath.Clean(config.Prefix + "/var/storage/" + path)
 
 	rsp.Path = path
 	rsp.Items = fsDirList(projfp, "", false)

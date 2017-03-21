@@ -16,20 +16,21 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
 
+	"code.hooto.com/lynkdb/iomix/connect"
 	"github.com/eryx/hcaptcha/captcha"
-	"github.com/lessos/lessdb/skv"
 	"github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
+	"github.com/lessos/lessgo/types"
 
 	"code.hooto.com/hooto/hootopress/api"
 )
 
 var (
+	Prefix        string
 	Config        ConfigCommon
 	AppName       = "hooto-hootopress"
 	Version       = "0.1.7.dev"
@@ -46,15 +47,14 @@ var (
 )
 
 type ConfigCommon struct {
-	Prefix        string      `json:"prefix,omitempty"`
-	UrlBasePath   string      `json:"url_base_path,omitempty"`
-	ModuleDir     string      `json:"module_dir,omitempty"`
-	InstanceID    string      `json:"instance_id"`
-	AppTitle      string      `json:"app_title,omitempty"`
-	HttpPort      uint16      `json:"http_port"`
-	IamServiceUrl string      `json:"iam_service_url"`
-	Database      base.Config `json:"database"`
-	CacheDB       skv.Config  `json:"cache_db,omitempty"`
+	UrlBasePath   string                   `json:"url_base_path,omitempty"`
+	ModuleDir     string                   `json:"module_dir,omitempty"`
+	InstanceID    string                   `json:"instance_id"`
+	AppTitle      string                   `json:"app_title,omitempty"`
+	HttpPort      uint16                   `json:"http_port"`
+	IamServiceUrl string                   `json:"iam_service_url"`
+	Database      base.Config              `json:"database"`
+	IoConnectors  connect.MultiConnOptions `json:"io_connectors"`
 }
 
 func init() {
@@ -107,14 +107,10 @@ func Initialize(prefix string) error {
 		}
 	}
 
-	Config.Prefix = filepath.Clean(prefix)
-	Config.ModuleDir = Config.Prefix + "/modules"
+	Prefix = filepath.Clean(prefix)
+	Config.ModuleDir = Prefix + "/modules"
 
-	file := Config.Prefix + "/etc/main.json"
-	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
-		return fmt.Errorf("Error: config file is not exists")
-	}
-
+	file := Prefix + "/etc/main.json"
 	if err := json.DecodeFile(file, &Config); err != nil {
 		return err
 	}
@@ -146,7 +142,7 @@ func Initialize(prefix string) error {
 	}
 
 	// Setting CAPTCHA
-	CaptchaConfig.DataDir = Config.Prefix + "/var/captchadb"
+	CaptchaConfig.DataDir = Prefix + "/var/captchadb"
 
 	if err := captcha.Config(CaptchaConfig); err != nil {
 		return err
@@ -157,29 +153,45 @@ func Initialize(prefix string) error {
 		return err
 	}
 
-	//
-	Config.CacheDB = skv.Config{
-		DataDir: Config.Prefix + "/var/cachedb",
+	if err := init_data(); err != nil {
+		return err
 	}
 
 	return module_init()
 }
 
-func Save() error {
+//
+func init_data() error {
 
-	file := Config.Prefix + "/etc/main.json"
-	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
-		return errors.New("Error: config file is not exists")
+	io_name := types.NewNameIdentifier("htp_local_cache")
+	opts := Config.IoConnectors.Options(io_name)
+
+	if opts == nil {
+
+		opts = &connect.ConnOptions{
+			Name:      io_name,
+			Connector: "iomix/skv/Connector",
+			Driver:    types.NewNameIdentifier("lynkdb/kvgo"),
+		}
 	}
 
-	cfgExport := ConfigCommon{
+	if opts.Value("data_dir") == "" {
+		opts.SetValue("data_dir", Prefix+"/var/"+string(io_name))
+	}
+
+	Config.IoConnectors.SetOptions(*opts)
+
+	return nil
+}
+func Save() error {
+
+	return json.EncodeToFile(ConfigCommon{
 		InstanceID:    Config.InstanceID,
 		AppTitle:      Config.AppTitle,
 		HttpPort:      Config.HttpPort,
 		UrlBasePath:   Config.UrlBasePath,
 		IamServiceUrl: Config.IamServiceUrl,
 		Database:      Config.Database,
-	}
-
-	return json.EncodeToFile(cfgExport, file, "  ")
+		IoConnectors:  Config.IoConnectors,
+	}, Prefix+"/etc/main.json", "  ")
 }

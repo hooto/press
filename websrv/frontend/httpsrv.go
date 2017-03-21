@@ -28,7 +28,7 @@ func NewModule() httpsrv.Module {
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
 		Path:       "~",
-		StaticPath: config.Config.Prefix + "/webui/",
+		StaticPath: config.Prefix + "/webui/",
 	})
 
 	module.ControllerRegister(new(Index))

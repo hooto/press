@@ -15,25 +15,34 @@
 package store
 
 import (
-	"github.com/lessos/lessdb/skv"
-	skvdrv "github.com/lessos/lessdb/skv/goleveldb"
+	"errors"
+	"fmt"
+
+	"code.hooto.com/lynkdb/iomix/connect"
+	"code.hooto.com/lynkdb/iomix/skv"
+	"code.hooto.com/lynkdb/kvgo"
 )
 
 var (
-	CacheDB skv.DB
-	err     error
-	errInit = &skv.Reply{Status: "ClientError"}
+	err        error
+	LocalCache skv.Connector
 )
 
-func Init(cfg skv.Config) error {
+func Init(cfg connect.MultiConnOptions) error {
 
-	if CacheDB, err = skvdrv.Open(cfg); err != nil {
-		return err
+	opts := cfg.Options("htp_local_cache")
+	if opts == nil {
+		return errors.New("No htp_local_cache Config.IoConnectors Found")
+	}
+
+	if LocalCache, err = kvgo.Open(*opts); err != nil {
+		return fmt.Errorf("Can Not Connect To %s, Error: %s", opts.Name, err.Error())
 	}
 
 	return nil
 }
 
+/*
 func CacheSet(key, value string, ttl int64) *skv.Reply {
 	return CacheSetBytes([]byte(key), []byte(value), ttl)
 }
@@ -73,3 +82,4 @@ func CacheDel(key string) *skv.Reply {
 
 	return CacheDB.KvDel([]byte(key))
 }
+*/

@@ -28,16 +28,16 @@ func NewModule() httpsrv.Module {
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
 		Path:       "~",
-		StaticPath: config.Config.Prefix + "/webui/",
+		StaticPath: config.Prefix + "/webui/",
 	})
 
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
 		Path:       "-",
-		StaticPath: config.Config.Prefix + "/websrv/mgr/tpls/",
+		StaticPath: config.Prefix + "/websrv/mgr/tpls/",
 	})
 
-	module.TemplatePathSet(config.Config.Prefix + "/websrv/mgr/views")
+	module.TemplatePathSet(config.Prefix + "/websrv/mgr/views")
 
 	module.ControllerRegister(new(controllers.Index))
 	module.ControllerRegister(new(controllers.Setup))

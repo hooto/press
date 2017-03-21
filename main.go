@@ -60,13 +60,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := store.Init(config.Config.CacheDB); err != nil {
+	if err := store.Init(config.Config.IoConnectors); err != nil {
 		logger.Printf("error", "store.Init error: %v", err)
 		fmt.Println("error", "store.Init error ", err)
 		os.Exit(1)
 	}
 
-	ext_captcha.DataConnector = store.CacheDB
+	ext_captcha.DataConnector = store.LocalCache
 	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
 		logger.Printf("error", "ext_captcha.Config error: %v", err)
 		fmt.Println("ext_captcha.Config error", err)
@@ -84,8 +84,8 @@ func main() {
 	datax.Worker()
 
 	//
-	// httpsrv.Config.I18n(config.Config.Prefix + "/src/i18n/en.json")
-	// httpsrv.Config.I18n(config.Config.Prefix + "/src/i18n/zh_CN.json")
+	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/en.json")
+	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/zh_CN.json")
 
 	httpsrv.GlobalService.ModuleRegister("/+/comment", ext_comment.NewModule())
 	httpsrv.GlobalService.ModuleRegister("/+/hcaptcha", ext_captcha.WebServerModule())

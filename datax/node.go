@@ -54,7 +54,7 @@ func Worker() {
 		for {
 
 			time.Sleep(60e9)
-			if store.CacheDB == nil {
+			if store.LocalCache == nil {
 				continue
 			}
 
@@ -65,7 +65,7 @@ func Worker() {
 
 			for {
 
-				ls := store.CacheDB.KvScan([]byte("access_counter"), []byte("access_counter"), uint32(limit)).Hash()
+				ls := store.LocalCache.KvScan([]byte("access_counter"), []byte("access_counter"), limit).KvList()
 
 				imap := map[string]int{}
 
@@ -83,7 +83,7 @@ func Worker() {
 						}
 					}
 
-					store.CacheDB.KvDel(v.Key)
+					store.LocalCache.KvDel(v.Key)
 				}
 
 				for key, num := range imap {

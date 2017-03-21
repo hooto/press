@@ -20,6 +20,7 @@ import (
 	"html/template"
 	"strings"
 
+	"code.hooto.com/lynkdb/iomix/skv"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
 
@@ -110,15 +111,17 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					var ls api.NodeList
 					qryhash := qry.Hash()
 					if datax.CacheTTL > 0 {
-						if rs := store.CacheGet(qryhash); rs.Status == "OK" {
-							rs.JsonDecode(&ls)
+						if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+							rs.Decode(&ls)
 						}
 					}
 
 					if len(ls.Items) == 0 {
 						ls = qry.NodeList()
 						if datax.CacheTTL > 0 && len(ls.Items) > 0 {
-							store.CacheSetJson(qryhash, ls, datax.CacheTTL)
+							store.LocalCache.KvPut([]byte(qryhash), ls, &skv.KvWriteOptions{
+								TimeToLive: int64(datax.CacheTTL) * 1000,
+							})
 						}
 					}
 
@@ -129,15 +132,17 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					var entry api.Node
 					qryhash := qry.Hash()
 					if datax.CacheTTL > 0 {
-						if rs := store.CacheGet(qryhash); rs.Status == "OK" {
-							rs.JsonDecode(&entry)
+						if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+							rs.Decode(&entry)
 						}
 					}
 
 					if entry.Title == "" {
 						entry = qry.NodeEntry()
 						if datax.CacheTTL > 0 && entry.Title != "" {
-							store.CacheSetJson(qryhash, entry, datax.CacheTTL)
+							store.LocalCache.KvPut([]byte(qryhash), entry, &skv.KvWriteOptions{
+								TimeToLive: int64(datax.CacheTTL) * 1000,
+							})
 						}
 					}
 

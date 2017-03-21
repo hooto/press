@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	"code.hooto.com/lynkdb/iomix/skv"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/x/webui"
@@ -228,8 +229,8 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		qryhash := qry.Hash()
 
 		if ad.CacheTTL > 0 {
-			if rs := store.CacheGet(qryhash); rs.Status == "OK" {
-				rs.JsonDecode(&ls)
+			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+				rs.Decode(&ls)
 			}
 		}
 
@@ -238,9 +239,14 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			ls = qry.NodeList()
 			// fmt.Println("index node.list")
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
-				c.hookPosts = append(c.hookPosts, func() {
-					store.CacheSetJson(qryhash, &ls, ad.CacheTTL)
-				})
+				c.hookPosts = append(
+					c.hookPosts,
+					func() {
+						store.LocalCache.KvPut([]byte(qryhash), &ls, &skv.KvWriteOptions{
+							TimeToLive: int64(ad.CacheTTL) * 1000,
+						})
+					},
+				)
 			}
 		}
 
@@ -279,17 +285,22 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		var entry api.Node
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 {
-			if rs := store.CacheGet(qryhash); rs.Status == "OK" {
-				rs.JsonDecode(&entry)
+			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+				rs.Decode(&entry)
 			}
 		}
 
 		if entry.ID == "" {
 			entry = qry.NodeEntry()
 			if ad.CacheTTL > 0 && entry.Title != "" {
-				c.hookPosts = append(c.hookPosts, func() {
-					store.CacheSetJson(qryhash, &entry, ad.CacheTTL)
-				})
+				c.hookPosts = append(
+					c.hookPosts,
+					func() {
+						store.LocalCache.KvPut([]byte(qryhash), &entry, &skv.KvWriteOptions{
+							TimeToLive: int64(ad.CacheTTL) * 1000,
+						})
+					},
+				)
 			}
 		}
 
@@ -302,7 +313,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
 
 				table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), ad.Query.Table)
-				store.CacheSet("access_counter/"+table+"/"+ips[0]+"/"+entry.ID, "1", 0)
+				store.LocalCache.KvPut([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1", nil)
 			}
 		}
 
@@ -317,15 +328,17 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		var ls api.TermList
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 {
-			if rs := store.CacheGet(qryhash); rs.Status == "OK" {
-				rs.JsonDecode(&ls)
+			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+				rs.Decode(&ls)
 			}
 		}
 
 		if len(ls.Items) == 0 {
 			ls = qry.TermList()
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
-				store.CacheSetJson(qryhash, ls, ad.CacheTTL)
+				store.LocalCache.KvPut([]byte(qryhash), ls, &skv.KvWriteOptions{
+					TimeToLive: int64(ad.CacheTTL) * 1000,
+				})
 			}
 		}
 
@@ -344,15 +357,17 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		qryhash := qry.Hash()
 
 		if ad.CacheTTL > 0 {
-			if rs := store.CacheGet(qryhash); rs.Status == "OK" {
-				rs.JsonDecode(&entry)
+			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+				rs.Decode(&entry)
 			}
 		}
 
 		if entry.Title == "" {
 			entry = qry.TermEntry()
 			if ad.CacheTTL > 0 && entry.Title != "" {
-				store.CacheSetJson(qryhash, entry, ad.CacheTTL)
+				store.LocalCache.KvPut([]byte(qryhash), entry, &skv.KvWriteOptions{
+					TimeToLive: int64(ad.CacheTTL) * 1000,
+				})
 			}
 		}
 

@@ -91,7 +91,7 @@ func SpecFetch(modname string) (api.Spec, error) {
 
 	var entry api.Spec
 
-	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Config.Prefix, modname)
+	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Prefix, modname)
 	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
 		return entry, errors.New("Error: config file is not exists")
 	}
@@ -136,7 +136,7 @@ func SpecInfoNew(entry api.Spec) error {
 	entry.Meta.ResourceVersion = "1"
 	entry.Meta.Created = utilx.TimeNow("atom")
 
-	dir := fmt.Sprintf("%s/modules/%s", config.Config.Prefix, entry.Meta.Name)
+	dir := fmt.Sprintf("%s/modules/%s", config.Prefix, entry.Meta.Name)
 	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
@@ -703,7 +703,7 @@ func _specSet(entry api.Spec) error {
 	jsb, _ := json.Encode(entry, "  ")
 
 	//
-	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Config.Prefix, entry.Meta.Name)
+	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Prefix, entry.Meta.Name)
 
 	fp, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE, 0640)
 	if err != nil {
