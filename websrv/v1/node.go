@@ -77,13 +77,18 @@ func (c Node) ListAction() {
 		dqc.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
 	}
 
+	var (
+		fields = strings.Split(c.Params.Get("fields"), ",")
+		terms  = strings.Split(c.Params.Get("terms"), ",")
+	)
+
 	count, err := dqc.NodeCount()
 	if err != nil {
 		ls.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
 		return
 	}
 
-	ls = dq.NodeList()
+	ls = dq.NodeList(fields, terms)
 
 	ls.Meta.TotalResults = uint64(count)
 	ls.Meta.StartIndex = uint64((page - 1) * node_list_limit)

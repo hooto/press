@@ -264,6 +264,9 @@ func (c S2) IndexAction() {
 	case ".gif":
 		meta_type = "image/gif"
 
+	case ".svg":
+		meta_type = "image/svg+xml"
+
 	default:
 		c.RenderError(400, "Bad Request #01")
 		return
@@ -374,7 +377,7 @@ func (c S2) IndexAction() {
 	//
 	if dst_buf.Len() > 10 {
 		store.LocalCache.KvPut([]byte(hid), dst_buf.Bytes(), &skv.KvWriteOptions{
-			TimeToLive: int64(36000+rand.Intn(36000)) * 1000,
+			Ttl: int64(36000+rand.Intn(36000)) * 1000,
 		})
 	}
 

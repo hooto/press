@@ -52,7 +52,7 @@ func (c Comment) EmbedAction() {
 	qry.Filter("field_refer_id", c.Params.Get("refer_id"))
 	qry.Filter("field_refer", c.Params.Get("refer_modname")+"."+c.Params.Get("refer_datax_table"))
 
-	c.Data["list"] = qry.NodeList()
+	c.Data["list"] = qry.NodeList([]string{}, []string{})
 
 	c.Data["new_form_refer_id"] = c.Params.Get("refer_id")
 	c.Data["new_form_refer_modname"] = c.Params.Get("refer_modname")

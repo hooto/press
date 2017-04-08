@@ -128,7 +128,7 @@ func (q *QuerySet) NodeCount() (int64, error) {
 	return dcn.Base.Count(table, q.filter)
 }
 
-func (q *QuerySet) NodeList() api.NodeList {
+func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 	rsp := api.NodeList{}
 
@@ -175,8 +175,12 @@ func (q *QuerySet) NodeList() api.NodeList {
 		return rsp
 	}
 
-	termBufs := map[string][]string{}
-	termTaxonomy := map[string]api.Term{}
+	var (
+		termBufs     = map[string][]string{}
+		termTaxonomy = map[string]api.Term{}
+		ar_fields    = types.ArrayString(fields)
+		ar_terms     = types.ArrayString(terms)
+	)
 
 	if len(rs) > 0 {
 
@@ -209,6 +213,10 @@ func (q *QuerySet) NodeList() api.NodeList {
 
 			for _, field := range model.Fields {
 
+				if len(ar_fields) > 0 && !ar_fields.Contain(field.Name) {
+					continue
+				}
+
 				nodeField := api.NodeField{
 					Name:        field.Name,
 					Value:       v.Field("field_" + field.Name).String(),
@@ -228,6 +236,10 @@ func (q *QuerySet) NodeList() api.NodeList {
 			}
 
 			for _, term := range model.Terms {
+
+				if len(ar_terms) > 0 && !ar_terms.Contain(term.Meta.Name) {
+					continue
+				}
 
 				termItem := api.NodeTerm{
 					Name:  term.Meta.Name,

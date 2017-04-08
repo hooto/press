@@ -275,6 +275,7 @@ htpNode.List = function(modname, modelid)
     }
 
     var uri = "modname="+ modname +"&modelid="+ modelid +"&page="+ page;
+	uri += "&fields=no_fields&terms=no_terms";
     if (document.getElementById("qry_text")) {
         uri += "&qry_text="+ $("#qry_text").val();
     }

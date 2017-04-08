@@ -236,14 +236,14 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 
 		if len(ls.Items) == 0 {
 
-			ls = qry.NodeList()
+			ls = qry.NodeList([]string{}, []string{})
 			// fmt.Println("index node.list")
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
 				c.hookPosts = append(
 					c.hookPosts,
 					func() {
 						store.LocalCache.KvPut([]byte(qryhash), &ls, &skv.KvWriteOptions{
-							TimeToLive: int64(ad.CacheTTL) * 1000,
+							Ttl: int64(ad.CacheTTL) * 1000,
 						})
 					},
 				)
@@ -297,7 +297,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 					c.hookPosts,
 					func() {
 						store.LocalCache.KvPut([]byte(qryhash), &entry, &skv.KvWriteOptions{
-							TimeToLive: int64(ad.CacheTTL) * 1000,
+							Ttl: int64(ad.CacheTTL) * 1000,
 						})
 					},
 				)
@@ -337,7 +337,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			ls = qry.TermList()
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
 				store.LocalCache.KvPut([]byte(qryhash), ls, &skv.KvWriteOptions{
-					TimeToLive: int64(ad.CacheTTL) * 1000,
+					Ttl: int64(ad.CacheTTL) * 1000,
 				})
 			}
 		}
@@ -366,7 +366,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			entry = qry.TermEntry()
 			if ad.CacheTTL > 0 && entry.Title != "" {
 				store.LocalCache.KvPut([]byte(qryhash), entry, &skv.KvWriteOptions{
-					TimeToLive: int64(ad.CacheTTL) * 1000,
+					Ttl: int64(ad.CacheTTL) * 1000,
 				})
 			}
 		}

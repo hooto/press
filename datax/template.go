@@ -117,10 +117,10 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					}
 
 					if len(ls.Items) == 0 {
-						ls = qry.NodeList()
+						ls = qry.NodeList([]string{}, []string{})
 						if datax.CacheTTL > 0 && len(ls.Items) > 0 {
 							store.LocalCache.KvPut([]byte(qryhash), ls, &skv.KvWriteOptions{
-								TimeToLive: int64(datax.CacheTTL) * 1000,
+								Ttl: int64(datax.CacheTTL) * 1000,
 							})
 						}
 					}
@@ -141,7 +141,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 						entry = qry.NodeEntry()
 						if datax.CacheTTL > 0 && entry.Title != "" {
 							store.LocalCache.KvPut([]byte(qryhash), entry, &skv.KvWriteOptions{
-								TimeToLive: int64(datax.CacheTTL) * 1000,
+								Ttl: int64(datax.CacheTTL) * 1000,
 							})
 						}
 					}

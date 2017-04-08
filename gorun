@@ -5,7 +5,7 @@
 rm -f ./bin/hootopress
 
 #go build -race -o ./bin/hootopress ./main.go
-go build -o ./bin/hootopress ./main.go
+go build -ldflags "-s -w" -o ./bin/hootopress ./main.go
 
 ./bin/hootopress -logtostderr=true 
 
