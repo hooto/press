@@ -1,5 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
 {{pagelet . "core/general" "html-header.tpl"}}
-
+<body>
 {{pagelet . "core/general" "nav-header.tpl" "topnav"}}
 
 <div class="container">
@@ -17,4 +19,6 @@
 {{pagelet . "core/general" "footer.tpl"}}
 
 {{pagelet . "core/general" "html-footer.tpl"}}
+<body>
+</html>
 

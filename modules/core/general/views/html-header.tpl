@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{{if .__html_head_title__}}{{.__html_head_title__}} | {{end}}{{SysConfig "frontend_html_head_subtitle"}}</title>
@@ -15,5 +13,3 @@
     window.onload_hooks = [];
   </script>
 </head>
-<body>
-
