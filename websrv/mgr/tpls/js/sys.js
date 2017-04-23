@@ -166,6 +166,26 @@ htpSys.IamStatus = function()
                 return;
             }
 
+            if (!data.instance_self.privileges) {
+                data.instance_self.privileges = [];
+            }
+            for (var i in data.instance_self.privileges) {
+
+                if (!data.instance_self.privileges[i].roles) {
+                    data.instance_self.privileges[i].roles = [];
+                }
+            }
+
+            if (!data.instance_registered.privileges) {
+                data.instance_registered.privileges = [];
+            }
+            for (var i in data.instance_registered.privileges) {
+
+                if (!data.instance_registered.privileges[i].roles) {
+                    data.instance_registered.privileges[i].roles = [];
+                }
+            }
+
             data._roles = htpSys.roles;
 
             l4iTemplate.Render({
@@ -193,21 +213,22 @@ htpSys.IamStatus = function()
 htpSys.IamSync = function()
 {
     var form = $("#htp-mgr-sys-iam");
+    var alert_id = "#htp-mgr-sys-iam-alert";
 
-    htpMgr.Ajax("setup/app-register-put", {
+    htpMgr.Ajax("setup/app-register-sync", {
         method : "POST",
         data   : form.serialize(),
         success: function(data) {
 
-            if (data === undefined || data.kind != "AppInstanceRegister") {
+            if (!data || data.kind != "AppInstanceRegister") {
                 if (data.error) {
-                    return l4i.InnerAlert("#htp-mgr-sys-iam-alert", 'alert-danger', data.error.message);
+                    return l4i.InnerAlert(alert_id, 'alert-danger', data.error.message);
                 }
 
-                return l4i.InnerAlert("#htp-mgr-sys-iam-alert", 'alert-danger', "Network Connection Exception");
+                return l4i.InnerAlert(alert_id, 'alert-danger', "Network Connection Exception");
             }
 
-            l4i.InnerAlert("#htp-mgr-sys-iam-alert", 'alert-success', "Successful registered");
+            l4i.InnerAlert(alert_id, 'alert-success', "Successful registered");
 
             window.setTimeout(function() {
                 htpSys.IamStatus();
@@ -249,6 +270,10 @@ htpSys.UtilDurationFormat = function(timems, fix)
         [60000, "minute"],
         [1000, "second"],
     ];
+
+    if (!timems) {
+        timems = 0;
+    }
 
     if (fix) {
         timems = parseInt(timems / fix);

@@ -20,6 +20,7 @@ import (
 	"os/user"
 	"path/filepath"
 
+	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lynkdb/iomix/connect"
 	"github.com/eryx/hcaptcha/captcha"
 	"github.com/lessos/lessgo/data/rdo/base"
@@ -50,6 +51,7 @@ type ConfigCommon struct {
 	UrlBasePath   string                   `json:"url_base_path,omitempty"`
 	ModuleDir     string                   `json:"module_dir,omitempty"`
 	InstanceID    string                   `json:"instance_id"`
+	AppInstance   iamapi.AppInstance       `json:"app_instance"`
 	AppTitle      string                   `json:"app_title,omitempty"`
 	HttpPort      uint16                   `json:"http_port"`
 	IamServiceUrl string                   `json:"iam_service_url"`
@@ -187,6 +189,7 @@ func Save() error {
 
 	return json.EncodeToFile(ConfigCommon{
 		InstanceID:    Config.InstanceID,
+		AppInstance:   Config.AppInstance,
 		AppTitle:      Config.AppTitle,
 		HttpPort:      Config.HttpPort,
 		UrlBasePath:   Config.UrlBasePath,

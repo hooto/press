@@ -70,7 +70,7 @@ func (c Setup) IndexAction() {
 	c.Redirect("mgr")
 }
 
-func (c Setup) AppRegisterPutAction() {
+func (c Setup) AppRegisterSyncAction() {
 
 	reg := iamapi.AppInstanceRegister{
 		AccessToken: iamclient.SessionAccessToken(c.Session),
@@ -101,7 +101,9 @@ func (c Setup) AppRegisterPutAction() {
 
 		config.Config.InstanceID = reg.Instance.Meta.ID
 		iamclient.InstanceID = reg.Instance.Meta.ID
+		iamclient.InstanceOwner = reg.Instance.Meta.UserID
 
+		config.Config.AppInstance = reg.Instance
 		config.Config.AppTitle = reg.Instance.AppTitle
 
 		status.IamServiceStatus = status.IamServiceOK

@@ -88,7 +88,7 @@ $("#htp-app-reg").submit(function(event) {
 
     $.ajax({
         type    : "POST",
-        url     : "{{HttpSrvBasePath "mgr/setup/app-register-put"}}",
+        url     : "{{HttpSrvBasePath "mgr/setup/app-register-sync"}}",
         data    : $(this).serialize(),
         timeout : 3000,
         success : function(data) {

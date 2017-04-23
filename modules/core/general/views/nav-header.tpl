@@ -13,11 +13,13 @@
       {{end}}
     </ul>
 
-    <ul class="htp-nav htp-nav-right" id="htp-topbar-userbar">
-      <li class="iam-name"><a href="{{HttpSrvBasePath "auth/login"}}">Login</a></li>
-    </ul>
+    <ul class="htp-nav htp-nav-right" id="htp-topbar-userbar"></ul>
   </div>
 </div>
+
+<script id="htp-topbar-user-unsigned-tpl" type="text/html">
+<li class="iam-name"><a href="{{HttpSrvBasePath "auth/login"}}">Login</a></li>
+</script>
 
 <script id="htp-topbar-user-signed-tpl" type="text/html">
 
@@ -27,7 +29,7 @@
 <div id="htp-topbar-user-signed-modal" style="display:none;">
   <img class="iam-photo" src="{[=it.photo_url]}">
   <div class="iam-name">{[=it.name]}</div>
-  <a class="btn btn-primary iam-btn" href="{[=htp.HttpSrvBasePath('mgr')]}">Content Manage</a>
+  {[? it.instance_owner]}<a class="btn btn-primary iam-btn" href="{[=htp.HttpSrvBasePath('mgr')]}">Content Manage</a>{[?]}
   <a class="btn btn-default iam-btn" href="{[=it.iam_url]}" target="_blank">Account Center</a>
   <a class="btn btn-default iam-btn" href="{[=htp.HttpSrvBasePath('auth/sign-out')]}">Sign out</a>
 </div>

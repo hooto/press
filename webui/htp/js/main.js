@@ -219,7 +219,11 @@ htp.AuthSessionRefresh = function()
         callback: function(err, data) {
 
             if (err || !data || data.kind != "AuthSession") {
-                return;
+
+                return l4iTemplate.Render({
+                    dstid:   "htp-topbar-userbar",
+                    tplid:   "htp-topbar-user-unsigned-tpl",
+                });
             }
 
             l4iTemplate.Render({

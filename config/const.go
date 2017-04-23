@@ -35,22 +35,22 @@ var (
 		{
 			Privilege: "editor.list",
 			Desc:      "Editor - List",
-			Roles:     []uint32{100},
+			Roles:     []uint32{},
 		},
 		{
 			Privilege: "editor.write",
 			Desc:      "Editor - Write",
-			Roles:     []uint32{100},
+			Roles:     []uint32{},
 		},
 		{
 			Privilege: "editor.read",
 			Desc:      "Editor - Read",
-			Roles:     []uint32{100},
+			Roles:     []uint32{},
 		},
 		{
 			Privilege: "sys.admin",
 			Desc:      "System Admin",
-			Roles:     []uint32{1},
+			Roles:     []uint32{},
 		},
 	}
 )

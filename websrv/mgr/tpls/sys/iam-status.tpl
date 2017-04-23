@@ -83,7 +83,7 @@
                 <p>{[=v.privilege]}</p>
               </td>
               <td>
-              {[ if (v.roles) { ]}
+              {[ if (v.roles.length > 0) { ]}
               {[~v.roles :rv]}
                 {[~it._roles.items :drv]}
                 {[ if (rv == drv.idxid) { ]}
@@ -91,6 +91,8 @@
                 {[ } ]}
                 {[~]}
               {[~]}
+              {[ } else {]}
+                <p>Owner</p>
               {[ } ]}
               </td>
             </tr>
@@ -114,7 +116,7 @@
                 <p>{[=v.privilege]}</p>
               </td>
               <td>
-              {[ if (v.roles) { ]}
+              {[ if (v.roles.length > 0) { ]}
               {[~v.roles :rv]}
                 {[~it._roles.items :drv]}
                 {[ if (rv == drv.idxid) { ]}
@@ -122,6 +124,8 @@
                 {[ } ]}
                 {[~]}
               {[~]}
+              {[ } else {]}
+                <p>Owner</p>
               {[ } ]}
               </td>
             </tr>
