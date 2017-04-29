@@ -54,16 +54,18 @@ var (
 )
 
 type ConfigCommon struct {
-	UrlBasePath   string                   `json:"url_base_path,omitempty"`
-	ModuleDir     string                   `json:"module_dir,omitempty"`
-	InstanceID    string                   `json:"instance_id"`
-	AppInstance   iamapi.AppInstance       `json:"app_instance"`
-	AppTitle      string                   `json:"app_title,omitempty"`
-	HttpPort      uint16                   `json:"http_port"`
-	IamServiceUrl string                   `json:"iam_service_url"`
-	Database      base.Config              `json:"database"`
-	IoConnectors  connect.MultiConnOptions `json:"io_connectors"`
-	RunMode       string                   `json:"run_mode,omitempty"`
+	UrlBasePath           string                   `json:"url_base_path,omitempty"`
+	ModuleDir             string                   `json:"module_dir,omitempty"`
+	InstanceID            string                   `json:"instance_id"`
+	AppInstance           iamapi.AppInstance       `json:"app_instance"`
+	AppTitle              string                   `json:"app_title,omitempty"`
+	HttpPort              uint16                   `json:"http_port"`
+	HttpPortPprof         uint16                   `json:"http_port_pprof,omitempty"`
+	IamServiceUrl         string                   `json:"iam_service_url"`
+	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend"`
+	Database              base.Config              `json:"database"`
+	IoConnectors          connect.MultiConnOptions `json:"io_connectors"`
+	RunMode               string                   `json:"run_mode,omitempty"`
 }
 
 func init() {
@@ -121,7 +123,9 @@ func Initialize(prefix string) error {
 
 	file := Prefix + "/etc/main.json"
 	if err := json.DecodeFile(file, &Config); err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 
 	{
@@ -172,6 +176,18 @@ func Initialize(prefix string) error {
 			Config.IamServiceUrl = v.String()
 		} else {
 			return errors.New("No Config.IamServiceUrl Found")
+		}
+
+		if v, ok := opt.Items.Get("iam_service_url_frontend"); ok {
+			Config.IamServiceUrlFrontend = v.String()
+		} else {
+			Config.IamServiceUrlFrontend = Config.IamServiceUrl
+		}
+
+		if v, ok := opt.Items.Get("http_pprof_enable"); ok && v.String() == "1" {
+			Config.HttpPortPprof = Config.HttpPort + 1
+		} else {
+			Config.HttpPortPprof = 0
 		}
 
 		if optref == nil || optref.Ref == nil {

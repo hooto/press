@@ -81,6 +81,8 @@ func main() {
 	}
 
 	iamclient.ServiceUrl = config.Config.IamServiceUrl
+	iamclient.ServiceUrlFrontend = config.Config.IamServiceUrlFrontend
+
 	iamclient.InstanceID = config.Config.InstanceID
 	iamclient.InstanceOwner = config.Config.AppInstance.Meta.UserID
 
@@ -104,7 +106,9 @@ func main() {
 	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
 
 	//
-	go http.ListenAndServe(":60001", nil)
+	if config.Config.HttpPortPprof > 0 {
+		go http.ListenAndServe(fmt.Sprintf(":%d", config.Config.HttpPortPprof), nil)
+	}
 
 	fmt.Println("Running")
 	if err := httpsrv.GlobalService.Start(); err != nil {

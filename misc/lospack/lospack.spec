@@ -8,7 +8,7 @@ project.groups = app/other
 export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
-mkdir -p {{.buildroot}}/var/{cachedb,captchadb,log,storage}
+mkdir -p {{.buildroot}}/var/{captchadb,log,storage}
 go build -ldflags "-s -w" -o {{.buildroot}}/bin/hootopress main.go
 
 
@@ -54,3 +54,4 @@ websrv/mgr/views/
 
 %png_compress
 webui/htp/img/
+
