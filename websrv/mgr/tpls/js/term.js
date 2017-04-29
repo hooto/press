@@ -26,7 +26,6 @@ htpTerm.List = function(modname, modelid)
         uri += "&qry_text="+ $("#qry_text").val();
     }
 
-    // console.log(uri);
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, rsj) {
@@ -43,10 +42,14 @@ htpTerm.List = function(modname, modelid)
                 $("#htpm-nodels").empty();
                 $("#htpm-termls").empty();
 
-                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+                l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+            } else {
+                $(alertid).hide();
             }
 
-            $(alertid).hide();
+            if (!rsj.items) {
+                rsj.items = [];
+            }
 
             for (var i in rsj.items) {
 
@@ -142,9 +145,6 @@ htpTerm.ListSubRange = function(ls, rs, pid, dpnum)
 
     dpnum++;
 
-    // console.log(rs, pid);
-    // console.log(ls.length);
-
     for (var i in rs) {
         if (rs[i].id == pid) {
             // return rs;
@@ -159,8 +159,6 @@ htpTerm.ListSubRange = function(ls, rs, pid, dpnum)
             rs = htpTerm.ListSubRange(ls, rs, ls[i].id, dpnum);
         }
     }
-
-    // console.log(rs);
 
     return rs;
 }
@@ -188,7 +186,6 @@ htpTerm.Set = function(modname, modelid, termid)
 
     var uri = "modname="+ modname +"&modelid="+ modelid;
 
-    // console.log(uri);
     seajs.use(["ep"], function (EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function (tpl, data) {
@@ -216,7 +213,7 @@ htpTerm.Set = function(modname, modelid, termid)
             data._taxonomy_ls = htpTerm.taxonomy_ls_cache;
 
             $(alertid).hide();
-            htpNode.OpToolsRefresh();
+            htpNode.OpToolsRefresh("clean");
 
             l4iTemplate.Render({
                 dstid: "htpm-termset",
@@ -282,10 +279,8 @@ htpTerm.SetCommit = function()
         req.weight = parseInt(form.find("input[name=weight]").val());
         req.pid    = parseInt(form.find("select[name=pid]").val());
     } else if (model_type = "tag") {
-
+        //
     }
-
-    // console.log(JSON.stringify(req));
 
     //
     var uri = "modname="+ l4iStorage.Get("htpm_spec_active") +

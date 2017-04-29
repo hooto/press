@@ -109,6 +109,12 @@ htpNode.OpToolsRefresh = function(div_target)
         return;
     }
 
+    if (div_target == "clean") {
+        htpNode.nodeOpToolsRefreshCurrent = null;
+        $("#htpm-node-optools").empty();
+        return;
+    }
+
     $("#htpm-node-optools").empty();
 
     if (typeof div_target == "string") {
@@ -275,7 +281,7 @@ htpNode.List = function(modname, modelid)
     }
 
     var uri = "modname="+ modname +"&modelid="+ modelid +"&page="+ page;
-	uri += "&fields=no_fields&terms=no_terms";
+    uri += "&fields=no_fields&terms=no_terms";
     if (document.getElementById("qry_text")) {
         uri += "&qry_text="+ $("#qry_text").val();
     }
@@ -293,10 +299,14 @@ htpNode.List = function(modname, modelid)
 
                 $("#htpm-nodels").empty();
                 $("#htpm-termls").empty();
-                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+                l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+            } else {
+                $(alertid).hide();
             }
 
-            $(alertid).hide();
+            if (!rsj.items) {
+                rsj.items = [];
+            }
 
             for (var i in rsj.items) {
 
@@ -438,7 +448,7 @@ htpNode.ListBatchSelectTodo = function()
 
     htpMgr.TplCmd("node/list-batch-set", {
         callback: function(err, data) {
-            
+
             if (err) {
                 return;
             }
