@@ -11,6 +11,7 @@ mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{captchadb,log,storage}
 go build -ldflags "-s -w" -o {{.buildroot}}/bin/hootopress main.go
 
+sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/websrv/mgr/tpls/js/main.js
 
 %files
 bin/hootopress

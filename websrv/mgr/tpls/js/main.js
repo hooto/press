@@ -3,6 +3,15 @@ var htpMgr = {
     base    : "/mgr/",
     api     : "/v1/",
     basetpl : "/mgr/-/",
+    debug   : true,
+}
+
+htpMgr.debug_uri = function()
+{
+    if (!htpMgr.debug) {
+        return "";
+    }
+    return "?_="+ Math.random();
 }
 
 htpMgr.Boot = function()
@@ -45,20 +54,20 @@ htpMgr.Boot = function()
             "~/purecss/pure.css",
             "~/lessui/js/lessui.js",
             "~/lessui/css/lessui.css",
-            "~/htp/css/main.css?_="+ Math.random(),
+            "~/htp/css/main.css"+ htpMgr.debug_uri(),
             "~/htp/js/marked.js",
-            "-/css/main.css?_="+ Math.random(),
+            "-/css/main.css"+ htpMgr.debug_uri(),
             "-/css/defx.css",
-            "-/js/spec.js?_="+ Math.random(),
-            "-/js/spec-editor.js?_="+ Math.random(),
+            "-/js/spec.js"+ htpMgr.debug_uri(),
+            "-/js/spec-editor.js"+ htpMgr.debug_uri(),
             "-/js/tablet.js",
             "-/js/lc-editor.js",
-            "-/js/model.js?_="+ Math.random(),
-            "-/js/term.js?_="+ Math.random(),
-            "-/js/node.js?_="+ Math.random(),
-            "-/js/sys.js?_="+ Math.random(),
-            "-/js/s2.js?_="+ Math.random(),
-            "-/js/editor.js?_="+ Math.random(),
+            "-/js/model.js"+ htpMgr.debug_uri(),
+            "-/js/term.js"+ htpMgr.debug_uri(),
+            "-/js/node.js"+ htpMgr.debug_uri(),
+            "-/js/sys.js"+ htpMgr.debug_uri(),
+            "-/js/s2.js"+ htpMgr.debug_uri(),
+            "-/js/editor.js"+ htpMgr.debug_uri(),
         ], function() {
 
             setTimeout(htpMgr.BootInit, 300);
@@ -68,6 +77,8 @@ htpMgr.Boot = function()
 
 htpMgr.BootInit = function()
 {
+    l4i.debug = htpMgr.debug;
+
     $("#htpm-topbar").css({"display": "block"});
 
     htpSys.Init();
@@ -124,52 +135,39 @@ htpMgr.Ajax = function(url, options)
         url = htpMgr.HttpSrvBasePath(url);
     }
 
-    //
-    if (/\?/.test(url)) {
-        url += "&_=";
-    } else {
-        url += "?_=";
-    }
-    url += Math.random();
+    l4i.Ajax(url, options)
+}
 
-    //
-    if (!options.method) {
-        options.method = "GET";
-    }
-
-    //
-    if (!options.timeout) {
-        options.timeout = 10000;
-    }
-
-    //
-    $.ajax({
-        url     : url,
-        type    : options.method,
-        data    : options.data,
-        timeout : options.timeout,
-        success : function(rsp) {
-            if (typeof options.callback === "function") {
-                options.callback(null, rsp);
-            }
-            if (typeof options.success === "function") {
-                options.success(rsp);
-            }
-        },
-        error: function(xhr, textStatus, error) {
-            if (typeof options.callback === "function") {
-                options.callback(xhr.responseText, null);
-            }
-            if (typeof options.error === "function") {
-                options.error(xhr, textStatus, error);
-            }
-        }
+htpMgr.AlertUserLogin = function()
+{
+    l4iAlert.Open("warn", "You are not logged in, or your login session has expired. Please sign in again", {
+        close: false,
+        buttons: [{
+            title: "SIGN IN",
+            href: htpMgr.frtbase +"auth/login",
+        }],
     });
 }
 
-
 htpMgr.ApiCmd = function(url, options)
 {
+    if (options.nocache === undefined) {
+        options.nocache = true;
+    }
+
+    var appcb = null;
+    if (options.callback) {
+        appcb = options.callback;
+    }
+    options.callback = function(err, data) {
+        if (err == "Unauthorized") {
+            return htpMgr.AlertUserLogin();
+        }
+        if (appcb) {
+            appcb(err, data);
+        }
+    }
+
     htpMgr.Ajax(htpMgr.api + url, options);
 }
 
