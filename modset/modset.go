@@ -877,10 +877,10 @@ func SpecSchemaSync(spec api.Spec) error {
 					Length: "200",
 				})
 
-				tbl.AddColumn(&rdobase.Column{
-					Name: "term_" + term.Meta.Name + "_body",
-					Type: "string-text",
-				})
+				// tbl.AddColumn(&rdobase.Column{
+				// 	Name: "term_" + term.Meta.Name + "_body",
+				// 	Type: "string-text",
+				// })
 
 				tbl.AddColumn(&rdobase.Column{
 					Name:   "term_" + term.Meta.Name + "_idx",

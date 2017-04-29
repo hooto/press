@@ -40,9 +40,11 @@ type Node struct {
 }
 
 var (
-	node_list_limit int64 = 15
-	reg_permalink         = regexp.MustCompile("^[0-9a-z_-]{1,100}$")
-	node_set_lock   sync.Mutex
+	node_id_length                = 12
+	node_pid_default              = "00"
+	node_list_limit         int64 = 15
+	node_field_permalink_re       = regexp.MustCompile("^[0-9a-z_-]{1,100}$")
+	node_set_lock           sync.Mutex
 )
 
 func (c Node) ListAction() {
@@ -121,8 +123,13 @@ func (c Node) SetAction() {
 
 	defer c.RenderJson(&rsp)
 
-	node_set_lock.Lock()
-	defer node_set_lock.Unlock()
+	if err := c.Request.JsonDecode(&rsp); err != nil {
+		rsp.Error = &types.ErrorMeta{
+			Code:    "400",
+			Message: "Bad Request: " + err.Error(),
+		}
+		return
+	}
 
 	if !iamclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
 		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
@@ -147,13 +154,8 @@ func (c Node) SetAction() {
 		return
 	}
 
-	if err := c.Request.JsonDecode(&rsp); err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "400",
-			Message: "Bad Request: " + err.Error(),
-		}
-		return
-	}
+	node_set_lock.Lock()
+	defer node_set_lock.Unlock()
 
 	var (
 		set = map[string]interface{}{}
@@ -166,7 +168,7 @@ func (c Node) SetAction() {
 
 		rsp.ExtPermalinkName = strings.Replace(strings.ToLower(strings.TrimSpace(rsp.ExtPermalinkName)), " ", "-", -1)
 
-		if !reg_permalink.MatchString(rsp.ExtPermalinkName) {
+		if !node_field_permalink_re.MatchString(rsp.ExtPermalinkName) {
 			rsp.Error = &types.ErrorMeta{
 				Code:    "400",
 				Message: "Invalid Permalink Name",
@@ -303,16 +305,22 @@ func (c Node) SetAction() {
 
 	} else {
 
-		set["id"] = idhash.RandHexString(12)
+		set["id"] = idhash.RandHexString(node_id_length)
 		set["title"] = rsp.Title
 		set["status"] = rsp.Status
 		set["created"] = rdobase.TimeNow("datetime")
+
+		// TODO
 		set["userid"] = "dr5a8pgv"
+		set["pid"] = node_pid_default
+		if model.Extensions.AccessCounter {
+			set["ext_access_counter"] = "0"
+		}
 
 		//
-		for _, valField := range rsp.Fields {
+		for _, modField := range model.Fields {
 
-			for _, modField := range model.Fields {
+			for _, valField := range rsp.Fields {
 
 				if modField.Name != valField.Name {
 					continue
@@ -321,6 +329,7 @@ func (c Node) SetAction() {
 				set["field_"+valField.Name] = valField.Value
 
 				if modField.Type == "text" {
+
 					attrs := []api.KeyValue{}
 
 					for _, attr := range valField.Attrs {
@@ -334,6 +343,31 @@ func (c Node) SetAction() {
 				}
 
 				break
+			}
+
+			if _, ok := set["field_"+modField.Name]; !ok {
+
+				switch modField.Type {
+
+				case "bool":
+					set["field_"+modField.Name] = false
+
+				case "string":
+					set["field_"+modField.Name] = ""
+
+				case "text":
+					set["field_"+modField.Name] = ""
+					set["field_"+modField.Name+"_attrs"] = "[]"
+
+				case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64":
+					set["field_"+modField.Name] = "0"
+
+				case "float", "decimal":
+					set["field_"+modField.Name] = "0"
+
+				default:
+					set["field_"+modField.Name] = ""
+				}
 			}
 		}
 
@@ -357,6 +391,21 @@ func (c Node) SetAction() {
 				case api.TermTaxonomy:
 
 					set["term_"+modTerm.Meta.Name] = term.Value
+				}
+
+				break
+			}
+
+			if _, ok := set["term_"+modTerm.Meta.Name]; !ok {
+
+				switch modTerm.Type {
+
+				case api.TermTag:
+					set["term_"+modTerm.Meta.Name+"_idx"] = ""
+					set["term_"+modTerm.Meta.Name] = ""
+
+				case api.TermTaxonomy:
+					set["term_"+modTerm.Meta.Name] = ""
 				}
 			}
 		}

@@ -28,8 +28,8 @@ import (
 )
 
 var (
-	term_cmap   = map[string]*term_cates{}
-	term_locker sync.Mutex
+	term_cmap    = map[string]*term_cates{}
+	term_cmap_mu sync.RWMutex
 )
 
 type term_cates struct {
@@ -63,8 +63,8 @@ func _termTaxonomyCacheRefresh(modname, table string) {
 		return
 	}
 
-	term_locker.Lock()
-	defer term_locker.Unlock()
+	term_cmap_mu.Lock()
+	defer term_cmap_mu.Unlock()
 
 	ls := api.TermList{}
 
@@ -107,6 +107,9 @@ func TermTaxonomyCacheIndexes(modname, table, termid_s string) []uint32 {
 		_termTaxonomyCacheRefresh(modname, table)
 	}
 
+	term_cmap_mu.RLock()
+	defer term_cmap_mu.RUnlock()
+
 	if t, ok := term_cmap[modname+table]; ok {
 		if tis, ok := t.dps[uint32(tid)]; ok {
 			return tis
@@ -117,6 +120,9 @@ func TermTaxonomyCacheIndexes(modname, table, termid_s string) []uint32 {
 }
 
 func TermTaxonomyCacheEntry(modname, table string, termid uint32) *api.Term {
+
+	term_cmap_mu.RLock()
+	defer term_cmap_mu.RUnlock()
 
 	if t, ok := term_cmap[modname+table]; ok {
 
@@ -133,8 +139,8 @@ func TermTaxonomyCacheEntry(modname, table string, termid uint32) *api.Term {
 
 func TermTaxonomyCacheClean(modname, table string) {
 
-	term_locker.Lock()
-	defer term_locker.Unlock()
+	term_cmap_mu.Lock()
+	defer term_cmap_mu.Unlock()
 
 	if _, ok := term_cmap[modname+table]; ok {
 		delete(term_cmap, modname+table)

@@ -144,9 +144,6 @@ func (q *QuerySet) TermList() api.TermList {
 
 	if model.Type == api.TermTaxonomy {
 
-		term_locker.Lock()
-		defer term_locker.Unlock()
-
 		tcm := &term_cates{
 			ls:  rsp,
 			dps: map[uint32][]uint32{},
@@ -156,7 +153,9 @@ func (q *QuerySet) TermList() api.TermList {
 			tcm.dps[term_entry.ID] = _term_cate_subtree(&tcm.ls, []uint32{}, term_entry.ID)
 		}
 
+		term_cmap_mu.Lock()
 		term_cmap[q.ModName+q.Table] = tcm
+		term_cmap_mu.Unlock()
 	}
 
 	// qryhash := q.Hash()
