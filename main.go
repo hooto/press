@@ -22,6 +22,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"runtime"
+	"time"
 
 	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
@@ -54,10 +55,16 @@ func init() {
 func main() {
 
 	//
-	if err := config.Initialize(*flagPrefix); err != nil {
+	for {
+
+		err := config.Initialize(*flagPrefix)
+		if err == nil {
+			break
+		}
+
 		fmt.Println("Error on config.Initialize", err)
 		logger.Printf("error", "config.Initialize error: %v", err)
-		os.Exit(1)
+		time.Sleep(3e9)
 	}
 
 	if err := store.Init(config.Config.IoConnectors); err != nil {

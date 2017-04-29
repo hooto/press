@@ -16,11 +16,14 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
+	"time"
 
 	"code.hooto.com/lessos/iam/iamapi"
+	"code.hooto.com/lessos/loscore/losapi"
 	"code.hooto.com/lynkdb/iomix/connect"
 	"github.com/eryx/hcaptcha/captcha"
 	"github.com/lessos/lessgo/data/rdo/base"
@@ -33,9 +36,12 @@ import (
 var (
 	Prefix        string
 	Config        ConfigCommon
-	AppName       = "hooto-hootopress"
+	AppName       = "hootopress"
 	Version       = "0.1.7.dev"
 	CaptchaConfig = captcha.DefaultConfig
+
+	pod_inst_updated time.Time
+	pod_inst         = "/home/action/.los/pod_instance.json"
 
 	User = &user.User{
 		Uid:      "2048",
@@ -57,6 +63,7 @@ type ConfigCommon struct {
 	IamServiceUrl string                   `json:"iam_service_url"`
 	Database      base.Config              `json:"database"`
 	IoConnectors  connect.MultiConnOptions `json:"io_connectors"`
+	RunMode       string                   `json:"run_mode,omitempty"`
 }
 
 func init() {
@@ -94,7 +101,7 @@ func init() {
 		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text",
 	})
 	SysConfigList.Insert(api.SysConfig{
-		"ls2_uri", "//127.0.0.1/bucket-name",
+		"ls2_uri", "//127.0.0.1/s2/bucket-name",
 		"Storage Service URI", "",
 	})
 }
@@ -105,7 +112,7 @@ func Initialize(prefix string) error {
 
 	if prefix == "" {
 		if prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/.."); err != nil {
-			prefix = "/opt/hooto/hootopress"
+			prefix = "/home/action/apps/hootopress"
 		}
 	}
 
@@ -117,18 +124,104 @@ func Initialize(prefix string) error {
 		return err
 	}
 
-	//
-	if Config.IamServiceUrl == "" {
-		return errors.New("Error: `iam_service_url` can not be null")
+	{
+		if Config.HttpPort == 0 {
+			Config.HttpPort = 9533
+		}
 	}
+
+	if Config.RunMode != "local-dev" {
+
+		var inst losapi.Pod
+		if err := json.DecodeFile(pod_inst, &inst); err != nil {
+			return err
+		}
+
+		if inst.Spec == nil ||
+			len(inst.Spec.Boxes) == 0 ||
+			inst.Spec.Boxes[0].Resources == nil {
+			return errors.New("Not Pod Instance Setup")
+		}
+
+		var (
+			opt    *losapi.AppOption
+			optref *losapi.AppOption
+		)
+
+		for _, app := range inst.Apps {
+
+			if app.Spec.Meta.Name != "hootopress" {
+				continue
+			}
+
+			//
+			if opt == nil {
+				opt = app.Operate.Options.Get("cfg/hootopress") // TODO
+			}
+
+			if optref == nil {
+				optref = app.Operate.Options.Get("cfg/mysql") // TODO
+			}
+		}
+
+		if opt == nil {
+			return errors.New("No Configure Found")
+		}
+
+		if v, ok := opt.Items.Get("iam_service_url"); ok {
+			Config.IamServiceUrl = v.String()
+		} else {
+			return errors.New("No Config.IamServiceUrl Found")
+		}
+
+		if optref == nil || optref.Ref == nil {
+			return errors.New("No Database Connection Configure Found")
+		}
+
+		Config.Database.Driver = "mysql"
+
+		if v, ok := optref.Items.Get("db_name"); ok {
+			Config.Database.Dbname = v.String()
+		}
+
+		if v, ok := optref.Items.Get("db_user"); ok {
+			Config.Database.User = v.String()
+		}
+
+		if v, ok := optref.Items.Get("db_auth"); ok {
+			Config.Database.Pass = v.String()
+		}
+
+		if optref.Ref.PodId == "" {
+			return errors.New("No UpStream Pod Found")
+		}
+
+		var nsz losapi.NsPodServiceMap
+		if err := json.DecodeFile("/dev/shm/los/nsz/"+optref.Ref.PodId, &nsz); err != nil {
+			return err
+		}
+
+		// TODO
+		if srv := nsz.Get(3306); srv == nil || len(srv.Items) == 0 {
+			return errors.New("No Pod ServicePort Found")
+		} else {
+			Config.Database.Host = srv.Items[0].Ip
+			Config.Database.Port = fmt.Sprintf("%d", srv.Items[0].Port)
+		}
+	}
+
+	Save()
 
 	dcn, err := Config.DatabaseInstance()
 	if err != nil {
 		return err
 	}
 
-	rs, err := dcn.Base.Query(base.NewQuerySet().From("sys_config").Limit(1000))
-	if err == nil {
+	{
+		rs, err := dcn.Base.Query(base.NewQuerySet().From("sys_config").Limit(1000))
+		if err != nil {
+			return err
+		}
 
 		for _, v := range rs {
 
@@ -140,7 +233,7 @@ func Initialize(prefix string) error {
 	}
 
 	if Config.AppTitle == "" {
-		Config.AppTitle = "HootoPress"
+		Config.AppTitle = "Hooto Press"
 	}
 
 	// Setting CAPTCHA
@@ -196,5 +289,6 @@ func Save() error {
 		IamServiceUrl: Config.IamServiceUrl,
 		Database:      Config.Database,
 		IoConnectors:  Config.IoConnectors,
+		RunMode:       Config.RunMode,
 	}, Prefix+"/etc/main.json", "  ")
 }
