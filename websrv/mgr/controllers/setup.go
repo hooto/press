@@ -50,7 +50,7 @@ func (c Setup) IndexAction() {
 		}
 		http.SetCookie(c.Response.Out, ck)
 
-		c.Redirect("mgr")
+		c.Redirect("htp/mgr")
 		return
 	}
 

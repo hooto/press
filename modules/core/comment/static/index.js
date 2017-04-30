@@ -43,7 +43,7 @@ htpComment.EmbedCommit = function()
                     var captcha_token = Math.random();
                     form.find("input[name=captcha_token]").val(captcha_token);
                     form.find("#htp-comment-captcha-url").attr("src", 
-                        htp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+                        htp.HttpSrvBasePath("htp/+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
                 }
 
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -104,7 +104,7 @@ htpComment.EmbedFormActive = function()
 
     form.find("input[name=captcha_token]").val(captcha_token);
     form.find("#htp-comment-captcha-url").attr("src", 
-        htp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+        htp.HttpSrvBasePath("htp/+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
 
     form.find("textarea[name=content]").focus();
 

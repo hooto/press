@@ -1,11 +1,14 @@
 var htp = {
-    base : "/",
+    base : "/htp/",
 }
 
 htp.Boot = function()
 {
-    if (window._basepath) {
+    if (window._basepath && window._basepath.length > 1) {
         htp.base = window._basepath;
+        if (htp.base.substring(htp.base.length - 1) != "/") {
+            htp.base += "/";
+        }
     }
 
     if (!htp.base || htp.base == "") {

@@ -25,15 +25,23 @@ func NewModule() httpsrv.Module {
 
 	module := httpsrv.NewModule("default")
 
+	module.ControllerRegister(new(Index))
+	module.ControllerRegister(new(Error))
+	module.ControllerRegister(new(S2))
+
+	return module
+}
+
+func NewHtpModule() httpsrv.Module {
+
+	module := httpsrv.NewModule("default_htp")
+
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
 		Path:       "~",
 		StaticPath: config.Prefix + "/webui/",
 	})
 
-	module.ControllerRegister(new(Index))
-	module.ControllerRegister(new(Error))
-	module.ControllerRegister(new(S2))
 	module.ControllerRegister(new(iamclient.Auth))
 
 	return module

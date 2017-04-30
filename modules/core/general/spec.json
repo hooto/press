@@ -1,8 +1,8 @@
 {
   "meta": {
     "name": "core/general",
-    "resourceVersion": "7",
-    "updated": "2015-08-10T09:27:07Z"
+    "resourceVersion": "8",
+    "updated": "2017-05-10T02:10:09Z"
   },
   "srvname": "",
   "title": "General",
@@ -66,7 +66,7 @@
             "order": "field_weight asc",
             "limit": 50
           },
-          "cache_ttl": 3600000
+          "cache_ttl": 3600
         }
       ]
     },

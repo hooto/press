@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>Setup : Registration to IAM Service</title>
-  <link rel="stylesheet" href="{{HttpSrvBasePath "mgr/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
-  <link rel="stylesheet" href="{{HttpSrvBasePath "mgr/~/css/main.css"}}" type="text/css">
-  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "mgr/~/htp/img/ap.ico"}}">
-  <script src="{{HttpSrvBasePath "mgr/~/htp/js/jquery.js"}}"></script>
-  <script src="{{HttpSrvBasePath "mgr/~/lessui/js/lessui.js"}}"></script>
-  <script src="{{HttpSrvBasePath "mgr/~/lessui/js/sea.js"}}"></script>
-  <script src="{{HttpSrvBasePath "mgr/~/htp/js/main.js"}}"></script>
+  <link rel="stylesheet" href="{{HttpSrvBasePath "htp/mgr/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
+  <link rel="stylesheet" href="{{HttpSrvBasePath "htp/mgr/~/css/main.css"}}" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "htp/mgr/~/htp/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "htp/mgr/~/htp/js/jquery.js"}}"></script>
+  <script src="{{HttpSrvBasePath "htp/mgr/~/lessui/js/lessui.js"}}"></script>
+  <script src="{{HttpSrvBasePath "htp/mgr/~/lessui/js/sea.js"}}"></script>
+  <script src="{{HttpSrvBasePath "htp/mgr/~/htp/js/main.js"}}"></script>
   <script type="text/javascript">
     window.onload_hooks = [];
   </script>
@@ -20,7 +20,7 @@
 <div class="container" style="width:600px">
 
 <div class="htp-mgr-setup-logo" style="text-align:center;padding:30px;">
-  <img src="{{HttpSrvBasePath "mgr/~/htp/img/alpha2.png"}}">
+  <img src="{{HttpSrvBasePath "htp/mgr/~/htp/img/alpha2.png"}}">
 </div>
 
 <div class="panel panel-default">
@@ -88,7 +88,7 @@ $("#htp-app-reg").submit(function(event) {
 
     $.ajax({
         type    : "POST",
-        url     : "{{HttpSrvBasePath "mgr/setup/app-register-sync"}}",
+        url     : "{{HttpSrvBasePath "htp/mgr/setup/app-register-sync"}}",
         data    : $(this).serialize(),
         timeout : 3000,
         success : function(data) {
@@ -106,7 +106,7 @@ $("#htp-app-reg").submit(function(event) {
                 l4i.InnerAlert(alertid, 'alert-success', 'Successfully registered ...');
 
                 window.setTimeout(function(){
-                    window.location = "{{HttpSrvBasePath "mgr"}}";
+                    window.location = "{{HttpSrvBasePath "htp/mgr"}}";
                 }, 1500);
             }
         },

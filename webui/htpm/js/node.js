@@ -299,7 +299,7 @@ htpNode.List = function(modname, modelid)
 
                 $("#htpm-nodels").empty();
                 $("#htpm-termls").empty();
-                l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+                l4i.InnerAlert(alertid, 'alert-info', "Item Not Found");
             } else {
                 $(alertid).hide();
             }
@@ -548,7 +548,7 @@ htpNode.Set = function(modname, modelid, nodeid)
             $("#work-content").html(tpl);
 
             if (!data || data.kind != "Node") {
-                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert(alertid, 'alert-info', "Item Not Found");
             }
 
             if (!data.status) {

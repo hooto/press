@@ -42,7 +42,7 @@ htpTerm.List = function(modname, modelid)
                 $("#htpm-nodels").empty();
                 $("#htpm-termls").empty();
 
-                l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+                l4i.InnerAlert(alertid, 'alert-info', "Item Not Found");
             } else {
                 $(alertid).hide();
             }
@@ -197,7 +197,7 @@ htpTerm.Set = function(modname, modelid, termid)
             $("#work-content").html(tpl);
 
             if (!data || data.kind != "Term") {
-                return l4i.InnerAlert(alertid, 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert(alertid, 'alert-info', "Item Not Found");
             }
 
             if (!data.status) {

@@ -175,7 +175,7 @@ htpS2._objNewUpload = function(formid, file)
                     body    : e.target.result,
                     encode  : "base64",
                 }),
-                success : function(rsp) {
+                callback : function(err, rsp) {
 
                     if (rsp && rsp.kind && rsp.kind == "FsFile") {
 

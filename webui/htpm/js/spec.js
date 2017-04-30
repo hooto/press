@@ -203,7 +203,7 @@ htpSpec.List = function()
 
             if (rsj === undefined || rsj.kind != "SpecList"
                 || rsj.items === undefined || rsj.items.length < 1) {
-                return l4i.InnerAlert("#htpm-specls-alert", 'alert-danger', "Item Not Found");
+                return l4i.InnerAlert("#htpm-specls-alert", 'alert-info', "Item Not Found");
             }
 
             $("#htpm-specls-alert").hide();
@@ -361,7 +361,7 @@ htpSpec.InfoSetCommit = function()
     htpMgr.ApiCmd("mod-set/spec-info-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             // console.log(data);
 
@@ -525,7 +525,7 @@ htpSpec.TermSetCommit = function()
     htpMgr.ApiCmd("mod-set/spec-term-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             // console.log(data);
 
@@ -910,7 +910,7 @@ htpSpec.NodeSetCommit = function()
     htpMgr.ApiCmd("mod-set/spec-node-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             // console.log(data);
 
@@ -1308,7 +1308,7 @@ htpSpec.ActionSetCommit = function()
     htpMgr.ApiCmd("mod-set/spec-action-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             // console.log(data);
 
@@ -1615,7 +1615,7 @@ htpSpec.RouteSetCommit = function()
     htpMgr.ApiCmd("mod-set/spec-route-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             if (!data || !data.kind || data.kind != "SpecRoute") {
 

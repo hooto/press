@@ -97,12 +97,13 @@ func main() {
 	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/en.json")
 	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/zh_CN.json")
 
-	httpsrv.GlobalService.ModuleRegister("/+/comment", ext_comment.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/+/hcaptcha", ext_captcha.WebServerModule())
+	httpsrv.GlobalService.ModuleRegister("/htp/+/comment", ext_comment.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/htp/+/hcaptcha", ext_captcha.WebServerModule())
 
 	//
-	httpsrv.GlobalService.ModuleRegister("/v1", capi.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/mgr", cmgr.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/htp/v1", capi.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/htp/mgr", cmgr.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/htp", cdef.NewHtpModule())
 	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
 
 	//

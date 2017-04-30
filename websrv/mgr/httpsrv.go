@@ -25,17 +25,17 @@ func NewModule() httpsrv.Module {
 
 	module := httpsrv.NewModule("htp_mgr")
 
-	module.RouteSet(httpsrv.Route{
-		Type:       httpsrv.RouteTypeStatic,
-		Path:       "~",
-		StaticPath: config.Prefix + "/webui/",
-	})
+	// module.RouteSet(httpsrv.Route{
+	// 	Type:       httpsrv.RouteTypeStatic,
+	// 	Path:       "~",
+	// 	StaticPath: config.Prefix + "/webui/",
+	// })
 
-	module.RouteSet(httpsrv.Route{
-		Type:       httpsrv.RouteTypeStatic,
-		Path:       "-",
-		StaticPath: config.Prefix + "/websrv/mgr/tpls/",
-	})
+	// module.RouteSet(httpsrv.Route{
+	// 	Type:       httpsrv.RouteTypeStatic,
+	// 	Path:       "-",
+	// 	StaticPath: config.Prefix + "/webui/htpm/",
+	// })
 
 	module.TemplatePathSet(config.Prefix + "/websrv/mgr/views")
 

@@ -103,7 +103,7 @@ htpSys.ConfigSetCommit = function()
     htpMgr.ApiCmd("sys/config-set", {
         method  : "PUT",
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             if (!data || !data.kind || data.kind != "SysConfigList") {
 
@@ -218,7 +218,9 @@ htpSys.IamSync = function()
     htpMgr.Ajax("setup/app-register-sync", {
         method : "POST",
         data   : form.serialize(),
-        success: function(data) {
+        callback: function(err, data) {
+
+            console.log("ASDFASD");
 
             if (!data || data.kind != "AppInstanceRegister") {
                 if (data.error) {

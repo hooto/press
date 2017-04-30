@@ -1,8 +1,8 @@
 var htpMgr = {
-    frtbase : "/",
-    base    : "/mgr/",
-    api     : "/v1/",
-    basetpl : "/mgr/-/",
+    frtbase : "/htp/",
+    base    : "/htp/mgr/",
+    api     : "/htp/v1/",
+    basetpl : "/htp/~/htpm/",
     debug   : true,
 }
 
@@ -16,18 +16,21 @@ htpMgr.debug_uri = function()
 
 htpMgr.Boot = function()
 {
-    if (window._basepath) {
+    if (window._basepath && window._basepath.length > 1) {
         htpMgr.frtbase = window._basepath;
+        if (htpMgr.frtbase.substring(htpMgr.frtbase.length - 1) != "/") {
+            htpMgr.frtbase += "/";
+        }
         if (!htpMgr.frtbase || htpMgr.frtbase == "") {
             htpMgr.frtbase = "/";
         }
-        htpMgr.base    = htpMgr.frtbase +"mgr/";
+        htpMgr.base    = htpMgr.frtbase +"/mgr/";
         htpMgr.api     = htpMgr.frtbase +"v1/";
-        htpMgr.basetpl = htpMgr.frtbase +"mgr/-/";
+        htpMgr.basetpl = htpMgr.frtbase +"~/htpm/";
     }
 
     seajs.config({
-        base: htpMgr.base,
+        base: htpMgr.frtbase,
         alias: {
             ep: '~/lessui/js/eventproxy.js'
         },
@@ -56,18 +59,18 @@ htpMgr.Boot = function()
             "~/lessui/css/lessui.css",
             "~/htp/css/main.css"+ htpMgr.debug_uri(),
             "~/htp/js/marked.js",
-            "-/css/main.css"+ htpMgr.debug_uri(),
-            "-/css/defx.css",
-            "-/js/spec.js"+ htpMgr.debug_uri(),
-            "-/js/spec-editor.js"+ htpMgr.debug_uri(),
-            "-/js/tablet.js",
-            "-/js/lc-editor.js",
-            "-/js/model.js"+ htpMgr.debug_uri(),
-            "-/js/term.js"+ htpMgr.debug_uri(),
-            "-/js/node.js"+ htpMgr.debug_uri(),
-            "-/js/sys.js"+ htpMgr.debug_uri(),
-            "-/js/s2.js"+ htpMgr.debug_uri(),
-            "-/js/editor.js"+ htpMgr.debug_uri(),
+            "~/htpm/css/main.css"+ htpMgr.debug_uri(),
+            "~/htpm/css/defx.css",
+            "~/htpm/js/spec.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/spec-editor.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/tablet.js",
+            "~/htpm/js/lc-editor.js",
+            "~/htpm/js/model.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/term.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/node.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/sys.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/s2.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/editor.js"+ htpMgr.debug_uri(),
         ], function() {
 
             setTimeout(htpMgr.BootInit, 300);

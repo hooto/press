@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <title>{{SysConfig "frontend_html_head_subtitle"}}</title>
-  <script src="{{HttpSrvBasePath "mgr/~/lessui/js/sea.js"}}"></script>
-  <script src="{{HttpSrvBasePath "mgr/-/js/main.js"}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "mgr/~/htp/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "htp/~/lessui/js/sea.js"}}"></script>
+  <script src="{{HttpSrvBasePath "htp/~/htpm/js/main.js"}}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "htp/~/htp/img/ap.ico"}}">
   <script type="text/javascript">
-    window._basepath = {{HttpSrvBasePath ""}};
+    window._basepath = {{HttpSrvBasePath "/htp"}};
   </script>
 </head>
 <body id="body-content">
@@ -22,7 +22,7 @@
     <ul class="htpm-nav htpm-topbar-nav" id="htpm-topbar-nav-node-specls">
     </ul>
     <ul class="htpm-nav htpm-nav-right" id="htpm-topbar-userbar">
-      <li><a href="{{HttpSrvBasePath "auth/sign-out"}}">Sign Out</a></li>
+      <li><a href="{{HttpSrvBasePath "htp/auth/sign-out"}}">Sign Out</a></li>
     </ul>
     <ul class="htpm-nav htpm-nav-right">
       <li><a class="l4i-nav-item" href="#s2/index">Storage</a></li>

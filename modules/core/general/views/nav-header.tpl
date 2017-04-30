@@ -18,7 +18,7 @@
 </div>
 
 <script id="htp-topbar-user-unsigned-tpl" type="text/html">
-<li class="iam-name"><a href="{{HttpSrvBasePath "auth/login"}}">Login</a></li>
+<li class="iam-name"><a href="{{HttpSrvBasePath "htp/auth/login"}}">Login</a></li>
 </script>
 
 <script id="htp-topbar-user-signed-tpl" type="text/html">
