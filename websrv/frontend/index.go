@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"code.hooto.com/lynkdb/iomix/skv"
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/x/webui"
 
 	"code.hooto.com/hooto/hootopress/api"
@@ -277,7 +277,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			id = id[:len(id)-5]
 			qry.Filter("id", id)
 		} else if nodeModel.Extensions.Permalink != "" {
-			qry.Filter("ext_permalink_idx", utils.StringEncode16(id, 12))
+			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(id), 12))
 		} else {
 			return
 		}
@@ -312,7 +312,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 
 			if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
 
-				table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), ad.Query.Table)
+				table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(mod.Meta.Name), 12), ad.Query.Table)
 				store.LocalCache.KvPut([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1", nil)
 			}
 		}

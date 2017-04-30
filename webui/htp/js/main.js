@@ -154,52 +154,8 @@ htp.Ajax = function(url, options)
         url = htp.HttpSrvBasePath(url);
     }
 
-    //
-    if (/\?/.test(url)) {
-        url += "&_=";
-    } else {
-        url += "?_=";
-    }
-    url += Math.random();
-
-    //
-    if (!options.method) {
-        options.method = "GET";
-    }
-
-    //
-    if (!options.timeout) {
-        options.timeout = 10000;
-    }
-
-    // console.log(url);
-    // console.log(options);
-
-    //
-    $.ajax({
-        url     : url,
-        type    : options.method,
-        data    : options.data,
-        timeout : options.timeout,
-        success : function(rsp) {
-            if (typeof options.callback === "function") {
-                options.callback(null, rsp);
-            }
-            if (typeof options.success === "function") {
-                options.success(rsp);
-            }
-        },
-        error: function(xhr, textStatus, error) {
-            if (typeof options.callback === "function") {
-                options.callback(xhr.responseText, null);
-            }
-            if (typeof options.error === "function") {
-                options.error(xhr, textStatus, error);
-            }
-        }
-    });
+    l4i.Ajax(url, options)
 }
-
 
 htp.ActionLoader = function(target, url)
 {
@@ -210,7 +166,6 @@ htp.ActionLoader = function(target, url)
     });
 }
 
-
 htp.ApiCmd = function(url, options)
 {
     htp.Ajax(htp.HttpSrvBasePath(url), options);
@@ -218,7 +173,7 @@ htp.ApiCmd = function(url, options)
 
 htp.AuthSessionRefresh = function()
 {
-    htp.Ajax("auth/session", {
+    htp.Ajax(htp.HttpSrvBasePath("auth/session"), {
         callback: function(err, data) {
 
             if (err || !data || data.kind != "AuthSession") {

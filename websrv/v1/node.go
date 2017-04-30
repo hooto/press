@@ -33,10 +33,26 @@ import (
 	"code.hooto.com/hooto/hootopress/api"
 	"code.hooto.com/hooto/hootopress/config"
 	"code.hooto.com/hooto/hootopress/datax"
+	"code.hooto.com/hooto/hootopress/store"
 )
 
 type Node struct {
 	*httpsrv.Controller
+	us iamapi.UserSession
+}
+
+func (c *Node) Init() int {
+
+	//
+	c.us, _ = iamclient.SessionInstance(c.Session)
+
+	if !c.us.IsLogin() {
+		c.Response.Out.WriteHeader(401)
+		c.RenderJson(types.NewTypeErrorMeta(iamapi.ErrCodeUnauthorized, "Unauthorized"))
+		return 1
+	}
+
+	return 0
 }
 
 var (
@@ -433,6 +449,13 @@ func (c Node) SetAction() {
 			rsp.ID = set["id"].(string)
 			_, err = dcn.Base.Insert(table, set)
 		}
+
+		// clean frontend cache
+		qry := datax.NewQuery(c.Params.Get("modname"), model.Meta.Name)
+		qry.Filter("status", 1)
+		qry.Filter("id", rsp.ID)
+
+		store.LocalCache.KvDel([]byte(qry.Hash()))
 
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{

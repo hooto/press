@@ -49,6 +49,21 @@ func path_filter(path string) (string, error) {
 
 type S2Obj struct {
 	*httpsrv.Controller
+	us iamapi.UserSession
+}
+
+func (c *S2Obj) Init() int {
+
+	//
+	c.us, _ = iamclient.SessionInstance(c.Session)
+
+	if !c.us.IsLogin() {
+		c.Response.Out.WriteHeader(401)
+		c.RenderJson(types.NewTypeErrorMeta(iamapi.ErrCodeUnauthorized, "Unauthorized"))
+		return 1
+	}
+
+	return 0
 }
 
 func (c S2Obj) RenameAction() {

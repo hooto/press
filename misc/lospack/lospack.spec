@@ -11,7 +11,7 @@ mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{captchadb,log,storage}
 go build -ldflags "-s -w" -o {{.buildroot}}/bin/hootopress main.go
 
-sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/websrv/mgr/tpls/js/main.js
+sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/htpm/js/main.js
 
 %files
 bin/hootopress
@@ -19,7 +19,7 @@ bin/keeper
 etc/main.json.tpl
 i18n/
 modules/
-websrv/mgr/tpls/
+webui/htpm/
 webui/htp/img/alpha2.png
 webui/htp/img/search-16.png
 webui/htp/img/ap.ico
@@ -34,7 +34,7 @@ webui/lessui/js/browser-detect.js
 webui/lessui/js/eventproxy.js
 webui/lessui/js/sea.js
 webui/htp/js/
-websrv/mgr/tpls/js/
+webui/htpm/js/
 modules/
 
 
@@ -44,15 +44,16 @@ webui/cm/5/
 webui/purecss/pure.css
 webui/lessui/css/lessui.css
 webui/htp/css/
-websrv/mgr/tpls/css/
+webui/htpm/css/
 modules/
 
 
 %html_compress
 modules/
-websrv/mgr/tpls/
+webui/htpm/
 websrv/mgr/views/
 
 %png_compress
 webui/htp/img/
+webui/htpm/img/
 

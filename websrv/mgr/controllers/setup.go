@@ -72,6 +72,14 @@ func (c Setup) IndexAction() {
 
 func (c Setup) AppRegisterSyncAction() {
 
+	if status.IamServiceStatus != status.IamServiceUnRegistered {
+		return
+	}
+
+	if !iamclient.SessionIsLogin(c.Session) {
+		return
+	}
+
 	reg := iamapi.AppInstanceRegister{
 		AccessToken: iamclient.SessionAccessToken(c.Session),
 		Instance: iamapi.AppInstance{

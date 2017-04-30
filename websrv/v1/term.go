@@ -24,11 +24,11 @@ import (
 
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/lessgo/utils"
 
 	"code.hooto.com/hooto/hootopress/api"
 	"code.hooto.com/hooto/hootopress/config"
@@ -43,6 +43,21 @@ var (
 
 type Term struct {
 	*httpsrv.Controller
+	us iamapi.UserSession
+}
+
+func (c *Term) Init() int {
+
+	//
+	c.us, _ = iamclient.SessionInstance(c.Session)
+
+	if !c.us.IsLogin() {
+		c.Response.Out.WriteHeader(401)
+		c.RenderJson(types.NewTypeErrorMeta(iamapi.ErrCodeUnauthorized, "Unauthorized"))
+		return 1
+	}
+
+	return 0
 }
 
 func (c Term) ListAction() {
@@ -165,7 +180,7 @@ func (c Term) SetAction() {
 
 	var (
 		set   = map[string]interface{}{}
-		table = fmt.Sprintf("tx%s_%s", utils.StringEncode16(c.Params.Get("modname"), 12), c.Params.Get("modelid"))
+		table = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 	)
 
 	q := rdobase.NewQuerySet().From(table).Limit(1)
