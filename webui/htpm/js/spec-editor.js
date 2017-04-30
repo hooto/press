@@ -849,7 +849,7 @@ l9rPodFs.Get = function(options)
 
     // console.log("box refresh:"+ url);
     htpMgr.ApiCmd(url, {
-        success: function(data) {
+        callback: function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -906,7 +906,7 @@ l9rPodFs.Post = function(options)
         method  : "POST",
         timeout : 30000,
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -956,7 +956,7 @@ l9rPodFs.Rename = function(options)
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -1001,7 +1001,7 @@ l9rPodFs.Del = function(options)
         method  : "POST",
         timeout : 10000,
         data    : JSON.stringify(req),
-        success : function(data) {
+        callback : function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -1042,7 +1042,7 @@ l9rPodFs.List = function(options)
     htpMgr.ApiCmd(url, {
         method  : "GET",
         timeout : 30000,
-        success : function(data) {
+        callback : function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");

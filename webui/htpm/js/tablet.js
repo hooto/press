@@ -220,7 +220,7 @@ l9rTab.TabletTitleImage = function(urid, imgsrc)
         if (item.icon.slice(0, 1) == "/") {
             imgsrc = item.icon;
         } else {
-            imgsrc = htpMgr.base + "-/img/"+ item.icon +".png";
+            imgsrc = htpMgr.frtbase + "~/htpm/img/"+ item.icon +".png";
         }
     }
 
@@ -248,9 +248,9 @@ l9rTab.TabletTitle = function(urid, loading)
         if (item.icon) {
 
             if (loading) {
-                var imgsrc = htpMgr.base + "-/img/loading4.gif";
+                var imgsrc = htpMgr.frtbase + "~/htpm/img/loading4.gif";
             } else {
-                var imgsrc = htpMgr.base + "-/img/"+ item.icon +".png";
+                var imgsrc = htpMgr.frtbase + "~/htpm/img/"+ item.icon +".png";
             }
 
             //
@@ -319,7 +319,7 @@ l9rTab.TabletMore = function(tg)
 
         var href = "javascript:l9rTab.Switch('"+ i +"')";
         ol += '<div class="ltm-item lctab-nav-moreitem">';
-        ol += '<div class="ltm-ico"><img src="'+ htpMgr.base + '-/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
+        ol += '<div class="ltm-ico"><img src="'+ htpMgr.frtbase + '~/htpm/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
         ol += '<div class="ltm-ctn"><a href="'+ href +'">'+ l9rTab.pool[i].title +'</a></div>';
         ol += '</div>';
     }
@@ -400,7 +400,7 @@ l9rTab.Close = function(urid, force)
 
                 l4iModal.Open({
                     title        : "Save changes before closing",
-                    tpluri       : htpMgr.base + "-/editor/changes2save.tpl",
+                    tpluri       : htpMgr.frtbase + "~/htpm/editor/changes2save.tpl",
                     width        : 500,
                     height       : 180,
                     data         : {urid: urid},

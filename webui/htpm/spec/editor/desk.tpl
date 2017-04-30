@@ -47,13 +47,13 @@
             <ul class="lfnm-item-submenu">
                 <li>
                     <a href="#proj/fs/file-new" onclick="l9rProjFs.FileNew('file', null, '')">
-                        <img src="mgr/-/img/page_white_add.png" class="h5c_icon" />
+                        <img src="~/htpm/img/page_white_add.png" class="h5c_icon" />
                         New File
                     </a>
                 </li>
                 <li>
                     <a href="#proj/fs/file-upl" onclick="l9rProjFs.FileUpload(null)">
-                        <img src="mgr/-/img/page_white_get.png" class="h5c_icon" />
+                        <img src="~/htpm/img/page_white_get.png" class="h5c_icon" />
                         Upload
                     </a>
                 </li>
@@ -81,7 +81,7 @@
 {[~it :v]}
 <div id="ptp{[=v.fsid]}" class="lcx-fsitem" 
   lc-fspath="{[=v.path]}" lc-fstype="{[=v.fstype]}" lc-fsico="{[=v.ico]}">
-    <img src="{[=htpMgr.base]}-/img/{[=v.ico]}.png" align="absmiddle">
+    <img src="{[=htpMgr.frtbase]}~/htpm/img/{[=v.ico]}.png" align="absmiddle">
     <a href="#" class="anoline">{[=v.name]}</a>
 </div>
 {[~]}
@@ -92,13 +92,13 @@
 <div id="lcbind-fsnav-rcm" style="display:none">  
   <div class="lcbind-fsrcm-item fsrcm-isdir" lc-fsnav="new-file">
     <div class="rcico">
-        <img src="mgr/-/img/page_white_add.png" align="absmiddle" />
+        <img src="~/htpm/img/page_white_add.png" align="absmiddle" />
     </div>
     <a href="#" class="rcctn">New File</a>
   </div>
   <div class="lcbind-fsrcm-item fsrcm-isdir" lc-fsnav="upload">
     <div class="rcico">
-        <img src="mgr/-/img/page_white_get.png" align="absmiddle">
+        <img src="~/htpm/img/page_white_get.png" align="absmiddle">
     </div>
     <a href="#" class="rcctn">Upload</a>
   </div>
@@ -107,13 +107,13 @@
 
   <div class="lcbind-fsrcm-item" lc-fsnav="rename">
     <div class="rcico">
-        <img src="mgr/-/img/page_white_copy.png" align="absmiddle">
+        <img src="~/htpm/img/page_white_copy.png" align="absmiddle">
     </div>
     <a href="#" class="rcctn">Rename</a>
   </div>
   <div class="lcbind-fsrcm-item" lc-fsnav="file-del">
     <div class="rcico">
-        <img src="mgr/-/img/delete.png" align="absmiddle">
+        <img src="~/htpm/img/delete.png" align="absmiddle">
     </div>
     <a href="#" class="rcctn">Delete</a>
   </div>
@@ -125,7 +125,7 @@
 <form id="{[=it.formid]}" action="#" onsubmit="l9rProjFs.FileNewSave('{[=it.formid]}');return false;">
   <div class="input-prepend" style="margin-left:2px">
     <span class="add-on">
-        <img src="{[=htpMgr.base]}-/img/folder_add.png" class="h5c_icon">
+        <img src="{[=htpMgr.frtbase]}~/htpm/img/folder_add.png" class="h5c_icon">
         {[=it.path]}
     </span>
     <input type="text" name="name" value="{[=it.file]}" class="span2">
@@ -141,7 +141,7 @@
 <form id="{[=it.formid]}" action="#" onsubmit="l9rProjFs.FileRenameSave('{[=it.formid]}');return false;">
   <div class="input-prepend" style="margin-left:2px">
     <span class="add-on">
-        <img src="{[=htpMgr.base]}-/img/folder_edit.png" class="h5c_icon">
+        <img src="{[=htpMgr.frtbase]}~/htpm/img/folder_edit.png" class="h5c_icon">
     </span>
     <input type="text" name="pathset" value="{[=it.path]}" style="width:500px;">
     <input type="hidden" name="path" value="{[=it.path]}">
@@ -190,7 +190,7 @@
 <div id="{[=it.reqid]}">
   <div>The target of Upload directory</div>
   <div class="input-prepend">
-    <span class="add-on"><img src="{[=htpMgr.base]}-/img/page_white_get.png" align="absmiddle"></span>
+    <span class="add-on"><img src="{[=htpMgr.frtbase]}~/htpm/img/page_white_get.png" align="absmiddle"></span>
     <input style="width:400px;" name="path" type="text" value="{[=it.path]}">
     <button class="btn hide" type="button" onclick="_fs_upl_chgdir()">Change directory</button>
   </div>
