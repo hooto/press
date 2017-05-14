@@ -3,13 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>Setup : Registration to IAM Service</title>
-  <link rel="stylesheet" href="{{HttpSrvBasePath "htp/mgr/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
-  <link rel="stylesheet" href="{{HttpSrvBasePath "htp/mgr/~/css/main.css"}}" type="text/css">
-  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "htp/mgr/~/htp/img/ap.ico"}}">
-  <script src="{{HttpSrvBasePath "htp/mgr/~/htp/js/jquery.js"}}"></script>
-  <script src="{{HttpSrvBasePath "htp/mgr/~/lessui/js/lessui.js"}}"></script>
-  <script src="{{HttpSrvBasePath "htp/mgr/~/lessui/js/sea.js"}}"></script>
-  <script src="{{HttpSrvBasePath "htp/mgr/~/htp/js/main.js"}}"></script>
+  <link rel="stylesheet" href="{{HttpSrvBasePath "htp/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "htp/~/htp/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "htp/~/htp/js/jquery.js"}}"></script>
+  <script src="{{HttpSrvBasePath "htp/~/lessui/js/lessui.js"}}"></script>
   <script type="text/javascript">
     window.onload_hooks = [];
   </script>
@@ -20,7 +17,7 @@
 <div class="container" style="width:600px">
 
 <div class="htp-mgr-setup-logo" style="text-align:center;padding:30px;">
-  <img src="{{HttpSrvBasePath "htp/mgr/~/htp/img/alpha2.png"}}">
+  <img src="{{HttpSrvBasePath "htp/~/htp/img/alpha2.png"}}">
 </div>
 
 <div class="panel panel-default">
