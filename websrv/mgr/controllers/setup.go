@@ -83,7 +83,7 @@ func (c Setup) AppRegisterSyncAction() {
 	reg := iamapi.AppInstanceRegister{
 		AccessToken: iamclient.SessionAccessToken(c.Session),
 		Instance: iamapi.AppInstance{
-			Meta: types.ObjectMeta{
+			Meta: types.InnerObjectMeta{
 				ID: config.Config.InstanceID,
 			},
 			AppID:      config.AppName,
@@ -109,7 +109,7 @@ func (c Setup) AppRegisterSyncAction() {
 
 		config.Config.InstanceID = reg.Instance.Meta.ID
 		iamclient.InstanceID = reg.Instance.Meta.ID
-		iamclient.InstanceOwner = reg.Instance.Meta.UserID
+		iamclient.InstanceOwner = reg.Instance.Meta.User
 
 		config.Config.AppInstance = reg.Instance
 		config.Config.AppTitle = reg.Instance.AppTitle

@@ -197,7 +197,7 @@ func (c Sys) IamStatusAction() {
 	sets = api.SysIamStatus{
 		ServiceUrl: iamclient.ServiceUrl,
 		InstanceSelf: iamapi.AppInstance{
-			Meta: types.ObjectMeta{
+			Meta: types.InnerObjectMeta{
 				ID: config.Config.InstanceID,
 			},
 			AppID:      config.AppName,

@@ -84,7 +84,7 @@ func main() {
 	iamclient.ServiceUrlFrontend = config.Config.IamServiceUrlFrontend
 
 	iamclient.InstanceID = config.Config.InstanceID
-	iamclient.InstanceOwner = config.Config.AppInstance.Meta.UserID
+	iamclient.InstanceOwner = config.Config.AppInstance.Meta.User
 
 	httpsrv.GlobalService.Config.UrlBasePath = config.Config.UrlBasePath
 	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort
