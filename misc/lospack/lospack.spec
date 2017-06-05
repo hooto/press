@@ -1,5 +1,5 @@
-project.name = hootopress
-project.version = 0.1.7.dev
+project.name = hooto-press
+project.version = 0.2.0.dev
 project.vendor = hooto.com
 project.homepage = https://code.hooto.com/hooto/hootopress
 project.groups = app/other
@@ -9,12 +9,12 @@ export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{captchadb,log,storage}
-go build -ldflags "-s -w" -o {{.buildroot}}/bin/hootopress main.go
+go build -ldflags "-s -w" -o {{.buildroot}}/bin/hooto-press main.go
 
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/htpm/js/main.js
 
 %files
-bin/hootopress
+bin/hooto-press
 bin/keeper
 etc/main.json.tpl
 i18n/

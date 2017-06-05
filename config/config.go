@@ -36,8 +36,8 @@ import (
 var (
 	Prefix        string
 	Config        ConfigCommon
-	AppName       = "hootopress"
-	Version       = "0.1.7.dev"
+	AppName       = "hooto-press"
+	Version       = "0.2.0.dev"
 	CaptchaConfig = captcha.DefaultConfig
 
 	pod_inst_updated time.Time
@@ -114,7 +114,7 @@ func Initialize(prefix string) error {
 
 	if prefix == "" {
 		if prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/.."); err != nil {
-			prefix = "/home/action/apps/hootopress"
+			prefix = "/home/action/apps/hooto-press"
 		}
 	}
 
@@ -154,17 +154,17 @@ func Initialize(prefix string) error {
 
 		for _, app := range inst.Apps {
 
-			if app.Spec.Meta.Name != "hootopress" {
+			if app.Spec.Meta.Name != "hooto-press" {
 				continue
 			}
 
 			//
 			if opt == nil {
-				opt = app.Operate.Options.Get("cfg/hootopress") // TODO
+				opt = app.Operate.Options.Get("cfg/hooto-press") // TODO
 			}
 
 			if optref == nil {
-				optref = app.Operate.Options.Get("cfg/mysql") // TODO
+				optref = app.Operate.Options.Get("cfg/los-mysql") // TODO
 			}
 		}
 

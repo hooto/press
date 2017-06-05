@@ -216,8 +216,6 @@ func (c Sys) IamStatusAction() {
 
 	if err := hc.ReplyJson(&info); err == nil {
 		sets.InstanceRegistered = info
-	} else {
-		sets.InstanceRegistered.Error = &types.ErrorMeta{}
 	}
 
 	hc.Close()
