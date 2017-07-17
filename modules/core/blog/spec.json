@@ -1,9 +1,9 @@
 {
   "meta": {
     "name": "core/blog",
-    "resourceVersion": "13",
+    "resourceVersion": "20",
     "created": "2015-08-10T05:00:15Z",
-    "updated": "2015-09-04T02:48:07Z"
+    "updated": "2017-07-18T05:15:57Z"
   },
   "srvname": "blog",
   "title": "Blog",
@@ -45,6 +45,7 @@
       ],
       "extensions": {
         "access_counter": true,
+        "comment_enable": true,
         "comment_perentry": true,
         "permalink": "name"
       }

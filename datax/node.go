@@ -200,8 +200,14 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 				item.ExtAccessCounter = v.Field("ext_access_counter").Uint32()
 			}
 
-			if model.Extensions.CommentPerEntry {
-				item.ExtCommentPerEntry = v.Field("ext_comment_perentry").Bool()
+			if model.Extensions.CommentEnable {
+				if model.Extensions.CommentPerEntry && v.Field("ext_comment_perentry").Bool() == false {
+					item.ExtCommentEnable = false
+					item.ExtCommentPerEntry = false
+				} else {
+					item.ExtCommentEnable = true
+					item.ExtCommentPerEntry = true
+				}
 			}
 
 			if model.Extensions.Permalink != "" && v.Field("ext_permalink_name").String() != "" {
@@ -435,8 +441,14 @@ func (q *QuerySet) NodeEntry() api.Node {
 		rsp.ExtAccessCounter = rs.Field("ext_access_counter").Uint32()
 	}
 
-	if rsp.Model.Extensions.CommentPerEntry {
-		rsp.ExtCommentPerEntry = rs.Field("ext_comment_perentry").Bool()
+	if rsp.Model.Extensions.CommentEnable {
+		if rsp.Model.Extensions.CommentPerEntry && rs.Field("ext_comment_perentry").Bool() == false {
+			rsp.ExtCommentEnable = false
+			rsp.ExtCommentPerEntry = false
+		} else {
+			rsp.ExtCommentEnable = true
+			rsp.ExtCommentPerEntry = true
+		}
 	}
 
 	if rsp.Model.Extensions.Permalink != "" {

@@ -55,7 +55,7 @@
         <div class="content">{{FieldHtml .entry.Fields "content"}}</div>
       </div>
 
-      {{if .entry.ExtCommentPerEntry}}
+      {{if .entry.ExtCommentEnable}}
       <div id="core-blog-comments">comments loading</div>
       {{end}}
     </div>
@@ -67,7 +67,7 @@
 {{pagelet . "core/general" "footer.tpl"}}
 
 <script type="text/javascript">
-{{if .entry.ExtCommentPerEntry}}
+{{if .entry.ExtCommentEnable}}
 window.onload_hooks.push(function() {
     seajs.use([
         "+/comment/~/index.js",

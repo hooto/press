@@ -97,7 +97,7 @@
 <script id="htp-comment-embed-tpl" type="text/html">
 <div class="entry" id="entry-{[=it.meta.id]}">
   <div class="avatar">
-    <img src="{[=htp.HttpSrvBasePath("+/comment/~/img/user-default.png")]}">
+    <img src="{[=htp.HttpSrvBasePath('+/comment/~/img/user-default.png')]}">
   </div>
   <div class="body">
     <div class="info">

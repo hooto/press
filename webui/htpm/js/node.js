@@ -559,6 +559,10 @@ htpNode.Set = function(modname, modelid, nodeid)
                 data.model.terms = [];
             }
 
+            if (!data.ext_comment_enable) {
+                data.ext_comment_enable = false;
+            }
+
             if (!data.ext_comment_perentry) {
                 data.ext_comment_perentry = false;
             }
@@ -782,7 +786,7 @@ htpNode.Set = function(modname, modelid, nodeid)
                     }
 
 
-                    if (data.model.extensions.comment_perentry) {
+                    if (data.model.extensions.comment_enable && data.model.extensions.comment_perentry) {
                         l4iTemplate.Render({
                             dstid  : field_layout_target,
                             tplid  : "htpm-nodeset-tplext_comment_perentry",

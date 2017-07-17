@@ -352,6 +352,11 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 				sync = true
 			}
 
+			if nodeModel.Extensions.CommentEnable != entry.Extensions.CommentEnable {
+				prev.NodeModels[i].Extensions.CommentEnable = entry.Extensions.CommentEnable
+				sync = true
+			}
+
 			if nodeModel.Extensions.CommentPerEntry != entry.Extensions.CommentPerEntry {
 				prev.NodeModels[i].Extensions.CommentPerEntry = entry.Extensions.CommentPerEntry
 				sync = true

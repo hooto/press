@@ -32,6 +32,7 @@ type Node struct {
 	Fields             []*NodeField `json:"fields,omitempty"`
 	Terms              []NodeTerm   `json:"terms,omitempty"`
 	ExtAccessCounter   uint32       `json:"ext_access_counter,omitempty"`
+	ExtCommentEnable   bool         `json:"ext_comment_enable,omitempty"`
 	ExtCommentPerEntry bool         `json:"ext_comment_perentry,omitempty"`
 	ExtPermalinkName   string       `json:"ext_permalink_name,omitempty"`
 }
