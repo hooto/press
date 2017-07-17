@@ -184,48 +184,15 @@ func (c Node) SetAction() {
 
 		rsp.ExtPermalinkName = strings.Replace(strings.ToLower(strings.TrimSpace(rsp.ExtPermalinkName)), " ", "-", -1)
 
-		if !node_field_permalink_re.MatchString(rsp.ExtPermalinkName) {
-			rsp.Error = &types.ErrorMeta{
-				Code:    "400",
-				Message: "Invalid Permalink Name",
+		if len(rsp.ExtPermalinkName) > 0 {
+
+			if !node_field_permalink_re.MatchString(rsp.ExtPermalinkName) {
+				rsp.Error = &types.ErrorMeta{
+					Code:    "400",
+					Message: "Invalid Permalink Name",
+				}
+				return
 			}
-			return
-		}
-
-		// set["ext_permalink_name"] = rsp.ExtPermalinkName
-
-		permaname := rsp.ExtPermalinkName
-
-		for i := 0; i < 10; i++ {
-
-			if i > 0 {
-				permaname = fmt.Sprintf("%s-%d", rsp.ExtPermalinkName, i)
-			}
-
-			permaidx := idhash.HashToHexString([]byte(permaname), 12)
-
-			q := rdobase.NewQuerySet().From(table).Limit(1)
-			q.Where.And("ext_permalink_idx", permaidx)
-
-			if len(rsp.ID) > 0 {
-				q.Where.And("id.ne", rsp.ID)
-			}
-
-			if rs, err := dcn.Base.Query(q); err == nil && len(rs) < 1 {
-
-				set["ext_permalink_name"] = permaname
-				set["ext_permalink_idx"] = permaidx
-				break
-			}
-		}
-
-		if _, ok := set["ext_permalink_idx"]; !ok {
-
-			rsp.Error = &types.ErrorMeta{
-				Code:    "400",
-				Message: "Permalink Name Conflict",
-			}
-			return
 		}
 	}
 
@@ -256,6 +223,10 @@ func (c Node) SetAction() {
 
 		if rs[0].Field("status").Int16() != rsp.Status {
 			set["status"] = rsp.Status
+		}
+
+		if model.Extensions.Permalink != "" {
+			set["ext_permalink_name"] = rs[0].Field("ext_permalink_name")
 		}
 
 		//
@@ -427,11 +398,62 @@ func (c Node) SetAction() {
 		}
 	}
 
+	if model.Extensions.Permalink != "" {
+
+		if prev, ok := set["ext_permalink_name"]; !ok || prev != rsp.ExtPermalinkName {
+
+			if rsp.ExtPermalinkName == "" {
+				if len(rsp.ID) > 0 {
+					set["ext_permalink_idx"] = rsp.ID
+				} else {
+					set["ext_permalink_idx"], _ = set["id"]
+				}
+				set["ext_permalink_name"] = ""
+			} else {
+
+				permaname := rsp.ExtPermalinkName
+
+				for i := 0; i < 10; i++ {
+
+					if i > 0 {
+						permaname = fmt.Sprintf("%s-%d", rsp.ExtPermalinkName, i)
+					}
+
+					permaidx := idhash.HashToHexString([]byte(permaname), 12)
+
+					q := rdobase.NewQuerySet().From(table).Limit(1)
+					q.Where.And("ext_permalink_idx", permaidx)
+
+					if len(rsp.ID) > 0 {
+						q.Where.And("id.ne", rsp.ID)
+					}
+
+					if rs, err := dcn.Base.Query(q); err == nil && len(rs) < 1 {
+
+						set["ext_permalink_name"] = permaname
+						set["ext_permalink_idx"] = permaidx
+						break
+					}
+				}
+
+				if _, ok := set["ext_permalink_idx"]; !ok {
+
+					rsp.Error = &types.ErrorMeta{
+						Code:    "400",
+						Message: "Permalink Name Conflict",
+					}
+					return
+				}
+
+			}
+		}
+	}
+
 	if model.Extensions.CommentPerEntry {
-		if rsp.ExtCommentPerEntry {
-			set["ext_comment_perentry"] = 1
-		} else {
+		if model.Extensions.CommentEnable && !rsp.ExtCommentPerEntry {
 			set["ext_comment_perentry"] = 0
+		} else {
+			set["ext_comment_perentry"] = 1
 		}
 	}
 
