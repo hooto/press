@@ -31,7 +31,7 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
 
-	"code.hooto.com/hooto/hootopress/api"
+	"code.hooto.com/hooto/hooto-press/api"
 )
 
 var (

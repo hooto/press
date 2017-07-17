@@ -19,6 +19,6 @@
 {{pagelet . "core/general" "footer.tpl"}}
 
 {{pagelet . "core/general" "html-footer.tpl"}}
-<body>
+</body>
 </html>
 

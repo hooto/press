@@ -25,8 +25,8 @@ import (
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
 
-	"code.hooto.com/hooto/hootopress/config"
-	"code.hooto.com/hooto/hootopress/status"
+	"code.hooto.com/hooto/hooto-press/config"
+	"code.hooto.com/hooto/hooto-press/status"
 )
 
 type Setup struct {

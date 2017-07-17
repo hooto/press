@@ -17,8 +17,8 @@ package v1
 import (
 	"github.com/lessos/lessgo/httpsrv"
 
-	"code.hooto.com/hooto/hootopress/config"
-	"code.hooto.com/hooto/hootopress/websrv/mgr/controllers"
+	"code.hooto.com/hooto/hooto-press/config"
+	"code.hooto.com/hooto/hooto-press/websrv/mgr/controllers"
 )
 
 func NewModule() httpsrv.Module {

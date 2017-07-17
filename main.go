@@ -28,16 +28,16 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/logger"
 
-	"code.hooto.com/hooto/hootopress/config"
-	"code.hooto.com/hooto/hootopress/datax"
-	"code.hooto.com/hooto/hootopress/status"
-	"code.hooto.com/hooto/hootopress/store"
+	"code.hooto.com/hooto/hooto-press/config"
+	"code.hooto.com/hooto/hooto-press/datax"
+	"code.hooto.com/hooto/hooto-press/status"
+	"code.hooto.com/hooto/hooto-press/store"
 
-	cdef "code.hooto.com/hooto/hootopress/websrv/frontend"
-	cmgr "code.hooto.com/hooto/hootopress/websrv/mgr"
-	capi "code.hooto.com/hooto/hootopress/websrv/v1"
+	cdef "code.hooto.com/hooto/hooto-press/websrv/frontend"
+	cmgr "code.hooto.com/hooto/hooto-press/websrv/mgr"
+	capi "code.hooto.com/hooto/hooto-press/websrv/v1"
 
-	ext_comment "code.hooto.com/hooto/hootopress/modules/core/comment/websrv"
+	ext_comment "code.hooto.com/hooto/hooto-press/modules/core/comment/websrv"
 	ext_captcha "github.com/eryx/hcaptcha/captcha"
 )
 

@@ -30,9 +30,9 @@ import (
 	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 
-	"code.hooto.com/hooto/hootopress/api"
-	"code.hooto.com/hooto/hootopress/config"
-	"code.hooto.com/hooto/hootopress/datax"
+	"code.hooto.com/hooto/hooto-press/api"
+	"code.hooto.com/hooto/hooto-press/config"
+	"code.hooto.com/hooto/hooto-press/datax"
 )
 
 var (

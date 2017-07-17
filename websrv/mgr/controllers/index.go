@@ -18,8 +18,8 @@ import (
 	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/httpsrv"
 
-	"code.hooto.com/hooto/hootopress/config"
-	"code.hooto.com/hooto/hootopress/status"
+	"code.hooto.com/hooto/hooto-press/config"
+	"code.hooto.com/hooto/hooto-press/status"
 )
 
 type Index struct {

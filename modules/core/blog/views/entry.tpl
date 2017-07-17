@@ -85,6 +85,6 @@ window.onload_hooks.push(function() {
 </script>
 
 {{pagelet . "core/general" "html-footer.tpl"}}
-<body>
+</body>
 </html>
 

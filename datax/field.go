@@ -24,8 +24,8 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 
-	"code.hooto.com/hooto/hootopress/api"
-	"code.hooto.com/hooto/hootopress/config"
+	"code.hooto.com/hooto/hooto-press/api"
+	"code.hooto.com/hooto/hooto-press/config"
 )
 
 const (

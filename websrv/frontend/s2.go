@@ -38,8 +38,8 @@ import (
 	// gd "github.com/eryx/go-gd"
 	"github.com/nfnt/resize"
 
-	"code.hooto.com/hooto/hootopress/config"
-	"code.hooto.com/hooto/hootopress/store"
+	"code.hooto.com/hooto/hooto-press/config"
+	"code.hooto.com/hooto/hooto-press/store"
 )
 
 var (
