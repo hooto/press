@@ -18,11 +18,17 @@
   <div class="panel-heading">IAM Service Status</div>
   <div class="panel-body">
 
-    <table width="100%" style="margin-bottom:20px;">
+    <table width="100%" class="table table-hover" style="margin-bottom:20px;padding: 2px 0;">
       <tr>
         <td width="20%">IAM Service Url</td>
-        <td><input type="text" name="iam_url" class="form-control" placeholder="Enter the IAM Service URL" value="{[=it.service_url]}" readonly></td>
+        <td>{[=it.service_url]}</td>
       </tr>
+      {[if (it.service_url_frontend && it.service_url_frontend.length > 1) {]}
+      <tr>
+        <td width="20%">IAM Service Url Frontend</td>
+        <td>{[=it.service_url_frontend]}</td>
+      </tr>
+	  {[}]}
     </table>
 
     <div id="htp-mgr-sys-iam-alert"></div>
@@ -31,8 +37,8 @@
     <table width="100%" class="table table-hover htp-sys-table">
       <thead><tr>
         <th width="20%"></th>
-        <th width="40%">Local App Info</th>
-        <th>Registered in IAM Service</th>
+        <th width="40%"><strong>Local App Info</strong></th>
+        <th><strong>Registered in IAM Service</strong></th>
       </tr></thead>
       
       <tr>

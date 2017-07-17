@@ -294,17 +294,7 @@ func init_data() error {
 
 	return nil
 }
-func Save() error {
 
-	return json.EncodeToFile(ConfigCommon{
-		InstanceID:    Config.InstanceID,
-		AppInstance:   Config.AppInstance,
-		AppTitle:      Config.AppTitle,
-		HttpPort:      Config.HttpPort,
-		UrlBasePath:   Config.UrlBasePath,
-		IamServiceUrl: Config.IamServiceUrl,
-		Database:      Config.Database,
-		IoConnectors:  Config.IoConnectors,
-		RunMode:       Config.RunMode,
-	}, Prefix+"/etc/main.json", "  ")
+func Save() error {
+	return json.EncodeToFile(Config, Prefix+"/etc/main.json", "  ")
 }

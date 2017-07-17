@@ -15,6 +15,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/lessos/lessgo/encoding/json"
@@ -72,10 +73,6 @@ func (c Setup) IndexAction() {
 
 func (c Setup) AppRegisterSyncAction() {
 
-	if status.IamServiceStatus != status.IamServiceUnRegistered {
-		return
-	}
-
 	if !iamclient.SessionIsLogin(c.Session) {
 		return
 	}
@@ -92,6 +89,13 @@ func (c Setup) AppRegisterSyncAction() {
 			Url:        c.Params.Get("instance_url"),
 			Privileges: config.Perms,
 		},
+	}
+	fmt.Println("apps")
+	fmt.Println("title", c.Params.Get("app_title"))
+	fmt.Println("url", c.Params.Get("instance_url"))
+	if reg.Instance.AppTitle == "" || reg.Instance.Url == "" {
+		reg.Error = types.NewErrorMeta(iamapi.ErrCodeInvalidArgument, "app_title or instance_url not found")
+		return
 	}
 
 	defer c.RenderJson(&reg)

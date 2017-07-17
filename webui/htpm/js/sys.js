@@ -212,15 +212,22 @@ htpSys.IamStatus = function()
 
 htpSys.IamSync = function()
 {
-    var form = $("#htp-mgr-sys-iam");
-    var alert_id = "#htp-mgr-sys-iam-alert";
+    var alert_id = "#htp-mgr-sys-iam-alert",
+        form = $("#htp-mgr-sys-iam"),
+        url = "";
+    if (form) {
+        var v = form.find("input[name=app_title]").val();
+        if (v) {
+            url += "&app_title="+ v;
+        }
+        v = form.find("input[name=instance_url]").val();
+        if (v) {
+            url += "&instance_url="+ v;
+        }
+    }
 
-    htpMgr.Ajax("setup/app-register-sync", {
-        method : "POST",
-        data   : form.serialize(),
+    htpMgr.Ajax("setup/app-register-sync?"+ url, {
         callback: function(err, data) {
-
-            console.log("ASDFASD");
 
             if (!data || data.kind != "AppInstanceRegister") {
                 if (data.error) {
