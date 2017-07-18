@@ -77,6 +77,10 @@ func (c Index) IndexAction() {
 
 	c.AutoRender = false
 
+	if v := config.SysConfigList.FetchString("http_h_ac_allow_origin"); v != "" {
+		c.Response.Out.Header().Set("Access-Control-Allow-Origin", v)
+	}
+
 	var (
 		srvname = "core/general"
 		uris    = strings.Split(strings.Trim(filepath.Clean(c.Request.RequestPath), "/"), "/")

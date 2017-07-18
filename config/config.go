@@ -72,6 +72,7 @@ func init() {
 
 	SysConfigList.Kind = "SysConfigList"
 
+	//
 	SysConfigList.Insert(api.SysConfig{
 		"frontend_header_site_name", "CMS",
 		"Site's Name", "",
@@ -85,6 +86,7 @@ func init() {
 		"", "",
 	})
 
+	//
 	SysConfigList.Insert(api.SysConfig{
 		"frontend_html_head_subtitle", "CMS",
 		"Sub Title for HTML Head Title", "",
@@ -105,6 +107,12 @@ func init() {
 	SysConfigList.Insert(api.SysConfig{
 		"ls2_uri", "//127.0.0.1/s2/bucket-name",
 		"Storage Service URI", "",
+	})
+
+	//
+	SysConfigList.Insert(api.SysConfig{
+		"http_h_ac_allow_origin", "",
+		"HTTP Access-Control-Allow-Origin", "",
 	})
 }
 

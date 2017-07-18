@@ -50,5 +50,11 @@ func (c Index) IndexAction() {
 		return
 	}
 
+	c.Response.Out.Header().Set("Cache-Control", "no-cache")
+
+	if v := config.SysConfigList.FetchString("http_h_ac_allow_origin"); v != "" {
+		c.Response.Out.Header().Set("Access-Control-Allow-Origin", v)
+	}
+
 	c.Render("index.tpl")
 }

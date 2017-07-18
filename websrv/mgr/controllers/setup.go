@@ -15,7 +15,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/lessos/lessgo/encoding/json"
@@ -90,9 +89,6 @@ func (c Setup) AppRegisterSyncAction() {
 			Privileges: config.Perms,
 		},
 	}
-	fmt.Println("apps")
-	fmt.Println("title", c.Params.Get("app_title"))
-	fmt.Println("url", c.Params.Get("instance_url"))
 	if reg.Instance.AppTitle == "" || reg.Instance.Url == "" {
 		reg.Error = types.NewErrorMeta(iamapi.ErrCodeInvalidArgument, "app_title or instance_url not found")
 		return
