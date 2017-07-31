@@ -1,21 +1,19 @@
 var htpMgr = {
-    frtbase : "/htp/",
-    base    : "/htp/mgr/",
-    api     : "/htp/v1/",
-    basetpl : "/htp/~/htpm/",
-    debug   : true,
+    frtbase: "/htp/",
+    base: "/htp/mgr/",
+    api: "/htp/v1/",
+    basetpl: "/htp/~/htpm/",
+    debug: true,
 }
 
-htpMgr.debug_uri = function()
-{
+htpMgr.debug_uri = function() {
     if (!htpMgr.debug) {
         return "";
     }
-    return "?_="+ Math.random();
+    return "?_=" + Math.random();
 }
 
-htpMgr.Boot = function()
-{
+htpMgr.Boot = function() {
     if (window._basepath && window._basepath.length > 1) {
         htpMgr.frtbase = window._basepath;
         if (htpMgr.frtbase.substring(htpMgr.frtbase.length - 1) != "/") {
@@ -24,9 +22,9 @@ htpMgr.Boot = function()
         if (!htpMgr.frtbase || htpMgr.frtbase == "") {
             htpMgr.frtbase = "/";
         }
-        htpMgr.base    = htpMgr.frtbase +"/mgr/";
-        htpMgr.api     = htpMgr.frtbase +"v1/";
-        htpMgr.basetpl = htpMgr.frtbase +"~/htpm/";
+        htpMgr.base = htpMgr.frtbase + "/mgr/";
+        htpMgr.api = htpMgr.frtbase + "v1/";
+        htpMgr.basetpl = htpMgr.frtbase + "~/htpm/";
     }
 
     seajs.config({
@@ -44,11 +42,11 @@ htpMgr.Boot = function()
 
         var browser = BrowserDetect.browser;
         var version = BrowserDetect.version;
-        var OS      = BrowserDetect.OS;
+        var OS = BrowserDetect.OS;
 
-        if (!((browser == 'Chrome' && version >= 22)
-            || (browser == 'Firefox' && version >= 31.0))) {
-            $('body').load(window._basepath +"/error/browser");
+        if (!((browser == 'Chrome' && version >= 22) ||
+            (browser == 'Firefox' && version >= 31.0))) {
+            $('body').load(window._basepath + "/error/browser");
             return;
         }
 
@@ -57,20 +55,20 @@ htpMgr.Boot = function()
             "~/purecss/pure.css",
             "~/lessui/js/lessui.js",
             "~/lessui/css/lessui.css",
-            "~/htp/css/main.css"+ htpMgr.debug_uri(),
+            "~/htp/css/main.css" + htpMgr.debug_uri(),
             "~/htp/js/marked.js",
-            "~/htpm/css/main.css"+ htpMgr.debug_uri(),
+            "~/htpm/css/main.css" + htpMgr.debug_uri(),
             "~/htpm/css/defx.css",
-            "~/htpm/js/spec.js"+ htpMgr.debug_uri(),
-            "~/htpm/js/spec-editor.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/spec.js" + htpMgr.debug_uri(),
+            "~/htpm/js/spec-editor.js" + htpMgr.debug_uri(),
             "~/htpm/js/tablet.js",
             "~/htpm/js/lc-editor.js",
-            "~/htpm/js/model.js"+ htpMgr.debug_uri(),
-            "~/htpm/js/term.js"+ htpMgr.debug_uri(),
-            "~/htpm/js/node.js"+ htpMgr.debug_uri(),
-            "~/htpm/js/sys.js"+ htpMgr.debug_uri(),
-            "~/htpm/js/s2.js"+ htpMgr.debug_uri(),
-            "~/htpm/js/editor.js"+ htpMgr.debug_uri(),
+            "~/htpm/js/model.js" + htpMgr.debug_uri(),
+            "~/htpm/js/term.js" + htpMgr.debug_uri(),
+            "~/htpm/js/node.js" + htpMgr.debug_uri(),
+            "~/htpm/js/sys.js" + htpMgr.debug_uri(),
+            "~/htpm/js/s2.js" + htpMgr.debug_uri(),
+            "~/htpm/js/editor.js" + htpMgr.debug_uri(),
         ], function() {
 
             setTimeout(htpMgr.BootInit, 300);
@@ -78,11 +76,12 @@ htpMgr.Boot = function()
     });
 }
 
-htpMgr.BootInit = function()
-{
+htpMgr.BootInit = function() {
     l4i.debug = htpMgr.debug;
 
-    $("#htpm-topbar").css({"display": "block"});
+    $("#htpm-topbar").css({
+        "display": "block"
+    });
 
     htpSys.Init();
 
@@ -116,8 +115,7 @@ htpMgr.BootInit = function()
     });
 }
 
-htpMgr.HttpSrvBasePath = function(url)
-{
+htpMgr.HttpSrvBasePath = function(url) {
     if (htpMgr.base == "") {
         return url;
     }
@@ -129,8 +127,7 @@ htpMgr.HttpSrvBasePath = function(url)
     return htpMgr.base + url;
 }
 
-htpMgr.Ajax = function(url, options)
-{
+htpMgr.Ajax = function(url, options) {
     options = options || {};
 
     //
@@ -141,19 +138,17 @@ htpMgr.Ajax = function(url, options)
     l4i.Ajax(url, options)
 }
 
-htpMgr.AlertUserLogin = function()
-{
+htpMgr.AlertUserLogin = function() {
     l4iAlert.Open("warn", "You are not logged in, or your login session has expired. Please sign in again", {
         close: false,
         buttons: [{
             title: "SIGN IN",
-            href: htpMgr.frtbase +"auth/login",
+            href: htpMgr.frtbase + "auth/login",
         }],
     });
 }
 
-htpMgr.ApiCmd = function(url, options)
-{
+htpMgr.ApiCmd = function(url, options) {
     if (options.nocache === undefined) {
         options.nocache = true;
     }
@@ -175,15 +170,13 @@ htpMgr.ApiCmd = function(url, options)
 }
 
 
-htpMgr.TplCmd = function(url, options)
-{
-    htpMgr.Ajax(htpMgr.basetpl + url +".tpl", options);
+htpMgr.TplCmd = function(url, options) {
+    htpMgr.Ajax(htpMgr.basetpl + url + ".tpl", options);
 }
 
 
-htpMgr.Loader = function(target, uri)
-{
-    htpMgr.Ajax(htpMgr.basetpl + uri +".tpl", {
+htpMgr.Loader = function(target, uri) {
+    htpMgr.Ajax(htpMgr.basetpl + uri + ".tpl", {
         callback: function(err, data) {
             $(target).html(data);
         }
@@ -191,19 +184,16 @@ htpMgr.Loader = function(target, uri)
 }
 
 
-htpMgr.BodyLoader = function(uri)
-{
+htpMgr.BodyLoader = function(uri) {
     htpMgr.Loader("#body-content", uri);
 }
 
 
-htpMgr.ComLoader = function(uri)
-{
+htpMgr.ComLoader = function(uri) {
     htpMgr.Loader("#com-content", uri);
 }
 
 
-htpMgr.WorkLoader = function(uri)
-{
+htpMgr.WorkLoader = function(uri) {
     htpMgr.Loader("#work-content", uri);
 }

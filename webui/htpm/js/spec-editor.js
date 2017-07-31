@@ -2,30 +2,28 @@ var htpSpecEditor = {
 
 }
 
-htpSpecEditor.Open = function(modname)
-{
+htpSpecEditor.Open = function(modname) {
     var topnav = $("#htp-uh-topnav");
     topnav.find("a.active").removeClass("active");
 
-    if (topnav.find("a[modname='"+ modname+"']").length > 0) {
-        topnav.find("a[modname='"+ modname+"']").addClass("active");
+    if (topnav.find("a[modname='" + modname + "']").length > 0) {
+        topnav.find("a[modname='" + modname + "']").addClass("active");
         htpSpecEditor.Index(modname);
         return;
     }
 
-    l4i.UrlEventRegister("spec-editor/"+ modname, function() {
+    l4i.UrlEventRegister("spec-editor/" + modname, function() {
         htpSpecEditor.Index(modname);
     });
 
-    $("#htp-uh-topnav").append("<a class=\"l4i-nav-item active\" modname=\""+ modname +"\" href=\"#spec-editor/"+ modname +"\">Spec Editor ("+ modname +")</a>");
+    $("#htp-uh-topnav").append("<a class=\"l4i-nav-item active\" modname=\"" + modname + "\" href=\"#spec-editor/" + modname + "\">Spec Editor (" + modname + ")</a>");
 
     lcData.Init("speceditor", function() {
         htpSpecEditor.Index(modname);
     });
 }
 
-htpSpecEditor.Index = function(modname)
-{
+htpSpecEditor.Index = function(modname) {
     if (!modname) {
         return;
     }
@@ -50,8 +48,7 @@ htpSpecEditor.Index = function(modname)
                 "~/cm/5/lib/codemirror.css",
                 "~/cm/5/lib/codemirror.js",
                 "~/cm/5/theme/monokai.css",
-            ],
-            function() {
+            ], function() {
 
                 seajs.use([
                     "~/cm/5/mode/clike/clike.js",
@@ -68,8 +65,7 @@ htpSpecEditor.Index = function(modname)
                     "~/cm/5/addon/fold/foldgutter.js",
                     "~/cm/5/addon/edit/closetag.js",
                     "~/cm/5/addon/edit/closebrackets.js",
-                ],
-                function() {
+                ], function() {
 
                     //
                     l9rProjFs.UiTreeLoad({
@@ -92,8 +88,7 @@ var l9rProjFs = {
 }
 
 
-l9rProjFs.OpenHistoryTabs = function()
-{
+l9rProjFs.OpenHistoryTabs = function() {
     // console.log("l9rProj.OpenHistoryTabs");
 
     // var last_tab_urid = l4iStorage.Set(l4iSession.Get("podid") +"."+ l4iSession.Get("proj_name") +".tab."+ item.target);
@@ -118,7 +113,7 @@ l9rProjFs.OpenHistoryTabs = function()
                 cab = l9rTab.frame[l9rTab.def];
             }
 
-            var tabLastActive = l4iStorage.Get(l4iSession.Get("htp-speceditor-modname") +".cab."+ ret.value.cabid);
+            var tabLastActive = l4iStorage.Get(l4iSession.Get("htp-speceditor-modname") + ".cab." + ret.value.cabid);
             // console.log("tabLastActive: "+ tabLastActive);
 
             var titleOnly = true;
@@ -128,19 +123,19 @@ l9rProjFs.OpenHistoryTabs = function()
             }
 
             l9rTab.Open({
-                uri   : ret.value.filepth,
-                type  : "editor",
-                icon  : icon,
-                close : true,
-                titleOnly : titleOnly,
-                success   : function() {
+                uri: ret.value.filepth,
+                type: "editor",
+                icon: icon,
+                close: true,
+                titleOnly: titleOnly,
+                success: function() {
                     // $('#pgtab'+ ret.value.id).addClass("current");
                 }
             });
 
             if (ret.value.ctn1_sum.length > 10 && ret.value.ctn1_sum != ret.value.ctn0_sum) {
-                $("#pgtab"+ ret.value.id +" .chg").show();
-                $("#pgtab"+ ret.value.id +" .pgtabtitle").addClass("chglight");
+                $("#pgtab" + ret.value.id + " .chg").show();
+                $("#pgtab" + ret.value.id + " .pgtabtitle").addClass("chglight");
             }
         }
 
@@ -148,25 +143,23 @@ l9rProjFs.OpenHistoryTabs = function()
     });
 }
 
-l9rProjFs.RootRefresh = function()
-{
+l9rProjFs.RootRefresh = function() {
     l9rProjFs.UiTreeLoad({
         path: "/",
     });
 }
 
-l9rProjFs.UiTreeLoad = function(options)
-{
+l9rProjFs.UiTreeLoad = function(options) {
     // console.log("l9rProjFs.UiTreeLoad"+ options.path);
 
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.toggle === undefined) {
@@ -178,13 +171,13 @@ l9rProjFs.UiTreeLoad = function(options)
         ptdid = "root";
     }
 
-    if (ptdid != "root" && options.toggle && document.getElementById("fstd"+ ptdid)) {
-        $("#fstd"+ ptdid).remove();
+    if (ptdid != "root" && options.toggle && document.getElementById("fstd" + ptdid)) {
+        $("#fstd" + ptdid).remove();
         return;
     }
 
     var req = {
-        path: options.path,// l4iSession.Get("modname_current"),
+        path: options.path, // l4iSession.Get("modname_current"),
     }
 
     // console.log("path reload "+ options.path);
@@ -201,7 +194,7 @@ l9rProjFs.UiTreeLoad = function(options)
                 // continue;
             }
 
-            var fspath = rs.path +"/"+ ls[i].name;
+            var fspath = rs.path + "/" + ls[i].name;
             ls[i].path = fspath.replace(/\/+/g, "/");
             ls[i].fsid = l4iString.CryptoMd5(ls[i].path);
 
@@ -214,36 +207,36 @@ l9rProjFs.UiTreeLoad = function(options)
                 ico = "folder";
                 ls[i].fstype = "dir";
 
-            } else if (ls[i].mime.substring(0, 4) == "text"
-                || ls[i].name.slice(-4) == ".tpl"
-                || ls[i].mime.substring(0, 23) == "application/x-httpd-php"
-                || ls[i].mime == "application/javascript"
-                || ls[i].mime == "application/x-empty"
-                || ls[i].mime == "inode/x-empty"
-                || ls[i].mime == "application/json") {
+            } else if (ls[i].mime.substring(0, 4) == "text" ||
+                ls[i].name.slice(-4) == ".tpl" ||
+                ls[i].mime.substring(0, 23) == "application/x-httpd-php" ||
+                ls[i].mime == "application/javascript" ||
+                ls[i].mime == "application/x-empty" ||
+                ls[i].mime == "inode/x-empty" ||
+                ls[i].mime == "application/json") {
 
-                if (ls[i].mime == "text/x-php"
-                    || ls[i].name.slice(-4) == ".php") {
+                if (ls[i].mime == "text/x-php" ||
+                    ls[i].name.slice(-4) == ".php") {
                     ico = "page_white_php";
-                } else if (ls[i].name.slice(-2) == ".h"
-                    || ls[i].name.slice(-4) == ".hpp") {
+                } else if (ls[i].name.slice(-2) == ".h" ||
+                    ls[i].name.slice(-4) == ".hpp") {
                     ico = "page_white_h";
                 } else if (ls[i].name.slice(-2) == ".c") {
                     ico = "page_white_c";
-                } else if (ls[i].name.slice(-4) == ".cpp"
-                    || ls[i].name.slice(-3) == ".cc") {
+                } else if (ls[i].name.slice(-4) == ".cpp" ||
+                    ls[i].name.slice(-3) == ".cc") {
                     ico = "page_white_cplusplus";
-                } else if (ls[i].name.slice(-3) == ".js"
-                    || ls[i].name.slice(-4) == ".css") {
+                } else if (ls[i].name.slice(-3) == ".js" ||
+                    ls[i].name.slice(-4) == ".css") {
                     ico = "page_white_code";
-                } else if (ls[i].name.slice(-5) == ".html"
-                    || ls[i].name.slice(-4) == ".htm"
-                    || ls[i].name.slice(-6) == ".phtml"
-                    || ls[i].name.slice(-6) == ".xhtml"
-                    || ls[i].name.slice(-4) == ".tpl") {
+                } else if (ls[i].name.slice(-5) == ".html" ||
+                    ls[i].name.slice(-4) == ".htm" ||
+                    ls[i].name.slice(-6) == ".phtml" ||
+                    ls[i].name.slice(-6) == ".xhtml" ||
+                    ls[i].name.slice(-4) == ".tpl") {
                     ico = "page_white_world";
-                } else if (ls[i].name.slice(-3) == ".sh"
-                    || ls[i].mime == "text/x-shellscript") {
+                } else if (ls[i].name.slice(-3) == ".sh" ||
+                    ls[i].mime == "text/x-shellscript") {
                     ico = "application_osx_terminal";
                 } else if (ls[i].name.slice(-3) == ".rb") {
                     ico = "page_white_ruby";
@@ -251,11 +244,11 @@ l9rProjFs.UiTreeLoad = function(options)
                     ico = "ht-page_white_golang";
                 } else if (ls[i].name.slice(-5) == ".java") {
                     ico = "page_white_cup";
-                } else if (ls[i].name.slice(-3) == ".py"
-                    || ls[i].name.slice(-4) == ".yml"
-                    || ls[i].name.slice(-5) == ".yaml"
-                    || ls[i].name.slice(-3) == ".md"
-                    ) {
+                } else if (ls[i].name.slice(-3) == ".py" ||
+                    ls[i].name.slice(-4) == ".yml" ||
+                    ls[i].name.slice(-5) == ".yaml" ||
+                    ls[i].name.slice(-3) == ".md"
+                ) {
                     ico = "page_white_code";
                 }
 
@@ -263,11 +256,11 @@ l9rProjFs.UiTreeLoad = function(options)
 
                 ls[i].fstype = "text";
 
-            } else if (ls[i].mime.slice(-5) == "image"
-                || ls[i].name.slice(-4) == ".jpg"
-                || ls[i].name.slice(-4) == ".png"
-                || ls[i].name.slice(-4) == ".gif"
-                ) {
+            } else if (ls[i].mime.slice(-5) == "image" ||
+                ls[i].name.slice(-4) == ".jpg" ||
+                ls[i].name.slice(-4) == ".png" ||
+                ls[i].name.slice(-4) == ".gif"
+            ) {
                 ico = "page_white_picture";
             }
 
@@ -276,11 +269,11 @@ l9rProjFs.UiTreeLoad = function(options)
             lsfs.push(ls[i]);
         }
 
-        if (document.getElementById("fstd"+ ptdid) == null) {
-            $("#ptp"+ ptdid).after("<div id=\"fstd"+ptdid+"\" style=\"padding-left:20px;\"></div>");
+        if (document.getElementById("fstd" + ptdid) == null) {
+            $("#ptp" + ptdid).after("<div id=\"fstd" + ptdid + "\" style=\"padding-left:20px;\"></div>");
         }
 
-        l4iTemplate.RenderFromID("fstd"+ ptdid, "lcx-filenav-tree-tpl", lsfs);
+        l4iTemplate.RenderFromID("fstd" + ptdid, "lcx-filenav-tree-tpl", lsfs);
 
         options.success();
 
@@ -299,8 +292,7 @@ l9rProjFs.UiTreeLoad = function(options)
 }
 
 var _fsItemPath = "";
-l9rProjFs.UiTreeEventRefresh = function()
-{
+l9rProjFs.UiTreeEventRefresh = function() {
     // console.log("l9rProjFs.UiTreeEventRefresh");
     $(".lcx-fsitem").unbind();
     $(".lcx-fsitem").bind("contextmenu", function(e) {
@@ -320,8 +312,8 @@ l9rProjFs.UiTreeEventRefresh = function()
         }
         // console.log("pos"+ t +"x"+ l);
         $("#lcbind-fsnav-rcm").css({
-            top: t +'px',
-            left: l +'px'
+            top: t + 'px',
+            left: l + 'px'
         }).show(10);
 
         _fsItemPath = $(this).attr("lc-fspath");
@@ -342,20 +334,23 @@ l9rProjFs.UiTreeEventRefresh = function()
         var fsicon = $(this).attr("lc-fsico")
 
         switch (fstype) {
-        case "dir":
-            l9rProjFs.UiTreeLoad({path: fspath, toggle: true});
-            break;
-        case "text":
-            l9rTab.Open({
-                uri    : fspath,
-                // colid : "lclay-colmain",
-                type   : "editor",
-                icon   : fsicon,
-                close  : true
-            });
-            break;
-        default:
-            //
+            case "dir":
+                l9rProjFs.UiTreeLoad({
+                    path: fspath,
+                    toggle: true
+                });
+                break;
+            case "text":
+                l9rTab.Open({
+                    uri: fspath,
+                    // colid : "lclay-colmain",
+                    type: "editor",
+                    icon: fsicon,
+                    close: true
+                });
+                break;
+            default:
+        //
         }
     });
 
@@ -369,23 +364,23 @@ l9rProjFs.UiTreeEventRefresh = function()
         // var fname = path.slice(path.lastIndexOf("/") + 1);
         // console.log("right click: "+ action);
         switch (action) {
-        case "new-file":
-            l9rProjFs.FileNew("file", _fsItemPath, "");
-            break;
-        case "new-dir":
-            l9rProjFs.FileNew("dir", _fsItemPath, "");
-            break;
-        case "upload":
-            l9rProjFs.FileUpload(_fsItemPath);
-            break;
-        case "rename":
-            l9rProjFs.FileRename(_fsItemPath);
-            break;
-        case "file-del":
-            l9rProjFs.FileDel(_fsItemPath);
-            break;
-        default:
-            break;
+            case "new-file":
+                l9rProjFs.FileNew("file", _fsItemPath, "");
+                break;
+            case "new-dir":
+                l9rProjFs.FileNew("dir", _fsItemPath, "");
+                break;
+            case "upload":
+                l9rProjFs.FileUpload(_fsItemPath);
+                break;
+            case "rename":
+                l9rProjFs.FileRename(_fsItemPath);
+                break;
+            case "file-del":
+                l9rProjFs.FileDel(_fsItemPath);
+                break;
+            default:
+                break;
         }
 
         $("#lcbind-fsnav-rcm").hide();
@@ -398,8 +393,7 @@ l9rProjFs.UiTreeEventRefresh = function()
 
 
 
-l9rProjFs.FileNew = function(type, path, file)
-{
+l9rProjFs.FileNew = function(type, path, file) {
     if (path === undefined || path === null) {
         path = l4iSession.Get("modname_current");
     }
@@ -407,32 +401,31 @@ l9rProjFs.FileNew = function(type, path, file)
     var formid = Math.random().toString(36).slice(2);
 
     var req = {
-        title        : (type == "dir") ? "New Folder" : "New File",
-        position     : "cursor",
-        width        : 550,
-        height       : 160,
-        tplid        : "lcbind-fstpl-filenew",
-        data         : {
-            formid   : formid,
-            file     : file,
-            path     : path,
-            type     : type
+        title: (type == "dir") ? "New Folder" : "New File",
+        position: "cursor",
+        width: 550,
+        height: 160,
+        tplid: "lcbind-fstpl-filenew",
+        data: {
+            formid: formid,
+            file: file,
+            path: path,
+            type: type
         },
-        buttons      : [
+        buttons: [{
+            onclick: "l9rProjFs.FileNewSave(\"" + formid + "\")",
+            title: "Create",
+            style: "btn-inverse"
+        },
             {
-                onclick : "l9rProjFs.FileNewSave(\""+ formid +"\")",
-                title   : "Create",
-                style   : "btn-inverse"
-            },
-            {
-                onclick : "l4iModal.Close()",
-                title   : "Close"
+                onclick: "l4iModal.Close()",
+                title: "Close"
             }
         ]
     }
 
     req.success = function() {
-        $("#"+ formid +" :input[name=name]").focus();
+        $("#" + formid + " :input[name=name]").focus();
     }
 
     l4iModal.Open(req);
@@ -442,24 +435,22 @@ var l9r = {
 
 }
 
-l9r.HeaderAlert = function(type, message)
-{
+l9r.HeaderAlert = function(type, message) {
     alert(message);
 }
 
-l9rProjFs.FileNewSave = function(formid)
-{
-    var path = $("#"+ formid +" :input[name=path]").val();
-    var name = $("#"+ formid +" :input[name=name]").val();
+l9rProjFs.FileNewSave = function(formid) {
+    var path = $("#" + formid + " :input[name=path]").val();
+    var name = $("#" + formid + " :input[name=name]").val();
     if (name === undefined || name.length < 1) {
         alert("Filename can not be null"); // TODO
         return;
     }
 
     l9rPodFs.Post({
-        path    : path +"/"+ name,
-        data    : "\n",
-        success : function(rsp) {
+        path: path + "/" + name,
+        data: "\n",
+        success: function(rsp) {
 
             // hdev_header_alert('success', "{{T . "Successfully Done"}}");
 
@@ -467,7 +458,9 @@ l9rProjFs.FileNewSave = function(formid)
             //     _plugin_yaf_cvlist();
             // }
 
-            l9rProjFs.UiTreeLoad({path: path});
+            l9rProjFs.UiTreeLoad({
+                path: path
+            });
 
             l4iModal.Close();
         },
@@ -482,11 +475,10 @@ l9rProjFs.FileNewSave = function(formid)
 
 // html5 file uploader
 var _fsUploadRequestId = "";
-var _fsUploadAreaId    = "";
-var _fsUploadBind      = null;
+var _fsUploadAreaId = "";
+var _fsUploadBind = null;
 
-function _fsUploadTraverseTree(reqid, item, path)
-{
+function _fsUploadTraverseTree(reqid, item, path) {
     path = path || "";
 
     if (item.isFile) {
@@ -496,7 +488,7 @@ function _fsUploadTraverseTree(reqid, item, path)
 
             //console.log("File:", path + file.name);
             if (file.size > 10 * 1024 * 1024) {
-                $("#"+ reqid +" .state").show().append("<div>"+ path +" Failed: File is too large to upload</div>");
+                $("#" + reqid + " .state").show().append("<div>" + path + " Failed: File is too large to upload</div>");
                 return;
             }
 
@@ -514,24 +506,20 @@ function _fsUploadTraverseTree(reqid, item, path)
     }
 }
 
-function _fsUploadHanderDragEnter(evt)
-{
+function _fsUploadHanderDragEnter(evt) {
     this.setAttribute('style', 'border-style:dashed;');
 }
 
-function _fsUploadHanderDragLeave(evt)
-{
+function _fsUploadHanderDragLeave(evt) {
     this.setAttribute('style', '');
 }
 
-function _fsUploadHanderDragOver(evt)
-{
+function _fsUploadHanderDragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
 }
 
-function _fsUploadCommit(reqid, file)
-{
+function _fsUploadCommit(reqid, file) {
     var reader = new FileReader();
 
     reader.onload = (function(file) {
@@ -542,19 +530,19 @@ function _fsUploadCommit(reqid, file)
                 return;
             }
 
-            var ppath = $("#"+ reqid +" :input[name=path]").val();
+            var ppath = $("#" + reqid + " :input[name=path]").val();
             // console.log("upload path: "+ ppath);
 
             l9rPodFs.Post({
-                path    : ppath +"/"+ file.name,
-                size    : file.size,
-                data    : e.target.result,
-                encode  : "base64",
-                success : function(rsp) {
+                path: ppath + "/" + file.name,
+                size: file.size,
+                data: e.target.result,
+                encode: "base64",
+                success: function(rsp) {
 
                     console.log(reqid + file.name);
 
-                    $("#"+ reqid).find(".alert").show().append("<div>"+ file.name +" OK</div>");
+                    $("#" + reqid).find(".alert").show().append("<div>" + file.name + " OK</div>");
 
                     // console.log(rsp);
                     // hdev_header_alert('success', "{{T . "Successfully Done"}}");
@@ -563,16 +551,16 @@ function _fsUploadCommit(reqid, file)
                     //     _plugin_yaf_cvlist();
                     // }
 
-                    // l9rProjFs.UiTreeLoad({path: ppath});
-                    // l4iModal.Close();
+                // l9rProjFs.UiTreeLoad({path: ppath});
+                // l4iModal.Close();
                 },
                 error: function(status, message) {
 
                     // console.log(message);
 
-                    $("#"+ reqid).find(".alert").show().append("<div>"+ file.name +" Failed</div>");
-                    // console.log(status, message);
-                    // hdev_header_alert('error', textStatus+' '+xhr.responseText);
+                    $("#" + reqid).find(".alert").show().append("<div>" + file.name + " Failed</div>");
+                // console.log(status, message);
+                // hdev_header_alert('error', textStatus+' '+xhr.responseText);
                 }
             });
         };
@@ -582,8 +570,7 @@ function _fsUploadCommit(reqid, file)
     reader.readAsDataURL(file);
 }
 
-function _fsUploadHander(evt)
-{
+function _fsUploadHander(evt) {
     evt.stopPropagation();
     evt.preventDefault();
 
@@ -597,12 +584,11 @@ function _fsUploadHander(evt)
     }
 }
 
-l9rProjFs.FileUpload = function(path)
-{
+l9rProjFs.FileUpload = function(path) {
     if (path === undefined || path === null) {
         path = l4iSession.Get("modname_current");
-        // alert("Path can not be null"); // TODO
-        // return;
+    // alert("Path can not be null"); // TODO
+    // return;
     }
 
     // Check for the various File API support.
@@ -613,31 +599,31 @@ l9rProjFs.FileUpload = function(path)
         return;
     }
 
-    var reqid  = Math.random().toString(36).slice(2);
+    var reqid = Math.random().toString(36).slice(2);
     var areaid = Math.random().toString(36).slice(2);
 
     // console.log("ids 1: "+ reqid +", "+ areaid);
 
     var req = {
-        title        : "Upload File From Location",
-        position     : "cursor",
-        width        : 600,
-        height       : 400,
-        tplid        : "lcbind-fstpl-fileupload",
-        data         : {
-            areaid   : areaid,
-            reqid    : reqid,
-            path     : path
+        title: "Upload File From Location",
+        position: "cursor",
+        width: 600,
+        height: 400,
+        tplid: "lcbind-fstpl-fileupload",
+        data: {
+            areaid: areaid,
+            reqid: reqid,
+            path: path
         },
-        buttons      : [
+        buttons: [
             // {
             //     onclick : "l9rProjFs.FileUploadSave(\""+ reqid +"\",\""+ areaid +"\")",
             //     title   : "Commit",
             //     style   : "btn-inverse"
             // },
             {
-                onclick : "l4iModal.Close()",
-                title   : "Close"
+                onclick: "l4iModal.Close()",
+                title: "Close"
             }
         ]
     }
@@ -674,8 +660,7 @@ l9rProjFs.FileUpload = function(path)
 }
 
 
-l9rProjFs.FileRename = function(path)
-{
+l9rProjFs.FileRename = function(path) {
     if (path === undefined || path === null) {
         alert("Path can not be null"); // TODO
         return;
@@ -684,39 +669,37 @@ l9rProjFs.FileRename = function(path)
     var formid = Math.random().toString(36).slice(2);
 
     var req = {
-        title        : "Rename File/Folder",
-        position     : "cursor",
-        width        : 550,
-        height       : 160,
-        tplid        : "lcbind-fstpl-filerename",
-        data         : {
-            formid   : formid,
-            path     : path
+        title: "Rename File/Folder",
+        position: "cursor",
+        width: 550,
+        height: 160,
+        tplid: "lcbind-fstpl-filerename",
+        data: {
+            formid: formid,
+            path: path
         },
-        buttons      : [
+        buttons: [{
+            onclick: "l9rProjFs.FileRenameSave(\"" + formid + "\")",
+            title: "Rename",
+            style: "btn-inverse"
+        },
             {
-                onclick : "l9rProjFs.FileRenameSave(\""+ formid +"\")",
-                title   : "Rename",
-                style   : "btn-inverse"
-            },
-            {
-                onclick : "l4iModal.Close()",
-                title   : "Close"
+                onclick: "l4iModal.Close()",
+                title: "Close"
             }
         ]
     }
 
     req.success = function() {
-        $("#"+ formid +" :input[name=pathset]").focus();
+        $("#" + formid + " :input[name=pathset]").focus();
     }
 
     l4iModal.Open(req);
 }
 
-l9rProjFs.FileRenameSave = function(formid)
-{
-    var path = $("#"+ formid +" :input[name=path]").val();
-    var pathset = $("#"+ formid +" :input[name=pathset]").val();
+l9rProjFs.FileRenameSave = function(formid) {
+    var path = $("#" + formid + " :input[name=path]").val();
+    var pathset = $("#" + formid + " :input[name=pathset]").val();
     if (pathset === undefined || pathset.length < 1) {
         alert("Path can not be null"); // TODO
         return;
@@ -728,9 +711,9 @@ l9rProjFs.FileRenameSave = function(formid)
     }
 
     l9rPodFs.Rename({
-        path    : path,
-        pathset : pathset,
-        success : function(rsp) {
+        path: path,
+        pathset: pathset,
+        success: function(rsp) {
 
             // hdev_header_alert('success', "{{T . "Successfully Done"}}");
 
@@ -743,18 +726,19 @@ l9rProjFs.FileRenameSave = function(formid)
             }
             // console.log(ppath);
 
-            l9rProjFs.UiTreeLoad({path: ppath});
+            l9rProjFs.UiTreeLoad({
+                path: ppath
+            });
             l4iModal.Close();
         },
         error: function(status, message) {
             console.log(status, message);
-            // hdev_header_alert('error', textStatus+' '+xhr.responseText);
+        // hdev_header_alert('error', textStatus+' '+xhr.responseText);
         }
     });
 }
 
-l9rProjFs.FileDel = function(path)
-{
+l9rProjFs.FileDel = function(path) {
     if (path === undefined || path === null) {
         alert("Path can not be null"); // TODO
         return;
@@ -763,24 +747,23 @@ l9rProjFs.FileDel = function(path)
     var formid = Math.random().toString(36).slice(2);
 
     var req = {
-        title        : "Delete File or Folder",
-        position     : "cursor",
-        width        : 550,
-        height       : 230,
-        tplid        : "lcbind-fstpl-filedel",
-        data         : {
-            formid   : formid,
-            path     : path,
+        title: "Delete File or Folder",
+        position: "cursor",
+        width: 550,
+        height: 230,
+        tplid: "lcbind-fstpl-filedel",
+        data: {
+            formid: formid,
+            path: path,
         },
-        buttons      : [
+        buttons: [{
+            onclick: "l9rProjFs.FileDelSave(\"" + formid + "\")",
+            title: "Confirm and Delete",
+            style: "btn-danger"
+        },
             {
-                onclick : "l9rProjFs.FileDelSave(\""+ formid +"\")",
-                title   : "Confirm and Delete",
-                style   : "btn-danger"
-            },
-            {
-                onclick : "l4iModal.Close()",
-                title   : "Cancel"
+                onclick: "l4iModal.Close()",
+                title: "Cancel"
             }
         ]
     }
@@ -788,27 +771,26 @@ l9rProjFs.FileDel = function(path)
     l4iModal.Open(req);
 }
 
-l9rProjFs.FileDelSave = function(formid)
-{
-    var path = $("#"+ formid +" :input[name=path]").val();
+l9rProjFs.FileDelSave = function(formid) {
+    var path = $("#" + formid + " :input[name=path]").val();
     if (path === undefined || path.length < 1) {
         alert("Path can not be null"); // TODO
         return;
     }
 
     l9rPodFs.Del({
-        path    : path,
-        success : function(rsp) {
+        path: path,
+        success: function(rsp) {
 
             var fsid = "ptp" + l4iString.CryptoMd5(path);
-            $("#"+ fsid).remove();
+            $("#" + fsid).remove();
 
             l4iModal.Close();
         },
         error: function(status, message) {
             alert(message);
-            // console.log(status, message);
-            // hdev_header_alert('error', textStatus+' '+xhr.responseText);
+        // console.log(status, message);
+        // hdev_header_alert('error', textStatus+' '+xhr.responseText);
         }
     });
 }
@@ -824,8 +806,7 @@ var l9rPodFs = {
 
 }
 
-l9rPodFs.Get = function(options)
-{
+l9rPodFs.Get = function(options) {
     // console.log(options);
     // Force options to be an object
     options = options || {};
@@ -836,16 +817,16 @@ l9rPodFs.Get = function(options)
     }
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
-    var url = "mod-set-fs/get?modname="+ l4iSession.Get("htp-speceditor-modname");
+    var url = "mod-set-fs/get?modname=" + l4iSession.Get("htp-speceditor-modname");
     // url += "?access_token="+ l4iCookie.Get("access_token");
-    url += "&path="+ options.path;
+    url += "&path=" + options.path;
 
     // console.log("box refresh:"+ url);
     htpMgr.ApiCmd(url, {
@@ -861,22 +842,21 @@ l9rPodFs.Get = function(options)
                 options.error(500, "Networking Error");
             }
         },
-        error : function(xhr, textStatus, error) {
+        error: function(xhr, textStatus, error) {
             options.error(textStatus, error);
         }
     });
 }
 
-l9rPodFs.Post = function(options)
-{
+l9rPodFs.Post = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.path === undefined) {
@@ -894,19 +874,19 @@ l9rPodFs.Post = function(options)
     }
 
     var req = {
-        path     : options.path,
-        body     : options.data,
-        encode   : options.encode,
-        sumcheck : options.sumcheck,
+        path: options.path,
+        body: options.data,
+        encode: options.encode,
+        sumcheck: options.sumcheck,
     }
 
-    var url = "mod-set-fs/put?modname="+ l4iSession.Get("htp-speceditor-modname");
+    var url = "mod-set-fs/put?modname=" + l4iSession.Get("htp-speceditor-modname");
 
     htpMgr.ApiCmd(url, {
-        method  : "POST",
-        timeout : 30000,
-        data    : JSON.stringify(req),
-        callback : function(err, data) {
+        method: "POST",
+        timeout: 30000,
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -918,22 +898,21 @@ l9rPodFs.Post = function(options)
                 options.error(500, "Networking Error");
             }
         },
-        error : function(xhr, textStatus, error) {
+        error: function(xhr, textStatus, error) {
             options.error(textStatus, error);
         }
     });
 }
 
-l9rPodFs.Rename = function(options)
-{
+l9rPodFs.Rename = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.path === undefined) {
@@ -947,16 +926,16 @@ l9rPodFs.Rename = function(options)
     }
 
     var req = {
-        path    : options.path,
-        pathset : options.pathset,
+        path: options.path,
+        pathset: options.pathset,
     }
 
-    var url = "mod-set-fs/rename?modname="+ l4iSession.Get("htp-speceditor-modname");
+    var url = "mod-set-fs/rename?modname=" + l4iSession.Get("htp-speceditor-modname");
     htpMgr.ApiCmd(url, {
-        method  : "POST",
-        timeout : 10000,
-        data    : JSON.stringify(req),
-        callback : function(err, data) {
+        method: "POST",
+        timeout: 10000,
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -968,22 +947,21 @@ l9rPodFs.Rename = function(options)
                 options.error(500, "Networking Error");
             }
         },
-        error : function(xhr, textStatus, error) {
+        error: function(xhr, textStatus, error) {
             options.error(textStatus, error);
         }
     });
 }
 
-l9rPodFs.Del = function(options)
-{
+l9rPodFs.Del = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.path === undefined) {
@@ -992,16 +970,16 @@ l9rPodFs.Del = function(options)
     }
 
     var req = {
-        path    : options.path,
+        path: options.path,
     }
 
-    var url = "mod-set-fs/del?modname="+ l4iSession.Get("htp-speceditor-modname");
+    var url = "mod-set-fs/del?modname=" + l4iSession.Get("htp-speceditor-modname");
 
     htpMgr.ApiCmd(url, {
-        method  : "POST",
-        timeout : 10000,
-        data    : JSON.stringify(req),
-        callback : function(err, data) {
+        method: "POST",
+        timeout: 10000,
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -1013,14 +991,13 @@ l9rPodFs.Del = function(options)
                 options.error(500, "Networking Error");
             }
         },
-        error : function(xhr, textStatus, error) {
+        error: function(xhr, textStatus, error) {
             options.error(textStatus, error);
         }
     });
 }
 
-l9rPodFs.List = function(options)
-{
+l9rPodFs.List = function(options) {
     // Force options to be an object
     options = options || {};
 
@@ -1029,20 +1006,20 @@ l9rPodFs.List = function(options)
     }
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
-    var url = "mod-set-fs/list?modname="+ l4iSession.Get("htp-speceditor-modname");
-    url += "&path="+ options.path;
+    var url = "mod-set-fs/list?modname=" + l4iSession.Get("htp-speceditor-modname");
+    url += "&path=" + options.path;
 
     htpMgr.ApiCmd(url, {
-        method  : "GET",
-        timeout : 30000,
-        callback : function(err, data) {
+        method: "GET",
+        timeout: 30000,
+        callback: function(err, data) {
 
             if (!data) {
                 options.error(500, "Networking Error");
@@ -1054,7 +1031,7 @@ l9rPodFs.List = function(options)
                 options.error(500, "Networking Error");
             }
         },
-        error : function(xhr, textStatus, error) {
+        error: function(xhr, textStatus, error) {
             options.error(textStatus, error);
         }
     });
@@ -1067,39 +1044,37 @@ l9rPodFs.List = function(options)
 
 
 var l9rLayout = {
-    init   : false,
-    colsep : 0,
-    width  : 0,
-    height : 0,
-    postop : 0,
-    cols   : [
+    init: false,
+    colsep: 0,
+    width: 0,
+    height: 0,
+    postop: 0,
+    cols: [{
+        id: "lcbind-proj-filenav",
+        width: 15,
+        minWidth: 200
+    },
         {
-            id       : "lcbind-proj-filenav",
-            width    : 15,
-            minWidth : 200
-        },
-        {
-            id    : "lclay-colmain",
-            width : 85
+            id: "lclay-colmain",
+            width: 85
         }
     ]
 }
 
-l9rLayout.Initialize = function()
-{
+l9rLayout.Initialize = function() {
     if (l9rLayout.init) {
         return;
     }
 
     for (var i in l9rLayout.cols) {
 
-        var wl = l4iStorage.Get(l4iSession.Get("htp-speceditor-modname") +"_laysize_"+ l9rLayout.cols[i].id);
+        var wl = l4iStorage.Get(l4iSession.Get("htp-speceditor-modname") + "_laysize_" + l9rLayout.cols[i].id);
 
         if (wl !== undefined && parseInt(wl) > 0) {
             l9rLayout.cols[i].width = parseInt(wl);
         } else {
 
-            var ws = l4iSession.Get("laysize_"+ l9rLayout.cols[i].id);
+            var ws = l4iSession.Get("laysize_" + l9rLayout.cols[i].id);
             if (ws !== undefined && parseInt(ws) > 0) {
                 l9rLayout.cols[i].width = parseInt(ws);
             }
@@ -1107,18 +1082,21 @@ l9rLayout.Initialize = function()
     }
 }
 
-l9rLayout.BindRefresh = function()
-{
+l9rLayout.BindRefresh = function() {
     $(".lclay-col-resize").bind("mousedown", function(e) {
 
         var layid = $(this).attr("lc-layid");
 
         // console.log("lclay-col-resize mousedown: "+ layid);
 
-        var leftLayId = "", rightLayId = "";
-        var leftIndexId = 0, rightIndexId = 1;
-        var leftWidth = 0, rightWidth = 0;
-        var leftMinWidth = 0, rightMinWidth = 0;
+        var leftLayId = "",
+            rightLayId = "";
+        var leftIndexId = 0,
+            rightIndexId = 1;
+        var leftWidth = 0,
+            rightWidth = 0;
+        var leftMinWidth = 0,
+            rightMinWidth = 0;
         for (var i in l9rLayout.cols) {
 
             rightLayId = l9rLayout.cols[i].id;
@@ -1139,7 +1117,7 @@ l9rLayout.BindRefresh = function()
             leftIndexId = rightIndexId;
         }
 
-        var leftStart = $("#"+ leftLayId).position().left;
+        var leftStart = $("#" + leftLayId).position().left;
 
         // $("#lcbind-col-rsline").remove();
         // $("body").append("<div id='lcbind-col-rsline'></div>");
@@ -1173,10 +1151,10 @@ l9rLayout.BindRefresh = function()
             l9rLayout.cols[leftIndexId].width = leftWidthNew;
             l9rLayout.cols[rightIndexId].width = rightWidthNew;
 
-            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") +"_laysize_"+ leftLayId, leftWidthNew);
-            l4iSession.Set("laysize_"+ leftLayId, leftWidthNew);
-            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") +"_laysize_"+ rightLayId, rightWidthNew);
-            l4iSession.Set("laysize_"+ rightLayId, rightWidthNew);
+            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") + "_laysize_" + leftLayId, leftWidthNew);
+            l4iSession.Set("laysize_" + leftLayId, leftWidthNew);
+            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") + "_laysize_" + rightLayId, rightWidthNew);
+            l4iSession.Set("laysize_" + rightLayId, rightWidthNew);
 
             setTimeout(function() {
                 l9rLayout.Resize();
@@ -1197,16 +1175,15 @@ l9rLayout.BindRefresh = function()
     });
 }
 
-l9rLayout.ColumnSet = function(options)
-{
+l9rLayout.ColumnSet = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.id === undefined) {
@@ -1228,8 +1205,8 @@ l9rLayout.ColumnSet = function(options)
     if (!exist) {
 
         colSet = {
-            id     : options.id, // Math.random().toString(36).slice(2),
-            width  : 15
+            id: options.id, // Math.random().toString(36).slice(2),
+            width: 15
         }
 
         if (options.width !== undefined) {
@@ -1246,8 +1223,7 @@ l9rLayout.ColumnSet = function(options)
     }
 }
 
-l9rLayout.Resize = function()
-{
+l9rLayout.Resize = function() {
     // console.log("l9rLayout.Resize");
 
     l9rLayout.Initialize();
@@ -1281,7 +1257,7 @@ l9rLayout.Resize = function()
     var colSep1 = 100 * (colSep / l9rLayout.width);
     if (colSep1 != l9rLayout.colsep) {
         l9rLayout.colsep = colSep1;
-        $(".lclay-colsep").width(l9rLayout.colsep +"%");
+        $(".lclay-colsep").width(l9rLayout.colsep + "%");
     }
     // console.log("colSep1: "+ colSep1);
 
@@ -1317,7 +1293,7 @@ l9rLayout.Resize = function()
     for (var i in l9rLayout.cols) {
         l9rLayout.cols[i].width = (l9rLayout.cols[i].width / fixRateSpace) * fixRate;
 
-        $("#"+ l9rLayout.cols[i].id).width(l9rLayout.cols[i].width + "%");
+        $("#" + l9rLayout.cols[i].id).width(l9rLayout.cols[i].width + "%");
 
         if (typeof l9rLayout.cols[i].hook === "function") {
             l9rLayout.cols[i].hook(l9rLayout.cols[i]);
@@ -1345,33 +1321,31 @@ l9rLayout.Resize = function()
 var lcData = {};
 lcData.db = null;
 lcData.version = 11;
-lcData.schema = [
-    {
-        name: "files",
-        pri: "id",
-        idx: ["projdir"]
-    },
+lcData.schema = [{
+    name: "files",
+    pri: "id",
+    idx: ["projdir"]
+},
     {
         name: "config",
         pri: "id",
         idx: ["type"]
     }
 ];
-lcData.Init = function(dbname, cb)
-{
+lcData.Init = function(dbname, cb) {
     var req = indexedDB.open(dbname, lcData.version);
 
-    req.onsuccess = function (event) {
+    req.onsuccess = function(event) {
         lcData.db = event.target.result;
         cb(true);
     };
 
-    req.onerror = function (event) {
+    req.onerror = function(event) {
         //console.log("IndexedDB error: " + event.target.errorCode);
         cb(true);
     };
 
-    req.onupgradeneeded = function (event) {
+    req.onupgradeneeded = function(event) {
 
         lcData.db = event.target.result;
 
@@ -1383,18 +1357,21 @@ lcData.Init = function(dbname, cb)
                 lcData.db.deleteObjectStore(tbl.name);
             }
 
-            var objectStore = lcData.db.createObjectStore(tbl.name, {keyPath: tbl.pri});
+            var objectStore = lcData.db.createObjectStore(tbl.name, {
+                keyPath: tbl.pri
+            });
 
             for (var j in tbl.idx) {
-                objectStore.createIndex(tbl.idx[j], tbl.idx[j], {unique: false});
+                objectStore.createIndex(tbl.idx[j], tbl.idx[j], {
+                    unique: false
+                });
             }
         }
         cb(true);
     };
 }
 
-lcData.Put = function(tbl, entry, cb)
-{
+lcData.Put = function(tbl, entry, cb) {
     if (lcData.db == null) {
         return;
     }
@@ -1416,8 +1393,7 @@ lcData.Put = function(tbl, entry, cb)
     }
 }
 
-lcData.Get = function(tbl, key, cb)
-{
+lcData.Get = function(tbl, key, cb) {
     if (lcData.db == null) {
         return;
     }
@@ -1433,8 +1409,7 @@ lcData.Get = function(tbl, key, cb)
     }
 }
 
-lcData.Query = function(tbl, column, value, cb)
-{
+lcData.Query = function(tbl, column, value, cb) {
     if (lcData.db == null) {
         //console.log("lcData is NULL");
         return;
@@ -1450,8 +1425,7 @@ lcData.Query = function(tbl, column, value, cb)
     }
 }
 
-lcData.Del = function(tbl, key, cb)
-{
+lcData.Del = function(tbl, key, cb) {
     if (lcData.db == null) {
         return;
     }
@@ -1467,8 +1441,7 @@ lcData.Del = function(tbl, key, cb)
     }
 }
 
-lcData.List = function(tbl, cb)
-{
+lcData.List = function(tbl, cb) {
     if (lcData.db == null) {
         return;
     }
@@ -1482,8 +1455,5 @@ lcData.List = function(tbl, cb)
         }
     };
 
-    req.onerror = function(event) {
-
-    }
+    req.onerror = function(event) {}
 }
-

@@ -1,9 +1,8 @@
 var htp = {
-    base : "/htp/",
+    base: "/htp/",
 }
 
-htp.Boot = function()
-{
+htp.Boot = function() {
     if (window._basepath && window._basepath.length > 1) {
         htp.base = window._basepath;
         if (htp.base.substring(htp.base.length - 1) != "/") {
@@ -21,13 +20,11 @@ htp.Boot = function()
 
     seajs.use([
         "~/htp/js/jquery.js",
-    ],
-    function() {
+    ], function() {
 
         seajs.use([
             "~/lessui/js/lessui.js",
-        ],
-        function() {
+        ], function() {
 
             setTimeout(function() {
                 for (var i in window.onload_hooks) {
@@ -38,8 +35,7 @@ htp.Boot = function()
     });
 }
 
-htp.HttpSrvBasePath = function(url)
-{
+htp.HttpSrvBasePath = function(url) {
     if (htp.base == "") {
         return url;
     }
@@ -51,8 +47,7 @@ htp.HttpSrvBasePath = function(url)
     return htp.base + url;
 }
 
-htp.CodeRender = function()
-{
+htp.CodeRender = function() {
     $("code[class^='language-']").each(function(i, el) {
 
         var lang = el.className.substr("language-".length);
@@ -68,52 +63,51 @@ htp.CodeRender = function()
 
         switch (lang) {
 
-        case "php":
-            modes.push("~/cm/5/mode/php/php.js");
-        case "htmlmixed":
-            modes.push("~/cm/5/mode/xml/xml.js");
-            modes.push("~/cm/5/mode/javascript/javascript.js");
-            modes.push("~/cm/5/mode/css/css.js");
-            modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js");
-            break;
+            case "php":
+                modes.push("~/cm/5/mode/php/php.js");
+            case "htmlmixed":
+                modes.push("~/cm/5/mode/xml/xml.js");
+                modes.push("~/cm/5/mode/javascript/javascript.js");
+                modes.push("~/cm/5/mode/css/css.js");
+                modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js");
+                break;
 
-        case "c":
-        case "cpp":
-        case "clike":
-        case "java":
-            lang = "clike";
-            break;
+            case "c":
+            case "cpp":
+            case "clike":
+            case "java":
+                lang = "clike";
+                break;
 
-        case "json":
-            modes.push("~/cm/5/mode/javascript/javascript.js");
-            lang = "application/ld+json";
-            break;
+            case "json":
+                modes.push("~/cm/5/mode/javascript/javascript.js");
+                lang = "application/ld+json";
+                break;
 
-        case "go":
-        case "javascript":
-        case "css":
-        case "xml":
-        case "yaml":
-        case "lua":
-        case "markdown":
-        case "r":
-        case "shell":
-        case "sql":
-        case "swift":
-        case "erlang":
-        case "nginx":
-            modes.push("~/cm/5/mode/"+ lang +"/"+ lang +".js");
-            break;
+            case "go":
+            case "javascript":
+            case "css":
+            case "xml":
+            case "yaml":
+            case "lua":
+            case "markdown":
+            case "r":
+            case "shell":
+            case "sql":
+            case "swift":
+            case "erlang":
+            case "nginx":
+                modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js");
+                break;
 
-        default:
-            return;
+            default:
+                return;
         }
 
         seajs.use([
             "~/cm/5/lib/codemirror.css",
             "~/cm/5/lib/codemirror.js",
-        ],
-        function() {
+        ], function() {
 
             modes.push("~/cm/5/addon/runmode/runmode.js");
             modes.push("~/cm/5/mode/clike/clike.js");
@@ -127,28 +121,25 @@ htp.CodeRender = function()
     });
 }
 
-htp.chartRender = function(i, elem)
-{
+htp.chartRender = function(i, elem) {
     var elem_id = "hooto_chart-id-" + i;
     elem.setAttribute("id", elem_id);
     seajs.use([
         "~/chart/chart.js",
-    ],
-    function() {
+    ], function() {
         hooto_chart.basepath = htp.base + "/~/chart";
-		hooto_chart.opts_width = "600px";
-		hooto_chart.opts_height = "400px";
+        hooto_chart.opts_width = "600px";
+        hooto_chart.opts_height = "400px";
         hooto_chart.JsonRenderElement(elem, elem_id);
     });
 }
 
-htp.NavActive = function(tplid, path)
-{
+htp.NavActive = function(tplid, path) {
     if (!tplid || !path) {
         return;
     }
 
-    var nav = $("#"+ tplid);
+    var nav = $("#" + tplid);
     nav.find("a").each(function() {
 
         var href = $(this).attr("href");
@@ -163,8 +154,7 @@ htp.NavActive = function(tplid, path)
     });
 }
 
-htp.Ajax = function(url, options)
-{
+htp.Ajax = function(url, options) {
     options = options || {};
 
     //
@@ -175,52 +165,43 @@ htp.Ajax = function(url, options)
     l4i.Ajax(url, options)
 }
 
-htp.ActionLoader = function(target, url)
-{
+htp.ActionLoader = function(target, url) {
     htp.Ajax(htp.HttpSrvBasePath(url), {
         callback: function(err, data) {
-            $("#"+ target).html(data);
+            $("#" + target).html(data);
         }
     });
 }
 
-htp.ApiCmd = function(url, options)
-{
+htp.ApiCmd = function(url, options) {
     htp.Ajax(htp.HttpSrvBasePath(url), options);
 }
 
-htp.AuthSessionRefresh = function()
-{
+htp.AuthSessionRefresh = function() {
     htp.Ajax(htp.HttpSrvBasePath("auth/session"), {
         callback: function(err, data) {
 
             if (err || !data || data.kind != "AuthSession") {
 
                 return l4iTemplate.Render({
-                    dstid:   "htp-topbar-userbar",
-                    tplid:   "htp-topbar-user-unsigned-tpl",
+                    dstid: "htp-topbar-userbar",
+                    tplid: "htp-topbar-user-unsigned-tpl",
                 });
             }
 
             l4iTemplate.Render({
-                dstid:   "htp-topbar-userbar",
-                tplid:   "htp-topbar-user-signed-tpl",
-                data:    data,
+                dstid: "htp-topbar-userbar",
+                tplid: "htp-topbar-user-signed-tpl",
+                data: data,
                 success: function() {
 
-                    $("#htp-topbar-userbar").hover(
-                        function() {
-                            $("#htp-topbar-user-signed-modal").fadeIn(200);
-                        },
-                        function() {
-                        }
+                    $("#htp-topbar-userbar").hover(function() {
+                        $("#htp-topbar-user-signed-modal").fadeIn(200);
+                    }, function() {}
                     );
-                    $("#htp-topbar-user-signed-modal").hover(
-                        function() {
-                        },
-                        function() {
-                            $("#htp-topbar-user-signed-modal").fadeOut(200);
-                        }
+                    $("#htp-topbar-user-signed-modal").hover(function() {}, function() {
+                        $("#htp-topbar-user-signed-modal").fadeOut(200);
+                    }
                     );
                 },
             });

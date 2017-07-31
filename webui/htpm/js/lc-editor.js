@@ -1,23 +1,22 @@
-
 var lcEditor = {};
 
 lcEditor.Config = {
-    'theme'         : 'monokai',
-    'tabSize'       : 4,
-    'lineWrapping'  : true,
-    'smartIndent'   : true,
-    'tabs2spaces'   : true,
-    'codeFolding'   : false,
-    'fontSize'      : 13,
-    'EditMode'      : "win",
-    'LangEditMode'  : 'Editor Mode Settings',
+    'theme': 'monokai',
+    'tabSize': 4,
+    'lineWrapping': true,
+    'smartIndent': true,
+    'tabs2spaces': true,
+    'codeFolding': false,
+    'fontSize': 13,
+    'EditMode': "win",
+    'LangEditMode': 'Editor Mode Settings',
     // 'TmpEditorZone' : 'w0',
-    'TmpScrollLeft' : 0,
-    'TmpScrollTop'  : 0,
-    'TmpCursorLine' : 0,
-    'TmpCursorCh'   : 0,
-    'TmpLine2Str'   : null,
-    'TmpUrid'       : null,
+    'TmpScrollLeft': 0,
+    'TmpScrollTop': 0,
+    'TmpCursorLine': 0,
+    'TmpCursorCh': 0,
+    'TmpLine2Str': null,
+    'TmpUrid': null,
 };
 
 lcEditor.isInited = false;
@@ -35,8 +34,7 @@ lcEditor.TabDefault = "lctab-default";
 //     lcEditor.MessageReply(cb, {status: status, message: message});
 // }
 
-lcEditor.TabletOpen = function(urid, callback)
-{
+lcEditor.TabletOpen = function(urid, callback) {
     // console.log("lcEditor.TabletOpen 1: "+ urid);
     var item = l9rTab.pool[urid];
     if (l9rTab.frame[item.target].urid == urid) {
@@ -51,9 +49,9 @@ lcEditor.TabletOpen = function(urid, callback)
 
         // console.log("lcData.Get.files");
 
-        if (ret && urid == ret.id
-            && ((ret.ctn1_sum && ret.ctn1_sum.length > 30)
-                || (ret.ctn0_sum && ret.ctn0_sum.length > 30))) {
+        if (ret && urid == ret.id &&
+            ((ret.ctn1_sum && ret.ctn1_sum.length > 30) ||
+            (ret.ctn0_sum && ret.ctn0_sum.length > 30))) {
 
             //l9rTab.pool[urid].data = ret.ctn1_src;
             //l9rTab.pool[urid].hash = l4iString.CryptoMd5(ret.ctn1_src);
@@ -77,7 +75,7 @@ lcEditor.TabletOpen = function(urid, callback)
         // }
 
         var req = {
-            path : item.url
+            path: item.url
         }
 
         req.error = function(status, message) {
@@ -95,16 +93,16 @@ lcEditor.TabletOpen = function(urid, callback)
             }
 
             var entry = {
-                id       : urid,
-                modname  : l4iSession.Get("htp-speceditor-modname"),
-                projdir  : l4iSession.Get("htp-speceditor-modname"),
-                filepth  : item.url,
-                ctn0_src : file.body,
-                ctn0_sum : l4iString.CryptoMd5(file.body),
-                ctn1_src : "",
-                ctn1_sum : "",
-                mime     : file.mime,
-                cabid    : item.target,
+                id: urid,
+                modname: l4iSession.Get("htp-speceditor-modname"),
+                projdir: l4iSession.Get("htp-speceditor-modname"),
+                filepth: item.url,
+                ctn0_src: file.body,
+                ctn0_sum: l4iString.CryptoMd5(file.body),
+                ctn1_src: "",
+                ctn1_sum: "",
+                mime: file.mime,
+                cabid: item.target,
             }
             if (item.icon) {
                 entry.icon = item.icon;
@@ -113,8 +111,8 @@ lcEditor.TabletOpen = function(urid, callback)
             lcData.Put("files", entry, function(ret) {
 
                 if (ret) {
-                    $("#lctab-bar"+ item.target).empty();
-                    $("#lctab-body"+ item.target).empty();
+                    $("#lctab-bar" + item.target).empty();
+                    $("#lctab-body" + item.target).empty();
 
                     //l9rTab.pool[urid].mime = obj.data.mime;
                     lcEditor.LoadInstance(entry);
@@ -127,15 +125,14 @@ lcEditor.TabletOpen = function(urid, callback)
                 }
             });
 
-            // callback(true);
+        // callback(true);
         }
 
         l9rPodFs.Get(req);
     });
 }
 
-lcEditor.LoadInstance = function(entry)
-{
+lcEditor.LoadInstance = function(entry) {
     var item = l9rTab.pool[entry.id];
     if (!item) {
         return;
@@ -147,74 +144,76 @@ lcEditor.LoadInstance = function(entry)
 
     var ext = item.url.split('.').pop();
     switch (ext) {
-    case "c":
-    case "h":
-    case "cc":
-    case "cpp":
-    case "hpp":
-    case "java":
-        mode = "clike";
-        break;
-    case "php":
-    case "css":
-    case "xml":
-    case "go" :
-    case "lua":
-    case "sql":
-    // case "less":
-        mode = ext;
-        break;
-    // case "sql":
-    //     mode = "plsql";
-    //     break;
-    case "js":
-    case "json":
-        mode = "javascript";
-        break;
-    case "sh":
-        mode = "shell";
-        break;
-    case "py":
-        mode = "python";
-        break;
-    case "rb":
-        mode = "ruby";
-        break;
-    case "perl":
-    case "prl" :
-    case "pl"  :
-    case "pm"  :
-        mode = "perl";
-        break;
-    case "md":
-        mode = "markdown";
-        break;
-    case "yml":
-    case "yaml":
-        mode = "yaml";
-        break;
-    default:
-        mode = "htmlmixed";
+        case "c":
+        case "h":
+        case "cc":
+        case "cpp":
+        case "hpp":
+        case "java":
+            mode = "clike";
+            break;
+        case "php":
+        case "css":
+        case "xml":
+        case "go":
+        case "lua":
+        case "sql":
+            // case "less":
+            mode = ext;
+            break;
+        // case "sql":
+        //     mode = "plsql";
+        //     break;
+        case "js":
+        case "json":
+            mode = "javascript";
+            break;
+        case "sh":
+            mode = "shell";
+            break;
+        case "py":
+            mode = "python";
+            break;
+        case "rb":
+            mode = "ruby";
+            break;
+        case "perl":
+        case "prl":
+        case "pl":
+        case "pm":
+            mode = "perl";
+            break;
+        case "md":
+            mode = "markdown";
+            break;
+        case "yml":
+        case "yaml":
+            mode = "yaml";
+            break;
+        default:
+            mode = "htmlmixed";
     }
 
     switch (entry.mime) {
-    case "text/x-php":
-        mode = "php";
-        break;
-    case "text/x-shellscript":
-        mode = "shell";
-        break;
+        case "text/x-php":
+            mode = "php";
+            break;
+        case "text/x-shellscript":
+            mode = "shell";
+            break;
     }
 
     //l9rTab.frame[item.target].urid = entry.id;
 
     if (l9rTab.frame[item.target].editor != null) {
-        $("#lctab-body"+ item.target).empty();
-        $("#lctab-bar"+ item.target).empty();
+        $("#lctab-body" + item.target).empty();
+        $("#lctab-bar" + item.target).empty();
     }
 
     // styling
-    $(".CodeMirror-lines").css({"font-size": lcEditor.Config.fontSize +"px"});
+    $(".CodeMirror-lines").css({
+        "font-size": lcEditor.Config.fontSize + "px"
+    });
 
 
     var src = (entry.ctn1_sum.length > 30 ? entry.ctn1_src : entry.ctn0_src);
@@ -227,10 +226,10 @@ lcEditor.LoadInstance = function(entry)
     }
 
     lcEditor.Config.TmpScrollLeft = isNaN(entry.scrlef) ? 0 : parseInt(entry.scrlef);
-    lcEditor.Config.TmpScrollTop  = isNaN(entry.scrtop) ? 0 : parseInt(entry.scrtop);
+    lcEditor.Config.TmpScrollTop = isNaN(entry.scrtop) ? 0 : parseInt(entry.scrtop);
     lcEditor.Config.TmpCursorLine = isNaN(entry.curlin) ? 0 : parseInt(entry.curlin);
-    lcEditor.Config.TmpCursorCH   = isNaN(entry.curch)  ? 0 : parseInt(entry.curch);
-    lcEditor.Config.TmpUrid       = entry.id;
+    lcEditor.Config.TmpCursorCH = isNaN(entry.curch) ? 0 : parseInt(entry.curch);
+    lcEditor.Config.TmpUrid = entry.id;
 
     if (!lcEditor.isInited) {
 
@@ -250,7 +249,10 @@ lcEditor.LoadInstance = function(entry)
                         lineto = cminst.lineCount() - 1;
                     }
 
-                    cminst.scrollIntoView({line: lineto, ch: 0});
+                    cminst.scrollIntoView({
+                        line: lineto,
+                        ch: 0
+                    });
                 }
             }
 
@@ -267,7 +269,7 @@ lcEditor.LoadInstance = function(entry)
         lcEditor.isInited = true;
     }
 
-    $("#lctab-body"+ item.target).empty();
+    $("#lctab-body" + item.target).empty();
 
     // seajs.use(l9r.basecm +"mode/"+ mode +"/"+ mode +".js");
 
@@ -279,41 +281,47 @@ lcEditor.LoadInstance = function(entry)
     //     return;
 
     l9rTab.frame[item.target].editor = CodeMirror(
-        document.getElementById("lctab-body"+ item.target), {
+        document.getElementById("lctab-body" + item.target), {
 
-        value         : src,
-        lineNumbers   : true,
-        matchBrackets : true,
-        undoDepth     : 1000,
-        mode          : mode,
-        indentUnit    : lcEditor.Config.tabSize,
-        tabSize       : lcEditor.Config.tabSize,
-        theme         : lcEditor.Config.theme,
-        smartIndent   : lcEditor.Config.smartIndent,
-        lineWrapping  : lcEditor.Config.lineWrapping,
-        foldGutter    : lcEditor.Config.codeFolding,
-        gutters       : ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-        rulers        : [{color: "#777", column: 80, lineStyle: "dashed"}],
-        autoCloseTags : true,
-        autoCloseBrackets       : true,
-        showCursorWhenSelecting : true,
-        styleActiveLine         : true,
-        extraKeys : {
-            Tab : function(cm) {
-                if (lcEditor.Config.tabs2spaces) {
-                    var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-                    cm.replaceSelection(spaces, "end", "+input");
+            value: src,
+            lineNumbers: true,
+            matchBrackets: true,
+            undoDepth: 1000,
+            mode: mode,
+            indentUnit: lcEditor.Config.tabSize,
+            tabSize: lcEditor.Config.tabSize,
+            theme: lcEditor.Config.theme,
+            smartIndent: lcEditor.Config.smartIndent,
+            lineWrapping: lcEditor.Config.lineWrapping,
+            foldGutter: lcEditor.Config.codeFolding,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            rulers: [{
+                color: "#777",
+                column: 80,
+                lineStyle: "dashed"
+            }],
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            showCursorWhenSelecting: true,
+            styleActiveLine: true,
+            extraKeys: {
+                Tab: function(cm) {
+                    if (lcEditor.Config.tabs2spaces) {
+                        var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+                        cm.replaceSelection(spaces, "end", "+input");
+                    }
+                },
+                "Shift-Space": "autocomplete",
+                "Ctrl-S": function() {
+                    lcEditor.EntrySave({
+                        urid: entry.id
+                    });
                 }
-            },
-            "Shift-Space" : "autocomplete",
-            "Ctrl-S" : function() {
-                lcEditor.EntrySave({urid: entry.id});
             }
-        }
-    });
+        });
 
     // CodeMirror.modeURL = l9r.basecm +"mode/%N/%N.js";
-    // CodeMirror.autoLoadMode(l9rTab.frame[item.target].editor, mode);
+        // CodeMirror.autoLoadMode(l9rTab.frame[item.target].editor, mode);
 
     l9rTab.frame[item.target].editor.on("change", function(cm) {
         lcEditor.Changed(entry.id);
@@ -329,12 +337,11 @@ lcEditor.LoadInstance = function(entry)
 
     setTimeout(l9rLayout.Resize, 200);
 
-    // });
+// });
 }
 
 
-lcEditor.Changed = function(urid)
-{
+lcEditor.Changed = function(urid) {
     //console.log("lcEditor.Changed:"+ urid);
 
     if (!l9rTab.pool[urid]) {
@@ -361,25 +368,25 @@ lcEditor.Changed = function(urid)
         });
     });
 
-    $("#pgtab"+ urid +" .chg").show();
-    $("#pgtab"+ urid +" .pgtabtitle").addClass("chglight");
+    $("#pgtab" + urid + " .chg").show();
+    $("#pgtab" + urid + " .pgtabtitle").addClass("chglight");
 }
 
-lcEditor.SaveCurrent = function()
-{
-    lcEditor.EntrySave({urid: l9rTab.frame[lcEditor.TabDefault].urid});
+lcEditor.SaveCurrent = function() {
+    lcEditor.EntrySave({
+        urid: l9rTab.frame[lcEditor.TabDefault].urid
+    });
 }
 
-lcEditor.EntrySave = function(options)
-{
+lcEditor.EntrySave = function(options) {
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.urid === undefined) {
@@ -394,8 +401,8 @@ lcEditor.EntrySave = function(options)
         }
 
         var req = {
-            urid : options.urid,
-            path : ret.filepth,
+            urid: options.urid,
+            path: ret.filepth,
         }
 
         var item = l9rTab.pool[options.urid];
@@ -405,8 +412,8 @@ lcEditor.EntrySave = function(options)
             var ctn = l9rTab.frame[item.target].editor.getValue();
             if (ctn == ret.ctn0_src) {
 
-                $("#pgtab"+ options.urid +" .chg").hide();
-                $("#pgtab"+ options.urid +" .pgtabtitle").removeClass("chglight");
+                $("#pgtab" + options.urid + " .chg").hide();
+                $("#pgtab" + options.urid + " .pgtabtitle").removeClass("chglight");
 
                 options.success(options);
                 return; // 200
@@ -427,8 +434,8 @@ lcEditor.EntrySave = function(options)
 
         } else if (ret.ctn1_src == ret.ctn0_src) {
 
-            $("#pgtab"+ options.urid +" .chg").hide();
-            $("#pgtab"+ options.urid +" .pgtabtitle").removeClass("chglight");
+            $("#pgtab" + options.urid + " .chg").hide();
+            $("#pgtab" + options.urid + " .pgtabtitle").removeClass("chglight");
 
             options.success(options);
             return;
@@ -457,8 +464,8 @@ lcEditor.EntrySave = function(options)
                         return;
                     }
 
-                    $("#pgtab"+ options.urid +" .chg").hide();
-                    $("#pgtab"+ options.urid +" .pgtabtitle").removeClass("chglight");
+                    $("#pgtab" + options.urid + " .chg").hide();
+                    $("#pgtab" + options.urid + " .pgtabtitle").removeClass("chglight");
 
                     options.success(options);
                 });
@@ -474,29 +481,26 @@ lcEditor.EntrySave = function(options)
     });
 }
 
-lcEditor.DialogChanges2SaveSkip = function(urid)
-{
+lcEditor.DialogChanges2SaveSkip = function(urid) {
     l9rTab.Close(urid, 1);
     l4iModal.Close();
 }
 
-lcEditor.DialogChanges2SaveDone = function(urid)
-{
+lcEditor.DialogChanges2SaveDone = function(urid) {
     //console.log(lcEditor.MessageReply(0, "ok"));
     lcEditor.EntrySave({
-        urid    : urid,
-        success : function() {
+        urid: urid,
+        success: function() {
             l9rTab.Close(urid, 1);
             l4iModal.Close();
         },
-        error : function() {
+        error: function() {
             l4i.InnerAlert("#xi1b3h", "alert-error", "<span></span>Internal Server Error<span></span>");
         }
     });
 }
 
-lcEditor.IsSaved = function(urid, cb)
-{
+lcEditor.IsSaved = function(urid, cb) {
     lcData.Get("files", urid, function(ret) {
 
         if (ret == undefined) {
@@ -504,9 +508,9 @@ lcEditor.IsSaved = function(urid, cb)
             return;
         }
 
-        if (ret.id == urid
-            && ret.ctn1_sum.length > 30
-            && ret.ctn0_sum != ret.ctn1_sum) {
+        if (ret.id == urid &&
+            ret.ctn1_sum.length > 30 &&
+            ret.ctn0_sum != ret.ctn1_sum) {
             cb(false);
         } else {
             cb(true);
@@ -515,10 +519,9 @@ lcEditor.IsSaved = function(urid, cb)
 }
 
 
-lcEditor.HookOnBeforeUnload = function()
-{
-    if (l9rTab.frame[lcEditor.TabDefault].editor != null
-        && l9rTab.frame[lcEditor.TabDefault].urid == lcEditor.Config.TmpUrid) {
+lcEditor.HookOnBeforeUnload = function() {
+    if (l9rTab.frame[lcEditor.TabDefault].editor != null &&
+        l9rTab.frame[lcEditor.TabDefault].urid == lcEditor.Config.TmpUrid) {
 
         var prevEditorScrollInfo = l9rTab.frame[lcEditor.TabDefault].editor.getScrollInfo();
         var prevEditorCursorInfo = l9rTab.frame[lcEditor.TabDefault].editor.getCursor();
@@ -532,7 +535,7 @@ lcEditor.HookOnBeforeUnload = function()
             prevEntry.scrlef = prevEditorScrollInfo.left;
             prevEntry.scrtop = prevEditorScrollInfo.top;
             prevEntry.curlin = prevEditorCursorInfo.line;
-            prevEntry.curch  = prevEditorCursorInfo.ch;
+            prevEntry.curch = prevEditorCursorInfo.ch;
 
             lcData.Put("files", prevEntry, function() {
                 // TODO
@@ -540,4 +543,3 @@ lcEditor.HookOnBeforeUnload = function()
         });
     }
 }
-

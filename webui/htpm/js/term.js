@@ -1,9 +1,8 @@
 var htpTerm = {
-    taxonomy_ls_cache : null,
+    taxonomy_ls_cache: null,
 }
 
-htpTerm.List = function(modname, modelid)
-{
+htpTerm.List = function(modname, modelid) {
     var alertid = "#htpm-node-alert",
         page = 0;
 
@@ -21,14 +20,14 @@ htpTerm.List = function(modname, modelid)
         return;
     }
 
-    var uri = "modname="+ modname +"&modelid="+ modelid +"&page="+ page;
+    var uri = "modname=" + modname + "&modelid=" + modelid + "&page=" + page;
     if (document.getElementById("qry_text")) {
-        uri += "&qry_text="+ $("#qry_text").val();
+        uri += "&qry_text=" + $("#qry_text").val();
     }
 
-    seajs.use(["ep"], function (EventProxy) {
+    seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create("tpl", "data", function (tpl, rsj) {
+        var ep = EventProxy.create("tpl", "data", function(tpl, rsj) {
 
             if (tpl) {
                 $("#work-content").html(tpl);
@@ -36,8 +35,8 @@ htpTerm.List = function(modname, modelid)
 
             l4iStorage.Set("htpm_tmodel_active", modelid);
 
-            if (!rsj || rsj.kind != "TermList"
-                || !rsj.items || rsj.items.length < 1) {
+            if (!rsj || rsj.kind != "TermList" ||
+                !rsj.items || rsj.items.length < 1) {
 
                 $("#htpm-nodels").empty();
                 $("#htpm-termls").empty();
@@ -74,11 +73,11 @@ htpTerm.List = function(modname, modelid)
             l4iTemplate.Render({
                 dstid: "htpm-termls",
                 tplid: "htpm-termls-tpl",
-                data:  {
-                    model   : rsj.model,
-                    modname : modname,
-                    modelid : modelid,
-                    items   : rsj.items,
+                data: {
+                    model: rsj.model,
+                    modname: modname,
+                    modelid: modelid,
+                    items: rsj.items,
                 },
                 success: function() {
 
@@ -86,9 +85,9 @@ htpTerm.List = function(modname, modelid)
                         rsj.meta.RangeLen = 20;
 
                         l4iTemplate.Render({
-                            dstid : "htpm-termls-pager",
-                            tplid : "htpm-termls-pager-tpl",
-                            data  : l4i.Pager(rsj.meta),
+                            dstid: "htpm-termls-pager",
+                            tplid: "htpm-termls-pager-tpl",
+                            data: l4i.Pager(rsj.meta),
                         });
                     } else {
                         $("#htpm-termls-pager").empty();
@@ -99,7 +98,7 @@ htpTerm.List = function(modname, modelid)
             });
         });
 
-        ep.fail(function (err) {
+        ep.fail(function(err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-termlist)");
         });
@@ -121,14 +120,13 @@ htpTerm.List = function(modname, modelid)
             ep.emit("tpl", null);
         }
 
-        htpMgr.ApiCmd("term/list?"+ uri, {
+        htpMgr.ApiCmd("term/list?" + uri, {
             callback: ep.done("data"),
         });
     });
 }
 
-htpTerm.Sprint = function(num)
-{
+htpTerm.Sprint = function(num) {
     var s = "";
     for (i = 0; i < num; i++) {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -137,8 +135,7 @@ htpTerm.Sprint = function(num)
     return s;
 }
 
-htpTerm.ListSubRange = function(ls, rs, pid, dpnum)
-{
+htpTerm.ListSubRange = function(ls, rs, pid, dpnum) {
     if (!rs) {
         rs = [];
     }
@@ -163,14 +160,12 @@ htpTerm.ListSubRange = function(ls, rs, pid, dpnum)
     return rs;
 }
 
-htpTerm.ListPage = function(page)
-{
+htpTerm.ListPage = function(page) {
     l4iStorage.Set("htpm_termls_page", parseInt(page));
     htpTerm.List();
 }
 
-htpTerm.Set = function(modname, modelid, termid)
-{
+htpTerm.Set = function(modname, modelid, termid) {
     var alertid = "#htpm-node-alert";
 
     if (!modname && l4iStorage.Get("htpm_spec_active")) {
@@ -184,11 +179,11 @@ htpTerm.Set = function(modname, modelid, termid)
         return;
     }
 
-    var uri = "modname="+ modname +"&modelid="+ modelid;
+    var uri = "modname=" + modname + "&modelid=" + modelid;
 
-    seajs.use(["ep"], function (EventProxy) {
+    seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create("tpl", "data", function (tpl, data) {
+        var ep = EventProxy.create("tpl", "data", function(tpl, data) {
 
             if (!tpl) {
                 return; // TODO
@@ -218,14 +213,12 @@ htpTerm.Set = function(modname, modelid, termid)
             l4iTemplate.Render({
                 dstid: "htpm-termset",
                 tplid: "htpm-termset-tpl",
-                data:  data,
-                success: function() {
-
-                },
+                data: data,
+                success: function() {},
             });
         });
 
-        ep.fail(function (err) {
+        ep.fail(function(err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
@@ -241,19 +234,19 @@ htpTerm.Set = function(modname, modelid, termid)
         });
 
         if (termid) {
-            htpMgr.ApiCmd("term/entry?"+ uri +"&id="+ termid, {
+            htpMgr.ApiCmd("term/entry?" + uri + "&id=" + termid, {
                 callback: ep.done("data"),
             });
         } else {
-            htpMgr.ApiCmd("term-model/entry?"+ uri, {
+            htpMgr.ApiCmd("term-model/entry?" + uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
-                        kind  : "Term",
-                        model : data,
-                        id    : "0",
-                        pid   : "0",
-                        title : "",
-                        status : "1",
+                        kind: "Term",
+                        model: data,
+                        id: "0",
+                        pid: "0",
+                        title: "",
+                        status: "1",
                         weight: "0",
                     });
                 },
@@ -262,34 +255,33 @@ htpTerm.Set = function(modname, modelid, termid)
     });
 }
 
-htpTerm.SetCommit = function()
-{
+htpTerm.SetCommit = function() {
     var form = $("#htpm-termset"),
         alertid = "#htpm-node-alert";
 
     var req = {
-        kind   : "Term",
-        id     : parseInt(form.find("input[name=id]").val()),
-        title  : form.find("input[name=title]").val(),
-        status  : parseInt(form.find("input[name=status]").val()),
+        kind: "Term",
+        id: parseInt(form.find("input[name=id]").val()),
+        title: form.find("input[name=title]").val(),
+        status: parseInt(form.find("input[name=status]").val()),
     }
 
     var model_type = form.find("input[name=model_type]").val();
     if (model_type = "taxonomy") {
         req.weight = parseInt(form.find("input[name=weight]").val());
-        req.pid    = parseInt(form.find("select[name=pid]").val());
+        req.pid = parseInt(form.find("select[name=pid]").val());
     } else if (model_type = "tag") {
         //
     }
 
     //
-    var uri = "modname="+ l4iStorage.Get("htpm_spec_active") +
-        "&modelid="+ l4iStorage.Get("htpm_tmodel_active");
+    var uri = "modname=" + l4iStorage.Get("htpm_spec_active") +
+    "&modelid=" + l4iStorage.Get("htpm_tmodel_active");
 
-    htpMgr.ApiCmd("term/set?"+ uri, {
-        method : "POST",
-        data   : JSON.stringify(req),
-        callback : function(err, data) {
+    htpMgr.ApiCmd("term/set?" + uri, {
+        method: "POST",
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
             if (!data || data.kind != "Term") {
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);

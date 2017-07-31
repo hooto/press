@@ -2,20 +2,17 @@ var htpEditor = {
     editors: {},
 }
 
-htpEditor.Open = function(name, format)
-{
+htpEditor.Open = function(name, format) {
     seajs.use([
         "~/cm/5/lib/codemirror.css",
         "~/cm/5/lib/codemirror.js",
-    ],
-    function() {
+    ], function() {
 
         seajs.use([
             "~/cm/5/mode/markdown/markdown.js",
             "~/cm/5/mode/xml/xml.js",
             "~/cm/5/addon/selection/active-line.js",
-        ],
-        function() {
+        ], function() {
 
             var lineNumbers = false;
             if (format == "md" || format == "html") {
@@ -23,18 +20,18 @@ htpEditor.Open = function(name, format)
             }
 
             if (format == "md") {
-                $("#field_"+ name +"_editor_mdr").show();
+                $("#field_" + name + "_editor_mdr").show();
             } else {
-                $("#field_"+ name +"_editor_mdr").hide();
+                $("#field_" + name + "_editor_mdr").hide();
             }
 
-            $("#field_"+ name +"_editor_nav").find("a.active").removeClass("active");
-            $("#field_"+ name +"_editor_nav").find("a.editor-nav-"+ format).addClass("active");
+            $("#field_" + name + "_editor_nav").find("a.active").removeClass("active");
+            $("#field_" + name + "_editor_nav").find("a.editor-nav-" + format).addClass("active");
 
             var editor = htpEditor.editors[name];
             if (editor) {
 
-                $("#field_"+ name +"_attr_format").val(format);
+                $("#field_" + name + "_attr_format").val(format);
 
                 htpEditor.editors[name].setOption("lineNumbers", lineNumbers);
 
@@ -45,16 +42,16 @@ htpEditor.Open = function(name, format)
                 return;
             }
 
-            var height = $("#field_"+ name +"_layout").height(),
-                width = $("#field_"+ name +"_layout").width();
+            var height = $("#field_" + name + "_layout").height(),
+                width = $("#field_" + name + "_layout").width();
 
-            htpEditor.editors[name] = CodeMirror.fromTextArea(document.getElementById("field_"+ name), {
-                mode            : "markdown",
-                lineNumbers     : lineNumbers,
-                theme           : "default",
-                lineWrapping    : true,
-                styleActiveLine : true,
-                // viewportMargin  : Infinity,
+            htpEditor.editors[name] = CodeMirror.fromTextArea(document.getElementById("field_" + name), {
+                mode: "markdown",
+                lineNumbers: lineNumbers,
+                theme: "default",
+                lineWrapping: true,
+                styleActiveLine: true,
+            // viewportMargin  : Infinity,
             });
 
             htpEditor.editors[name].setSize(width, height);
@@ -64,26 +61,25 @@ htpEditor.Open = function(name, format)
             });
 
             // console.log("post width: "+ $("#field_"+ name +"_layout").width());
-            $("#field_"+ name +"_layout").addClass("htpm-editor-cm");
-            $("#field_"+ name +"_tools").find(".preview_open").show();
+            $("#field_" + name + "_layout").addClass("htpm-editor-cm");
+            $("#field_" + name + "_tools").find(".preview_open").show();
         });
     });
 }
 
-htpEditor.sizeRefresh = function()
-{
+htpEditor.sizeRefresh = function() {
     // console.log("htpEditor.sizeRefresh");
 
     var dels = [];
     for (var name in htpEditor.editors) {
 
-        var ok = document.getElementById("field_"+ name +"_layout");
+        var ok = document.getElementById("field_" + name + "_layout");
         if (!ok) {
             dels.push(name);
             continue;
         }
 
-        if (!$("#field_"+ name +"_colpreview").is(":visible")) {
+        if (!$("#field_" + name + "_colpreview").is(":visible")) {
             // console.log("preview skip");
             continue;
         }
@@ -96,30 +92,39 @@ htpEditor.sizeRefresh = function()
     }
 }
 
-htpEditor.PreviewOpen = function(name)
-{
+htpEditor.PreviewOpen = function(name) {
     // console.log($("#field_"+ name +"_preview"));
 
-    var width = $("#field_"+ name +"_layout").width(),
-        height = $("#field_"+ name +"_layout").height();
+    var width = $("#field_" + name + "_layout").width(),
+        height = $("#field_" + name + "_layout").height();
 
     var width5 = (width - 20) / 2;
 
-    $("#field_"+ name +"_editor").css({width: width5 +"px"});
-    $("#field_"+ name +"_editor").find(".CodeMirror").css({width: width5 +"px"});
-    $("#field_"+ name +"_colpreview").css({width: width5 +"px", height: height +"px"});
-    $("#field_"+ name +"_preview").css({width: width5 +"px", height: height +"px"});
+    $("#field_" + name + "_editor").css({
+        width: width5 + "px"
+    });
+    $("#field_" + name + "_editor").find(".CodeMirror").css({
+        width: width5 + "px"
+    });
+    $("#field_" + name + "_colpreview").css({
+        width: width5 + "px",
+        height: height + "px"
+    });
+    $("#field_" + name + "_preview").css({
+        width: width5 + "px",
+        height: height + "px"
+    });
 
-    $("#field_"+ name +"_colspace").show();
-    $("#field_"+ name +"_colpreview").show();
+    $("#field_" + name + "_colspace").show();
+    $("#field_" + name + "_colpreview").show();
 
-    $("#field_"+ name +"_editor").find(".CodeMirror").hover(function() {
+    $("#field_" + name + "_editor").find(".CodeMirror").hover(function() {
         htpEditor.editorBindScroll(name);
     }, function() {
         htpEditor.editorUnBindScroll(name);
     });
 
-    $("#field_"+ name +"_preview").hover(function() {
+    $("#field_" + name + "_preview").hover(function() {
         htpEditor.previewBindScroll(name);
     }, function() {
         htpEditor.previewUnBindScroll(name);
@@ -127,29 +132,29 @@ htpEditor.PreviewOpen = function(name)
 
     htpEditor.previewChanged(name);
 
-    $("#field_"+ name +"_tools").find(".preview_close").show();
-    $("#field_"+ name +"_tools").find(".preview_open").hide();
+    $("#field_" + name + "_tools").find(".preview_close").show();
+    $("#field_" + name + "_tools").find(".preview_open").hide();
 }
 
-htpEditor.PreviewClose = function(name)
-{
+htpEditor.PreviewClose = function(name) {
     htpEditor.editorUnBindScroll(name);
     htpEditor.previewUnBindScroll(name);
 
-    $("#field_"+ name +"_preview").empty();
+    $("#field_" + name + "_preview").empty();
 
-    $("#field_"+ name +"_colspace").hide();
-    $("#field_"+ name +"_colpreview").hide();
+    $("#field_" + name + "_colspace").hide();
+    $("#field_" + name + "_colpreview").hide();
 
-    $("#field_"+ name +"_editor").css({width: "100%"});
+    $("#field_" + name + "_editor").css({
+        width: "100%"
+    });
 
-    $("#field_"+ name +"_tools").find(".preview_close").hide();
-    $("#field_"+ name +"_tools").find(".preview_open").show();
+    $("#field_" + name + "_tools").find(".preview_close").hide();
+    $("#field_" + name + "_tools").find(".preview_open").show();
 }
 
-htpEditor.previewChanged = function(name)
-{
-    if (!$("#field_"+ name +"_colpreview").is(":visible")) {
+htpEditor.previewChanged = function(name) {
+    if (!$("#field_" + name + "_colpreview").is(":visible")) {
         return;
     }
 
@@ -161,28 +166,27 @@ htpEditor.previewChanged = function(name)
     var text = editor.getValue();
 
     // frountend markdown render
-    $("#field_"+ name +"_preview").html(marked(text));
+    $("#field_" + name + "_preview").html(marked(text));
 
-    // // backend markdown render
-    // htpMgr.ApiCmd("/text/markdown-render", {
-    //     method : "POST",
-    //     data   : text,
-    //     callback : function(err, data) {
-    //         $("#field_"+ name +"_preview").html(data);
-    //     }
-    // });
+// // backend markdown render
+// htpMgr.ApiCmd("/text/markdown-render", {
+//     method : "POST",
+//     data   : text,
+//     callback : function(err, data) {
+//         $("#field_"+ name +"_preview").html(data);
+//     }
+// });
 }
 
-htpEditor.editorBindScroll = function(name)
-{
+htpEditor.editorBindScroll = function(name) {
     htpEditor.previewUnBindScroll(name);
 
-    $("#field_"+ name +"_editor").find(".CodeMirror-scroll").on("scroll", function() {
+    $("#field_" + name + "_editor").find(".CodeMirror-scroll").on("scroll", function() {
 
-        var height    = $(this).outerHeight();
+        var height = $(this).outerHeight();
         var scrollTop = $(this).scrollTop();
-        var percent   = (scrollTop / $(this)[0].scrollHeight);
-        var preview   = $("#field_"+ name +"_preview");
+        var percent = (scrollTop / $(this)[0].scrollHeight);
+        var preview = $("#field_" + name + "_preview");
 
         if (scrollTop === 0) {
             preview.scrollTop(0);
@@ -194,21 +198,19 @@ htpEditor.editorBindScroll = function(name)
     });
 }
 
-htpEditor.editorUnBindScroll = function(name)
-{
-    $("#field_"+ name +"_editor").find(".CodeMirror-scroll").unbind("scroll");
+htpEditor.editorUnBindScroll = function(name) {
+    $("#field_" + name + "_editor").find(".CodeMirror-scroll").unbind("scroll");
 }
 
-htpEditor.previewBindScroll = function(name)
-{
+htpEditor.previewBindScroll = function(name) {
     htpEditor.editorUnBindScroll(name);
 
-    $("#field_"+ name +"_preview").on("scroll", function() {
+    $("#field_" + name + "_preview").on("scroll", function() {
 
-        var height     = $(this).outerHeight();
-        var scrollTop  = $(this).scrollTop();
-        var percent    = (scrollTop / $(this)[0].scrollHeight);
-        var editorView = $("#field_"+ name +"_editor").find(".CodeMirror-scroll");
+        var height = $(this).outerHeight();
+        var scrollTop = $(this).scrollTop();
+        var percent = (scrollTop / $(this)[0].scrollHeight);
+        var editorView = $("#field_" + name + "_editor").find(".CodeMirror-scroll");
 
         if (scrollTop === 0) {
             editorView.scrollTop(0);
@@ -220,13 +222,11 @@ htpEditor.previewBindScroll = function(name)
     });
 }
 
-htpEditor.previewUnBindScroll = function(name)
-{
-    $("#field_"+ name +"_preview").unbind("scroll");
+htpEditor.previewUnBindScroll = function(name) {
+    $("#field_" + name + "_preview").unbind("scroll");
 }
 
-htpEditor.Content = function(name)
-{
+htpEditor.Content = function(name) {
     var editor = htpEditor.editors[name];
     if (editor) {
         return editor.getValue();
@@ -235,8 +235,7 @@ htpEditor.Content = function(name)
     return null;
 }
 
-htpEditor.Close = function(name)
-{
+htpEditor.Close = function(name) {
     var edr = htpEditor.editors[name];
     if (edr) {
         htpEditor.editors[name] = null;
@@ -244,8 +243,7 @@ htpEditor.Close = function(name)
     }
 }
 
-htpEditor.Clean = function()
-{
+htpEditor.Clean = function() {
     for (var i in htpEditor.editors) {
         htpEditor.editors[i] = null;
         delete htpEditor.editors[i];

@@ -1,21 +1,20 @@
 var htpSys = {
-    roles : {
+    roles: {
         items: [{
             idxid: 100,
             meta: {
-                name : "Member",
+                name: "Member",
             },
-        },{
+        }, {
             idxid: 1000,
             meta: {
-                name : "Guest",
+                name: "Guest",
             },
         }],
     },
 }
 
-htpSys.Init = function()
-{
+htpSys.Init = function() {
     l4i.UrlEventRegister("sys/index", htpSys.Index, "htpm-topbar");
 
     l4i.UrlEventRegister("sys/status", htpSys.Status, "htpm-sys-nav");
@@ -23,25 +22,23 @@ htpSys.Init = function()
     l4i.UrlEventRegister("sys/config", htpSys.Config, "htpm-sys-nav");
 }
 
-htpSys.Index = function()
-{
+htpSys.Index = function() {
     l4iStorage.Set("htpm_nav_last_active", "sys/index");
 
     htpMgr.TplCmd("sys/index", {
         callback: function(err, data) {
             $("#com-content").html(data);
             htpSys.Status();
-            // htpSys.IamStatus();
-            // htpSys.Config();
+        // htpSys.IamStatus();
+        // htpSys.Config();
         },
     });
 }
 
-htpSys.Config = function()
-{
+htpSys.Config = function() {
     seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create('tpl', 'data', function (tpl, data) {
+        var ep = EventProxy.create('tpl', 'data', function(tpl, data) {
 
             if (!data) {
                 return;
@@ -54,9 +51,9 @@ htpSys.Config = function()
             }
 
             l4iTemplate.Render({
-                dstid  : "work-content",
-                tplsrc : tpl,
-                data   : data,
+                dstid: "work-content",
+                tplsrc: tpl,
+                data: data,
             });
         });
 
@@ -74,8 +71,7 @@ htpSys.Config = function()
     });
 }
 
-htpSys.ConfigSetCommit = function()
-{
+htpSys.ConfigSetCommit = function() {
 
     var form = $("#htpm-sys-configset"),
         alertid = "#htpm-sys-configset-alert",
@@ -101,9 +97,9 @@ htpSys.ConfigSetCommit = function()
     }
 
     htpMgr.ApiCmd("sys/config-set", {
-        method  : "PUT",
-        data    : JSON.stringify(req),
-        callback : function(err, data) {
+        method: "PUT",
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
             if (!data || !data.kind || data.kind != "SysConfigList") {
 
@@ -120,11 +116,10 @@ htpSys.ConfigSetCommit = function()
 }
 
 
-htpSys.Status = function()
-{
+htpSys.Status = function() {
     seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create('tpl', 'data', function (tpl, data) {
+        var ep = EventProxy.create('tpl', 'data', function(tpl, data) {
 
             if (!data) {
                 return;
@@ -136,9 +131,9 @@ htpSys.Status = function()
             // }
 
             l4iTemplate.Render({
-                dstid  : "work-content",
-                tplsrc : tpl,
-                data   : data,
+                dstid: "work-content",
+                tplsrc: tpl,
+                data: data,
             });
         });
 
@@ -156,11 +151,10 @@ htpSys.Status = function()
     });
 }
 
-htpSys.IamStatus = function()
-{
+htpSys.IamStatus = function() {
     seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create('tpl', 'data', function (tpl, data) {
+        var ep = EventProxy.create('tpl', 'data', function(tpl, data) {
 
             if (!data) {
                 return;
@@ -189,9 +183,9 @@ htpSys.IamStatus = function()
             data._roles = htpSys.roles;
 
             l4iTemplate.Render({
-                dstid  : "work-content",
-                tplsrc : tpl,
-                data   : data,
+                dstid: "work-content",
+                tplsrc: tpl,
+                data: data,
             });
         });
 
@@ -210,23 +204,22 @@ htpSys.IamStatus = function()
 }
 
 
-htpSys.IamSync = function()
-{
+htpSys.IamSync = function() {
     var alert_id = "#htp-mgr-sys-iam-alert",
         form = $("#htp-mgr-sys-iam"),
         url = "";
     if (form) {
         var v = form.find("input[name=app_title]").val();
         if (v) {
-            url += "&app_title="+ v;
+            url += "&app_title=" + v;
         }
         v = form.find("input[name=instance_url]").val();
         if (v) {
-            url += "&instance_url="+ v;
+            url += "&instance_url=" + v;
         }
     }
 
-    htpMgr.Ajax("setup/app-register-sync?"+ url, {
+    htpMgr.Ajax("setup/app-register-sync?" + url, {
         callback: function(err, data) {
 
             if (!data || data.kind != "AppInstanceRegister") {
@@ -247,8 +240,7 @@ htpSys.IamSync = function()
 }
 
 
-htpSys.UtilResourceSizeFormat = function(size)
-{
+htpSys.UtilResourceSizeFormat = function(size) {
     var ms = [
         [6, "EB"],
         [5, "PB"],
@@ -259,7 +251,7 @@ htpSys.UtilResourceSizeFormat = function(size)
     ];
     for (var i in ms) {
         if (size > Math.pow(1024, ms[i][0])) {
-            return (size / Math.pow(1024, ms[i][0])).toFixed(0) +" <span>"+ ms[i][1] +"</span>";
+            return (size / Math.pow(1024, ms[i][0])).toFixed(0) + " <span>" + ms[i][1] + "</span>";
         }
     }
 
@@ -271,8 +263,7 @@ htpSys.UtilResourceSizeFormat = function(size)
 }
 
 
-htpSys.UtilDurationFormat = function(timems, fix)
-{
+htpSys.UtilDurationFormat = function(timems, fix) {
     var ms = [
         [86400000, "day"],
         [3600000, "hour"],
@@ -300,7 +291,7 @@ htpSys.UtilDurationFormat = function(timems, fix)
 
             if (t > 0) {
 
-                ts += t + " "+ ms[i][1];
+                ts += t + " " + ms[i][1];
 
                 if (t > 1) {
                     ts += "s";
@@ -316,11 +307,10 @@ htpSys.UtilDurationFormat = function(timems, fix)
     if (ts.length > 2) {
         ts = ts.substr(0, ts.length - 2);
     } else if (timems > 0) {
-        ts = timems +" microseconds";
+        ts = timems + " microseconds";
     } else {
         ts = "0";
     }
 
     return ts;
 }
-

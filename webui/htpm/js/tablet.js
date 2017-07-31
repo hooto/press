@@ -1,8 +1,7 @@
-
 var l9rTab = {
-    def         : "lctab-default",
-    pageArray   : {},
-    pageCurrent : 0,
+    def: "lctab-default",
+    pageArray: {},
+    pageCurrent: 0,
 
     // frame[frame] = {
     //     "colid"  : "lclay-colmain",
@@ -10,11 +9,11 @@ var l9rTab = {
     //     "editor" : null,
     //     "state"  : "current/null",
     // }
-    frame       : {
+    frame: {
         "lctab-default": {
-            colid : "lclay-colmain",
-            urid  : "",
-            actived : false,
+            colid: "lclay-colmain",
+            urid: "",
+            actived: false,
         }
     },
 
@@ -29,20 +28,19 @@ var l9rTab = {
     //     "tpluri" : "string",
     //     "jsdata" : "JSON",
     // }
-    pool        : {}
+    pool: {}
 }
 
-l9rTab.Open = function(options)
-{
+l9rTab.Open = function(options) {
     // console.log(options);
     options = options || {};
 
     if (typeof options.success !== "function") {
-        options.success = function(){};
+        options.success = function() {};
     }
 
     if (typeof options.error !== "function") {
-        options.error = function(){};
+        options.error = function() {};
     }
 
     if (options.colid === undefined) {
@@ -57,31 +55,31 @@ l9rTab.Open = function(options)
 
     if (!l9rTab.frame[options.target]) {
         l9rTab.frame[options.target] = {
-            urid   : 0,
-            colid  : options.colid,
-            editor : null,
-            state  : ""
+            urid: 0,
+            colid: options.colid,
+            editor: null,
+            state: ""
         };
     }
 
     if (!l9rTab.pool[urid]) {
 
         l9rTab.pool[urid] = {
-            modname   : l4iSession.Get("htp-speceditor-modname"),
-            url       : options.uri,
-            colid     : options.colid,
-            target    : options.target,
-            type      : options.type,
-            title     : options.title,
-            icon      : options.icon,
-            success   : options.success,
-            error     : options.error,
-            titleOnly : options.titleOnly,
-            close     : true,
+            modname: l4iSession.Get("htp-speceditor-modname"),
+            url: options.uri,
+            colid: options.colid,
+            target: options.target,
+            type: options.type,
+            title: options.title,
+            icon: options.icon,
+            success: options.success,
+            error: options.error,
+            titleOnly: options.titleOnly,
+            close: true,
         }
 
         if (options.close === false) {
-        	l9rTab.pool[urid].close = false;
+            l9rTab.pool[urid].close = false;
         }
 
         if (options.jsdata) {
@@ -93,19 +91,21 @@ l9rTab.Open = function(options)
         }
     }
 
-    if (document.getElementById("lctab-box"+ options.target) == null) {
+    if (document.getElementById("lctab-box" + options.target) == null) {
 
-        var tpl = l4iTemplate.RenderByID("lctab-tpl", {tabid: l9rTab.def});
+        var tpl = l4iTemplate.RenderByID("lctab-tpl", {
+            tabid: l9rTab.def
+        });
 
         if (tpl == "") {
             return;
         }
 
         // console.log(tpl);
-        $("#"+ options.colid).append(tpl);
+        $("#" + options.colid).append(tpl);
         l9rLayout.ColumnSet({
-            id   : "lclay-colmain",
-            hook : l9rTab.LayoutResize
+            id: "lclay-colmain",
+            hook: l9rTab.LayoutResize
         });
 
         // TODO
@@ -125,8 +125,7 @@ l9rTab.Open = function(options)
     l9rTab.Switch(urid);
 }
 
-l9rTab.Switch = function(urid)
-{
+l9rTab.Switch = function(urid) {
     // console.log(l9rTab.pool);
     var item = l9rTab.pool[urid];
     if (!item) {
@@ -177,42 +176,41 @@ l9rTab.Switch = function(urid)
         return;
     }
 
-    $("#lctab-body"+ item.target).removeClass("lctab-body-bg-light");
+    $("#lctab-body" + item.target).removeClass("lctab-body-bg-light");
 
 
 
     switch (item.type) {
 
-    case "editor":
+        case "editor":
 
-        lcEditor.TabletOpen(urid, function(ret) {
+            lcEditor.TabletOpen(urid, function(ret) {
 
-            if (!ret) {
-                return;
-            }
+                if (!ret) {
+                    return;
+                }
 
-            // if (item.modname != l4iSession.Get("htp-speceditor-modname")) {
-            //     // return;
-            // }
+                // if (item.modname != l4iSession.Get("htp-speceditor-modname")) {
+                //     // return;
+                // }
 
-            //console.log("lcEditor.TabletOpen OK");
-            l9rTab.TabletTitleImage(urid);
-            l9rTab.frame[item.target].urid = urid;
-            // l4iStorage.Set("tab.fra.urid."+ item.target, urid);
-            l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") +".cab."+ item.target, urid);
+                //console.log("lcEditor.TabletOpen OK");
+                l9rTab.TabletTitleImage(urid);
+                l9rTab.frame[item.target].urid = urid;
+                // l4iStorage.Set("tab.fra.urid."+ item.target, urid);
+                l4iStorage.Set(l4iSession.Get("htp-speceditor-modname") + ".cab." + item.target, urid);
 
-            item.success();
-        });
+                item.success();
+            });
 
-        break;
+            break;
 
-    default :
-        return;
+        default:
+            return;
     }
 }
 
-l9rTab.TabletTitleImage = function(urid, imgsrc)
-{
+l9rTab.TabletTitleImage = function(urid, imgsrc) {
     var item = l9rTab.pool[urid];
 
     if (imgsrc === undefined && item.icon !== undefined) {
@@ -220,37 +218,36 @@ l9rTab.TabletTitleImage = function(urid, imgsrc)
         if (item.icon.slice(0, 1) == "/") {
             imgsrc = item.icon;
         } else {
-            imgsrc = htpMgr.frtbase + "~/htpm/img/"+ item.icon +".png";
+            imgsrc = htpMgr.frtbase + "~/htpm/img/" + item.icon + ".png";
         }
     }
 
     if (imgsrc !== undefined) {
-        $("#pgtab"+ urid +" .ico img").attr("src", imgsrc);
+        $("#pgtab" + urid + " .ico img").attr("src", imgsrc);
     }
 }
 
-l9rTab.TabletTitle = function(urid, loading)
-{
+l9rTab.TabletTitle = function(urid, loading) {
     var item = l9rTab.pool[urid];
 
     if (!item.target) {
         return;
     }
 
-    if ($("#pgtab"+ urid).length < 1) {
+    if ($("#pgtab" + urid).length < 1) {
 
         if (!item.title) {
             item.title = item.url.replace(/^.*[\\\/]/, '');
         }
 
-        var entry  = '<table id="pgtab'+ urid +'" class="pgtab" style="display:none"><tr>';
+        var entry = '<table id="pgtab' + urid + '" class="pgtab" style="display:none"><tr>';
 
         if (item.icon) {
 
             if (loading) {
                 var imgsrc = htpMgr.frtbase + "~/htpm/img/loading4.gif";
             } else {
-                var imgsrc = htpMgr.frtbase + "~/htpm/img/"+ item.icon +".png";
+                var imgsrc = htpMgr.frtbase + "~/htpm/img/" + item.icon + ".png";
             }
 
             //
@@ -258,56 +255,57 @@ l9rTab.TabletTitle = function(urid, loading)
                 imgsrc = item.icon;
             }
 
-            entry += "<td class='ico' onclick=\"l9rTab.Switch('"+ urid +"')\">\
-                <img src='"+ imgsrc +"' align='absmiddle' /></td>";
+            entry += "<td class='ico' onclick=\"l9rTab.Switch('" + urid + "')\">\
+                <img src='" + imgsrc + "' align='absmiddle' /></td>";
         }
 
         entry += '<td class="chg">*</td>';
-        entry += "<td class=\"pgtabtitle\" onclick=\"l9rTab.Switch('"+ urid +"')\">"+item.title+"</td>";
+        entry += "<td class=\"pgtabtitle\" onclick=\"l9rTab.Switch('" + urid + "')\">" + item.title + "</td>";
 
         if (item.close) {
             // entry += '<td><div class="pgtabclose" onclick="l9rTab.Close(\''+ urid +'\', 0)"><div class="pgtabcloseitem">&times;</div></div></td>';
-            entry += '<td><span class="pgtabclose" onclick="l9rTab.Close(\''+ urid +'\', 0)"></span></td>';
+            entry += '<td><span class="pgtabclose" onclick="l9rTab.Close(\'' + urid + '\', 0)"></span></td>';
         }
 
         entry += '</tr></table>';
 
-        $("#lctab-navtabs"+ item.target).append(entry);
-        $("#pgtab"+ urid).show(200);
+        $("#lctab-navtabs" + item.target).append(entry);
+        $("#pgtab" + urid).show(200);
     }
 
     if (item.titleOnly !== true) {
-        $('#lctab-navtabs'+ item.target +' .pgtab.current').removeClass('current');
-        $('#pgtab'+ urid).addClass("current");
+        $('#lctab-navtabs' + item.target + ' .pgtab.current').removeClass('current');
+        $('#pgtab' + urid).addClass("current");
     }
 
-    var pg = $('#lctab-nav'+ item.target +' .lctab-navm').innerWidth();
+    var pg = $('#lctab-nav' + item.target + ' .lctab-navm').innerWidth();
     //console.log("h5c-tablet-tabs t*"+ pg);
 
-    var tabp = $('#pgtab'+ urid).position();
+    var tabp = $('#pgtab' + urid).position();
     //console.log("tab pos left:"+ tabp.left);
 
-    var mov = tabp.left + $('#pgtab'+ urid).outerWidth(true) - pg;
+    var mov = tabp.left + $('#pgtab' + urid).outerWidth(true) - pg;
     if (mov < 0) {
         mov = 0;
     }
 
-    var pgl = $('#lctab-navtabs'+ item.target +' .pgtab').last().position().left
-            + $('#lctab-navtabs'+ item.target +' .pgtab').last().outerWidth(true);
+    var pgl = $('#lctab-navtabs' + item.target + ' .pgtab').last().position().left +
+    $('#lctab-navtabs' + item.target + ' .pgtab').last().outerWidth(true);
 
     if (pgl > pg) {
         //$('#lctab-nav'+ item.target +' .lcpg-tab-more').show();
-        $('#lctab-nav'+ item.target +' .lcpg-tab-more').html("»");
+        $('#lctab-nav' + item.target + ' .lcpg-tab-more').html("»");
     } else {
         //$('#lctab-nav'+ item.target +' .lcpg-tab-more').hide();
-        $('#lctab-nav'+ item.target +' .lcpg-tab-more').empty();
+        $('#lctab-nav' + item.target + ' .lcpg-tab-more').empty();
     }
 
-    $('#lctab-nav'+ item.target +' .lctab-navs').animate({left: "-"+mov+"px"}); // COOL!
+    $('#lctab-nav' + item.target + ' .lctab-navs').animate({
+        left: "-" + mov + "px"
+    }); // COOL!
 }
 
-l9rTab.TabletMore = function(tg)
-{
+l9rTab.TabletMore = function(tg) {
     // console.log("TabletMore: "+ tg);
 
     var ol = '';
@@ -317,10 +315,10 @@ l9rTab.TabletMore = function(tg)
             continue;
         }
 
-        var href = "javascript:l9rTab.Switch('"+ i +"')";
+        var href = "javascript:l9rTab.Switch('" + i + "')";
         ol += '<div class="ltm-item lctab-nav-moreitem">';
-        ol += '<div class="ltm-ico"><img src="'+ htpMgr.frtbase + '~/htpm/img/'+ l9rTab.pool[i].icon +'.png" align="absmiddle" /></div>';
-        ol += '<div class="ltm-ctn"><a href="'+ href +'">'+ l9rTab.pool[i].title +'</a></div>';
+        ol += '<div class="ltm-ico"><img src="' + htpMgr.frtbase + '~/htpm/img/' + l9rTab.pool[i].icon + '.png" align="absmiddle" /></div>';
+        ol += '<div class="ltm-ctn"><a href="' + href + '">' + l9rTab.pool[i].title + '</a></div>';
         ol += '</div>';
     }
     $("#lctab-openfiles-ol").empty().html(ol);
@@ -331,22 +329,22 @@ l9rTab.TabletMore = function(tg)
     //console.log("event top:"+e.top+", left:"+e.left);
 
     $("#lctab-openfiles-ol").css({
-        width: w +'px',
+        width: w + 'px',
         height: 'auto',
-        top: (e.top + 10)+'px',
-        left: (e.left - w - 10)+'px'
+        top: (e.top + 10) + 'px',
+        left: (e.left - w - 10) + 'px'
     }).toggle();
 
     rw = $("#lctab-openfiles-ol").outerWidth(true);
     if (rw > 400) {
         $("#lctab-openfiles-ol").css({
             width: '400px',
-            left: (e.left - 410) +'px'
+            left: (e.left - 410) + 'px'
         });
     } else if (rw > w) {
         $("#lctab-openfiles-ol").css({
-            width: rw+'px',
-            left: (e.left - rw - 10)+'px'
+            width: rw + 'px',
+            left: (e.left - rw - 10) + 'px'
         });
     }
 
@@ -355,7 +353,9 @@ l9rTab.TabletMore = function(tg)
     hmax = bh - e.top - 30;
     //console.log("hmax: "+hmax);
     if (rh > hmax) {
-        $("#lctab-openfiles-ol").css({height: hmax+"px"});
+        $("#lctab-openfiles-ol").css({
+            height: hmax + "px"
+        });
     }
 
     $(".lctab-openfiles-ol").find(".lctab-nav-moreitem").click(function() {
@@ -363,74 +363,72 @@ l9rTab.TabletMore = function(tg)
     });
 }
 
-l9rTab.ScrollTop = function(urid)
-{
+l9rTab.ScrollTop = function(urid) {
     var item = l9rTab.pool[urid];
     if (item === undefined || item.target === undefined) {
         return;
     }
 
-    $("#lctab-body"+ item.target +".less_scroll").scrollTop(0);
+    $("#lctab-body" + item.target + ".less_scroll").scrollTop(0);
 }
 
-l9rTab.Close = function(urid, force)
-{
+l9rTab.Close = function(urid, force) {
     var item = l9rTab.pool[urid];
 
     switch (item.type) {
-    case "apidriven":
-    case 'html':
-        l9rTab.CloseClean(urid);
-        break;
-
-    case 'editor':
-
-        if (force == 1) {
-
+        case "apidriven":
+        case 'html':
             l9rTab.CloseClean(urid);
+            break;
 
-        } else {
+        case 'editor':
 
-            lcEditor.IsSaved(urid, function(ret) {
+            if (force == 1) {
 
-                if (ret) {
-                    l9rTab.CloseClean(urid);
-                    return;
-                }
+                l9rTab.CloseClean(urid);
 
-                l4iModal.Open({
-                    title        : "Save changes before closing",
-                    tpluri       : htpMgr.frtbase + "~/htpm/editor/changes2save.tpl",
-                    width        : 500,
-                    height       : 180,
-                    data         : {urid: urid},
-                    position     : "center",
-                    buttons      : [
-                        {
-                            onclick : "lcEditor.DialogChanges2SaveDone(\""+urid+"\")",
-                            title   : "Save",
-                            style   : "btn-inverse"
+            } else {
+
+                lcEditor.IsSaved(urid, function(ret) {
+
+                    if (ret) {
+                        l9rTab.CloseClean(urid);
+                        return;
+                    }
+
+                    l4iModal.Open({
+                        title: "Save changes before closing",
+                        tpluri: htpMgr.frtbase + "~/htpm/editor/changes2save.tpl",
+                        width: 500,
+                        height: 180,
+                        data: {
+                            urid: urid
                         },
-                        {
-                            onclick : "lcEditor.DialogChanges2SaveSkip(\""+urid+"\")",
-                            title   : "Close without Saving",
+                        position: "center",
+                        buttons: [{
+                            onclick: "lcEditor.DialogChanges2SaveDone(\"" + urid + "\")",
+                            title: "Save",
+                            style: "btn-inverse"
                         },
-                        {
-                            onclick : "l4iModal.Close()",
-                            title   : "Close"
-                        }
-                    ]
+                            {
+                                onclick: "lcEditor.DialogChanges2SaveSkip(\"" + urid + "\")",
+                                title: "Close without Saving",
+                            },
+                            {
+                                onclick: "l4iModal.Close()",
+                                title: "Close"
+                            }
+                        ]
+                    });
                 });
-            });
-        }
-        break;
-    default :
-        return;
+            }
+            break;
+        default:
+            return;
     }
 }
 
-l9rTab.CloseClean = function(urid)
-{
+l9rTab.CloseClean = function(urid) {
     var item = l9rTab.pool[urid];
     if (!item || !item.url) {
         return;
@@ -455,8 +453,8 @@ l9rTab.CloseClean = function(urid)
                 //console.log("del: "+ rs);
             });
 
-            $('#pgtab'+ urid).hide(200, function() {
-                $('#pgtab'+ urid).remove()
+            $('#pgtab' + urid).hide(200, function() {
+                $('#pgtab' + urid).remove()
             });
             delete l9rTab.pool[urid];
 
@@ -485,50 +483,49 @@ l9rTab.CloseClean = function(urid)
     if (j != 0) {
         l9rTab.Switch(j);
         l9rTab.frame[item.target].urid = j;
-    } else if (cleanbody)  {
+    } else if (cleanbody) {
         // $("#lctab-body"+ item.target).slideUp(200, function() {
         //     $("#lctab-body"+ item.target).empty();
         // });
-        $("#lctab-bar"+ item.target).slideUp(100, function() {
-            $("#lctab-bar"+ item.target).empty();
+        $("#lctab-bar" + item.target).slideUp(100, function() {
+            $("#lctab-bar" + item.target).empty();
         });
-        $("#lctab-body"+ item.target).empty();
-        // $("#lctab-bar"+ item.target).empty();
+        $("#lctab-body" + item.target).empty();
+    // $("#lctab-bar"+ item.target).empty();
     }
 
     l9rLayout.Resize();
 }
 
-l9rTab.LayoutResize = function(options)
-{
+l9rTab.LayoutResize = function(options) {
     for (var i in l9rTab.frame) {
 
         if (l9rTab.frame[i].colid != options.id) {
             continue;
         }
 
-        if ($("#lctab-box"+ i).length < 1) {
+        if ($("#lctab-box" + i).length < 1) {
             continue;
         }
 
         var _w = options.width * l9rLayout.width / 100;
 
-        var _tabs_h = $("#lctab-nav"+ i).height();
+        var _tabs_h = $("#lctab-nav" + i).height();
         var _tbar_h = 0;
-        if ($("#lctab-bar"+ i).is(":visible")) {
-            _tbar_h = $("#lctab-bar"+ i).height();
-            // console.log("lctab-bar height: "+ _tbar_h);
+        if ($("#lctab-bar" + i).is(":visible")) {
+            _tbar_h = $("#lctab-bar" + i).height();
+        // console.log("lctab-bar height: "+ _tbar_h);
         }
         var _body_h = l9rLayout.height - _tabs_h - _tbar_h;
 
-        $("#lctab-body"+ i).height(_body_h);
-        $("#lctab-nav"+ i +" .lctab-navm").width(_w - 30);
+        $("#lctab-body" + i).height(_body_h);
+        $("#lctab-nav" + i + " .lctab-navm").width(_w - 30);
 
         if (l9rTab.frame[i].editor !== null) {
             // console.log("CodeMirror changed");
-            if ($("#lctab-body"+ i +" > .CodeMirror").length > 0) {
-                $("#lctab-body"+ i +" > .CodeMirror").width(_w);
-                $("#lctab-body"+ i +" > .CodeMirror").height(_body_h);
+            if ($("#lctab-body" + i + " > .CodeMirror").length > 0) {
+                $("#lctab-body" + i + " > .CodeMirror").width(_w);
+                $("#lctab-body" + i + " > .CodeMirror").height(_body_h);
             }
         }
     }

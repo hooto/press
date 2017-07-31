@@ -5,34 +5,32 @@ var htpNode = {
     setCurrent: null,
     cmEditor: null,
     cmEditors: {},
-    general_onoff : [{
+    general_onoff: [{
         type: true,
         name: "ON",
-    },{
+    }, {
         type: false,
         name: "OFF",
     }],
-    status_def : [{
+    status_def: [{
         type: 1,
         name: "Publish",
-    },{
+    }, {
         type: 2,
         name: "Draft",
-    },{
+    }, {
         type: 3,
         name: "Private",
     }],
-    nodeOpToolsRefreshCurrent : null,
+    nodeOpToolsRefreshCurrent: null,
 }
 
-htpNode.Init = function(cb)
-{
+htpNode.Init = function(cb) {
     htpNode.navRefresh(cb);
 }
 
-htpNode.navRefresh = function(cb)
-{
-    cb = cb || function(){};
+htpNode.navRefresh = function(cb) {
+    cb = cb || function() {};
 
     if (htpNode.speclsCurrent.length > 0) {
 
@@ -52,9 +50,9 @@ htpNode.navRefresh = function(cb)
         l4iTemplate.Render({
             dstid: "htpm-topbar-nav-node-specls",
             tplid: "htpm-topbar-nav-node-specls-tpl",
-            data:  {
-                active : l4iStorage.Get("htpm_spec_active"),
-                items  : htpNode.speclsCurrent,
+            data: {
+                active: l4iStorage.Get("htpm_spec_active"),
+                items: htpNode.speclsCurrent,
             },
         });
 
@@ -92,9 +90,9 @@ htpNode.navRefresh = function(cb)
             l4iTemplate.Render({
                 dstid: "htpm-topbar-nav-node-specls",
                 tplid: "htpm-topbar-nav-node-specls-tpl",
-                data:  {
+                data: {
                     // active : l4iStorage.Get("htpm_spec_active"),
-                    items  : htpNode.speclsCurrent,
+                    items: htpNode.speclsCurrent,
                 },
             });
 
@@ -103,8 +101,7 @@ htpNode.navRefresh = function(cb)
     });
 }
 
-htpNode.OpToolsRefresh = function(div_target)
-{
+htpNode.OpToolsRefresh = function(div_target) {
     if (typeof div_target == "string" && div_target == htpNode.nodeOpToolsRefreshCurrent) {
         return;
     }
@@ -127,8 +124,7 @@ htpNode.OpToolsRefresh = function(div_target)
     }
 }
 
-htpNode.Index = function(nav_href)
-{
+htpNode.Index = function(nav_href) {
     if (!nav_href || nav_href.length <= htpNode.navPrefix.length) {
         return;
     }
@@ -146,9 +142,9 @@ htpNode.Index = function(nav_href)
 
     var alertid = "#htpm-node-alert";
 
-    seajs.use(["ep"], function (EventProxy) {
+    seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create("tpl", function (tpl) {
+        var ep = EventProxy.create("tpl", function(tpl) {
 
             if (tpl) {
                 $("#com-content").html(tpl);
@@ -197,7 +193,7 @@ htpNode.Index = function(nav_href)
                 return; // TODO
             }
 
-                    //
+            //
             if (node_model_active != l4iStorage.Get("htpm_nmodel_active")) {
                 l4iStorage.Set("htpm_nmodel_active", node_model_active);
             }
@@ -213,7 +209,7 @@ htpNode.Index = function(nav_href)
                 l4iTemplate.Render({
                     dstid: "htpm-node-nmodels",
                     tplid: "htpm-node-nmodels-tpl",
-                    data:  {
+                    data: {
                         active: node_model_active,
                         items: htpNode.specCurrent.nodeModels,
                     },
@@ -226,7 +222,7 @@ htpNode.Index = function(nav_href)
                 l4iTemplate.Render({
                     dstid: "htpm-node-tmodels",
                     tplid: "htpm-node-tmodels-tpl",
-                    data:  {
+                    data: {
                         items: htpNode.specCurrent.termModels,
                     },
                 });
@@ -235,7 +231,7 @@ htpNode.Index = function(nav_href)
             }
         });
 
-        ep.fail(function (err) {
+        ep.fail(function(err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
@@ -259,8 +255,7 @@ htpNode.Index = function(nav_href)
     });
 }
 
-htpNode.List = function(modname, modelid)
-{
+htpNode.List = function(modname, modelid) {
     var alertid = "#htpm-node-alert",
         page = 0;
 
@@ -280,22 +275,22 @@ htpNode.List = function(modname, modelid)
         return;
     }
 
-    var uri = "modname="+ modname +"&modelid="+ modelid +"&page="+ page;
+    var uri = "modname=" + modname + "&modelid=" + modelid + "&page=" + page;
     uri += "&fields=no_fields&terms=no_terms";
     if (document.getElementById("qry_text")) {
-        uri += "&qry_text="+ $("#qry_text").val();
+        uri += "&qry_text=" + $("#qry_text").val();
     }
 
-    seajs.use(["ep"], function (EventProxy) {
+    seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create("tpl", "data", function (tpl, rsj) {
+        var ep = EventProxy.create("tpl", "data", function(tpl, rsj) {
 
             if (tpl) {
                 $("#work-content").html(tpl);
             }
 
-            if (!rsj || rsj.kind != "NodeList"
-                || !rsj.items || rsj.items.length < 1) {
+            if (!rsj || rsj.kind != "NodeList" ||
+                !rsj.items || rsj.items.length < 1) {
 
                 $("#htpm-nodels").empty();
                 $("#htpm-termls").empty();
@@ -325,21 +320,21 @@ htpNode.List = function(modname, modelid)
             l4iTemplate.Render({
                 dstid: "htpm-nodels",
                 tplid: "htpm-nodels-tpl",
-                data:  {
-                    model   : rsj.model,
-                    modname : modname,
-                    modelid : modelid,
-                    items   : rsj.items,
-                    _status_def : htpNode.status_def,
+                data: {
+                    model: rsj.model,
+                    modname: modname,
+                    modelid: modelid,
+                    items: rsj.items,
+                    _status_def: htpNode.status_def,
                 },
                 success: function() {
 
                     rsj.meta.RangeLen = 20;
 
                     l4iTemplate.Render({
-                        dstid : "htpm-nodels-pager",
-                        tplid : "htpm-nodels-pager-tpl",
-                        data  : l4i.Pager(rsj.meta),
+                        dstid: "htpm-nodels-pager",
+                        tplid: "htpm-nodels-pager-tpl",
+                        data: l4i.Pager(rsj.meta),
                     });
 
                     htpNode.OpToolsRefresh("#htpm-node-list-opts");
@@ -347,7 +342,7 @@ htpNode.List = function(modname, modelid)
             });
         });
 
-        ep.fail(function (err) {
+        ep.fail(function(err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
@@ -369,20 +364,18 @@ htpNode.List = function(modname, modelid)
             ep.emit("tpl", null);
         }
 
-        htpMgr.ApiCmd("node/list?"+ uri, {
+        htpMgr.ApiCmd("node/list?" + uri, {
             callback: ep.done("data"),
         });
     });
 }
 
-htpNode.ListPage = function(page)
-{
+htpNode.ListPage = function(page) {
     l4iStorage.Set("htpm_nodels_page", parseInt(page));
     htpNode.List();
 }
 
-htpNode.ListBatchSelectAll = function()
-{
+htpNode.ListBatchSelectAll = function() {
     var form = $("#htpm-nodels");
     if (!form) {
         return;
@@ -404,8 +397,7 @@ htpNode.ListBatchSelectAll = function()
     htpNode.ListBatchSelectTodoBtnRefresh(checked);
 }
 
-htpNode.ListBatchSelectTodoBtnRefresh = function(onoff)
-{
+htpNode.ListBatchSelectTodoBtnRefresh = function(onoff) {
     if (onoff !== true && onoff !== false) {
 
         onoff = false;
@@ -414,20 +406,23 @@ htpNode.ListBatchSelectTodoBtnRefresh = function(onoff)
 
             if ($(this).is(":checked")) {
                 onoff = true;
-                return(false);
+                return (false);
             }
         });
     }
 
     if (onoff === true) {
-        $("#htpm-nodels-batch-select-todo-btn").css({"display": "block"});
+        $("#htpm-nodels-batch-select-todo-btn").css({
+            "display": "block"
+        });
     } else {
-        $("#htpm-nodels-batch-select-todo-btn").css({"display": "none"});
+        $("#htpm-nodels-batch-select-todo-btn").css({
+            "display": "none"
+        });
     }
 }
 
-htpNode.ListBatchSelectTodo = function()
-{
+htpNode.ListBatchSelectTodo = function() {
     var form = $("#htpm-nodels");
     if (!form) {
         return;
@@ -454,26 +449,25 @@ htpNode.ListBatchSelectTodo = function()
             }
 
             l4iModal.Open({
-                title  : "Batch operation",
-                tplsrc : data,
-                data   : params,
-                width  : 800,
-                height : 300,
+                title: "Batch operation",
+                tplsrc: data,
+                data: params,
+                width: 800,
+                height: 300,
                 buttons: [{
                     title: "Confirm to delete",
-                    onclick : "htpNode.ListBatchSelectTodoDelete()",
+                    onclick: "htpNode.ListBatchSelectTodoDelete()",
                     style: "btn-danger",
                 }, {
                     title: "Cancel",
-                    onclick : "l4iModal.Close()",
+                    onclick: "l4iModal.Close()",
                 }],
             });
         },
     })
 }
 
-htpNode.ListBatchSelectTodoDelete = function(modname, modelid)
-{
+htpNode.ListBatchSelectTodoDelete = function(modname, modelid) {
     if (!modname && l4iStorage.Get("htpm_spec_active")) {
         modname = l4iStorage.Get("htpm_spec_active");
     }
@@ -514,8 +508,7 @@ htpNode.ListBatchSelectTodoDelete = function(modname, modelid)
     });
 }
 
-htpNode.Set = function(modname, modelid, nodeid)
-{
+htpNode.Set = function(modname, modelid, nodeid) {
     var alertid = "#htpm-node-alert";
 
     if (!modname && l4iStorage.Get("htpm_spec_active")) {
@@ -534,12 +527,12 @@ htpNode.Set = function(modname, modelid, nodeid)
     htpEditor.Clean();
     htpNode.nodeOpToolsRefreshCurrent = null;
 
-    var uri = "modname="+ modname +"&modelid="+ modelid;
+    var uri = "modname=" + modname + "&modelid=" + modelid;
 
     // console.log(uri);
-    seajs.use(["ep"], function (EventProxy) {
+    seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create("tpl", "data", function (tpl, data) {
+        var ep = EventProxy.create("tpl", "data", function(tpl, data) {
 
             if (!tpl) {
                 return; // TODO
@@ -581,7 +574,7 @@ htpNode.Set = function(modname, modelid, nodeid)
             l4iTemplate.Render({
                 dstid: "htpm-nodeset-laymain",
                 tplid: "htpm-nodeset-tpl",
-                data:  data,
+                data: data,
                 success: function() {
 
                     var main_len = 0,
@@ -592,17 +585,17 @@ htpNode.Set = function(modname, modelid, nodeid)
 
                         switch (field.type) {
 
-                        case "string":
-                            main_len += 1;
-                            break;
+                            case "string":
+                                main_len += 1;
+                                break;
 
-                        case "text":
-                            main_len += 5;
-                            break;
+                            case "text":
+                                main_len += 5;
+                                break;
 
-                        default:
-                            side_len += 1;
-                            break;
+                            default:
+                                side_len += 1;
+                                break;
                         }
                     }
                     side_len += data.model.terms.length;
@@ -642,69 +635,69 @@ htpNode.Set = function(modname, modelid, nodeid)
 
                         switch (field.type) {
 
-                        case "string":
+                            case "string":
 
-                            if (!field.value) {
-                                field.value = "";
-                            }
-
-                            tplid = "htpm-nodeset-tplstring";
-                            break;
-
-                        case "text":
-
-                            if (field.attrs) {
-                                for (var j in field.attrs) {
-                                    field["attr_"+ field.attrs[j].key] = field.attrs[j].value;
+                                if (!field.value) {
+                                    field.value = "";
                                 }
-                            }
 
-                            if (field_entry.attrs) {
-                                for (var j in field_entry.attrs) {
-                                    field["attr_"+ field_entry.attrs[j].key] = field_entry.attrs[j].value;
+                                tplid = "htpm-nodeset-tplstring";
+                                break;
+
+                            case "text":
+
+                                if (field.attrs) {
+                                    for (var j in field.attrs) {
+                                        field["attr_" + field.attrs[j].key] = field.attrs[j].value;
+                                    }
                                 }
-                            }
 
-                            if (!field.value) {
-                                field.value = "";
-                            }
+                                if (field_entry.attrs) {
+                                    for (var j in field_entry.attrs) {
+                                        field["attr_" + field_entry.attrs[j].key] = field_entry.attrs[j].value;
+                                    }
+                                }
 
-                            if (!field.attr_format) {
-                                field.attr_format = "text";
-                            }
+                                if (!field.value) {
+                                    field.value = "";
+                                }
 
-                            cb = function() {
-                                htpEditor.Open(field.name, field.attr_format);
-                            };
+                                if (!field.attr_format) {
+                                    field.attr_format = "text";
+                                }
 
-                            tplid = "htpm-nodeset-tpltext";
-                            break;
+                                cb = function() {
+                                    htpEditor.Open(field.name, field.attr_format);
+                                };
 
-                        case "int8":
-                        case "int16":
-                        case "int32":
-                        case "int64":
-                        case "uint8":
-                        case "uint16":
-                        case "uint32":
-                        case "uint64":
+                                tplid = "htpm-nodeset-tpltext";
+                                break;
 
-                            if (!field.value) {
-                                field.value = "0";
-                            }
+                            case "int8":
+                            case "int16":
+                            case "int32":
+                            case "int64":
+                            case "uint8":
+                            case "uint16":
+                            case "uint32":
+                            case "uint64":
 
-                            tplid = "htpm-nodeset-tplint";
-                            break;
+                                if (!field.value) {
+                                    field.value = "0";
+                                }
 
-                        default:
-                            continue;
+                                tplid = "htpm-nodeset-tplint";
+                                break;
+
+                            default:
+                                continue;
                         }
 
                         l4iTemplate.Render({
-                            dstid  : "htpm-nodeset-fields",
-                            tplid  : tplid,
-                            append : true,
-                            data   : field,
+                            dstid: "htpm-nodeset-fields",
+                            tplid: tplid,
+                            append: true,
+                            data: field,
                             success: cb,
                         });
                     }
@@ -724,74 +717,74 @@ htpNode.Set = function(modname, modelid, nodeid)
 
                         switch (term.type) {
 
-                        case "tag":
+                            case "tag":
 
-                            if (!term.value) {
-                                term.value = "";
-                            }
+                                if (!term.value) {
+                                    term.value = "";
+                                }
 
-                            tplid = "htpm-nodeset-tplterm_tag";
+                                tplid = "htpm-nodeset-tplterm_tag";
 
-                            l4iTemplate.Render({
-                                dstid  : field_layout_target,
-                                tplid  : tplid,
-                                prepend: true,
-                                data   : term,
-                            });
+                                l4iTemplate.Render({
+                                    dstid: field_layout_target,
+                                    tplid: tplid,
+                                    prepend: true,
+                                    data: term,
+                                });
 
-                            break;
+                                break;
 
-                        case "taxonomy":
+                            case "taxonomy":
 
-                            if (!term.value) {
-                                term.value = "0";
-                            }
+                                if (!term.value) {
+                                    term.value = "0";
+                                }
 
-                            htpMgr.ApiCmd("term/list?modname="+ modname +"&modelid="+ term.meta.name, {
-                                callback: function(err, data) {
+                                htpMgr.ApiCmd("term/list?modname=" + modname + "&modelid=" + term.meta.name, {
+                                    callback: function(err, data) {
 
-                                    if (data.kind != "TermList") {
-                                        return;
-                                    }
-
-                                    data.item = term;
-
-                                    for (var i in data.items) {
-
-                                        if (!data.items[i].pid) {
-                                            data.items[i].pid = 0;
+                                        if (data.kind != "TermList") {
+                                            return;
                                         }
 
-                                        if (data.items[i].pid == 0) {
-                                            data.items[i]._subs = htpTerm.ListSubRange(data.items, null, data.items[i].id, 0);
+                                        data.item = term;
+
+                                        for (var i in data.items) {
+
+                                            if (!data.items[i].pid) {
+                                                data.items[i].pid = 0;
+                                            }
+
+                                            if (data.items[i].pid == 0) {
+                                                data.items[i]._subs = htpTerm.ListSubRange(data.items, null, data.items[i].id, 0);
+                                            }
                                         }
-                                    }
 
-                                    tplid = "htpm-nodeset-tplterm_taxonomy";
+                                        tplid = "htpm-nodeset-tplterm_taxonomy";
 
-                                    l4iTemplate.Render({
-                                        dstid  : field_layout_target,
-                                        tplid  : tplid,
-                                        prepend: true,
-                                        data   : data,
-                                    });
-                                },
-                            });
+                                        l4iTemplate.Render({
+                                            dstid: field_layout_target,
+                                            tplid: tplid,
+                                            prepend: true,
+                                            data: data,
+                                        });
+                                    },
+                                });
 
-                            break;
+                                break;
 
-                        default:
-                            continue;
+                            default:
+                                continue;
                         }
                     }
 
 
                     if (data.model.extensions.comment_enable && data.model.extensions.comment_perentry) {
                         l4iTemplate.Render({
-                            dstid  : field_layout_target,
-                            tplid  : "htpm-nodeset-tplext_comment_perentry",
-                            append : true,
-                            data   : {
+                            dstid: field_layout_target,
+                            tplid: "htpm-nodeset-tplext_comment_perentry",
+                            append: true,
+                            data: {
                                 _general_onoff: htpNode.general_onoff,
                                 ext_comment_perentry: data.ext_comment_perentry,
                             },
@@ -800,22 +793,22 @@ htpNode.Set = function(modname, modelid, nodeid)
 
                     if (data.model.extensions.permalink && data.model.extensions.permalink != "") {
                         l4iTemplate.Render({
-                            dstid  : "htpm-nodeset-tops",
-                            tplid  : "htpm-nodeset-tplext_permalink",
-                            append : true,
-                            data   : {
+                            dstid: "htpm-nodeset-tops",
+                            tplid: "htpm-nodeset-tplext_permalink",
+                            append: true,
+                            data: {
                                 ext_permalink_name: data.ext_permalink_name,
                             },
                         });
                     }
 
                     l4iTemplate.Render({
-                        dstid  : field_layout_target,
-                        tplid  : "htpm-nodeset-tplstatus",
-                        append : true,
-                        data   : {
+                        dstid: field_layout_target,
+                        tplid: "htpm-nodeset-tplstatus",
+                        append: true,
+                        data: {
                             _status_def: htpNode.status_def,
-                            status:      data.status,
+                            status: data.status,
                         },
                     });
 
@@ -830,7 +823,7 @@ htpNode.Set = function(modname, modelid, nodeid)
             });
         });
 
-        ep.fail(function (err) {
+        ep.fail(function(err) {
             // TODO
             alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
         });
@@ -846,19 +839,19 @@ htpNode.Set = function(modname, modelid, nodeid)
         });
 
         if (nodeid) {
-            htpMgr.ApiCmd("node/entry?"+ uri +"&id="+ nodeid, {
+            htpMgr.ApiCmd("node/entry?" + uri + "&id=" + nodeid, {
                 callback: ep.done("data"),
             });
         } else {
-            htpMgr.ApiCmd("node-model/entry?"+ uri, {
+            htpMgr.ApiCmd("node-model/entry?" + uri, {
                 callback: function(err, data) {
                     ep.emit("data", {
-                        kind  : "Node",
-                        model : data,
-                        id    : "",
-                        title : "",
+                        kind: "Node",
+                        model: data,
+                        id: "",
+                        title: "",
                         ext_comment_perentry: true,
-                        create_new : true,
+                        create_new: true,
                     });
                 },
             });
@@ -867,8 +860,7 @@ htpNode.Set = function(modname, modelid, nodeid)
 }
 
 
-htpNode.SetCommit = function()
-{
+htpNode.SetCommit = function() {
     var form = $("#htpm-nodeset-layout"),
         alertid = "#htpm-node-alert";
 
@@ -879,11 +871,11 @@ htpNode.SetCommit = function()
     htpNode.setCurrent.title = form.find("input[name=title]").val();
 
     var req = {
-        id     : form.find("input[name=id]").val(),
-        title  : form.find("input[name=title]").val(),
-        status : parseInt(form.find("select[name=status]").val()),
-        fields : [],
-        terms  : [],
+        id: form.find("input[name=id]").val(),
+        title: form.find("input[name=title]").val(),
+        status: parseInt(form.find("select[name=status]").val()),
+        fields: [],
+        terms: [],
         ext_comment_perentry: form.find("select[name=ext_comment_perentry]").val(),
         ext_permalink_name: form.find("input[name=ext_permalink_name]").val(),
     }
@@ -908,53 +900,56 @@ htpNode.SetCommit = function()
 
         switch (field.type) {
 
-        case "text":
+            case "text":
 
-            var format = form.find("input[name=field_"+ field.name +"_attr_format]").val();
-            if (!format) {
-                format = "text";
-            }
+                var format = form.find("input[name=field_" + field.name + "_attr_format]").val();
+                if (!format) {
+                    format = "text";
+                }
 
-            field_set.attrs.push({key: "format", value: format});
-            field_set.value = htpEditor.Content(field.name);
+                field_set.attrs.push({
+                    key: "format",
+                    value: format
+                });
+                field_set.value = htpEditor.Content(field.name);
 
-            // console.log(format);
+                // console.log(format);
 
-            // if (field.attrs) {
+                // if (field.attrs) {
 
-            //     for (var j in field.attrs) {
+                //     for (var j in field.attrs) {
 
-            //         if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
+                //         if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
 
-            //             field_set.value = htpEditor.Content(field.name);
+                //             field_set.value = htpEditor.Content(field.name);
 
-            //             field_set.attrs.push({key: "format", value: "md"});
+                //             field_set.attrs.push({key: "format", value: "md"});
 
-            //             break;
-            //         }
-            //     }
-            // }
+                //             break;
+                //         }
+                //     }
+                // }
 
-            // if (!field_set.value) {
-            //     field_set.value = form.find("textarea[name=field_"+ field.name +"]").val();
-            // }
+                // if (!field_set.value) {
+                //     field_set.value = form.find("textarea[name=field_"+ field.name +"]").val();
+                // }
 
-            break;
+                break;
 
-        case "string":
-            field_set.value = form.find("input[name=field_"+ field.name +"]").val();
-            break;
+            case "string":
+                field_set.value = form.find("input[name=field_" + field.name + "]").val();
+                break;
 
-        case "int8":
-        case "int16":
-        case "int32":
-        case "int64":
-        case "uint8":
-        case "uint16":
-        case "uint32":
-        case "uint64":
-            field_set.value = form.find("input[name=field_"+ field.name +"]").val();
-            break;
+            case "int8":
+            case "int16":
+            case "int32":
+            case "int64":
+            case "uint8":
+            case "uint16":
+            case "uint32":
+            case "uint64":
+                field_set.value = form.find("input[name=field_" + field.name + "]").val();
+                break;
 
         }
 
@@ -971,16 +966,19 @@ htpNode.SetCommit = function()
 
         switch (term.type) {
 
-        case "tag":
-            val = form.find("input[name=term_"+ term.meta.name +"]").val();
-            break;
-        case "taxonomy":
-            val = form.find("select[name=term_"+ term.meta.name +"]").val();
-            break;
+            case "tag":
+                val = form.find("input[name=term_" + term.meta.name + "]").val();
+                break;
+            case "taxonomy":
+                val = form.find("select[name=term_" + term.meta.name + "]").val();
+                break;
         }
 
         if (val) {
-            req.terms.push({name: term.meta.name, value: val});
+            req.terms.push({
+                name: term.meta.name,
+                value: val
+            });
         }
     }
 
@@ -988,13 +986,13 @@ htpNode.SetCommit = function()
     // console.log(JSON.stringify(req));
 
     //
-    var uri = "modname="+ l4iStorage.Get("htpm_spec_active");
-    uri += "&modelid="+ l4iStorage.Get("htpm_nmodel_active");
+    var uri = "modname=" + l4iStorage.Get("htpm_spec_active");
+    uri += "&modelid=" + l4iStorage.Get("htpm_nmodel_active");
 
-    htpMgr.ApiCmd("node/set?"+ uri, {
-        method : "POST",
-        data   : JSON.stringify(req),
-        callback : function(err, data) {
+    htpMgr.ApiCmd("node/set?" + uri, {
+        method: "POST",
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
             if (!data || data.kind != "Node") {
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -1013,30 +1011,28 @@ htpNode.SetCommit = function()
 }
 
 
-htpNode.Del = function(modname, modelid, id)
-{
+htpNode.Del = function(modname, modelid, id) {
     l4iModal.Open({
-        title  : "Delete",
-        tplsrc : '<div id="htpm-node-del" class="alert alert-danger">Are you sure to delete this?</div>',
-        height : "200px",
+        title: "Delete",
+        tplsrc: '<div id="htpm-node-del" class="alert alert-danger">Are you sure to delete this?</div>',
+        height: "200px",
         buttons: [{
             title: "Confirm to delete",
-            onclick : 'htpNode.DelCommit("'+modname+'","'+modelid+'","'+id+'")',
+            onclick: 'htpNode.DelCommit("' + modname + '","' + modelid + '","' + id + '")',
             style: "btn-danger",
-        },{
+        }, {
             title: "Cancel",
-            onclick : "l4iModal.Close()",
+            onclick: "l4iModal.Close()",
         }],
     });
 }
 
-htpNode.DelCommit = function(modname, modelid, id)
-{
+htpNode.DelCommit = function(modname, modelid, id) {
     var alertid = "#htpm-node-del";
-    var uri = "modname="+ modname + "&modelid="+ modelid +"&id="+ id;
+    var uri = "modname=" + modname + "&modelid=" + modelid + "&id=" + id;
 
-    htpMgr.ApiCmd("node/del?"+ uri, {
-        callback : function(err, data) {
+    htpMgr.ApiCmd("node/del?" + uri, {
+        callback: function(err, data) {
 
             if (!data || data.kind != "Node") {
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -1051,11 +1047,10 @@ htpNode.DelCommit = function(modname, modelid, id)
     });
 }
 
-htpNode.DelBatch = function(modname, modelid, ids, cb)
-{
-    var uri = "modname="+ modname + "&modelid="+ modelid +"&id="+ ids.join(",");
+htpNode.DelBatch = function(modname, modelid, ids, cb) {
+    var uri = "modname=" + modname + "&modelid=" + modelid + "&id=" + ids.join(",");
 
-    htpMgr.ApiCmd("node/del?"+ uri, {
-        callback : cb,
+    htpMgr.ApiCmd("node/del?" + uri, {
+        callback: cb,
     });
 }
