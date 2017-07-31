@@ -38,6 +38,12 @@ func NewHtpModule() httpsrv.Module {
 
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
+		Path:       "~/chart",
+		StaticPath: config.Prefix + "/vendor/code.hooto.com/hooto/chart/webui",
+	})
+
+	module.RouteSet(httpsrv.Route{
+		Type:       httpsrv.RouteTypeStatic,
 		Path:       "~",
 		StaticPath: config.Prefix + "/webui/",
 	})

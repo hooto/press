@@ -56,6 +56,9 @@ htp.CodeRender = function()
     $("code[class^='language-']").each(function(i, el) {
 
         var lang = el.className.substr("language-".length);
+        if (lang == "hooto_chart") {
+            return htp.chartRender(i, el);
+        }
 
         var modes = [];
 
@@ -121,6 +124,21 @@ htp.CodeRender = function()
                 CodeMirror.runMode($(el).text(), lang, $(el)[0]);
             });
         });
+    });
+}
+
+htp.chartRender = function(i, elem)
+{
+    var elem_id = "hooto_chart-id-" + i;
+    elem.setAttribute("id", elem_id);
+    seajs.use([
+        "~/chart/chart.js",
+    ],
+    function() {
+        hooto_chart.basepath = htp.base + "/~/chart";
+		hooto_chart.opts_width = "600px";
+		hooto_chart.opts_height = "400px";
+        hooto_chart.JsonRenderElement(elem, elem_id);
     });
 }
 

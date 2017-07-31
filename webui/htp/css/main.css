@@ -357,6 +357,9 @@ body {
   padding: 3px 5px 3px 0;
 }
 
+.htp-nodev .content .hooto-chart-entry {
+	margin: 0 auto !important;
+}
 
 /** sidebar **/
 .htp-sidebar-section {

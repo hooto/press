@@ -4,3 +4,6 @@
 [submodule "webui/lessui"]
 	path = webui/lessui
 	url = git@github.com:lessos/lessui.git
+[submodule "vendor/code.hooto.com/hooto/chart"]
+	path = vendor/code.hooto.com/hooto/chart
+	url = git@code.hooto.com:hooto/chart.git
