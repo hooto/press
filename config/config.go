@@ -37,7 +37,7 @@ var (
 	Prefix        string
 	Config        ConfigCommon
 	AppName       = "hooto-press"
-	Version       = "0.2.1.dev"
+	Version       = "0.2.2.dev"
 	CaptchaConfig = captcha.DefaultConfig
 
 	pod_inst_updated time.Time

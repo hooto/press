@@ -1,5 +1,5 @@
 project.name = hooto-press
-project.version = 0.2.1.dev
+project.version = 0.2.2.dev
 project.vendor = hooto.com
 project.homepage = https://code.hooto.com/hooto/hootopress
 project.groups = app/other
@@ -36,7 +36,7 @@ webui/lessui/js/sea.js
 webui/htp/js/
 webui/htpm/js/
 modules/
-
+vendor/code.hooto.com/hooto/chart/webui/
 
 %css_compress
 webui/bs/3.3/css/
