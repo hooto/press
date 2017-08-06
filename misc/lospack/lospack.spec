@@ -1,7 +1,7 @@
 project.name = hooto-press
 project.version = 0.2.2.dev
 project.vendor = hooto.com
-project.homepage = https://code.hooto.com/hooto/hootopress
+project.homepage = https://github.com/hooto/hooto-press
 project.groups = app/other
 
 %build

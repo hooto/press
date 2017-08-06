@@ -4,7 +4,7 @@
       &copy;{{SysConfig "frontend_footer_copyright"}}
     </div>
 	<div class="pull-right">
-      Powered by <strong><a href="https://code.hooto.com/hooto/hootopress" target="_blank">HootoPress</a></strong>
+      Powered by <strong><a href="https://github.com/hooto/hooto-press" target="_blank">Hooto Press</a></strong>
     </div>
   </div>
 </footer>
