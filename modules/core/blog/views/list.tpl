@@ -6,7 +6,7 @@
 
 <div class="container">
   
-  <div class="htp-ctn-header">
+  <div class="hpress-ctn-header">
     <h2>Content Explore</h2>
   </div>
 
@@ -14,11 +14,11 @@
 
     <div class="col-md-9">
     
-    <ul class="htp-nodels">
+    <ul class="hpress-nodels">
       {{range $v := .list.Items}}
-      <li class="htp-nodels-item">
-        <h4 class="htp-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
-        <span class="htp-nodels-info">
+      <li class="hpress-nodels-item">
+        <h4 class="hpress-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
+        <span class="hpress-nodels-info">
             
             <span class="section">
               <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
@@ -53,7 +53,7 @@
 
         </span>
 
-        <div class="htp-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
+        <div class="hpress-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
       </li>
       {{end}}
     </ul>

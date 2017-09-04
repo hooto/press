@@ -30,7 +30,7 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 
-	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hpress/api"
 )
 
 var (
@@ -282,7 +282,7 @@ func Initialize(prefix string) error {
 //
 func init_data() error {
 
-	io_name := types.NewNameIdentifier("htp_local_cache")
+	io_name := types.NewNameIdentifier("hpress_local_cache")
 	opts := Config.IoConnectors.Options(io_name)
 
 	if opts == nil {

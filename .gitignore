@@ -3,7 +3,7 @@ _*/
 si.go
 bin/*
 var/*
-webui/htp/img/src
+webui/hpress/img/src
 misc/import.go
 misc/cm-compress.go
 misc/rhel/pkg-builder

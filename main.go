@@ -28,17 +28,17 @@ import (
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
 
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/datax"
-	"github.com/hooto/hooto-press/status"
-	"github.com/hooto/hooto-press/store"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/datax"
+	"github.com/hooto/hpress/status"
+	"github.com/hooto/hpress/store"
 
-	cdef "github.com/hooto/hooto-press/websrv/frontend"
-	cmgr "github.com/hooto/hooto-press/websrv/mgr"
-	capi "github.com/hooto/hooto-press/websrv/v1"
+	cdef "github.com/hooto/hpress/websrv/frontend"
+	cmgr "github.com/hooto/hpress/websrv/mgr"
+	capi "github.com/hooto/hpress/websrv/v1"
 
 	ext_captcha "github.com/hooto/hcaptcha/captcha4g"
-	ext_comment "github.com/hooto/hooto-press/modules/core/comment/websrv"
+	ext_comment "github.com/hooto/hpress/modules/core/comment/websrv"
 )
 
 var (
@@ -97,13 +97,13 @@ func main() {
 	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/en.json")
 	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/zh_CN.json")
 
-	httpsrv.GlobalService.ModuleRegister("/htp/+/comment", ext_comment.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/htp/+/hcaptcha", ext_captcha.WebServerModule())
+	httpsrv.GlobalService.ModuleRegister("/hpress/+/comment", ext_comment.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/hpress/+/hcaptcha", ext_captcha.WebServerModule())
 
 	//
-	httpsrv.GlobalService.ModuleRegister("/htp/v1", capi.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/htp/mgr", cmgr.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/htp", cdef.NewHtpModule())
+	httpsrv.GlobalService.ModuleRegister("/hpress/v1", capi.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/hpress/mgr", cmgr.NewModule())
+	httpsrv.GlobalService.ModuleRegister("/hpress", cdef.NewHtpModule())
 	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
 
 	//

@@ -18,8 +18,8 @@ import (
 	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/hooto/httpsrv"
 
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/status"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/status"
 )
 
 type Index struct {
@@ -39,14 +39,14 @@ func (c Index) IndexAction() {
 	if !iamclient.SessionIsLogin(c.Session) {
 		c.Redirect(iamclient.AuthServiceUrl(
 			config.Config.InstanceID,
-			c.UrlBase("htp/auth/cb"),
+			c.UrlBase("hpress/auth/cb"),
 			c.Request.RawAbsUrl(),
 		))
 		return
 	}
 
 	if status.IamServiceStatus == status.IamServiceUnRegistered {
-		c.Redirect("htp/mgr/setup/index")
+		c.Redirect("hpress/mgr/setup/index")
 		return
 	}
 

@@ -1,17 +1,17 @@
-var htpComment = {
+var hpressComment = {
 
 }
 
-htpComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
+hpressComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
 {
-    htp.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
+    hpress.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
         "&refer_datax_table="+ ref_table +"&refer_id="+ ref_id );
 }
 
-htpComment.EmbedCommit = function()
+hpressComment.EmbedCommit = function()
 {
-    var form = $("#htp-comment-embed-new-form"),
-        alertid = "#htp-comment-embed-new-form-alert";
+    var form = $("#hpress-comment-embed-new-form"),
+        alertid = "#hpress-comment-embed-new-form-alert";
 
     var req = {
         pid               : "",
@@ -24,7 +24,7 @@ htpComment.EmbedCommit = function()
         captcha_word      : form.find("input[name=captcha_word]").val(),
     };
 
-    htp.ApiCmd("+/comment/comment/set", {
+    hpress.ApiCmd("+/comment/comment/set", {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
@@ -41,8 +41,8 @@ htpComment.EmbedCommit = function()
 
                     var captcha_token = Math.random();
                     form.find("input[name=captcha_token]").val(captcha_token);
-                    form.find("#htp-comment-captcha-url").attr("src", 
-                        htp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+                    form.find("#hpress-comment-captcha-url").attr("src", 
+                        hpress.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
                 }
 
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -58,13 +58,13 @@ htpComment.EmbedCommit = function()
             };
 
             l4iTemplate.Render({
-                dstid  : "htp-comment-embed-list",
-                tplid  : "htp-comment-embed-tpl",
+                dstid  : "hpress-comment-embed-list",
+                tplid  : "hpress-comment-embed-tpl",
                 data   : req,
                 append : true,
                 success : function() {
 
-                    $("#htp-comment-embed-list-header").css({"display": "block"});
+                    $("#hpress-comment-embed-list-header").css({"display": "block"});
                     
                     $("#entry-"+ req.meta.id).css({
                         "outline": "#5cb85c solid 2px",
@@ -84,7 +84,7 @@ htpComment.EmbedCommit = function()
             l4i.InnerAlert(alertid, 'alert-success', "Successfully commited");
 
             setTimeout(function() {
-                htpComment.EmbedFormHidden();
+                hpressComment.EmbedFormHidden();
                 $(alertid).hide(500);
             }, 1500);
         },
@@ -92,18 +92,18 @@ htpComment.EmbedCommit = function()
 }
 
 
-htpComment.EmbedFormActive = function()
+hpressComment.EmbedFormActive = function()
 {
-    $("#htp-comment-embed-new-form-ctrl").css({"display": "none"});
+    $("#hpress-comment-embed-new-form-ctrl").css({"display": "none"});
 
-    var form = $("#htp-comment-embed-new-form"),
+    var form = $("#hpress-comment-embed-new-form"),
         captcha_token = Math.random();
 
     form.css({"display": "block"});
 
     form.find("input[name=captcha_token]").val(captcha_token);
-    form.find("#htp-comment-captcha-url").attr("src", 
-        htp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+    form.find("#hpress-comment-captcha-url").attr("src", 
+        hpress.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
 
     form.find("textarea[name=content]").focus();
 
@@ -111,8 +111,8 @@ htpComment.EmbedFormActive = function()
 }
 
 
-htpComment.EmbedFormHidden = function()
+hpressComment.EmbedFormHidden = function()
 {
-    $("#htp-comment-embed-new-form-ctrl").css({"display": "block"});
-    $("#htp-comment-embed-new-form").slideUp(500);//css({"display": "none"});
+    $("#hpress-comment-embed-new-form-ctrl").css({"display": "block"});
+    $("#hpress-comment-embed-new-form").slideUp(500);//css({"display": "none"});
 }

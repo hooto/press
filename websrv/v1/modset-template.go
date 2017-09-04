@@ -23,9 +23,9 @@ import (
 	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/lessos/lessgo/types"
 
-	"github.com/hooto/hooto-press/api"
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/modset"
+	"github.com/hooto/hpress/api"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/modset"
 )
 
 func (c ModSet) FsTplListAction() {

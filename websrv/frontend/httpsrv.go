@@ -18,7 +18,7 @@ import (
 	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/hooto/httpsrv"
 
-	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hpress/config"
 )
 
 func NewModule() httpsrv.Module {
@@ -34,7 +34,7 @@ func NewModule() httpsrv.Module {
 
 func NewHtpModule() httpsrv.Module {
 
-	module := httpsrv.NewModule("default_htp")
+	module := httpsrv.NewModule("default_hpress")
 
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,

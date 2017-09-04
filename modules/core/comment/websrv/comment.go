@@ -24,8 +24,8 @@ import (
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/datax"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/datax"
 )
 
 const (

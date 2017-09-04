@@ -17,13 +17,13 @@ package v1
 import (
 	"github.com/hooto/httpsrv"
 
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/websrv/mgr/controllers"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/websrv/mgr/controllers"
 )
 
 func NewModule() httpsrv.Module {
 
-	module := httpsrv.NewModule("htp_mgr")
+	module := httpsrv.NewModule("hpress_mgr")
 
 	// module.RouteSet(httpsrv.Route{
 	// 	Type:       httpsrv.RouteTypeStatic,
@@ -34,7 +34,7 @@ func NewModule() httpsrv.Module {
 	// module.RouteSet(httpsrv.Route{
 	// 	Type:       httpsrv.RouteTypeStatic,
 	// 	Path:       "-",
-	// 	StaticPath: config.Prefix + "/webui/htpm/",
+	// 	StaticPath: config.Prefix + "/webui/hpressm/",
 	// })
 
 	module.TemplatePathSet(config.Prefix + "/websrv/mgr/views")

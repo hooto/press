@@ -25,9 +25,9 @@ import (
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
 
-	"github.com/hooto/hooto-press/api"
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/modset"
+	"github.com/hooto/hpress/api"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/modset"
 )
 
 type ModSet struct {

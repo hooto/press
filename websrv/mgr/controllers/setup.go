@@ -17,16 +17,16 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/lessos/lessgo/encoding/json"
 	"github.com/hooto/httpsrv"
+	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
 
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
 
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/status"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/status"
 )
 
 type Setup struct {
@@ -50,7 +50,7 @@ func (c Setup) IndexAction() {
 		}
 		http.SetCookie(c.Response.Out, ck)
 
-		c.Redirect("htp/mgr")
+		c.Redirect("hpress/mgr")
 		return
 	}
 

@@ -1,4 +1,4 @@
-<div class="htp-sidebar-section">
+<div class="hpress-sidebar-section">
   <div class="header">
     <h3>Search</h3>
   </div>

@@ -1,3 +1,3 @@
 <script type="text/javascript">
-window.onload = htp.Boot();
+window.onload = hpress.Boot();
 </script>

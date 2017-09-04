@@ -30,9 +30,9 @@ var (
 
 func Init(cfg connect.MultiConnOptions) error {
 
-	opts := cfg.Options("htp_local_cache")
+	opts := cfg.Options("hpress_local_cache")
 	if opts == nil {
-		return errors.New("No htp_local_cache Config.IoConnectors Found")
+		return errors.New("No hpress_local_cache Config.IoConnectors Found")
 	}
 
 	if LocalCache, err = kvgo.Open(*opts); err != nil {

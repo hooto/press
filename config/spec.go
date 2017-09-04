@@ -31,7 +31,7 @@ import (
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 
-	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hpress/api"
 )
 
 var (

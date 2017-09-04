@@ -17,7 +17,7 @@ package websrv
 import (
 	"github.com/hooto/httpsrv"
 
-	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hpress/config"
 )
 
 func NewModule() httpsrv.Module {

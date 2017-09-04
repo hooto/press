@@ -6,7 +6,7 @@
 
 <div class="container">
 
-  <div class="htp-ctn-header">
+  <div class="hpress-ctn-header">
     <h2>Hello, world</h2>
   </div>
 

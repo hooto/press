@@ -24,9 +24,9 @@ import (
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
 
-	"github.com/hooto/hooto-press/api"
-	"github.com/hooto/hooto-press/config"
-	"github.com/hooto/hooto-press/store"
+	"github.com/hooto/hpress/api"
+	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/store"
 )
 
 func FilterUri(data map[string]interface{}, args ...interface{}) template.URL {
