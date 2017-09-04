@@ -18,9 +18,9 @@ import (
 	"errors"
 	"fmt"
 
-	"code.hooto.com/lynkdb/iomix/connect"
-	"code.hooto.com/lynkdb/iomix/skv"
-	"code.hooto.com/lynkdb/kvgo"
+	"github.com/lynkdb/iomix/connect"
+	"github.com/lynkdb/iomix/skv"
+	"github.com/lynkdb/kvgo"
 )
 
 var (

@@ -22,8 +22,8 @@ import (
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/types"
 
-	"code.hooto.com/lessos/iam/iamapi"
-	"code.hooto.com/lessos/iam/iamclient"
+	"github.com/hooto/iam/iamapi"
+	"github.com/hooto/iam/iamclient"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"

@@ -15,8 +15,8 @@
 package frontend
 
 import (
-	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/hooto/httpsrv"
+	"github.com/hooto/iam/iamclient"
 
 	"github.com/hooto/hpress/config"
 )

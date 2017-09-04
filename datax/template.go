@@ -20,9 +20,9 @@ import (
 	"html/template"
 	"strings"
 
-	"code.hooto.com/lynkdb/iomix/skv"
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
+	"github.com/lynkdb/iomix/skv"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"

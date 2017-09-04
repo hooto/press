@@ -1,5 +1,5 @@
 {
-  "app_title": "CMS",
+  "app_title": "Hooto Press",
   "http_port": 9627,
   "iam_service_url": "http://127.0.0.1:9528/iam",
   "database": {

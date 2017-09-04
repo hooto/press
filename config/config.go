@@ -22,13 +22,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/loscore/losapi"
-	"code.hooto.com/lynkdb/iomix/connect"
 	"github.com/hooto/hcaptcha/captcha4g"
+	"github.com/hooto/iam/iamapi"
 	"github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
+	"github.com/lynkdb/iomix/connect"
 
 	"github.com/hooto/hpress/api"
 )
@@ -75,7 +75,7 @@ func init() {
 
 	//
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_header_site_name", "CMS",
+		"frontend_header_site_name", "Hooto Press",
 		"Site's Name", "",
 	})
 	SysConfigList.Insert(api.SysConfig{
@@ -89,7 +89,7 @@ func init() {
 
 	//
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_html_head_subtitle", "CMS",
+		"frontend_html_head_subtitle", "HP",
 		"Sub Title for HTML Head Title", "",
 	})
 	SysConfigList.Insert(api.SysConfig{
