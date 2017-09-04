@@ -17,7 +17,7 @@ package config
 import (
 	"path/filepath"
 
-	"github.com/lessos/lessgo/httpsrv"
+	"github.com/hooto/httpsrv"
 )
 
 func init() {

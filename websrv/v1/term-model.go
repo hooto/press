@@ -19,11 +19,11 @@ import (
 
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
-	"github.com/lessos/lessgo/httpsrv"
+	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/types"
 
-	"code.hooto.com/hooto/hooto-press/api"
-	"code.hooto.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/config"
 )
 
 type TermModel struct {

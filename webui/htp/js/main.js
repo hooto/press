@@ -51,8 +51,8 @@ htp.CodeRender = function() {
     $("code[class^='language-']").each(function(i, el) {
 
         var lang = el.className.substr("language-".length);
-        if (lang == "hooto_chart") {
-            return htp.chartRender(i, el);
+        if (lang == "hchart" || lang == "hooto_chart") {
+            return htp.hchartRender(i, el);
         }
 
         var modes = [];
@@ -121,13 +121,13 @@ htp.CodeRender = function() {
     });
 }
 
-htp.chartRender = function(i, elem) {
-    var elem_id = "hooto_chart-id-" + i;
+htp.hchartRender = function(i, elem) {
+    var elem_id = "hchart-id-" + i;
     elem.setAttribute("id", elem_id);
     seajs.use([
-        "~/chart/chart.js",
+        "~/hchart/hchart.js",
     ], function() {
-        hooto_chart.basepath = htp.base + "/~/chart";
+        hooto_chart.basepath = htp.base + "/~/hchart";
         hooto_chart.opts_width = "600px";
         hooto_chart.opts_height = "400px";
         hooto_chart.JsonRenderElement(elem, elem_id);

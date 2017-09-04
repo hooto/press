@@ -17,15 +17,15 @@ package websrv
 import (
 	"strings"
 
-	"github.com/eryx/hcaptcha/captcha"
+	"github.com/hooto/hcaptcha/captcha4g"
+	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/httpsrv"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 
-	"code.hooto.com/hooto/hooto-press/config"
-	"code.hooto.com/hooto/hooto-press/datax"
+	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/datax"
 )
 
 const (
@@ -125,7 +125,7 @@ func (c Comment) SetAction() {
 		return
 	}
 
-	if set.Error = captcha.Verify(set.CaptchaToken, set.CaptchaWord); set.Error != nil {
+	if set.Error = captcha4g.Verify(set.CaptchaToken, set.CaptchaWord); set.Error != nil {
 
 		set.Error.Code = errCaptchaNotMatch
 		set.Error.Message = "Word Verification do not match"

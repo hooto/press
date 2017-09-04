@@ -8,7 +8,7 @@ project.groups = app/other
 export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
-mkdir -p {{.buildroot}}/var/{captchadb,log,storage,htp_local_cache}
+mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,htp_local_cache}
 go build -ldflags "-s -w" -o {{.buildroot}}/bin/hooto-press main.go
 
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/htpm/js/main.js

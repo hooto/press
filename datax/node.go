@@ -26,9 +26,9 @@ import (
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
 
-	"code.hooto.com/hooto/hooto-press/api"
-	"code.hooto.com/hooto/hooto-press/config"
-	"code.hooto.com/hooto/hooto-press/store"
+	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/store"
 )
 
 var (

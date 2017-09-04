@@ -15,9 +15,9 @@
 package websrv
 
 import (
-	"github.com/lessos/lessgo/httpsrv"
+	"github.com/hooto/httpsrv"
 
-	"code.hooto.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/config"
 )
 
 func NewModule() httpsrv.Module {

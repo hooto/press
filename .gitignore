@@ -4,7 +4,6 @@ si.go
 bin/*
 var/*
 webui/htp/img/src
-webui/purecss
 misc/import.go
 misc/cm-compress.go
 misc/rhel/pkg-builder

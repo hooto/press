@@ -19,15 +19,15 @@ import (
 
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
-	"github.com/lessos/lessgo/httpsrv"
+	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/types"
 
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
 
-	"code.hooto.com/hooto/hooto-press/api"
-	"code.hooto.com/hooto/hooto-press/config"
-	"code.hooto.com/hooto/hooto-press/modset"
+	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/modset"
 )
 
 type ModSet struct {

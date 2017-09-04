@@ -21,12 +21,12 @@ import (
 	"strings"
 
 	"code.hooto.com/lynkdb/iomix/skv"
-	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessgo/logger"
+	"github.com/hooto/hlog4g/hlog"
+	"github.com/hooto/httpsrv"
 
-	"code.hooto.com/hooto/hooto-press/api"
-	"code.hooto.com/hooto/hooto-press/config"
-	"code.hooto.com/hooto/hooto-press/store"
+	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/store"
 )
 
 func FilterUri(data map[string]interface{}, args ...interface{}) template.URL {
@@ -57,7 +57,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 
 	defer func() {
 		if err := recover(); err != nil {
-			logger.Printf("error", "Pagelet Panic %s", err)
+			hlog.Printf("error", "Pagelet Panic %s", err)
 		}
 	}()
 
@@ -169,7 +169,7 @@ func templateRender(data map[string]interface{}, module, templatePath string) te
 
 	var out bytes.Buffer
 	if err = tplset.Render(&out, data); err != nil {
-		logger.Printf("error", "tplset.Render Error %v", err)
+		hlog.Printf("error", "tplset.Render Error %v", err)
 		return ""
 	}
 

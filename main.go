@@ -25,20 +25,20 @@ import (
 	"time"
 
 	"code.hooto.com/lessos/iam/iamclient"
-	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessgo/logger"
+	"github.com/hooto/hlog4g/hlog"
+	"github.com/hooto/httpsrv"
 
-	"code.hooto.com/hooto/hooto-press/config"
-	"code.hooto.com/hooto/hooto-press/datax"
-	"code.hooto.com/hooto/hooto-press/status"
-	"code.hooto.com/hooto/hooto-press/store"
+	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/datax"
+	"github.com/hooto/hooto-press/status"
+	"github.com/hooto/hooto-press/store"
 
-	cdef "code.hooto.com/hooto/hooto-press/websrv/frontend"
-	cmgr "code.hooto.com/hooto/hooto-press/websrv/mgr"
-	capi "code.hooto.com/hooto/hooto-press/websrv/v1"
+	cdef "github.com/hooto/hooto-press/websrv/frontend"
+	cmgr "github.com/hooto/hooto-press/websrv/mgr"
+	capi "github.com/hooto/hooto-press/websrv/v1"
 
-	ext_comment "code.hooto.com/hooto/hooto-press/modules/core/comment/websrv"
-	ext_captcha "github.com/eryx/hcaptcha/captcha"
+	ext_captcha "github.com/hooto/hcaptcha/captcha4g"
+	ext_comment "github.com/hooto/hooto-press/modules/core/comment/websrv"
 )
 
 var (
@@ -63,19 +63,19 @@ func main() {
 		}
 
 		fmt.Println("Error on config.Initialize", err)
-		logger.Printf("error", "config.Initialize error: %v", err)
+		hlog.Printf("error", "config.Initialize error: %v", err)
 		time.Sleep(3e9)
 	}
 
 	if err := store.Init(config.Config.IoConnectors); err != nil {
-		logger.Printf("error", "store.Init error: %v", err)
+		hlog.Printf("error", "store.Init error: %v", err)
 		fmt.Println("error", "store.Init error ", err)
 		os.Exit(1)
 	}
 
 	ext_captcha.DataConnector = store.LocalCache
 	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
-		logger.Printf("error", "ext_captcha.Config error: %v", err)
+		hlog.Printf("error", "ext_captcha.Config error: %v", err)
 		fmt.Println("ext_captcha.Config error", err)
 		os.Exit(1)
 	}

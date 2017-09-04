@@ -24,14 +24,14 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/hooto/hlog4g/hlog"
+	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/data/rdo"
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
-	"github.com/lessos/lessgo/httpsrv"
-	"github.com/lessos/lessgo/logger"
 
-	"code.hooto.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/api"
 )
 
 var (
@@ -109,7 +109,7 @@ func module_init() error {
 				}
 				Modules[v.Field("srvname").String()] = &mod
 			} else {
-				logger.Printf("error", "Module.Init(%s) Failed", v.Field("name").String())
+				hlog.Printf("error", "Module.Init(%s) Failed", v.Field("name").String())
 			}
 		}
 	}

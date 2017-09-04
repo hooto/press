@@ -25,12 +25,12 @@ import (
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/loscore/losapi"
 	"code.hooto.com/lynkdb/iomix/connect"
-	"github.com/eryx/hcaptcha/captcha"
+	"github.com/hooto/hcaptcha/captcha4g"
 	"github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 
-	"code.hooto.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/api"
 )
 
 var (
@@ -38,7 +38,7 @@ var (
 	Config        ConfigCommon
 	AppName       = "hooto-press"
 	Version       = "0.2.2.dev"
-	CaptchaConfig = captcha.DefaultConfig
+	CaptchaConfig = captcha4g.DefaultConfig
 
 	pod_inst_updated time.Time
 	pod_inst         = "/home/action/.los/pod_instance.json"
@@ -261,9 +261,9 @@ func Initialize(prefix string) error {
 	}
 
 	// Setting CAPTCHA
-	CaptchaConfig.DataDir = Prefix + "/var/captchadb"
+	CaptchaConfig.DataDir = Prefix + "/var/hcaptchadb"
 
-	if err := captcha.Config(CaptchaConfig); err != nil {
+	if err := captcha4g.Config(CaptchaConfig); err != nil {
 		return err
 	}
 

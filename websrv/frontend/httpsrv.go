@@ -16,9 +16,9 @@ package frontend
 
 import (
 	"code.hooto.com/lessos/iam/iamclient"
-	"github.com/lessos/lessgo/httpsrv"
+	"github.com/hooto/httpsrv"
 
-	"code.hooto.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/config"
 )
 
 func NewModule() httpsrv.Module {
@@ -38,8 +38,8 @@ func NewHtpModule() httpsrv.Module {
 
 	module.RouteSet(httpsrv.Route{
 		Type:       httpsrv.RouteTypeStatic,
-		Path:       "~/chart",
-		StaticPath: config.Prefix + "/vendor/code.hooto.com/hooto/chart/webui",
+		Path:       "~/hchart",
+		StaticPath: config.Prefix + "/vendor/github.com/hooto/hchart/webui",
 	})
 
 	module.RouteSet(httpsrv.Route{

@@ -23,8 +23,8 @@ import (
 	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/utils"
 
-	"code.hooto.com/hooto/hooto-press/api"
-	"code.hooto.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/api"
+	"github.com/hooto/hooto-press/config"
 )
 
 var (

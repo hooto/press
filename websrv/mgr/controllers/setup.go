@@ -18,15 +18,15 @@ import (
 	"net/http"
 
 	"github.com/lessos/lessgo/encoding/json"
-	"github.com/lessos/lessgo/httpsrv"
+	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
 
 	"code.hooto.com/lessos/iam/iamapi"
 	"code.hooto.com/lessos/iam/iamclient"
 
-	"code.hooto.com/hooto/hooto-press/config"
-	"code.hooto.com/hooto/hooto-press/status"
+	"github.com/hooto/hooto-press/config"
+	"github.com/hooto/hooto-press/status"
 )
 
 type Setup struct {
