@@ -19,7 +19,7 @@ var hpress = {
 }
 
 hpress.urlver = function(debug_off) {
-    var u = "?_v="+ hpress.sys_version;
+    var u = "?_v=" + hpress.sys_version;
     if (!debug_off && hpress.debug) {
         u += "&_=" + Math.random();
     }
@@ -46,11 +46,11 @@ hpress.Boot = function() {
     });
 
     seajs.use([
-        "~/hpress/js/jquery.js"+ hpress.urlver(),
+        "~/hpress/js/jquery.js" + hpress.urlver(),
     ], function() {
 
         seajs.use([
-            "~/lessui/js/lessui.js"+ hpress.urlver(),
+            "~/lessui/js/lessui.js" + hpress.urlver(),
         ], function() {
 
             setTimeout(function() {
@@ -91,12 +91,12 @@ hpress.CodeRender = function() {
         switch (lang) {
 
             case "php":
-                modes.push("~/cm/5/mode/php/php.js"+ hpress.urlver());
+                modes.push("~/cm/5/mode/php/php.js" + hpress.urlver());
             case "htmlmixed":
-                modes.push("~/cm/5/mode/xml/xml.js"+ hpress.urlver());
-                modes.push("~/cm/5/mode/javascript/javascript.js"+ hpress.urlver());
-                modes.push("~/cm/5/mode/css/css.js"+ hpress.urlver());
-                modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js"+ hpress.urlver());
+                modes.push("~/cm/5/mode/xml/xml.js" + hpress.urlver());
+                modes.push("~/cm/5/mode/javascript/javascript.js" + hpress.urlver());
+                modes.push("~/cm/5/mode/css/css.js" + hpress.urlver());
+                modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js" + hpress.urlver());
                 break;
 
             case "c":
@@ -107,7 +107,7 @@ hpress.CodeRender = function() {
                 break;
 
             case "json":
-                modes.push("~/cm/5/mode/javascript/javascript.js"+ hpress.urlver());
+                modes.push("~/cm/5/mode/javascript/javascript.js" + hpress.urlver());
                 lang = "application/ld+json";
                 break;
 
@@ -124,7 +124,7 @@ hpress.CodeRender = function() {
             case "swift":
             case "erlang":
             case "nginx":
-                modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js"+ hpress.urlver());
+                modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js" + hpress.urlver());
                 break;
 
             default:
@@ -132,12 +132,12 @@ hpress.CodeRender = function() {
         }
 
         seajs.use([
-            "~/cm/5/lib/codemirror.css"+ hpress.urlver(),
-            "~/cm/5/lib/codemirror.js"+ hpress.urlver(),
+            "~/cm/5/lib/codemirror.css" + hpress.urlver(),
+            "~/cm/5/lib/codemirror.js" + hpress.urlver(),
         ], function() {
 
-            modes.push("~/cm/5/addon/runmode/runmode.js"+ hpress.urlver());
-            modes.push("~/cm/5/mode/clike/clike.js"+ hpress.urlver());
+            modes.push("~/cm/5/addon/runmode/runmode.js" + hpress.urlver());
+            modes.push("~/cm/5/mode/clike/clike.js" + hpress.urlver());
 
             seajs.use(modes, function() {
 
@@ -152,7 +152,7 @@ hpress.hchartRender = function(i, elem) {
     var elem_id = "hchart-id-" + i;
     elem.setAttribute("id", elem_id);
     seajs.use([
-        "~/hchart/hchart.js"+ hpress.urlver(),
+        "~/hchart/hchart.js" + hpress.urlver(),
     ], function() {
         hooto_chart.basepath = hpress.base + "/~/hchart";
         hooto_chart.opts_width = "600px";
