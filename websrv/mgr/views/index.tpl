@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>{{SysConfig "frontend_html_head_subtitle"}}</title>
-  <script src="{{HttpSrvBasePath "hpress/~/lessui/js/sea.js"}}"></script>
-  <script src="{{HttpSrvBasePath "hpress/~/hpressm/js/main.js"}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "hpress/~/hpress/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "hpress/~/lessui/js/sea.js"}}?v={{.sys_version}}"></script>
+  <script src="{{HttpSrvBasePath "hpress/~/hpressm/js/main.js"}}?v={{.sys_version}}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "hpress/~/hpress/img/ap.ico"}}?v={{.sys_version}}">
   <script type="text/javascript">
     window._basepath = {{HttpSrvBasePath "/hpress"}};
   </script>
@@ -39,6 +39,7 @@
 </script>
 </body>
 <script type="text/javascript">
+window._sys_version = {{.sys_version}};
 window.onload = hpressMgr.Boot();
 </script>
 </html>

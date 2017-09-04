@@ -15,11 +15,17 @@
 package controllers
 
 import (
+	"fmt"
+
 	"code.hooto.com/lessos/iam/iamclient"
 	"github.com/hooto/httpsrv"
 
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/status"
+)
+
+var (
+	sys_version = fmt.Sprintf("%s-%s", config.Version, config.Release)
 )
 
 type Index struct {
@@ -55,6 +61,8 @@ func (c Index) IndexAction() {
 	if v := config.SysConfigList.FetchString("http_h_ac_allow_origin"); v != "" {
 		c.Response.Out.Header().Set("Access-Control-Allow-Origin", v)
 	}
+
+	c.Data["sys_version"] = sys_version
 
 	c.Render("index.tpl")
 }

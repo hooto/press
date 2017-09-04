@@ -38,6 +38,7 @@ var (
 	Config        ConfigCommon
 	AppName       = "hooto-press"
 	Version       = "0.2.2.dev"
+	Release       = "1"
 	CaptchaConfig = captcha4g.DefaultConfig
 
 	pod_inst_updated time.Time

@@ -17,14 +17,16 @@ var hpressMgr = {
     base: "/hpress/mgr/",
     api: "/hpress/v1/",
     basetpl: "/hpress/~/hpressm/",
+    sys_version: "1.0",
     debug: true,
 }
 
-hpressMgr.debug_uri = function() {
-    if (!hpressMgr.debug) {
-        return "";
+hpressMgr.urlver = function(debug_off) {
+    var u = "?_v="+ hpressMgr.sys_version;
+    if (!debug_off && hpressMgr.debug) {
+        u += "&_=" + Math.random();
     }
-    return "?_=" + Math.random();
+    return u;
 }
 
 hpressMgr.Boot = function() {
@@ -41,17 +43,21 @@ hpressMgr.Boot = function() {
         hpressMgr.basetpl = hpressMgr.frtbase + "~/hpressm/";
     }
 
+    if (window._sys_version && window._sys_version.length > 1) {
+        hpressMgr.sys_version = window._sys_version;
+    }
+
     seajs.config({
         base: hpressMgr.frtbase,
         alias: {
-            ep: '~/lessui/js/eventproxy.js'
+            ep: '~/lessui/js/eventproxy.js' + hpressMgr.urlver(),
         },
     });
 
     seajs.use([
-        "~/lessui/js/browser-detect.js",
-        "~/hpress/js/jquery.js",
-        "~/lessui/js/eventproxy.js",
+        "~/lessui/js/browser-detect.js" + hpressMgr.urlver(),
+        "~/hpress/js/jquery.js" + hpressMgr.urlver(),
+        "~/lessui/js/eventproxy.js" + hpressMgr.urlver(),
     ], function() {
 
         var browser = BrowserDetect.browser;
@@ -60,29 +66,29 @@ hpressMgr.Boot = function() {
 
         if (!((browser == 'Chrome' && version >= 22) ||
             (browser == 'Firefox' && version >= 31.0))) {
-            $('body').load(window._basepath + "/error/browser");
+            $('body').load(window._basepath + "/error/browser?" + hpressMgr.urlver());
             return;
         }
 
         seajs.use([
-            "~/bs/3.3/css/bootstrap.css",
-            "~/purecss/pure.css",
-            "~/lessui/js/lessui.js",
-            "~/lessui/css/lessui.css",
-            "~/hpress/css/main.css" + hpressMgr.debug_uri(),
-            "~/hpress/js/marked.js",
-            "~/hpressm/css/main.css" + hpressMgr.debug_uri(),
-            "~/hpressm/css/defx.css",
-            "~/hpressm/js/spec.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/spec-editor.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/tablet.js",
-            "~/hpressm/js/lc-editor.js",
-            "~/hpressm/js/model.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/term.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/node.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/sys.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/s2.js" + hpressMgr.debug_uri(),
-            "~/hpressm/js/editor.js" + hpressMgr.debug_uri(),
+            "~/bs/3.3/css/bootstrap.css" + hpressMgr.urlver(),
+            "~/purecss/pure.css" + hpressMgr.urlver(),
+            "~/lessui/js/lessui.js" + hpressMgr.urlver(),
+            "~/lessui/css/lessui.css" + hpressMgr.urlver(),
+            "~/hpress/css/main.css" + hpressMgr.urlver(),
+            "~/hpress/js/marked.js" + hpressMgr.urlver(),
+            "~/hpressm/css/main.css" + hpressMgr.urlver(),
+            "~/hpressm/css/defx.css" + hpressMgr.urlver(),
+            "~/hpressm/js/spec.js" + hpressMgr.urlver(),
+            "~/hpressm/js/spec-editor.js" + hpressMgr.urlver(),
+            "~/hpressm/js/tablet.js" + hpressMgr.urlver(),
+            "~/hpressm/js/lc-editor.js" + hpressMgr.urlver(),
+            "~/hpressm/js/model.js" + hpressMgr.urlver(),
+            "~/hpressm/js/term.js" + hpressMgr.urlver(),
+            "~/hpressm/js/node.js" + hpressMgr.urlver(),
+            "~/hpressm/js/sys.js" + hpressMgr.urlver(),
+            "~/hpressm/js/s2.js" + hpressMgr.urlver(),
+            "~/hpressm/js/editor.js" + hpressMgr.urlver(),
         ], function() {
 
             setTimeout(hpressMgr.BootInit, 300);
@@ -185,12 +191,12 @@ hpressMgr.ApiCmd = function(url, options) {
 
 
 hpressMgr.TplCmd = function(url, options) {
-    hpressMgr.Ajax(hpressMgr.basetpl + url + ".tpl", options);
+    hpressMgr.Ajax(hpressMgr.basetpl + url + ".tpl" + hpressMgr.urlver(true), options);
 }
 
 
 hpressMgr.Loader = function(target, uri) {
-    hpressMgr.Ajax(hpressMgr.basetpl + uri + ".tpl", {
+    hpressMgr.Ajax(hpressMgr.basetpl + uri + ".tpl" + hpressMgr.urlver(true), {
         callback: function(err, data) {
             $(target).html(data);
         }

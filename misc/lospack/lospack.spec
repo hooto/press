@@ -11,6 +11,7 @@ mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache}
 go build -ldflags "-s -w" -o {{.buildroot}}/bin/hooto-press main.go
 
+sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpress/js/main.js
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpressm/js/main.js
 
 %files
