@@ -19,12 +19,15 @@ import (
 	"fmt"
 
 	"github.com/lynkdb/iomix/connect"
+	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/skv"
 	"github.com/lynkdb/kvgo"
+	"github.com/lynkdb/mysqlgo"
 )
 
 var (
 	err        error
+	Data       rdb.Connector
 	LocalCache skv.Connector
 )
 
@@ -39,47 +42,16 @@ func Init(cfg connect.MultiConnOptions) error {
 		return fmt.Errorf("Can Not Connect To %s, Error: %s", opts.Name, err.Error())
 	}
 
+	opts = cfg.Options("hpress_database")
+	if opts == nil {
+		return errors.New("No hpress_database Config.IoConnectors Found")
+	}
+
+	conn, err := mysqlgo.NewConnector(*opts)
+	if err != nil {
+		return err
+	}
+	Data = conn
+
 	return nil
 }
-
-/*
-func CacheSet(key, value string, ttl int64) *skv.Reply {
-	return CacheSetBytes([]byte(key), []byte(value), ttl)
-}
-
-func CacheSetBytes(key, value []byte, ttl int64) *skv.Reply {
-
-	if CacheDB == nil {
-		return errInit
-	}
-
-	return CacheDB.KvPut(key, value, ttl)
-}
-
-func CacheSetJson(key string, value interface{}, ttl int64) *skv.Reply {
-
-	if CacheDB == nil {
-		return errInit
-	}
-
-	return CacheDB.KvPutJson([]byte(key), value, ttl)
-}
-
-func CacheGet(key string) *skv.Reply {
-
-	if CacheDB == nil {
-		return errInit
-	}
-
-	return CacheDB.KvGet([]byte(key))
-}
-
-func CacheDel(key string) *skv.Reply {
-
-	if CacheDB == nil {
-		return errInit
-	}
-
-	return CacheDB.KvDel([]byte(key))
-}
-*/

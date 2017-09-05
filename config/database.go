@@ -14,20 +14,24 @@
 
 package config
 
+/*
 import (
-	"github.com/lessos/lessgo/data/rdo"
-	"github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lynkdb/iomix/rdb"
+	"github.com/lynkdb/iomix/rdb/modeler"
+	"github.com/lynkdb/iomix/rdb"
+	"github.com/lynkdb/iomix/rdb/modeler"
 )
 
-func (c *ConfigCommon) DatabaseInstance() (*base.Client, error) {
+func (c *ConfigCommon) DatabaseInstance() (*rdb.Connector, error) {
 
 	dc, err := rdo.NewClient("def", c.Database)
 	if err != nil {
 		return dc, err
 	}
 
-	ds, err := base.LoadDataSetFromString(dsBase)
+	ds, err := modeler.LoadModelerFromString(dsBase)
 	err = dc.Dialect.SchemaSync(c.Database.Dbname, ds)
 
 	return dc, err
 }
+*/

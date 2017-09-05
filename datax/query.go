@@ -20,8 +20,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
+	"github.com/lynkdb/iomix/rdb"
+
+	"github.com/hooto/hpress/store"
 )
 
 type QuerySet struct {
@@ -32,7 +33,7 @@ type QuerySet struct {
 	order   string
 	limit   int64
 	offset  int64
-	filter  rdobase.Filter
+	filter  rdb.Filter
 	Pager   bool
 }
 
@@ -65,17 +66,9 @@ func (q *QuerySet) Hash() string {
 	return fmt.Sprintf("%x", h.Sum(nil))[:16]
 }
 
-func (q *QuerySet) Query() []rdobase.Entry {
+func (q *QuerySet) Query() []rdb.Entry {
 
-	rs := []rdobase.Entry{}
-
-	//
-	dc, err := rdo.ClientPull("def")
-	if err != nil {
-		return rs
-	}
-
-	qs := rdobase.NewQuerySet().
+	qs := rdb.NewQuerySet().
 		Select(q.cols).
 		From(q.Table).
 		Order(q.order).
@@ -84,7 +77,7 @@ func (q *QuerySet) Query() []rdobase.Entry {
 
 	qs.Where = q.filter
 
-	rs, err = dc.Base.Query(qs)
+	rs, err := store.Data.Query(qs)
 	if err != nil {
 		return rs
 	}
@@ -92,7 +85,7 @@ func (q *QuerySet) Query() []rdobase.Entry {
 	return rs
 }
 
-func (q *QuerySet) QueryEntry() *rdobase.Entry {
+func (q *QuerySet) QueryEntry() *rdb.Entry {
 
 	q.limit = 1
 	if ls := q.Query(); len(ls) > 0 {

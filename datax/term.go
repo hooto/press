@@ -21,13 +21,13 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/store"
 )
 
 var (
@@ -36,17 +36,12 @@ var (
 
 func (q *QuerySet) TermCount() (int64, error) {
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		return 0, err
-	}
-
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	fr := rdobase.NewFilter()
+	fr := rdb.NewFilter()
 	fr.And("status", 1)
 
-	return dcn.Base.Count(table, fr)
+	return store.Data.Count(table, fr)
 }
 
 func (q *QuerySet) TermList() api.TermList {
@@ -68,19 +63,10 @@ func (q *QuerySet) TermList() api.TermList {
 		}
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return rsp
-	}
-
 	// q.limit = 100
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdobase.NewQuerySet().
+	qs := rdb.NewQuerySet().
 		Select(q.cols).
 		From(table).
 		Offset(q.offset)
@@ -96,7 +82,7 @@ func (q *QuerySet) TermList() api.TermList {
 
 	qs.Where = q.filter
 
-	rs, err := dcn.Base.Query(qs)
+	rs, err := store.Data.Query(qs)
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
@@ -134,7 +120,7 @@ func (q *QuerySet) TermList() api.TermList {
 	rsp.Model = model
 
 	if q.Pager {
-		num, _ := dcn.Base.Count(table, q.filter)
+		num, _ := store.Data.Count(table, q.filter)
 		rsp.Meta.TotalResults = uint64(num)
 		rsp.Meta.StartIndex = uint64(q.offset)
 		rsp.Meta.ItemsPerList = uint64(q.limit)
@@ -198,16 +184,10 @@ func _term_in_array(arr []uint32, a uint32) bool {
 
 func (q *QuerySet) TermEntry() api.Term {
 
-	rsp := api.Term{}
-
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return rsp
-	}
+	var (
+		rsp = api.Term{}
+		err error
+	)
 
 	rsp.Model, err = config.SpecTermModel(q.ModName, q.Table)
 	if err != nil {
@@ -220,7 +200,7 @@ func (q *QuerySet) TermEntry() api.Term {
 
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdobase.NewQuerySet().
+	qs := rdb.NewQuerySet().
 		Select(q.cols).
 		From(table).
 		Order(q.order).
@@ -229,7 +209,7 @@ func (q *QuerySet) TermEntry() api.Term {
 
 	qs.Where = q.filter
 
-	rs, err := dcn.Base.Query(qs)
+	rs, err := store.Data.Query(qs)
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
@@ -311,11 +291,6 @@ func (t *TermList) Content() string {
 
 func NodeTermQuery(modname string, model *api.NodeModel, terms []api.NodeTerm) []api.NodeTerm {
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		return terms
-	}
-
 	for _, modTerm := range model.Terms {
 
 		for k, term := range terms {
@@ -341,11 +316,11 @@ func NodeTermQuery(modname string, model *api.NodeModel, terms []api.NodeTerm) [
 
 				table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), modTerm.Meta.Name)
 
-				q := rdobase.NewQuerySet().From(table)
+				q := rdb.NewQuerySet().From(table)
 				q.Limit(1)
 				q.Where.And("id", term.Value)
 
-				if rs, err := dcn.Base.Query(q); err == nil && len(rs) > 0 {
+				if rs, err := store.Data.Query(q); err == nil && len(rs) > 0 {
 
 					terms[k].Items = append(terms[k].Items, api.Term{
 						ID:    rs[0].Field("id").Uint32(),
@@ -366,11 +341,6 @@ func NodeTermQuery(modname string, model *api.NodeModel, terms []api.NodeTerm) [
 func TermSync(modname, modelid, terms string) (TermList, error) {
 
 	ls := TermList{}
-
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		return ls, err
-	}
 
 	terms = spaceReg.ReplaceAllString(terms, " ")
 
@@ -412,10 +382,10 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 
 	if len(ids) > 0 {
 
-		q := rdobase.NewQuerySet().From(table).Limit(int64(len(ids)))
+		q := rdb.NewQuerySet().From(table).Limit(int64(len(ids)))
 		q.Where.And("uid.in", ids...)
 
-		if rs, err := dcn.Base.Query(q); err == nil {
+		if rs, err := store.Data.Query(q); err == nil {
 
 			for _, v := range rs {
 
@@ -431,7 +401,7 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 		}
 	}
 
-	timenow := rdobase.TimeNow("datetime")
+	timenow := rdb.TimeNow("datetime")
 
 	for tk, tv := range ls.Items {
 
@@ -439,7 +409,7 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 			continue
 		}
 
-		if rs, err := dcn.Base.Insert(table, map[string]interface{}{
+		if rs, err := store.Data.Insert(table, map[string]interface{}{
 			"uid":     tv.UID,
 			"title":   tv.Title,
 			"userid":  "sysadmin",

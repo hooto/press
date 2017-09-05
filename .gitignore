@@ -9,7 +9,8 @@ misc/import.go
 misc/cm-compress.go
 misc/rhel/pkg-builder
 cm-compress
-modules/ruilog
+modules/*
+!modules/core
 etc/main.json
 testgd.go
 go-rpm

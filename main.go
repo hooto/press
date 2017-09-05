@@ -67,12 +67,6 @@ func main() {
 		time.Sleep(3e9)
 	}
 
-	if err := store.Init(config.Config.IoConnectors); err != nil {
-		hlog.Printf("error", "store.Init error: %v", err)
-		fmt.Println("error", "store.Init error ", err)
-		os.Exit(1)
-	}
-
 	ext_captcha.DataConnector = store.LocalCache
 	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
 		hlog.Printf("error", "ext_captcha.Config error: %v", err)
@@ -111,7 +105,6 @@ func main() {
 		go http.ListenAndServe(fmt.Sprintf(":%d", config.Config.HttpPortPprof), nil)
 	}
 
-	fmt.Println("Running")
 	if err := httpsrv.GlobalService.Start(); err != nil {
 		fmt.Println("httpsrv.GlobalService.Start error", err)
 		os.Exit(1)

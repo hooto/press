@@ -19,12 +19,12 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/utils"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/store"
 )
 
 var (
@@ -48,17 +48,12 @@ func _termTaxonomyCacheRefresh(modname, table string) {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		return
-	}
-
 	tx_table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), table)
 
-	qs := rdobase.NewQuerySet().From(tx_table).Limit(200).Order("weight desc")
+	qs := rdb.NewQuerySet().From(tx_table).Limit(200).Order("weight desc")
 	qs.Where.And("status", 1)
 
-	rs, err := dcn.Base.Query(qs)
+	rs, err := store.Data.Query(qs)
 	if err != nil || len(rs) < 1 {
 		return
 	}

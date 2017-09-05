@@ -25,12 +25,13 @@ import (
 	"code.hooto.com/lessos/loscore/losapi"
 	"github.com/hooto/hcaptcha/captcha4g"
 	"github.com/hooto/iam/iamapi"
-	"github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
+	"github.com/hooto/hpress/store"
 )
 
 var (
@@ -64,7 +65,6 @@ type ConfigCommon struct {
 	HttpPortPprof         uint16                   `json:"http_port_pprof,omitempty"`
 	IamServiceUrl         string                   `json:"iam_service_url"`
 	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend"`
-	Database              base.Config              `json:"database"`
 	IoConnectors          connect.MultiConnOptions `json:"io_connectors"`
 	RunMode               string                   `json:"run_mode,omitempty"`
 }
@@ -157,8 +157,9 @@ func Initialize(prefix string) error {
 		}
 
 		var (
-			opt    *losapi.AppOption
-			optref *losapi.AppOption
+			opt       *losapi.AppOption
+			optref    *losapi.AppOption
+			data_opts connect.ConnOptions
 		)
 
 		for _, app := range inst.Apps {
@@ -203,18 +204,18 @@ func Initialize(prefix string) error {
 			return errors.New("No Database Connection Configure Found")
 		}
 
-		Config.Database.Driver = "mysql"
+		data_opts.Driver = "lynkdb/mysqlgo"
 
 		if v, ok := optref.Items.Get("db_name"); ok {
-			Config.Database.Dbname = v.String()
+			data_opts.SetValue("dbname", v.String())
 		}
 
 		if v, ok := optref.Items.Get("db_user"); ok {
-			Config.Database.User = v.String()
+			data_opts.SetValue("user", v.String())
 		}
 
 		if v, ok := optref.Items.Get("db_auth"); ok {
-			Config.Database.Pass = v.String()
+			data_opts.SetValue("pass", v.String())
 		}
 
 		if optref.Ref.PodId == "" {
@@ -230,32 +231,14 @@ func Initialize(prefix string) error {
 		if srv := nsz.Get(3306); srv == nil || len(srv.Items) == 0 {
 			return errors.New("No Pod ServicePort Found")
 		} else {
-			Config.Database.Host = srv.Items[0].Ip
-			Config.Database.Port = fmt.Sprintf("%d", srv.Items[0].Port)
+			data_opts.SetValue("host", srv.Items[0].Ip)
+			data_opts.SetValue("port", fmt.Sprintf("%d", srv.Items[0].Port))
 		}
+
+		Config.IoConnectors.SetOptions(data_opts)
 	}
 
 	Save()
-
-	dcn, err := Config.DatabaseInstance()
-	if err != nil {
-		return err
-	}
-
-	{
-		rs, err := dcn.Base.Query(base.NewQuerySet().From("sys_config").Limit(1000))
-		if err != nil {
-			return err
-		}
-
-		for _, v := range rs {
-
-			SysConfigList.Insert(api.SysConfig{
-				Key:   v.Field("key").String(),
-				Value: v.Field("value").String(),
-			})
-		}
-	}
 
 	if Config.AppTitle == "" {
 		Config.AppTitle = "Hooto Press"
@@ -273,33 +256,78 @@ func Initialize(prefix string) error {
 		return err
 	}
 
-	if err := init_data(); err != nil {
+	if err := store_init(); err != nil {
 		return err
+	}
+
+	//
+	{
+		rs, err := store.Data.Query(rdb.NewQuerySet().From("sys_config").Limit(1000))
+		if err != nil {
+			return err
+		}
+
+		for _, v := range rs {
+
+			SysConfigList.Insert(api.SysConfig{
+				Key:   v.Field("key").String(),
+				Value: v.Field("value").String(),
+			})
+		}
 	}
 
 	return module_init()
 }
 
 //
-func init_data() error {
+func store_init() error {
 
-	io_name := types.NewNameIdentifier("hpress_local_cache")
-	opts := Config.IoConnectors.Options(io_name)
+	{
+		io_name := types.NewNameIdentifier("hpress_local_cache")
+		opts := Config.IoConnectors.Options(io_name)
 
-	if opts == nil {
-
-		opts = &connect.ConnOptions{
-			Name:      io_name,
-			Connector: "iomix/skv/Connector",
-			Driver:    types.NewNameIdentifier("lynkdb/kvgo"),
+		if opts == nil {
+			opts = &connect.ConnOptions{
+				Name:      io_name,
+				Connector: "iomix/skv/Connector",
+				Driver:    types.NewNameIdentifier("lynkdb/kvgo"),
+			}
 		}
+
+		if opts.Value("data_dir") == "" {
+			opts.SetValue("data_dir", Prefix+"/var/"+string(io_name))
+			Save()
+		}
+
+		Config.IoConnectors.SetOptions(*opts)
 	}
 
-	if opts.Value("data_dir") == "" {
-		opts.SetValue("data_dir", Prefix+"/var/"+string(io_name))
+	{
+		io_name := types.NewNameIdentifier("hpress_database")
+		opts := Config.IoConnectors.Options(io_name)
+
+		if opts == nil {
+			opts = &connect.ConnOptions{
+				Name:      io_name,
+				Connector: "iomix/rdb/Connector",
+				Driver:    types.NewNameIdentifier("lynkdb/mysqlgo"),
+			}
+		}
+
+		if opts.Value("host") == "" {
+			opts.SetValue("host", "localhost")
+		}
+
+		if opts.Value("port") == "" {
+			opts.SetValue("port", "3306")
+		}
+
+		Config.IoConnectors.SetOptions(*opts)
 	}
 
-	Config.IoConnectors.SetOptions(*opts)
+	if err := store.Init(Config.IoConnectors); err != nil {
+		return err
+	}
 
 	return nil
 }

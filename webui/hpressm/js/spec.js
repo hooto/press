@@ -20,6 +20,7 @@ var hpressSpec = {
             id: "",
             name: "",
         },
+		srvname: "",
         title: "",
     },
 

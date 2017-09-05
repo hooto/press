@@ -19,13 +19,13 @@ import (
 
 	"github.com/hooto/hcaptcha/captcha4g"
 	"github.com/hooto/httpsrv"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/datax"
+	"github.com/hooto/hpress/store"
 )
 
 const (
@@ -133,17 +133,8 @@ func (c Comment) SetAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		set.Error = &types.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
 	set.Meta.ID = utils.StringNewRand(16)
-	set.Meta.Created = rdobase.TimeNow("datetime")
+	set.Meta.Created = rdb.TimeNow("datetime")
 
 	//
 	item := map[string]interface{}{
@@ -159,7 +150,7 @@ func (c Comment) SetAction() {
 		"updated":        set.Meta.Created,
 	}
 
-	if _, err := dcn.Base.Insert("nx"+utils.StringEncode16("core/comment", 12)+"_entry", item); err != nil {
+	if _, err := store.Data.Insert("nx"+utils.StringEncode16("core/comment", 12)+"_entry", item); err != nil {
 		set.Error = &types.ErrorMeta{
 			Code:    "500",
 			Message: err.Error(),

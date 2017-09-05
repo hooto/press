@@ -26,13 +26,13 @@ import (
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
 	"github.com/lessos/lessgo/crypto/idhash"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/types"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/datax"
+	"github.com/hooto/hpress/store"
 )
 
 var (
@@ -152,15 +152,6 @@ func (c Term) SetAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
 	model, err := config.SpecTermModel(c.Params.Get("modname"), c.Params.Get("modelid"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
@@ -183,7 +174,7 @@ func (c Term) SetAction() {
 		table = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 	)
 
-	q := rdobase.NewQuerySet().From(table).Limit(1)
+	q := rdb.NewQuerySet().From(table).Limit(1)
 
 	switch model.Type {
 
@@ -198,7 +189,7 @@ func (c Term) SetAction() {
 
 		q.Where.And("uid", rsp.UID)
 
-		rs, err := dcn.Base.Query(q)
+		rs, err := store.Data.Query(q)
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{
 				Code:    "500",
@@ -224,8 +215,8 @@ func (c Term) SetAction() {
 			set["uid"] = rsp.UID
 			set["title"] = rsp.Title
 			set["status"] = rsp.Status
-			set["created"] = rdobase.TimeNow("datetime")
-			set["userid"] = "dr5a8pgv"
+			set["created"] = rdb.TimeNow("datetime")
+			set["userid"] = c.us.UserId()
 		}
 
 	case api.TermTaxonomy:
@@ -234,7 +225,7 @@ func (c Term) SetAction() {
 
 			q.Where.And("id", rsp.ID)
 
-			rs, err := dcn.Base.Query(q)
+			rs, err := store.Data.Query(q)
 			if err != nil {
 				rsp.Error = &types.ErrorMeta{
 					Code:    "500",
@@ -273,8 +264,8 @@ func (c Term) SetAction() {
 			set["title"] = rsp.Title
 			set["status"] = rsp.Status
 			set["weight"] = rsp.Weight
-			set["created"] = rdobase.TimeNow("datetime")
-			set["userid"] = "dr5a8pgv"
+			set["created"] = rdb.TimeNow("datetime")
+			set["userid"] = c.us.UserId()
 		}
 
 		datax.TermTaxonomyCacheClean(c.Params.Get("modname"), c.Params.Get("modelid"))
@@ -289,17 +280,17 @@ func (c Term) SetAction() {
 
 	if len(set) > 0 {
 
-		set["updated"] = rdobase.TimeNow("datetime")
+		set["updated"] = rdb.TimeNow("datetime")
 
 		if rsp.ID > 0 {
 
-			ft := rdobase.NewFilter()
+			ft := rdb.NewFilter()
 			ft.And("id", rsp.ID)
-			_, err = dcn.Base.Update(table, set, ft)
+			_, err = store.Data.Update(table, set, ft)
 
 		} else {
 
-			rs, err := dcn.Base.Insert(table, set)
+			rs, err := store.Data.Insert(table, set)
 			if err == nil {
 				if incrid, err := rs.LastInsertId(); err == nil && incrid > 0 {
 					rsp.ID = uint32(incrid)

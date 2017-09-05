@@ -22,14 +22,14 @@ import (
 	"github.com/hooto/httpsrv"
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/status"
+	"github.com/hooto/hpress/store"
 )
 
 type Sys struct {
@@ -80,25 +80,16 @@ func (c Sys) ConfigSetAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		ls.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
 	for _, entry := range ls.Items {
 
 		if prev := config.SysConfigList.Fetch(entry.Key); prev == nil {
 			continue
 		}
 
-		q := rdobase.NewQuerySet().From("sys_config").Limit(1)
+		q := rdb.NewQuerySet().From("sys_config").Limit(1)
 		q.Where.And("key", entry.Key)
 
-		rs, err := dcn.Base.Query(q)
+		rs, err := store.Data.Query(q)
 		if err != nil {
 			ls.Error = &types.ErrorMeta{
 				Code:    api.ErrCodeInternalError,
@@ -115,16 +106,16 @@ func (c Sys) ConfigSetAction() {
 
 			if rs[0].Field("value").String() != entry.Value {
 
-				ft := rdobase.NewFilter()
+				ft := rdb.NewFilter()
 				ft.And("key", entry.Key)
-				_, err = dcn.Base.Update("sys_config", set, ft)
+				_, err = store.Data.Update("sys_config", set, ft)
 			}
 
 		} else {
 
 			set["key"] = entry.Key
 
-			_, err = dcn.Base.Insert("sys_config", set)
+			_, err = store.Data.Insert("sys_config", set)
 		}
 
 		if err != nil {

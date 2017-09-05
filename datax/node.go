@@ -20,11 +20,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -55,11 +54,6 @@ func Worker() {
 
 			time.Sleep(60e9)
 			if store.LocalCache == nil {
-				continue
-			}
-
-			dcn, err := rdo.ClientPull("def")
-			if err != nil {
 				continue
 			}
 
@@ -94,15 +88,15 @@ func Worker() {
 						continue
 					}
 
-					q := rdobase.NewQuerySet().From(ks[0]).Limit(1)
+					q := rdb.NewQuerySet().From(ks[0]).Limit(1)
 					q.Where.And("id", ks[1])
 
-					if rs, err := dcn.Base.Query(q); err == nil && len(rs) > 0 {
+					if rs, err := store.Data.Query(q); err == nil && len(rs) > 0 {
 
-						ft := rdobase.NewFilter()
+						ft := rdb.NewFilter()
 						ft.And("id", ks[1])
 
-						dcn.Base.Update(ks[0], map[string]interface{}{
+						store.Data.Update(ks[0], map[string]interface{}{
 							"ext_access_counter": rs[0].Field("ext_access_counter").Int() + num,
 						}, ft)
 					}
@@ -118,14 +112,9 @@ func Worker() {
 
 func (q *QuerySet) NodeCount() (int64, error) {
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		return 0, err
-	}
-
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	return dcn.Base.Count(table, q.filter)
+	return store.Data.Count(table, q.filter)
 }
 
 func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
@@ -141,18 +130,9 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 		return rsp
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return rsp
-	}
-
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdobase.NewQuerySet().
+	qs := rdb.NewQuerySet().
 		Select(q.cols).
 		From(table).
 		Limit(q.limit).
@@ -166,7 +146,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 	qs.Where = q.filter
 
-	rs, err := dcn.Base.Query(qs)
+	rs, err := store.Data.Query(qs)
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
@@ -233,7 +213,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 					len(v.Field("field_"+field.Name+"_attrs").String()) > 10 {
 
 					var attrs []api.KeyValue
-					if err := v.Field("field_" + field.Name + "_attrs").Json(&attrs); err == nil {
+					if err := v.Field("field_" + field.Name + "_attrs").JsonDecode(&attrs); err == nil {
 						nodeField.Attrs = attrs
 					}
 				}
@@ -290,10 +270,10 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 		case api.TermTaxonomy:
 
 			table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), term.Meta.Name)
-			qs := rdobase.NewQuerySet().From(table).Limit(1000)
+			qs := rdb.NewQuerySet().From(table).Limit(1000)
 			qs.Where.And("id.in", ids...)
 
-			if rs, err := dcn.Base.Query(qs); err == nil && len(rs) > 0 {
+			if rs, err := store.Data.Query(qs); err == nil && len(rs) > 0 {
 
 				for _, v := range rs {
 					termTaxonomy[v.Field("id").String()] = api.Term{
@@ -341,7 +321,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 	rsp.Kind = "NodeList"
 
 	if q.Pager {
-		num, _ := dcn.Base.Count(table, q.filter)
+		num, _ := store.Data.Count(table, q.filter)
 		rsp.Meta.TotalResults = uint64(num)
 		rsp.Meta.StartIndex = uint64(q.offset)
 		rsp.Meta.ItemsPerList = uint64(q.limit)
@@ -358,16 +338,10 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 func (q *QuerySet) NodeEntry() api.Node {
 
-	rsp := api.Node{}
-
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return rsp
-	}
+	var (
+		rsp = api.Node{}
+		err error
+	)
 
 	rsp.Model, err = config.SpecNodeModel(q.ModName, q.Table)
 	if err != nil {
@@ -380,7 +354,7 @@ func (q *QuerySet) NodeEntry() api.Node {
 
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdobase.NewQuerySet().
+	qs := rdb.NewQuerySet().
 		Select(q.cols).
 		From(table).
 		Order(q.order).
@@ -390,7 +364,7 @@ func (q *QuerySet) NodeEntry() api.Node {
 	qs.Where = q.filter
 	// qs.Where.And("id", c.Params.Get("id"))
 
-	rs, err := dcn.Base.Fetch(qs)
+	rs, err := store.Data.Fetch(qs)
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
@@ -411,7 +385,7 @@ func (q *QuerySet) NodeEntry() api.Node {
 			len(rs.Field("field_"+field.Name+"_attrs").String()) > 10 {
 
 			var attrs []api.KeyValue
-			if err := rs.Field("field_" + field.Name + "_attrs").Json(&attrs); err == nil {
+			if err := rs.Field("field_" + field.Name + "_attrs").JsonDecode(&attrs); err == nil {
 				nodeField.Attrs = attrs
 			}
 		}

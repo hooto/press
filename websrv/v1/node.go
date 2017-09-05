@@ -24,11 +24,10 @@ import (
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
 	"github.com/lessos/lessgo/crypto/idhash"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utilx"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -152,15 +151,6 @@ func (c Node) SetAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
 	model, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
@@ -198,9 +188,9 @@ func (c Node) SetAction() {
 
 	if len(rsp.ID) > 0 {
 
-		q := rdobase.NewQuerySet().From(table).Limit(1)
+		q := rdb.NewQuerySet().From(table).Limit(1)
 		q.Where.And("id", rsp.ID)
-		rs, err := dcn.Base.Query(q)
+		rs, err := store.Data.Query(q)
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{
 				Code:    "500",
@@ -295,10 +285,10 @@ func (c Node) SetAction() {
 		set["id"] = idhash.RandHexString(node_id_length)
 		set["title"] = rsp.Title
 		set["status"] = rsp.Status
-		set["created"] = rdobase.TimeNow("datetime")
+		set["created"] = rdb.TimeNow("datetime")
 
 		// TODO
-		set["userid"] = "dr5a8pgv"
+		set["userid"] = c.us.UserId()
 		set["pid"] = node_pid_default
 		if model.Extensions.AccessCounter {
 			set["ext_access_counter"] = "0"
@@ -421,14 +411,14 @@ func (c Node) SetAction() {
 
 					permaidx := idhash.HashToHexString([]byte(permaname), 12)
 
-					q := rdobase.NewQuerySet().From(table).Limit(1)
+					q := rdb.NewQuerySet().From(table).Limit(1)
 					q.Where.And("ext_permalink_idx", permaidx)
 
 					if len(rsp.ID) > 0 {
 						q.Where.And("id.ne", rsp.ID)
 					}
 
-					if rs, err := dcn.Base.Query(q); err == nil && len(rs) < 1 {
+					if rs, err := store.Data.Query(q); err == nil && len(rs) < 1 {
 
 						set["ext_permalink_name"] = permaname
 						set["ext_permalink_idx"] = permaidx
@@ -459,17 +449,17 @@ func (c Node) SetAction() {
 
 	if len(set) > 0 {
 
-		set["updated"] = rdobase.TimeNow("datetime")
+		set["updated"] = rdb.TimeNow("datetime")
 
 		if len(rsp.ID) > 0 {
 
-			ft := rdobase.NewFilter()
+			ft := rdb.NewFilter()
 			ft.And("id", rsp.ID)
-			_, err = dcn.Base.Update(table, set, ft)
+			_, err = store.Data.Update(table, set, ft)
 
 		} else {
 			rsp.ID = set["id"].(string)
-			_, err = dcn.Base.Insert(table, set)
+			_, err = store.Data.Insert(table, set)
 		}
 
 		// clean frontend cache
@@ -502,15 +492,6 @@ func (c Node) DelAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    "500",
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
 	if _, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid")); err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    "404",
@@ -521,7 +502,7 @@ func (c Node) DelAction() {
 
 	//
 	set := map[string]interface{}{
-		"updated": rdobase.TimeNow("datetime"),
+		"updated": rdb.TimeNow("datetime"),
 		"status":  0,
 	}
 
@@ -533,10 +514,10 @@ func (c Node) DelAction() {
 
 	for _, id := range ids {
 
-		q := rdobase.NewQuerySet().From(table).Limit(1)
+		q := rdb.NewQuerySet().From(table).Limit(1)
 		q.Where.And("id", id)
 
-		if rs, err := dcn.Base.Query(q); err != nil {
+		if rs, err := store.Data.Query(q); err != nil {
 			rsp.Error = &types.ErrorMeta{
 				Code:    "500",
 				Message: "Can not pull database instance",
@@ -550,10 +531,10 @@ func (c Node) DelAction() {
 			return
 		}
 
-		ft := rdobase.NewFilter()
+		ft := rdb.NewFilter()
 		ft.And("id", id)
 
-		if _, err = dcn.Base.Update(table, set, ft); err != nil {
+		if _, err := store.Data.Update(table, set, ft); err != nil {
 			rsp.Error = &types.ErrorMeta{
 				Code:    "500",
 				Message: fmt.Sprintf("id:%s err:%s", id, err.Error()),

@@ -25,13 +25,14 @@ import (
 	"strings"
 
 	"github.com/lessos/lessgo/crypto/idhash"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/utilx"
+	"github.com/lynkdb/iomix/rdb"
+	"github.com/lynkdb/iomix/rdb/modeler"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/store"
 )
 
 var (
@@ -730,19 +731,13 @@ func _specSet(entry api.Spec) error {
 func SpecSchemaSync(spec api.Spec) error {
 
 	var (
-		ds      rdobase.DataSet
-		timenow = rdobase.TimeNow("datetime")
+		ds      modeler.DatabaseEntry
+		timenow = rdb.TimeNow("datetime")
 	)
 
 	// TODO
 	config.SpecSet(&spec)
 	config.SpecSrvRefresh(spec.SrvName)
-
-	//
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		return err
-	}
 
 	//
 	if spec.SrvName == "" {
@@ -759,32 +754,28 @@ func SpecSchemaSync(spec api.Spec) error {
 		"body":    string(jsb),
 	}
 
-	q := rdobase.NewQuerySet().From("modules")
+	q := rdb.NewQuerySet().From("modules")
 	q.Where.And("name", spec.Meta.Name)
 
-	if _, err := dcn.Base.Fetch(q); err == nil {
+	if _, err := store.Data.Fetch(q); err == nil {
 
-		fr := rdobase.NewFilter()
+		fr := rdb.NewFilter()
 		fr.And("name", spec.Meta.Name)
 
-		_, err = dcn.Base.Update("modules", set, fr)
+		_, err = store.Data.Update("modules", set, fr)
 
 	} else {
 
 		set["name"] = spec.Meta.Name
 		set["created"] = timenow
 
-		_, err = dcn.Base.Insert("modules", set)
-	}
-
-	if err != nil {
-		return err
+		_, err = store.Data.Insert("modules", set)
 	}
 
 	//
 	for _, nodeModel := range spec.NodeModels {
 
-		var tbl rdobase.Table
+		var tbl modeler.Table
 
 		if err := json.Decode([]byte(dsTplNodeModels), &tbl); err != nil {
 			continue
@@ -793,14 +784,14 @@ func SpecSchemaSync(spec api.Spec) error {
 		tbl.Name = fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
 
 		if nodeModel.Extensions.AccessCounter {
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name: "ext_access_counter",
 				Type: "uint32",
 			})
 		}
 
 		if nodeModel.Extensions.CommentPerEntry {
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name:    "ext_comment_perentry",
 				Type:    "uint8",
 				Default: "1",
@@ -809,19 +800,19 @@ func SpecSchemaSync(spec api.Spec) error {
 
 		if nodeModel.Extensions.Permalink != "" &&
 			nodeModel.Extensions.Permalink != "off" {
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name:   "ext_permalink_name",
 				Type:   "string",
 				Length: "100",
 			})
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name:   "ext_permalink_idx",
 				Type:   "string",
 				Length: "12",
 			})
-			tbl.AddIndex(&rdobase.Index{
+			tbl.AddIndex(&modeler.Index{
 				Name: "ext_permalink_idx",
-				Type: rdobase.IndexTypeIndex,
+				Type: modeler.IndexTypeIndex,
 				Cols: []string{"ext_permalink_idx"},
 			})
 		}
@@ -832,7 +823,7 @@ func SpecSchemaSync(spec api.Spec) error {
 
 			case "string":
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name:   "field_" + field.Name,
 					Type:   "string",
 					Length: field.Length,
@@ -840,8 +831,8 @@ func SpecSchemaSync(spec api.Spec) error {
 
 				switch field.IndexType {
 
-				case rdobase.IndexTypeUnique, rdobase.IndexTypeIndex:
-					tbl.AddIndex(&rdobase.Index{
+				case modeler.IndexTypeUnique, modeler.IndexTypeIndex:
+					tbl.AddIndex(&modeler.Index{
 						Name: "field_" + field.Name,
 						Type: field.IndexType,
 						Cols: []string{"field_" + field.Name},
@@ -850,12 +841,12 @@ func SpecSchemaSync(spec api.Spec) error {
 
 			case "text":
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name: "field_" + field.Name,
 					Type: "string-text",
 				})
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name:   "field_" + field.Name + "_attrs",
 					Type:   "string",
 					Length: "200",
@@ -863,7 +854,7 @@ func SpecSchemaSync(spec api.Spec) error {
 
 			case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64":
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name: "field_" + field.Name,
 					Type: field.Type,
 				})
@@ -876,39 +867,39 @@ func SpecSchemaSync(spec api.Spec) error {
 
 			case api.TermTag:
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name:   "term_" + term.Meta.Name,
 					Type:   "string",
 					Length: "200",
 				})
 
-				// tbl.AddColumn(&rdobase.Column{
+				// tbl.AddColumn(&modeler.Column{
 				// 	Name: "term_" + term.Meta.Name + "_body",
 				// 	Type: "string-text",
 				// })
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name:   "term_" + term.Meta.Name + "_idx",
 					Type:   "string",
 					Length: "100",
 				})
 
-				tbl.AddIndex(&rdobase.Index{
+				tbl.AddIndex(&modeler.Index{
 					Name: "term_" + term.Meta.Name + "_idx",
-					Type: rdobase.IndexTypeIndex,
+					Type: modeler.IndexTypeIndex,
 					Cols: []string{"term_" + term.Meta.Name + "_idx"},
 				})
 
 			case api.TermTaxonomy:
 
-				tbl.AddColumn(&rdobase.Column{
+				tbl.AddColumn(&modeler.Column{
 					Name: "term_" + term.Meta.Name,
 					Type: "uint32",
 				})
 
-				tbl.AddIndex(&rdobase.Index{
+				tbl.AddIndex(&modeler.Index{
 					Name: "term_" + term.Meta.Name,
-					Type: rdobase.IndexTypeIndex,
+					Type: modeler.IndexTypeIndex,
 					Cols: []string{"term_" + term.Meta.Name},
 				})
 			}
@@ -919,7 +910,7 @@ func SpecSchemaSync(spec api.Spec) error {
 
 	for _, termModel := range spec.TermModels {
 
-		var tbl rdobase.Table
+		var tbl modeler.Table
 
 		if err := json.Decode([]byte(dsTplTermModels), &tbl); err != nil {
 			continue
@@ -931,39 +922,39 @@ func SpecSchemaSync(spec api.Spec) error {
 
 		case api.TermTag:
 
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name:   "uid",
 				Type:   "string",
 				Length: "16",
 			})
 
-			tbl.AddIndex(&rdobase.Index{
+			tbl.AddIndex(&modeler.Index{
 				Name: "uid",
-				Type: rdobase.IndexTypeUnique,
+				Type: modeler.IndexTypeUnique,
 				Cols: []string{"uid"},
 			})
 
 		case api.TermTaxonomy:
 
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name: "pid",
 				Type: "uint32",
 			})
 
-			tbl.AddIndex(&rdobase.Index{
+			tbl.AddIndex(&modeler.Index{
 				Name: "pid",
-				Type: rdobase.IndexTypeIndex,
+				Type: modeler.IndexTypeIndex,
 				Cols: []string{"pid"},
 			})
 
-			tbl.AddColumn(&rdobase.Column{
+			tbl.AddColumn(&modeler.Column{
 				Name: "weight",
 				Type: "int16",
 			})
 
-			tbl.AddIndex(&rdobase.Index{
+			tbl.AddIndex(&modeler.Index{
 				Name: "weight",
-				Type: rdobase.IndexTypeIndex,
+				Type: modeler.IndexTypeIndex,
 				Cols: []string{"weight"},
 			})
 
@@ -975,9 +966,13 @@ func SpecSchemaSync(spec api.Spec) error {
 	}
 
 	//
-	if err := dcn.Dialect.SchemaSync(config.Config.Database.Dbname, ds); err != nil {
+	ms, err := store.Data.Modeler()
+	if err != nil {
 		return err
 	}
-
-	return nil
+	opts := config.Config.IoConnectors.Options("hpress_database")
+	if opts == nil {
+		return errors.New("No Database Setup")
+	}
+	return ms.Sync(opts.Value("dbname"), ds)
 }

@@ -18,9 +18,8 @@ import (
 	"strings"
 
 	"github.com/hooto/httpsrv"
-	"github.com/lessos/lessgo/data/rdo"
-	rdobase "github.com/lessos/lessgo/data/rdo/base"
 	"github.com/lessos/lessgo/types"
+	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
@@ -28,6 +27,7 @@ import (
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/modset"
+	"github.com/hooto/hpress/store"
 )
 
 type ModSet struct {
@@ -62,17 +62,8 @@ func (c ModSet) SpecListAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	q := rdobase.NewQuerySet().From("modules").Limit(100)
-	rs, err := dcn.Base.Query(q)
+	q := rdb.NewQuerySet().From("modules").Limit(100)
+	rs, err := store.Data.Query(q)
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
@@ -85,7 +76,7 @@ func (c ModSet) SpecListAction() {
 
 		var entry api.Spec
 
-		if err := v.Field("body").Json(&entry); err == nil {
+		if err := v.Field("body").JsonDecode(&entry); err == nil {
 			entry.SrvName = v.Field("srvname").String()
 			rsp.Items = append(rsp.Items, entry)
 		}
@@ -119,18 +110,9 @@ func (c ModSet) SpecEntryAction() {
 		return
 	}
 
-	dcn, err := rdo.ClientPull("def")
-	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
-		return
-	}
-
-	q := rdobase.NewQuerySet().From("modules").Limit(1)
+	q := rdb.NewQuerySet().From("modules").Limit(1)
 	q.Where.And("name", name)
-	rs, err := dcn.Base.Query(q)
+	rs, err := store.Data.Query(q)
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
@@ -147,7 +129,7 @@ func (c ModSet) SpecEntryAction() {
 		return
 	}
 
-	if err := rs[0].Field("body").Json(&rsp); err != nil {
+	if err := rs[0].Field("body").JsonDecode(&rsp); err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    api.ErrCodeInternalError,
 			Message: err.Error(),
