@@ -290,6 +290,7 @@ func (c Term) SetAction() {
 
 		} else {
 
+			fmt.Println("SET", table, "___", set)
 			rs, err := store.Data.Insert(table, set)
 			if err == nil {
 				if incrid, err := rs.LastInsertId(); err == nil && incrid > 0 {

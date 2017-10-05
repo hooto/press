@@ -200,7 +200,7 @@ func (c Sys) IamStatusAction() {
 		},
 	}
 
-	hc := httpclient.Get(fmt.Sprintf("%s/v1/my-app/inst-entry?instid=%s&%s=%s",
+	hc := httpclient.Get(fmt.Sprintf("%s/v1/app/inst-entry?instid=%s&%s=%s",
 		iamclient.ServiceUrl, config.Config.InstanceID,
 		iamclient.AccessTokenKey, iamclient.SessionAccessToken(c.Session)))
 

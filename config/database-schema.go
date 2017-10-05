@@ -192,7 +192,7 @@ const (
         {
             "name": "id",
             "type": "uint32",
-            "IncrAble": true
+            "incr_able": true
         },
         {
             "name": "status",

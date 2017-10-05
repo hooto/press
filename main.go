@@ -62,7 +62,7 @@ func main() {
 			break
 		}
 
-		fmt.Println("Error on config.Initialize", err)
+		// fmt.Println("Error on config.Initialize", err)
 		hlog.Printf("error", "config.Initialize error: %v", err)
 		time.Sleep(3e9)
 	}

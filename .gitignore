@@ -3,6 +3,7 @@ _*/
 si.go
 bin/*
 var/*
+etc/*
 webui/hpress/img/src
 webui/zeptojs
 misc/import.go

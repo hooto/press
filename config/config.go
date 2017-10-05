@@ -23,12 +23,14 @@ import (
 	"time"
 
 	"github.com/hooto/hcaptcha/captcha4g"
+	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/iam/iamapi"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
-	"github.com/lessos/loscore/losapi"
 	"github.com/lynkdb/iomix/connect"
 	"github.com/lynkdb/iomix/rdb"
+	"github.com/lynkdb/iomix/rdb/modeler"
+	"github.com/sysinner/incore/inapi"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/store"
@@ -43,7 +45,7 @@ var (
 	CaptchaConfig = captcha4g.DefaultConfig
 
 	pod_inst_updated time.Time
-	pod_inst         = "/home/action/.los/pod_instance.json"
+	pod_inst         = "/home/action/.sysinner/pod_instance.json"
 
 	User = &user.User{
 		Uid:      "2048",
@@ -145,7 +147,7 @@ func Initialize(prefix string) error {
 
 	if Config.RunMode != "local-dev" {
 
-		var inst losapi.Pod
+		var inst inapi.Pod
 		if err := json.DecodeFile(pod_inst, &inst); err != nil {
 			return err
 		}
@@ -157,8 +159,8 @@ func Initialize(prefix string) error {
 		}
 
 		var (
-			opt       *losapi.AppOption
-			optref    *losapi.AppOption
+			opt       *inapi.AppOption
+			optref    *inapi.AppOption
 			data_opts connect.ConnOptions
 		)
 
@@ -174,7 +176,7 @@ func Initialize(prefix string) error {
 			}
 
 			if optref == nil {
-				optref = app.Operate.Options.Get("cfg/los-mysql") // TODO
+				optref = app.Operate.Options.Get("cfg/sysinner-mysql") // TODO
 			}
 		}
 
@@ -204,6 +206,7 @@ func Initialize(prefix string) error {
 			return errors.New("No Database Connection Configure Found")
 		}
 
+		data_opts.Name = types.NameIdentifier("hpress_database")
 		data_opts.Driver = "lynkdb/mysqlgo"
 
 		if v, ok := optref.Items.Get("db_name"); ok {
@@ -222,8 +225,8 @@ func Initialize(prefix string) error {
 			return errors.New("No UpStream Pod Found")
 		}
 
-		var nsz losapi.NsPodServiceMap
-		if err := json.DecodeFile("/dev/shm/los/nsz/"+optref.Ref.PodId, &nsz); err != nil {
+		var nsz inapi.NsPodServiceMap
+		if err := json.DecodeFile("/dev/shm/sysinner/nsz/"+optref.Ref.PodId, &nsz); err != nil {
 			return err
 		}
 
@@ -264,6 +267,7 @@ func Initialize(prefix string) error {
 	{
 		rs, err := store.Data.Query(rdb.NewQuerySet().From("sys_config").Limit(1000))
 		if err != nil {
+			hlog.Print("error", err.Error())
 			return err
 		}
 
@@ -302,6 +306,7 @@ func store_init() error {
 		Config.IoConnectors.SetOptions(*opts)
 	}
 
+	var dbname = "dbaction"
 	{
 		io_name := types.NewNameIdentifier("hpress_database")
 		opts := Config.IoConnectors.Options(io_name)
@@ -322,14 +327,33 @@ func store_init() error {
 			opts.SetValue("port", "3306")
 		}
 
+		dbname = opts.Value("dbname")
+
 		Config.IoConnectors.SetOptions(*opts)
 	}
 
 	if err := store.Init(Config.IoConnectors); err != nil {
+		hlog.Printf("error", "store_init %s", err.Error())
 		return err
 	}
 
-	return nil
+	ds, err := modeler.NewDatabaseEntryFromJson(dsBase)
+	if err != nil {
+		return err
+	}
+
+	mor, err := store.Data.Modeler()
+	if err != nil {
+		hlog.Printf("error", "store_init %s", err.Error())
+		return err
+	}
+
+	err = mor.Sync(dbname, ds)
+	if err != nil {
+		hlog.Printf("error", "store_init %s", err.Error())
+	}
+
+	return err
 }
 
 func Save() error {

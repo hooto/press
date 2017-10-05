@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/hooto/hlog4g/hlog"
 	"github.com/lynkdb/iomix/connect"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/skv"
@@ -44,11 +45,13 @@ func Init(cfg connect.MultiConnOptions) error {
 
 	opts = cfg.Options("hpress_database")
 	if opts == nil {
+		hlog.Print("error", err.Error())
 		return errors.New("No hpress_database Config.IoConnectors Found")
 	}
 
 	conn, err := mysqlgo.NewConnector(*opts)
 	if err != nil {
+		hlog.Printf("error", "store_init %s", err.Error())
 		return err
 	}
 	Data = conn

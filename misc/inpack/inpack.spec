@@ -1,8 +1,9 @@
-project.name = hooto-press
-project.version = 0.2.2.dev
-project.vendor = hooto.com
-project.homepage = https://github.com/hooto/hpress
-project.groups = app/other
+[project]
+name = hooto-press
+version = 0.2.2.dev
+vendor = hooto.com
+homepage = https://github.com/hooto/hpress
+groups = app/other
 
 %build
 export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
