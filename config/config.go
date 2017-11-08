@@ -203,8 +203,13 @@ func Initialize(prefix string) error {
 			Config.HttpPortPprof = 0
 		}
 
-		if optref == nil || optref.Ref == nil {
+		if optref == nil {
 			return errors.New("No Database Connection Configure Found")
+		}
+
+		ref_pod_id := inst.Meta.ID
+		if optref.Ref != nil && optref.Ref.PodId != "" {
+			ref_pod_id = optref.Ref.PodId
 		}
 
 		data_opts.Name = types.NameIdentifier("hpress_database")
@@ -222,12 +227,8 @@ func Initialize(prefix string) error {
 			data_opts.SetValue("pass", v.String())
 		}
 
-		if optref.Ref.PodId == "" {
-			return errors.New("No UpStream Pod Found")
-		}
-
 		var nsz inapi.NsPodServiceMap
-		if err := json.DecodeFile("/dev/shm/sysinner/nsz/"+optref.Ref.PodId, &nsz); err != nil {
+		if err := json.DecodeFile("/dev/shm/sysinner/nsz/"+ref_pod_id, &nsz); err != nil {
 			return err
 		}
 
