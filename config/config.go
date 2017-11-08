@@ -166,7 +166,8 @@ func Initialize(prefix string) error {
 
 		for _, app := range inst.Apps {
 
-			if app.Spec.Meta.Name != "hooto-press" {
+			if app.Spec.Meta.Name != "hooto-press" &&
+				app.Spec.Meta.Name != "hooto-press-x1" {
 				continue
 			}
 

@@ -1,8 +1,8 @@
 {
   "meta": {
     "name": "core/general",
-    "resourceVersion": "9",
-    "updated": "2017-05-10T02:13:54Z"
+    "resourceVersion": "11",
+    "updated": "2017-10-30T21:24:21Z"
   },
   "srvname": "",
   "title": "General",
@@ -38,14 +38,11 @@
         {
           "name": "content",
           "type": "text",
+          "length": "0",
           "attrs": [
             {
               "key": "ui_rows",
               "value": "12"
-            },
-            {
-              "key": "format",
-              "value": "md"
             }
           ],
           "title": "Content"
@@ -66,7 +63,7 @@
             "order": "field_weight asc",
             "limit": 50
           },
-          "cache_ttl": 3600000
+          "cache_ttl": 600000
         }
       ]
     },
