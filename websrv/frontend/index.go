@@ -31,10 +31,6 @@ import (
 	"github.com/hooto/hpress/store"
 )
 
-var (
-	sys_version = fmt.Sprintf("%s-%s", config.Version, config.Release)
-)
-
 type Index struct {
 	*httpsrv.Controller
 	hookPosts []func()
@@ -130,7 +126,7 @@ func (c Index) IndexAction() {
 	c.Data["baseuri"] = "/" + srvname
 	c.Data["srvname"] = srvname
 	c.Data["modname"] = mod.Meta.Name
-	c.Data["sys_version"] = sys_version
+	c.Data["sys_version_sign"] = config.SysVersionSign
 
 	if dataAction != "" {
 

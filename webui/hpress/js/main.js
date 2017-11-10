@@ -14,12 +14,12 @@
 
 var hpress = {
     base: "/hpress/",
-    sys_version: "1.0",
+    sys_version_sign: "1.0",
     debug: true,
 }
 
 hpress.urlver = function(debug_off) {
-    var u = "?_v=" + hpress.sys_version;
+    var u = "?_v=" + hpress.sys_version_sign;
     if (!debug_off && hpress.debug) {
         u += "&_=" + Math.random();
     }
@@ -33,8 +33,8 @@ hpress.Boot = function() {
             hpress.base += "/";
         }
     }
-    if (window._sys_version && window._sys_version.length > 1) {
-        hpress.sys_version = window._sys_version;
+    if (window._sys_version_sign && window._sys_version_sign.length > 1) {
+        hpress.sys_version_sign = window._sys_version_sign;
     }
 
     if (!hpress.base || hpress.base == "") {
@@ -214,6 +214,10 @@ hpress.AuthSessionRefresh = function() {
                     dstid: "hpress-topbar-userbar",
                     tplid: "hpress-topbar-user-unsigned-tpl",
                 });
+            }
+
+            if (hpress.sys_version_sign == "unreg") {
+                return window.location = "/hpress/mgr";
             }
 
             l4iTemplate.Render({

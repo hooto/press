@@ -42,6 +42,8 @@ import (
 )
 
 var (
+	Version    = ""
+	Release    = ""
 	flagPrefix = flag.String("prefix", "", "the prefix folder path")
 )
 
@@ -53,6 +55,14 @@ func init() {
 }
 
 func main() {
+
+	config.Version = Version
+	config.Release = Release
+
+	if len(os.Args) > 1 && os.Args[1] == "version" {
+		fmt.Printf("Version: %s, Release: %s\n", Version, Release)
+		return
+	}
 
 	//
 	for {

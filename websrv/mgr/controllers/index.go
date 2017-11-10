@@ -15,17 +15,11 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/hooto/httpsrv"
 	"github.com/hooto/iam/iamclient"
 
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/status"
-)
-
-var (
-	sys_version = fmt.Sprintf("%s-%s", config.Version, config.Release)
 )
 
 type Index struct {
@@ -62,7 +56,7 @@ func (c Index) IndexAction() {
 		c.Response.Out.Header().Set("Access-Control-Allow-Origin", v)
 	}
 
-	c.Data["sys_version"] = sys_version
+	c.Data["sys_version_sign"] = config.SysVersionSign
 
 	c.Render("index.tpl")
 }

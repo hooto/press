@@ -15,9 +15,11 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/hooto/httpsrv"
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
@@ -106,6 +108,11 @@ func (c Setup) AppRegisterSyncAction() {
 		reg.Error = &types.ErrorMeta{iamapi.ErrCodeInternalError, err.Error()}
 
 	} else if reg.Error == nil && reg.Kind == "AppInstanceRegister" {
+
+		if config.Config.InstanceID != reg.Instance.Meta.ID {
+			config.SysVersionSign = idhash.HashToHexString([]byte(
+				fmt.Sprintf("%s-%s-%s", config.Version, config.Release, reg.Instance.Meta.ID)), 16)
+		}
 
 		config.Config.InstanceID = reg.Instance.Meta.ID
 		iamclient.InstanceID = reg.Instance.Meta.ID

@@ -10,7 +10,7 @@ export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache}
-go build -ldflags "-s -w" -o {{.buildroot}}/bin/hooto-press main.go
+go build -ldflags "-s -w -X main.Version={{.project__version}} -X main.Release={{.project__release}}" -o {{.buildroot}}/bin/hooto-press main.go
 
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpress/js/main.js
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpressm/js/main.js

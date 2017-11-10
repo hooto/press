@@ -17,12 +17,12 @@ var hpressMgr = {
     base: "/hpress/mgr/",
     api: "/hpress/v1/",
     basetpl: "/hpress/~/hpressm/",
-    sys_version: "1.0",
+    sys_version_sign: "1.0",
     debug: true,
 }
 
 hpressMgr.urlver = function(debug_off) {
-    var u = "?_v="+ hpressMgr.sys_version;
+    var u = "?_v="+ hpressMgr.sys_version_sign;
     if (!debug_off && hpressMgr.debug) {
         u += "&_=" + Math.random();
     }
@@ -43,8 +43,8 @@ hpressMgr.Boot = function() {
         hpressMgr.basetpl = hpressMgr.frtbase + "~/hpressm/";
     }
 
-    if (window._sys_version && window._sys_version.length > 1) {
-        hpressMgr.sys_version = window._sys_version;
+    if (window._sys_version_sign && window._sys_version_sign.length > 1) {
+        hpressMgr.sys_version_sign = window._sys_version_sign;
     }
 
     seajs.config({

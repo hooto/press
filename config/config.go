@@ -25,6 +25,7 @@ import (
 	"github.com/hooto/hcaptcha/captcha4g"
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/iam/iamapi"
+	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
@@ -37,12 +38,13 @@ import (
 )
 
 var (
-	Prefix        string
-	Config        ConfigCommon
-	AppName       = "hooto-press"
-	Version       = "0.2.2.dev"
-	Release       = "1"
-	CaptchaConfig = captcha4g.DefaultConfig
+	Prefix         string
+	Config         ConfigCommon
+	AppName        = "hooto-press"
+	Version        = "0.2.2.dev"
+	Release        = "1"
+	SysVersionSign = ""
+	CaptchaConfig  = captcha4g.DefaultConfig
 
 	pod_inst_updated time.Time
 	pod_inst         = "/home/action/.sysinner/pod_instance.json"
@@ -143,6 +145,12 @@ func Initialize(prefix string) error {
 		if Config.HttpPort == 0 {
 			Config.HttpPort = 9533
 		}
+	}
+
+	if Config.InstanceID != "" {
+		SysVersionSign = idhash.HashToHexString([]byte(fmt.Sprintf("%s-%s-%s", Version, Release, Config.InstanceID)), 16)
+	} else {
+		SysVersionSign = "unreg"
 	}
 
 	if Config.RunMode != "local-dev" {
