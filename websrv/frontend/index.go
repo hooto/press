@@ -21,6 +21,8 @@ import (
 	"time"
 
 	"github.com/hooto/httpsrv"
+	"github.com/hooto/iam/iamapi"
+	"github.com/hooto/iam/iamclient"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/x/webui"
 	"github.com/lynkdb/iomix/skv"
@@ -34,6 +36,12 @@ import (
 type Index struct {
 	*httpsrv.Controller
 	hookPosts []func()
+	us        iamapi.UserSession
+}
+
+func (c *Index) Init() int {
+	c.us, _ = iamclient.SessionInstance(c.Session)
+	return 0
 }
 
 func (c Index) filter(rt []string, spec *api.Spec) (string, string, bool) {
@@ -127,6 +135,9 @@ func (c Index) IndexAction() {
 	c.Data["srvname"] = srvname
 	c.Data["modname"] = mod.Meta.Name
 	c.Data["sys_version_sign"] = config.SysVersionSign
+	if c.us.IsLogin() {
+		c.Data[iamclient.AccessTokenKey] = c.Session.Get(iamclient.AccessTokenKey)
+	}
 
 	if dataAction != "" {
 
@@ -232,7 +243,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 		var ls api.NodeList
 		qryhash := qry.Hash()
 
-		if ad.CacheTTL > 0 {
+		if ad.CacheTTL > 0 && (!c.us.IsLogin() || c.us.UserName != config.Config.AppInstance.Meta.User) {
 			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
 				rs.Decode(&ls)
 			}
@@ -288,7 +299,7 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 
 		var entry api.Node
 		qryhash := qry.Hash()
-		if ad.CacheTTL > 0 {
+		if ad.CacheTTL > 0 && (!c.us.IsLogin() || c.us.UserName != config.Config.AppInstance.Meta.User) {
 			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
 				rs.Decode(&entry)
 			}
