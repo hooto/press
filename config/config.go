@@ -41,7 +41,7 @@ var (
 	Prefix         string
 	Config         ConfigCommon
 	AppName        = "hooto-press"
-	Version        = "0.2.2.dev"
+	Version        = "0.2"
 	Release        = "1"
 	SysVersionSign = ""
 	CaptchaConfig  = captcha4g.DefaultConfig
@@ -79,7 +79,7 @@ func init() {
 
 	//
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_header_site_name", "Hooto Press",
+		"frontend_header_site_name", "Site Name",
 		"Site's Name", "",
 	})
 	SysConfigList.Insert(api.SysConfig{
@@ -110,7 +110,7 @@ func init() {
 		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text",
 	})
 	SysConfigList.Insert(api.SysConfig{
-		"ls2_uri", "//127.0.0.1/s2/bucket-name",
+		"ls2_uri", "//127.0.0.1:9533/hpress/s2",
 		"Storage Service URI", "",
 	})
 

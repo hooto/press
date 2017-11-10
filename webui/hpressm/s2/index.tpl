@@ -32,39 +32,39 @@
 </script>
 
 <script id="hpressm-s2-objls-tpl" type="text/html">  
-  {[~it.items :v]}
-    <tr id="obj{[=v._id]}">
-      <td>
-      {[ if (v.isdir) { ]}
-        <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
-      {[ } else if (v._isimg) { ]}
-        <a href="{[=v.self_link]}" target="_blank"><img src="{[=v.self_link]}?ipn=i6040"></a>
-      {[ } ]}
-      </td>
-      <td class="ts3-fontmono">
-      {[ if (v.isdir) { ]}
-        <a class="obj-item-dir" href="#objs" path="{[=v._abspath]}">{[=v.name]}</a>
-      {[ } else { ]}
-        <a class="obj-item-file" href="{[=v.self_link]}" target="_blank">{[=v.name]}</a>
-      {[ } ]}
-      </td>
-      <td>
-      {[?v.isdir]}YES{[?]}
-      </td>
-      <td>
-      {[?!v.isdir]}
-        {[=hpressS2.UtilResourceSizeFormat(v.size)]}</td>
-      {[?]}
-      <td align="right">{[=l4i.TimeParseFormat(v.modtime, "Y-m-d H:i:s")]}</td>
-      <td align="right">
-      {[ if (!v.isdir) { ]}
-        <a class="obj-item-del btn btn-default btn-xs" href="#obj-del" obj="{[=v._abspath]}">
-          <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Delete
-        </a>
-      {[ } ]}
-      </td>
-    </tr>
-  {[~]}
+{[~it.items :v]}
+<tr id="obj{[=v._id]}">
+  <td>
+  {[ if (v.isdir) { ]}
+    <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+  {[ } else if (v._isimg) { ]}
+    <a href="{[=v.self_link]}" target="_blank"><img src="{[=v.self_link]}?ipn=i6040"></a>
+  {[ } ]}
+  </td>
+  <td class="ts3-fontmono">
+  {[ if (v.isdir) { ]}
+    <a class="obj-item-dir" href="#objs" path="{[=v._abspath]}">{[=v.name]}</a>
+  {[ } else { ]}
+    <a class="obj-item-file" href="{[=v.self_link]}" target="_blank">{[=v.name]}</a>
+  {[ } ]}
+  </td>
+  <td>
+  {[?v.isdir]}YES{[?]}
+  </td>
+  <td>
+  {[?!v.isdir]}
+    {[=hpressS2.UtilResourceSizeFormat(v.size)]}</td>
+  {[?]}
+  <td align="right">{[=l4i.TimeParseFormat(v.modtime, "Y-m-d H:i:s")]}</td>
+  <td align="right">
+  {[ if (!v.isdir) { ]}
+    <a class="obj-item-del btn btn-default btn-xs" href="#obj-del" obj="{[=v._abspath]}">
+      <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Delete
+    </a>
+  {[ } ]}
+  </td>
+</tr>
+{[~]}
 </script>
 
 <!-- TPL : File New -->

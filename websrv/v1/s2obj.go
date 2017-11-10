@@ -253,8 +253,7 @@ func (c S2Obj) ListAction() {
 	rsp.Items = fsDirList(projfp, "", false)
 
 	for i := range rsp.Items {
-		rsp.Items[i].SelfLink = fmt.Sprintf("%s/%s",
-			config.SysConfigList.FetchString("ls2_uri"), filepath.Clean(path+"/"+rsp.Items[i].Name))
+		rsp.Items[i].SelfLink = config.SysConfigList.FetchString("ls2_uri") + filepath.Clean(path+"/"+rsp.Items[i].Name)
 	}
 
 	rsp.Kind = "FsFileList"

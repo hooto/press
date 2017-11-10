@@ -27,7 +27,6 @@ func NewModule() httpsrv.Module {
 
 	module.ControllerRegister(new(Index))
 	module.ControllerRegister(new(Error))
-	module.ControllerRegister(new(S2))
 
 	return module
 }
@@ -48,6 +47,7 @@ func NewHtpModule() httpsrv.Module {
 		StaticPath: config.Prefix + "/webui/",
 	})
 
+	module.ControllerRegister(new(S2))
 	module.ControllerRegister(new(iamclient.Auth))
 
 	return module
