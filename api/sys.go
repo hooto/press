@@ -24,6 +24,7 @@ type SysStatus struct {
 	Meta            types.ObjectMeta `json:"meta,omitempty"`
 	InstanceID      string           `json:"instance_id,omitempty"`
 	AppVersion      string           `json:"app_version,omitempty"`
+	AppRelease      string           `json:"app_release,omitempty"`
 	RuntimeVersion  string           `json:"runtime_version,omitempty"`
 	Uptime          string           `json:"uptime,omitempty"`
 	CoroutineNumber int              `json:"coroutine_number,omitempty"`

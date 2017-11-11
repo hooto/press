@@ -145,6 +145,7 @@ func (c Sys) StatusAction() {
 
 	set.InstanceID = config.Config.InstanceID
 	set.AppVersion = config.Version
+	set.AppRelease = config.Release
 	set.RuntimeVersion = runtime.Version()
 	set.Uptime = status.Uptime
 	set.CoroutineNumber = runtime.NumGoroutine()

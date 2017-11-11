@@ -29,8 +29,8 @@
         <td>{[=it.instance_id]}</td>
       </tr>
       <tr>
-        <td>App Version</td>
-        <td>{[=it.app_version]}</td>
+        <td>App Version - Release</td>
+        <td>{[=it.app_version]} - {[=it.app_release]}</td>
       </tr>
       <tr>
         <td>Runtime Version</td>

@@ -57,6 +57,7 @@ var (
 	}
 
 	SysConfigList = api.SysConfigList{}
+	inited        = false
 )
 
 type ConfigCommon struct {
@@ -119,9 +120,18 @@ func init() {
 		"http_h_ac_allow_origin", "",
 		"HTTP Access-Control-Allow-Origin", "",
 	})
+
+	go func() {
+		sync_sysinner_config()
+		time.Sleep(60e9)
+	}()
 }
 
 func Initialize(prefix string) error {
+
+	if inited {
+		return nil
+	}
 
 	var err error
 
@@ -153,113 +163,16 @@ func Initialize(prefix string) error {
 		SysVersionSign = "unreg"
 	}
 
-	if Config.RunMode != "local-dev" {
-
-		var inst inapi.Pod
-		if err := json.DecodeFile(pod_inst, &inst); err != nil {
-			return err
-		}
-
-		if inst.Spec == nil ||
-			len(inst.Spec.Boxes) == 0 ||
-			inst.Spec.Boxes[0].Resources == nil {
-			return errors.New("Not Pod Instance Setup")
-		}
-
-		var (
-			opt       *inapi.AppOption
-			optref    *inapi.AppOption
-			data_opts connect.ConnOptions
-		)
-
-		for _, app := range inst.Apps {
-
-			if app.Spec.Meta.Name != "hooto-press" &&
-				app.Spec.Meta.Name != "hooto-press-x1" {
-				continue
-			}
-
-			//
-			if opt == nil {
-				opt = app.Operate.Options.Get("cfg/hooto-press") // TODO
-			}
-
-			if optref == nil {
-				optref = app.Operate.Options.Get("cfg/sysinner-mysql") // TODO
-			}
-		}
-
-		if opt == nil {
-			return errors.New("No Configure Found")
-		}
-
-		if v, ok := opt.Items.Get("iam_service_url"); ok {
-			Config.IamServiceUrl = v.String()
-		} else {
-			return errors.New("No Config.IamServiceUrl Found")
-		}
-
-		if v, ok := opt.Items.Get("iam_service_url_frontend"); ok {
-			Config.IamServiceUrlFrontend = v.String()
-		} else {
-			Config.IamServiceUrlFrontend = Config.IamServiceUrl
-		}
-
-		if v, ok := opt.Items.Get("http_pprof_enable"); ok && v.String() == "1" {
-			Config.HttpPortPprof = Config.HttpPort + 1
-		} else {
-			Config.HttpPortPprof = 0
-		}
-
-		if optref == nil {
-			return errors.New("No Database Connection Configure Found")
-		}
-
-		ref_pod_id := inst.Meta.ID
-		if optref.Ref != nil && optref.Ref.PodId != "" {
-			ref_pod_id = optref.Ref.PodId
-		}
-
-		data_opts.Name = types.NameIdentifier("hpress_database")
-		data_opts.Driver = "lynkdb/mysqlgo"
-
-		if v, ok := optref.Items.Get("db_name"); ok {
-			data_opts.SetValue("dbname", v.String())
-		}
-
-		if v, ok := optref.Items.Get("db_user"); ok {
-			data_opts.SetValue("user", v.String())
-		}
-
-		if v, ok := optref.Items.Get("db_auth"); ok {
-			data_opts.SetValue("pass", v.String())
-		}
-
-		var nsz inapi.NsPodServiceMap
-		if err := json.DecodeFile("/dev/shm/sysinner/nsz/"+ref_pod_id, &nsz); err != nil {
-			return err
-		}
-
-		// TODO
-		if srv := nsz.Get(3306); srv == nil || len(srv.Items) == 0 {
-			return errors.New("No Pod ServicePort Found")
-		} else {
-			data_opts.SetValue("host", srv.Items[0].Ip)
-			data_opts.SetValue("port", fmt.Sprintf("%d", srv.Items[0].Port))
-		}
-
-		Config.IoConnectors.SetOptions(data_opts)
-	}
-
-	Save()
-
 	if Config.AppTitle == "" {
 		Config.AppTitle = "Hooto Press"
 	}
 
+	if err := sync_sysinner_config(); err != nil {
+		return err
+	}
+
 	// Setting CAPTCHA
 	CaptchaConfig.DataDir = Prefix + "/var/hcaptchadb"
-
 	if err := captcha4g.Config(CaptchaConfig); err != nil {
 		return err
 	}
@@ -290,7 +203,142 @@ func Initialize(prefix string) error {
 		}
 	}
 
-	return module_init()
+	if err := module_init(); err != nil {
+		return err
+	}
+
+	inited = true
+
+	return nil
+}
+
+func sync_sysinner_config() error {
+
+	if Config.RunMode == "local-dev" {
+		return nil
+	}
+
+	var inst inapi.Pod
+	if err := json.DecodeFile(pod_inst, &inst); err != nil {
+		return err
+	}
+
+	if inst.Spec == nil ||
+		len(inst.Spec.Boxes) == 0 ||
+		inst.Spec.Boxes[0].Resources == nil {
+		return errors.New("Not Pod Instance Setup")
+	}
+
+	var (
+		opt       *inapi.AppOption
+		optref    *inapi.AppOption
+		data_opts connect.ConnOptions
+		sync      = false
+	)
+
+	for _, app := range inst.Apps {
+
+		if app.Spec.Meta.Name != "hooto-press" &&
+			app.Spec.Meta.Name != "hooto-press-x1" {
+			continue
+		}
+
+		//
+		if opt == nil {
+			opt = app.Operate.Options.Get("cfg/hooto-press") // TODO
+		}
+
+		if optref == nil {
+			optref = app.Operate.Options.Get("cfg/sysinner-mysql") // TODO
+		}
+	}
+
+	if opt == nil {
+		return errors.New("No Configure Found")
+	}
+
+	if v, ok := opt.Items.Get("iam_service_url"); ok {
+		Config.IamServiceUrl = v.String()
+	} else {
+		return errors.New("No Config.IamServiceUrl Found")
+	}
+
+	if v, ok := opt.Items.Get("iam_service_url_frontend"); ok {
+		if v.String() != Config.IamServiceUrlFrontend {
+			Config.IamServiceUrlFrontend, sync = v.String(), true
+		}
+	} else {
+		Config.IamServiceUrlFrontend = Config.IamServiceUrl
+	}
+
+	if v, ok := opt.Items.Get("http_pprof_enable"); ok && v.String() == "1" {
+		if p := Config.HttpPort + 1; p != Config.HttpPortPprof {
+			Config.HttpPortPprof, sync = Config.HttpPort+1, true
+		}
+	} else {
+		Config.HttpPortPprof = 0
+	}
+
+	if optref == nil {
+		return errors.New("No Database Connection Configure Found")
+	}
+
+	ref_pod_id := inst.Meta.ID
+	if optref.Ref != nil && optref.Ref.PodId != "" {
+		ref_pod_id = optref.Ref.PodId
+	}
+
+	data_opts.Name = types.NameIdentifier("hpress_database")
+	data_opts.Driver = "lynkdb/mysqlgo"
+
+	if v, ok := optref.Items.Get("db_name"); ok {
+		if data_opts.Value("dbname") != v.String() {
+			data_opts.SetValue("dbname", v.String())
+			sync = true
+		}
+	}
+
+	if v, ok := optref.Items.Get("db_user"); ok {
+		if data_opts.Value("user") != v.String() {
+			data_opts.SetValue("user", v.String())
+			sync = true
+		}
+	}
+
+	if v, ok := optref.Items.Get("db_auth"); ok {
+		if data_opts.Value("pass") != v.String() {
+			data_opts.SetValue("pass", v.String())
+			sync = true
+		}
+	}
+
+	var nsz inapi.NsPodServiceMap
+	if err := json.DecodeFile("/dev/shm/sysinner/nsz/"+ref_pod_id, &nsz); err != nil {
+		return err
+	}
+
+	// TODO
+	if srv := nsz.Get(3306); srv == nil || len(srv.Items) == 0 {
+		return errors.New("No Pod ServicePort Found")
+	} else {
+		if data_opts.Value("host") != srv.Items[0].Ip {
+			data_opts.SetValue("host", srv.Items[0].Ip)
+			sync = true
+		}
+		if p := fmt.Sprintf("%d", srv.Items[0].Port); p != data_opts.Value("port") {
+			data_opts.SetValue("port", p)
+			sync = true
+		}
+	}
+
+	Config.IoConnectors.SetOptions(data_opts)
+
+	if sync {
+		Save()
+		hlog.Print("warn", "sysinner configs synced")
+	}
+
+	return nil
 }
 
 //
