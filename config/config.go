@@ -122,8 +122,12 @@ func init() {
 	})
 
 	go func() {
-		sync_sysinner_config()
-		time.Sleep(60e9)
+		for {
+			time.Sleep(60e9)
+			if err := sync_sysinner_config(); err != nil {
+				hlog.Printf("error", "sync_sysinner_config err: %s", err.Error())
+			}
+		}
 	}()
 }
 
@@ -258,7 +262,9 @@ func sync_sysinner_config() error {
 	}
 
 	if v, ok := opt.Items.Get("iam_service_url"); ok {
-		Config.IamServiceUrl = v.String()
+		if v.String() != Config.IamServiceUrl {
+			Config.IamServiceUrl, sync = v.String(), true
+		}
 	} else {
 		return errors.New("No Config.IamServiceUrl Found")
 	}
