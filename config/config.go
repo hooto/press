@@ -236,7 +236,7 @@ func sync_sysinner_config() error {
 	var (
 		opt       *inapi.AppOption
 		optref    *inapi.AppOption
-		data_opts connect.ConnOptions
+		data_opts = Config.IoConnectors.Options(types.NameIdentifier("hpress_database"))
 		sync      = false
 	)
 
@@ -294,8 +294,12 @@ func sync_sysinner_config() error {
 		ref_pod_id = optref.Ref.PodId
 	}
 
-	data_opts.Name = types.NameIdentifier("hpress_database")
-	data_opts.Driver = "lynkdb/mysqlgo"
+	if data_opts == nil {
+		data_opts = &connect.ConnOptions{
+			Name:   types.NameIdentifier("hpress_database"),
+			Driver: "lynkdb/mysqlgo",
+		}
+	}
 
 	if v, ok := optref.Items.Get("db_name"); ok {
 		if data_opts.Value("dbname") != v.String() {
@@ -337,11 +341,11 @@ func sync_sysinner_config() error {
 		}
 	}
 
-	Config.IoConnectors.SetOptions(data_opts)
+	Config.IoConnectors.SetOptions(*data_opts)
 
 	if sync {
 		Save()
-		hlog.Print("warn", "sysinner configs synced")
+		hlog.Printf("warn", "sysinner configs synced")
 	}
 
 	return nil
