@@ -242,8 +242,8 @@ func sync_sysinner_config() error {
 
 	for _, app := range inst.Apps {
 
-		if app.Spec.Meta.Name != "hooto-press" &&
-			app.Spec.Meta.Name != "hooto-press-x1" {
+		if app.Spec.Meta.ID != "hooto-press" &&
+			app.Spec.Meta.ID != "hooto-press-x1" {
 			continue
 		}
 
