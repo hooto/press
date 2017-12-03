@@ -429,7 +429,6 @@ func (c ModSet) SpecRouteDelAction() {
 		return
 	}
 
-
 	err = modset.SpecRouteDel(set.ModName, set)
 	if err != nil {
 		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())

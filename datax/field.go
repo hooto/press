@@ -58,10 +58,12 @@ var (
 	regLineSpace  = regexp.MustCompile("\\n\\s*\\n")
 	mkp           = bluemonday.UGCPolicy()
 	htmlp         = bluemonday.UGCPolicy()
+	htmlphtml     = bluemonday.UGCPolicy()
 )
 
 func init() {
 	mkp.AllowAttrs("class").OnElements("code")
+	htmlphtml.AllowAttrs("class").OnElements("div")
 }
 
 func TimeFormat(timeString, formatFrom, formatTo string) string {
@@ -246,7 +248,8 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 		val = string(mkp.SanitizeBytes(unsafe))
 
 	case "html":
-		val = htmlp.Sanitize(val)
+
+		val = htmlphtml.Sanitize(val)
 
 	case "text":
 		if lines := strings.Split(val, "\n\n"); len(lines) > 1 {

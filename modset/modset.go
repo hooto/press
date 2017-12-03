@@ -706,7 +706,6 @@ func SpecRouteSet(modname string, entry api.Route) error {
 	return err
 }
 
-
 func SpecRouteDel(modname string, entry api.Route) error {
 
 	if modname == "" {
@@ -718,7 +717,6 @@ func SpecRouteDel(modname string, entry api.Route) error {
 	if entry.Path, err = RoutePathFilter(entry.Path); err != nil {
 		return fmt.Errorf("Invalid Action Path (%s)", entry.Path)
 	}
-
 
 	prev, err := SpecFetch(modname)
 	if err != nil {

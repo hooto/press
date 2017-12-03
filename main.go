@@ -35,6 +35,7 @@ import (
 
 	cdef "github.com/hooto/hpress/websrv/frontend"
 	cmgr "github.com/hooto/hpress/websrv/mgr"
+	cmod "github.com/hooto/hpress/websrv/module"
 	capi "github.com/hooto/hpress/websrv/v1"
 
 	ext_captcha "github.com/hooto/hcaptcha/captcha4g"
@@ -107,6 +108,7 @@ func main() {
 
 	httpsrv.GlobalService.ModuleRegister("/hpress/+/comment", ext_comment.NewModule())
 	httpsrv.GlobalService.ModuleRegister("/hpress/+/hcaptcha", ext_captcha.WebServerModule())
+	httpsrv.GlobalService.ModuleRegister("/hpress/+", cmod.NewModule())
 
 	//
 	httpsrv.GlobalService.ModuleRegister("/hpress/v1", capi.NewModule())
