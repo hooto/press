@@ -167,18 +167,41 @@ hpress.NavActive = function(tplid, path) {
     }
 
     var nav = $("#" + tplid);
-    nav.find("a").each(function() {
+    if (!nav) {
+        return;
+    }
 
-        var href = $(this).attr("href");
+    var nav_path = window.location.pathname;
+    if (!nav_path || nav_path == "") {
+        nav_path = "/";
+    }
 
-        if (href) {
+    var found = false;
+    while (true) {
 
-            if (href.match(path)) {
+        nav.find("a").each(function() {
+            if (found) {
+                return;
+            }
+            var href = $(this).attr("href");
+            if (href && href == nav_path) {
                 nav.find("a.active").removeClass("active");
                 $(this).addClass("active");
+                found = true;
             }
+        });
+
+        if (found) {
+            break;
         }
-    });
+
+        if (nav_path.lastIndexOf("/") > 0) {
+            nav_path = nav_path.substr(0, nav_path.lastIndexOf("/"));
+        } else {
+            console.log("break 2");
+            break;
+        }
+    }
 }
 
 hpress.Ajax = function(url, options) {
