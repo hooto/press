@@ -833,6 +833,8 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                     } else {
                         $("#hpressm-node-set-opts-label").text("Editing");
                     }
+
+                    hpressMgr.hotkey_ctrl_s = hpressNode.SetSave;
                 },
             });
         });
@@ -873,8 +875,18 @@ hpressNode.Set = function(modname, modelid, nodeid) {
     });
 }
 
+hpressNode.SetSave = function() {
+    if (!hpressNode.setCurrent) {
+        hpressMgr.hotkey_ctrl_s = null;
+        return;
+    }
+    hpressNode.SetCommit({
+        save: true
+    });
+}
 
-hpressNode.SetCommit = function() {
+hpressNode.SetCommit = function(options) {
+    options = options || {};
     var form = $("#hpressm-nodeset-layout"),
         alertid = "#hpressm-node-alert";
 
@@ -1016,6 +1028,10 @@ hpressNode.SetCommit = function() {
             form.find("input[name=id]").val(data.id);
 
             l4i.InnerAlert(alertid, 'alert-success', "Successful operation");
+            if (options.save) {
+                return;
+            }
+            hpressNode.setCurrent = null;
             setTimeout(function() {
                 hpressNode.List();
                 hpressEditor.Clean();

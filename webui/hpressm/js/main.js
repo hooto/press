@@ -19,10 +19,11 @@ var hpressMgr = {
     basetpl: "/hpress/~/hpressm/",
     sys_version_sign: "1.0",
     debug: true,
+    hotkey_ctrl_s: null,
 }
 
 hpressMgr.urlver = function(debug_off) {
-    var u = "?_v="+ hpressMgr.sys_version_sign;
+    var u = "?_v=" + hpressMgr.sys_version_sign;
     if (!debug_off && hpressMgr.debug) {
         u += "&_=" + Math.random();
     }
@@ -46,6 +47,15 @@ hpressMgr.Boot = function() {
     if (window._sys_version_sign && window._sys_version_sign.length > 1) {
         hpressMgr.sys_version_sign = window._sys_version_sign;
     }
+
+    document.addEventListener("keydown", function(e) {
+        if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+            e.preventDefault();
+            if (hpressMgr.hotkey_ctrl_s) {
+                hpressMgr.hotkey_ctrl_s();
+            }
+        }
+    }, false);
 
     seajs.config({
         base: hpressMgr.frtbase,

@@ -167,7 +167,7 @@ var hpressSpec = {
 
     permalink_def: [{
         type: "",
-        name: "Off",
+        name: "OFF",
     }, {
         type: "name",
         name: "Name",

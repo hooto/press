@@ -19,7 +19,7 @@ var hpress = {
 }
 
 hpress.urlver = function(debug_off) {
-    var u = "?_v=" + hpress.sys_version_sign;
+    var u = "?v=" + hpress.sys_version_sign;
     if (!debug_off && hpress.debug) {
         u += "&_=" + Math.random();
     }
@@ -162,7 +162,7 @@ hpress.hchartRender = function(i, elem) {
 }
 
 hpress.NavActive = function(tplid, path) {
-    if (!tplid || !path) {
+    if (!tplid) {
         return;
     }
 
