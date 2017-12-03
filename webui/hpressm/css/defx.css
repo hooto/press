@@ -1081,11 +1081,11 @@ body {
   /*background-repeat: repeat;*/
   /*background-image: url("../img/gen/grid-hexagons.png"), linear-gradient(10deg, #222222, #999999);*/
   /*background-image: url("@{url-img}/gen/grid-hexagons.png"), radial-gradient(circle, #ccc, #666);*/
-  -moz-user-select: none;
+ /* -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
-  user-select: none;
+  user-select: none;*/
 }
 
 .l9r-loadwell {

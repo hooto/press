@@ -15,7 +15,16 @@
 package api
 
 import (
+	"fmt"
+	"path/filepath"
+	"regexp"
+	"strings"
+
 	"github.com/lessos/lessgo/types"
+)
+
+var (
+	SrvNameReg = regexp.MustCompile("^[0-9a-z\\-_]{1,50}$")
 )
 
 type KeyValue struct {
@@ -35,6 +44,17 @@ type Spec struct {
 	Actions        []Action         `json:"actions,omitempty"`
 	Views          []View           `json:"views,omitempty"`
 	Router         Router           `json:"router,omitempty"`
+}
+
+func SrvNameFilter(name string) (string, error) {
+
+	name = strings.Replace(strings.Trim(filepath.Clean(strings.ToLower(name)), "/"), "/", "-", -1)
+
+	if mat := SrvNameReg.MatchString(name); !mat {
+		return "", fmt.Errorf("Invalid Service Name (%s)", name)
+	}
+
+	return name, nil
 }
 
 type View struct {

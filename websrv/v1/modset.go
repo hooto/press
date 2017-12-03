@@ -58,17 +58,14 @@ func (c ModSet) SpecListAction() {
 	defer c.RenderJson(&rsp)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		rsp.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	q := rdb.NewQuerySet().From("modules").Limit(100)
 	rs, err := store.Data.Query(q)
 	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
+		rsp.Error = types.NewErrorMeta(api.ErrCodeInternalError, "Can not pull database instance")
 		return
 	}
 
@@ -77,7 +74,7 @@ func (c ModSet) SpecListAction() {
 		var entry api.Spec
 
 		if err := v.Field("body").JsonDecode(&entry); err == nil {
-			entry.SrvName = v.Field("srvname").String()
+			entry.SrvName, _ = api.SrvNameFilter(v.Field("srvname").String())
 			rsp.Items = append(rsp.Items, entry)
 		}
 	}
@@ -92,21 +89,18 @@ func (c ModSet) SpecEntryAction() {
 	defer c.RenderJson(&rsp)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "editor.read", config.Config.InstanceID) {
-		rsp.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		rsp.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	if c.Params.Get("name") == "" {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeBadArgument,
-			Message: "Object Not Found",
-		}
+		rsp.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Object Not Found")
 		return
 	}
 
 	name, err := modset.ModNameFilter(c.Params.Get("name"))
 	if err != nil {
-		rsp.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		rsp.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
@@ -114,30 +108,21 @@ func (c ModSet) SpecEntryAction() {
 	q.Where.And("name", name)
 	rs, err := store.Data.Query(q)
 	if err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: "Can not pull database instance",
-		}
+		rsp.Error = types.NewErrorMeta(api.ErrCodeInternalError, "Can not pull database instance")
 		return
 	}
 
 	if len(rs) < 1 {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeBadArgument,
-			Message: "Object Not Found",
-		}
+		rsp.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Object Not Found")
 		return
 	}
 
 	if err := rs[0].Field("body").JsonDecode(&rsp); err != nil {
-		rsp.Error = &types.ErrorMeta{
-			Code:    api.ErrCodeInternalError,
-			Message: err.Error(),
-		}
+		rsp.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
-	rsp.SrvName = rs[0].Field("srvname").String()
+	rsp.SrvName, _ = api.SrvNameFilter(rs[0].Field("srvname").String())
 
 	rsp.Kind = "Spec"
 }
@@ -150,46 +135,46 @@ func (c ModSet) SpecInfoSetAction() {
 
 	if !iamclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {
 
-		set.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	err := c.Request.JsonDecode(&set)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "Bad Argument " + err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
 		return
 	}
 
 	set.Meta.Name, err = modset.ModNameFilter(set.Meta.Name)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
-	set.SrvName, err = modset.SrvNameFilter(set.SrvName)
+	set.SrvName, err = api.SrvNameFilter(set.SrvName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	if _, err = modset.SpecFetch(set.Meta.Name); err != nil {
 
 		if err = modset.SpecInfoNew(set); err != nil {
-			set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+			set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 			return
 		}
 
 	} else {
 
 		if err = modset.SpecInfoSet(set); err != nil {
-			set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+			set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 			return
 		}
 	}
 
 	seted, err := modset.SpecFetch(set.Meta.Name)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
@@ -205,50 +190,50 @@ func (c ModSet) SpecTermSetAction() {
 	defer c.RenderJson(&set)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		set.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	err := c.Request.JsonDecode(&set)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "Bad Argument " + err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
 		return
 	}
 
 	set.Meta.Name, err = modset.ModelNameFilter(set.Meta.Name)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	set.ModName, err = modset.ModNameFilter(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	set.Type = strings.ToLower(set.Type)
 	if set.Type != "tag" && set.Type != "taxonomy" {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "Invalid Type"}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Invalid Type")
 		return
 	}
 
 	_, err = modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "ModName Not Found"}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "ModName Not Found")
 		return
 	}
 
 	err = modset.SpecTermSet(set.ModName, set)
 
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
 	seted, err := modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
@@ -264,43 +249,43 @@ func (c ModSet) SpecNodeSetAction() {
 	defer c.RenderJson(&set)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		set.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	err := c.Request.JsonDecode(&set)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "Bad Argument " + err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
 		return
 	}
 
 	set.Meta.Name, err = modset.ModelNameFilter(set.Meta.Name)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	set.ModName, err = modset.ModNameFilter(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	_, err = modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "ModName Not Found"}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "ModName Not Found")
 		return
 	}
 
 	err = modset.SpecNodeSet(set.ModName, set)
 
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 	seted, err := modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
@@ -316,44 +301,44 @@ func (c ModSet) SpecActionSetAction() {
 	defer c.RenderJson(&set)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		set.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	err := c.Request.JsonDecode(&set)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "Bad Argument " + err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
 		return
 	}
 
 	set.Name, err = modset.ModelNameFilter(set.Name)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	set.ModName, err = modset.ModNameFilter(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	_, err = modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "ModName Not Found"}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "ModName Not Found")
 		return
 	}
 
 	err = modset.SpecActionSet(set.ModName, set)
 
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
 	seted, err := modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
@@ -369,44 +354,44 @@ func (c ModSet) SpecRouteSetAction() {
 	defer c.RenderJson(&set)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
-		set.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
 		return
 	}
 
 	err := c.Request.JsonDecode(&set)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "Bad Argument " + err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
 		return
 	}
 
 	set.Path, err = modset.RoutePathFilter(set.Path)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	set.ModName, err = modset.ModNameFilter(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return
 	}
 
 	_, err = modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "ModName Not Found"}
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "ModName Not Found")
 		return
 	}
 
 	err = modset.SpecRouteSet(set.ModName, set)
 
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 
 	seted, err := modset.SpecFetch(set.ModName)
 	if err != nil {
-		set.Error = &types.ErrorMeta{api.ErrCodeInternalError, err.Error()}
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
 		return
 	}
 

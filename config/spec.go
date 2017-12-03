@@ -45,6 +45,10 @@ func SpecSet(spec *api.Spec) {
 	locker.Lock()
 	defer locker.Unlock()
 
+	if strings.Contains(spec.SrvName, "/") {
+		spec.SrvName, _ = api.SrvNameFilter(spec.SrvName)
+	}
+
 	Modules[spec.SrvName] = spec
 }
 
@@ -104,10 +108,10 @@ func module_init() error {
 			var mod api.Spec
 
 			if err := v.Field("body").JsonDecode(&mod); err == nil && mod.Meta.Name != "" {
-				if mod.SrvName == "" {
-					mod.SrvName = v.Field("srvname").String()
+				if mod.SrvName == "" || strings.Contains(mod.SrvName, "/") {
+					mod.SrvName, _ = api.SrvNameFilter(v.Field("srvname").String())
 				}
-				Modules[v.Field("srvname").String()] = &mod
+				Modules[mod.SrvName] = &mod
 			} else {
 				hlog.Printf("error", "Module.Init(%s) Failed", v.Field("name").String())
 			}
@@ -156,8 +160,11 @@ func module_init() error {
 			continue
 		}
 
-		if spec.SrvName == "" {
-			spec.SrvName = spec.Meta.Name
+		if spec.SrvName == "" || strings.Contains(spec.SrvName, "/") {
+			spec.SrvName, err = api.SrvNameFilter(spec.Meta.Name)
+			if err != nil {
+				return err
+			}
 		}
 
 		//
@@ -217,6 +224,10 @@ func SpecRefresh(modname string) {
 }
 
 func SpecSrvRefresh(srvname string) {
+
+	if strings.Contains(srvname, "/") {
+		srvname, _ = api.SrvNameFilter(srvname)
+	}
 
 	spec, ok := Modules[srvname]
 	if !ok {

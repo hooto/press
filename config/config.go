@@ -148,7 +148,7 @@ func Initialize(prefix string) error {
 	Prefix = filepath.Clean(prefix)
 	Config.ModuleDir = Prefix + "/modules"
 
-	file := Prefix + "/etc/main.json"
+	file := Prefix + "/etc/config.json"
 	if err := json.DecodeFile(file, &Config); err != nil {
 		if !os.IsNotExist(err) {
 			return err
@@ -425,5 +425,5 @@ func store_init() error {
 }
 
 func Save() error {
-	return json.EncodeToFile(Config, Prefix+"/etc/main.json", "  ")
+	return json.EncodeToFile(Config, Prefix+"/etc/config.json", "  ")
 }

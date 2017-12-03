@@ -1,10 +1,10 @@
 {
   "meta": {
     "name": "core/general",
-    "resourceVersion": "11",
-    "updated": "2017-10-30T21:24:21Z"
+    "resourceVersion": "13",
+    "updated": "2017-12-09T13:35:17Z"
   },
-  "srvname": "",
+  "srvname": "core-general",
   "title": "General",
   "nodeModels": [
     {

@@ -90,14 +90,14 @@ func (c Index) IndexAction() {
 	}
 
 	var (
-		srvname = "core/general"
+		srvname = "core-general"
 		uris    = strings.Split(strings.Trim(filepath.Clean(c.Request.RequestPath), "/"), "/")
 	)
 
 	start := time.Now().UnixNano()
 
 	if len(uris) < 1 {
-		uris = append(uris, "core/general")
+		uris = append(uris, "core-general")
 	} else {
 		srvname = uris[0]
 	}
@@ -108,7 +108,7 @@ func (c Index) IndexAction() {
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
-		srvname = "core/general"
+		srvname = "core-general"
 		mod, ok = config.Modules[srvname]
 		if !ok {
 			return
@@ -118,7 +118,7 @@ func (c Index) IndexAction() {
 	dataAction, template, mat := c.filter(uris[1:], mod)
 	if !mat {
 
-		srvname = "core/general"
+		srvname = "core-general"
 
 		if uris[1] == "" {
 			template = "index.tpl"

@@ -37,7 +37,6 @@ import (
 
 var (
 	modNamePattern        = regexp.MustCompile("^[0-9a-z/]{3,30}$")
-	srvNamePattern        = regexp.MustCompile("^[0-9a-z/\\-_]{1,50}$")
 	modelNamePattern      = regexp.MustCompile("^[a-z]{1,1}[0-9a-z_]{1,20}$")
 	nodeFeildNamePattern  = regexp.MustCompile("^[a-z]{1,1}[0-9a-z_]{1,20}$")
 	routePathPattern      = regexp.MustCompile("^[0-9a-zA-Z_/\\-:]{1,30}$")
@@ -50,17 +49,6 @@ func ModNameFilter(name string) (string, error) {
 
 	if mat := modNamePattern.MatchString(name); !mat {
 		return "", fmt.Errorf("Invalid Module Name (%s)", name)
-	}
-
-	return name, nil
-}
-
-func SrvNameFilter(name string) (string, error) {
-
-	name = strings.Trim(filepath.Clean(strings.ToLower(name)), "/")
-
-	if mat := srvNamePattern.MatchString(name); !mat {
-		return "", fmt.Errorf("Invalid Service Name (%s)", name)
 	}
 
 	return name, nil
@@ -167,7 +155,7 @@ func SpecInfoSet(entry api.Spec) error {
 		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
 
 		prev.Title = entry.Title
-		prev.SrvName = entry.SrvName
+		prev.SrvName, err = api.SrvNameFilter(entry.SrvName)
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
 		if err := _specSet(prev); err != nil {
@@ -733,16 +721,20 @@ func SpecSchemaSync(spec api.Spec) error {
 	var (
 		ds      modeler.DatabaseEntry
 		timenow = rdb.TimeNow("datetime")
+		err     error
 	)
+
+	//
+	if spec.SrvName == "" || strings.Contains(spec.SrvName, "/") {
+		spec.SrvName, err = api.SrvNameFilter(spec.Meta.Name)
+		if err != nil {
+			return err
+		}
+	}
 
 	// TODO
 	config.SpecSet(&spec)
 	config.SpecSrvRefresh(spec.SrvName)
-
-	//
-	if spec.SrvName == "" {
-		spec.SrvName = spec.Meta.Name
-	}
 
 	jsb, _ := json.Encode(spec, "  ")
 	set := map[string]interface{}{

@@ -18,7 +18,7 @@ sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpressm/js/main.js
 %files
 bin/hooto-press
 bin/keeper
-etc/main.json.tpl
+etc/config.json.tpl
 i18n/
 modules/
 webui/hpressm/
