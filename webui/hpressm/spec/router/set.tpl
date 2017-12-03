@@ -43,6 +43,14 @@
     <label>Params</label>
     <table id="hpressm-spec-route-params" width="100%"></table>
   </div>
+  
+  <div class="form-group">
+    <label>Default</label>
+    <select class="form-control" name="default">
+      <option value="1" {[if (v.default) { ]}selected{[ } ]}>Yes</option>
+      <option value="0" {[if (!v.default) { ]}selected{[ } ]}>No</option>
+    </select>
+  </div>
 </script>
 
 <script id="hpressm-spec-route-param-item-tpl" type="text/html">

@@ -648,7 +648,7 @@ func SpecRouteSet(modname string, entry api.Route) error {
 		return err
 	}
 
-	sync, found := true, false
+	sync, found, def := true, false, false
 	for i, prevRoute := range prev.Router.Routes {
 
 		if prevRoute.Path == entry.Path {
@@ -657,12 +657,17 @@ func SpecRouteSet(modname string, entry api.Route) error {
 
 			if entry.DataAction == prevRoute.DataAction &&
 				entry.Template == prevRoute.Template &&
+				entry.Default == prevRoute.Default &&
 				_routeParamsEqual(entry.Params, prevRoute.Params) {
 
 				sync = false
 			} else {
 				entry.ModName = ""
 				prev.Router.Routes[i] = entry
+			}
+
+			if entry.Default {
+				def = true
 			}
 
 			break
@@ -674,6 +679,15 @@ func SpecRouteSet(modname string, entry api.Route) error {
 		prev.Router.Routes = append(prev.Router.Routes, entry)
 
 		sync = true
+	}
+
+	if def {
+		for i, prevRoute := range prev.Router.Routes {
+			if prevRoute.Default && prevRoute.Path != entry.Path {
+				prev.Router.Routes[i].Default = false
+				sync = true
+			}
+		}
 	}
 
 	if sync {
@@ -690,6 +704,47 @@ func SpecRouteSet(modname string, entry api.Route) error {
 	}
 
 	return err
+}
+
+
+func SpecRouteDel(modname string, entry api.Route) error {
+
+	if modname == "" {
+		return errors.New("modname Not Found")
+	}
+
+	var err error
+
+	if entry.Path, err = RoutePathFilter(entry.Path); err != nil {
+		return fmt.Errorf("Invalid Action Path (%s)", entry.Path)
+	}
+
+
+	prev, err := SpecFetch(modname)
+	if err != nil {
+		return err
+	}
+
+	for i, prevRoute := range prev.Router.Routes {
+
+		if prevRoute.Path != entry.Path {
+			continue
+		}
+
+		prev.Router.Routes = append(prev.Router.Routes[:i], prev.Router.Routes[i+1:]...)
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
+
+		prev.Meta.Updated = utilx.TimeNow("atom")
+
+		if err := _specSet(prev); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func _specSet(entry api.Spec) error {

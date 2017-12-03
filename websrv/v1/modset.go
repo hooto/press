@@ -399,3 +399,50 @@ func (c ModSet) SpecRouteSetAction() {
 
 	set.Kind = "SpecRoute"
 }
+
+func (c ModSet) SpecRouteDelAction() {
+
+	var set api.Route
+
+	defer c.RenderJson(&set)
+
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
+		return
+	}
+
+	err := c.Request.JsonDecode(&set)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
+		return
+	}
+
+	set.Path, err = modset.RoutePathFilter(set.Path)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+		return
+	}
+
+	set.ModName, err = modset.ModNameFilter(set.ModName)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+		return
+	}
+
+
+	err = modset.SpecRouteDel(set.ModName, set)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
+		return
+	}
+
+	seted, err := modset.SpecFetch(set.ModName)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
+		return
+	}
+
+	modset.SpecSchemaSync(seted)
+
+	set.Kind = "SpecRoute"
+}

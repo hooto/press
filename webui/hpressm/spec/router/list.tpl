@@ -8,6 +8,7 @@
       <th>Data Action</th>
       <th>Template</th>
       <th>Params</th>
+      <th>Default</th>
       <th></th>
     </tr>
   </thead>
@@ -21,6 +22,9 @@
   <td>{[=v.dataAction]}</td>
   <td>{[=v.template]}</td>
   <td>{[=v._paramsNum]}</td>
+  <td>
+    {[if (v.default) {]}Yes{[} else {]}No{[}]}
+  </td>
   <td align="right">
     <button class="btn btn-default" onclick="hpressSpec.RouteSet('{[=it._modname]}', '{[=v.path]}')">Setting</button>
   </td>

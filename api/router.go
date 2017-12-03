@@ -21,4 +21,5 @@ type Route struct {
 	Params         map[string]string `json:"params,omitempty"`
 	Tree           []string          `json:",omitempty"`
 	ModName        string            `json:"modname,omitempty"`
+	Default        bool              `json:"default,omitempty"`
 }

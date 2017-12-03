@@ -1,9 +1,9 @@
 {
   "meta": {
     "name": "core/blog",
-    "resourceVersion": "20",
+    "resourceVersion": "21",
     "created": "2015-08-10T05:00:15Z",
-    "updated": "2017-07-18T05:15:57Z"
+    "updated": "2017-12-10T07:12:18Z"
   },
   "srvname": "blog",
   "title": "Blog",
@@ -117,7 +117,8 @@
       {
         "path": "list",
         "dataAction": "list",
-        "template": "list.tpl"
+        "template": "list.tpl",
+        "default": true
       }
     ]
   }

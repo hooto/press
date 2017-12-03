@@ -22,8 +22,6 @@ import (
 
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
-	"github.com/hooto/iam/iamapi"
-	"github.com/hooto/iam/iamclient"
 	"github.com/lynkdb/iomix/skv"
 
 	"github.com/hooto/hpress/api"
@@ -77,9 +75,9 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 	// fmt.Println("Pagelet", modname, args)
 
 	//
-	var us iamapi.UserSession
-	if v, ok := data["iam_access_token"]; ok {
-		us, _ = iamclient.Instance(v.(string))
+	user, _ := data["s_user"]
+	if user == "" {
+		user = "guest"
 	}
 
 	//
@@ -111,15 +109,13 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 
 				qry.Filter("status", 1)
 
-				// us, _ := iamclient.SessionInstance(c.Session)
-
 				switch datax.Type {
 
 				case "node.list":
 
 					var ls api.NodeList
 					qryhash := qry.Hash()
-					if datax.CacheTTL > 0 && (!us.IsLogin() || us.UserName != config.Config.AppInstance.Meta.User) {
+					if datax.CacheTTL > 0 && user != config.Config.AppInstance.Meta.User {
 						if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
 							rs.Decode(&ls)
 						}
@@ -140,7 +136,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 
 					var entry api.Node
 					qryhash := qry.Hash()
-					if datax.CacheTTL > 0 && (!us.IsLogin() || us.UserName != config.Config.AppInstance.Meta.User) {
+					if datax.CacheTTL > 0 && user != config.Config.AppInstance.Meta.User {
 						if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
 							rs.Decode(&entry)
 						}

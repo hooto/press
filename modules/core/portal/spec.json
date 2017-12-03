@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "name": "core/portal",
+    "resourceVersion": "17",
+    "created": "2017-12-10T07:21:36Z",
+    "updated": "2017-12-10T14:45:54Z"
+  },
+  "srvname": "pt",
+  "title": "Portal",
+  "nodeModels": [
+    {
+      "meta": {
+        "name": "page"
+      },
+      "title": "Page",
+      "fields": [
+        {
+          "name": "content",
+          "type": "text",
+          "length": "0",
+          "attrs": [
+            {
+              "key": "ui_rows",
+              "value": "16"
+            }
+          ],
+          "title": "Content"
+        }
+      ],
+      "extensions": {}
+    }
+  ],
+  "actions": [
+    {
+      "name": "pageview",
+      "datax": [
+        {
+          "name": "page_entry",
+          "type": "node.entry",
+          "query": {
+            "table": "page",
+            "limit": 1
+          },
+          "cache_ttl": 3600000
+        }
+      ]
+    }
+  ],
+  "router": {
+    "routes": [
+      {
+        "path": "pv/:id",
+        "dataAction": "pageview",
+        "template": "page-entry.tpl"
+      }
+    ]
+  }
+}

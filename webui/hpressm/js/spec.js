@@ -20,7 +20,7 @@ var hpressSpec = {
             id: "",
             name: "",
         },
-		srvname: "",
+        srvname: "",
         title: "",
     },
 
@@ -1221,6 +1221,10 @@ hpressSpec.ActionSetDataxAppend = function(modname) {
     });
 }
 
+hpressSpec.ActionSetDataxDel = function(field) {
+    $(field).parent().parent().remove();
+}
+
 hpressSpec.ActionSetCommit = function() {
     var form = $("#hpressm-spec-actionset"),
         alertid = "#hpressm-spec-actionset-alert",
@@ -1434,6 +1438,43 @@ hpressSpec.RouteList = function(modname) {
     });
 }
 
+hpressSpec.route_list_refresh = function(modname) {
+
+    hpressSpec.List();
+
+    hpressMgr.ApiCmd("mod-set/spec-entry?name=" + modname, {
+        callback: function(err, data) {
+
+            if (err || !data || !data.kind || data.kind != "Spec") {
+                return;
+            }
+
+            data._modname = modname;
+
+            if (!data.router.routes) {
+                data.router.routes = [];
+            }
+
+            for (var i in data.router.routes) {
+
+                if (!data.router.routes[i].params) {
+                    data.router.routes[i].params = {};
+                }
+
+                data.router.routes[i]._paramsNum = 0;
+                for (var j in data.router.routes[i].params) {
+                    data.router.routes[i]._paramsNum++;
+                }
+            }
+
+            l4iTemplate.Render({
+                dstid: "hpressm-spec-routels",
+                tplid: "hpressm-spec-routels-tpl",
+                data: data,
+            });
+        },
+    });
+}
 
 hpressSpec.RouteSet = function(modname, modelid) {
     seajs.use(["ep"], function(EventProxy) {
@@ -1490,6 +1531,10 @@ hpressSpec.RouteSet = function(modname, modelid) {
                 buttons: [{
                     onclick: "l4iModal.Close()",
                     title: "Close",
+                }, {
+                    onclick: "hpressSpec.RouteDel()",
+                    title: "Delete",
+                    style: "btn-danger",
                 }, {
                     onclick: "hpressSpec.RouteSetParamAppend()",
                     title: "New Param",
@@ -1563,103 +1608,6 @@ hpressSpec.RouteSetParamAppend = function() {
     });
 }
 
-hpressSpec.RouteSetCommit = function() {
-    var form = $("#hpressm-spec-routeset"),
-        alertid = "#hpressm-spec-routeset-alert",
-        namereg = /^[a-z][a-z0-9_]+$/;
-    ;
-
-    var req = {
-        path: form.find("input[name=path]").val(),
-        dataAction: form.find("select[name=data_action]").val(),
-        template: form.find("input[name=template]").val(),
-        modname: form.find("input[name=modname]").val(),
-        params: {},
-    };
-
-    try {
-
-        form.find(".hpressm-spec-route-param-item").each(function() {
-
-            var param_key = $(this).find("input[name=param_key]").val(),
-                param_value = $(this).find("input[name=param_value]").val();
-
-            if (!param_key || !param_value) {
-                return;
-            }
-
-            if (!namereg.test(param_key)) {
-                throw "Invalid Param Name : " + param_key;
-            }
-
-            req.params[param_key] = param_value;
-        });
-
-    } catch (err) {
-        l4i.InnerAlert(alertid, 'alert-danger', err);
-        return;
-    }
-
-    hpressMgr.ApiCmd("mod-set/spec-route-set", {
-        method: "PUT",
-        data: JSON.stringify(req),
-        callback: function(err, data) {
-
-            if (!data || !data.kind || data.kind != "SpecRoute") {
-
-                if (data.error) {
-                    return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
-                }
-
-                return l4i.InnerAlert(alertid, 'alert-danger', 'Network Connection Exception');
-            }
-
-            l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
-
-            window.setTimeout(function() {
-
-                l4iModal.Prev(function() {
-
-                    hpressSpec.List();
-
-                    hpressMgr.ApiCmd("mod-set/spec-entry?name=" + req.modname, {
-                        callback: function(err, data) {
-
-                            if (err || !data || !data.kind || data.kind != "Spec") {
-                                return;
-                            }
-
-                            data._modname = req.modname;
-
-                            if (!data.router.routes) {
-                                data.router.routes = [];
-                            }
-
-                            for (var i in data.router.routes) {
-
-                                if (!data.router.routes[i].params) {
-                                    data.router.routes[i].params = {};
-                                }
-
-                                data.router.routes[i]._paramsNum = 0;
-                                for (var j in data.router.routes[i].params) {
-                                    data.router.routes[i]._paramsNum++;
-                                }
-                            }
-
-                            l4iTemplate.Render({
-                                dstid: "hpressm-spec-routels",
-                                tplid: "hpressm-spec-routels-tpl",
-                                data: data,
-                            });
-                        },
-                    });
-                });
-
-            }, 1000);
-        },
-    });
-}
 
 
 hpressSpec.RouteSetTemplateSelect = function(modname) {
@@ -1708,5 +1656,106 @@ hpressSpec.RouteSetTemplateSelect = function(modname) {
 hpressSpec.RouteSetTemplateSelectOne = function(path) {
     l4iModal.Prev(function() {
         $("#hpressm-spec-routeset-template").attr("value", path);
+    });
+}
+
+
+hpressSpec.RouteSetCommit = function() {
+    var form = $("#hpressm-spec-routeset"),
+        alertid = "#hpressm-spec-routeset-alert",
+        namereg = /^[a-z][a-z0-9_]+$/;
+
+    var req = {
+        path: form.find("input[name=path]").val(),
+        dataAction: form.find("select[name=data_action]").val(),
+        template: form.find("input[name=template]").val(),
+        modname: form.find("input[name=modname]").val(),
+        params: {},
+        default: false,
+    };
+    if (form.find("select[name=default]").val() == "1") {
+        req.default = true;
+    }
+
+    try {
+
+        form.find(".hpressm-spec-route-param-item").each(function() {
+
+            var param_key = $(this).find("input[name=param_key]").val(),
+                param_value = $(this).find("input[name=param_value]").val();
+
+            if (!param_key || !param_value) {
+                return;
+            }
+
+            if (!namereg.test(param_key)) {
+                throw "Invalid Param Name : " + param_key;
+            }
+
+            req.params[param_key] = param_value;
+        });
+
+    } catch (err) {
+        l4i.InnerAlert(alertid, 'alert-danger', err);
+        return;
+    }
+
+    hpressMgr.ApiCmd("mod-set/spec-route-set", {
+        method: "PUT",
+        data: JSON.stringify(req),
+        callback: function(err, data) {
+
+            if (!data || !data.kind || data.kind != "SpecRoute") {
+
+                if (data.error) {
+                    return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
+                }
+
+                return l4i.InnerAlert(alertid, 'alert-danger', 'Network Connection Exception');
+            }
+
+            l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
+
+            window.setTimeout(function() {
+                l4iModal.Prev(function() {
+                    hpressSpec.route_list_refresh(req.modname);
+                });
+            }, 1000);
+        },
+    });
+}
+
+hpressSpec.RouteDel = function() {
+    var form = $("#hpressm-spec-routeset"),
+        alertid = "#hpressm-spec-routeset-alert",
+        namereg = /^[a-z][a-z0-9_]+$/;
+
+    var req = {
+        path: form.find("input[name=path]").val(),
+        modname: form.find("input[name=modname]").val(),
+    };
+
+    hpressMgr.ApiCmd("mod-set/spec-route-del", {
+        method: "PUT",
+        data: JSON.stringify(req),
+        callback: function(err, data) {
+
+            if (!data || !data.kind || data.kind != "SpecRoute") {
+
+                if (data.error) {
+                    return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
+                }
+
+                return l4i.InnerAlert(alertid, 'alert-danger', 'Network Connection Exception');
+            }
+
+            l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
+
+            window.setTimeout(function() {
+                l4iModal.Prev(function() {
+                    hpressSpec.route_list_refresh(req.modname);
+                });
+            }, 1000);
+        },
     });
 }

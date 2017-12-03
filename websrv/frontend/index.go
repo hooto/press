@@ -78,6 +78,12 @@ func (c Index) filter(rt []string, spec *api.Spec) (string, string, bool) {
 		}
 	}
 
+	for _, route := range spec.Router.Routes {
+		if route.Default {
+			return route.DataAction, route.Template, true
+		}
+	}
+
 	return "", "", false
 }
 
@@ -136,7 +142,7 @@ func (c Index) IndexAction() {
 	c.Data["modname"] = mod.Meta.Name
 	c.Data["sys_version_sign"] = config.SysVersionSign
 	if c.us.IsLogin() {
-		c.Data[iamclient.AccessTokenKey] = c.Session.Get(iamclient.AccessTokenKey)
+		c.Data["s_user"] = c.us.UserName
 	}
 
 	if dataAction != "" {
@@ -159,6 +165,7 @@ func (c Index) IndexAction() {
 
 	// render_start := time.Now()
 	c.Render(mod.Meta.Name, template)
+
 	// fmt.Println("render in-time", mod.Meta.Name, template, time.Since(render_start))
 
 	c.RenderString(fmt.Sprintf("<!-- rt-time/db+render : %d ms -->", (time.Now().UnixNano()-start)/1e6))

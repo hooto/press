@@ -33,6 +33,7 @@
           <th>Limit</th>
           <th>Order</th>
           <th>Cache TTL (ms)</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="hpressm-spec-action-dataxs">
@@ -74,6 +75,9 @@
           </td>
           <td>
             <input type="text" class="form-control input-sm" name="datax_cache_ttl" size="4" value="{[=v.cache_ttl]}">
+          </td>
+          <td align="right">
+            <button class="btn btn-default btn-sm" onclick="hpressSpec.ActionSetDataxDel(this)">&times;</button>
           </td>
         </tr>
         {[~]}
