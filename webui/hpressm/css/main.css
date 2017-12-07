@@ -165,7 +165,7 @@ body {
 .hpressm-node-nav>li {
   position: relative;
   padding: 0;
-  margin: 0 0 0 10px;
+  margin: 0 10px 0 0;
   display: inline-block;
   zoom: 1;
   vertical-align: middle;
@@ -173,8 +173,8 @@ body {
   float: left;
 }
 
-.hpressm-node-nav>li:first-child {
-  margin-left: 0;
+.hpressm-node-nav>li:last-child {
+  margin-right: 0 !important;
 }
 
 .hpressm-node-nav>li>a {
@@ -219,6 +219,22 @@ body {
   background-color: #fff;
   color: #000;
   border: 1px solid #ccc;
+}
+
+.button-xsmall {
+  font-size: 70%;
+}
+
+.button-small {
+  font-size: 85%;
+}
+
+.button-large {
+  font-size: 110%;
+}
+
+.button-xlarge {
+  font-size: 125%;
 }
 
 .btapm-btn {

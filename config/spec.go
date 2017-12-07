@@ -296,6 +296,19 @@ func _instance_schema_sync(spec *api.Spec) error {
 			})
 		}
 
+		if nodeModel.Extensions.NodeRefer != "" {
+			tbl.AddColumn(&modeler.Column{
+				Name:   "ext_node_refer",
+				Type:   "string",
+				Length: "16",
+			})
+			tbl.AddIndex(&modeler.Index{
+				Name: "ext_node_refer",
+				Type: modeler.IndexTypeIndex,
+				Cols: []string{"ext_node_refer"},
+			})
+		}
+
 		for _, field := range nodeModel.Fields {
 
 			switch field.Type {

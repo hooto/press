@@ -15,6 +15,8 @@
 package api
 
 import (
+	"regexp"
+
 	"github.com/lessos/lessgo/types"
 )
 
@@ -35,7 +37,12 @@ type Node struct {
 	ExtCommentEnable   bool         `json:"ext_comment_enable,omitempty"`
 	ExtCommentPerEntry bool         `json:"ext_comment_perentry,omitempty"`
 	ExtPermalinkName   string       `json:"ext_permalink_name,omitempty"`
+	ExtNodeRefer       string       `json:"ext_node_refer,omitempty"`
 }
+
+var (
+	NodeExtNodeReferReg = regexp.MustCompile("^[0-9a-f]{12,16}$")
+)
 
 type NodeList struct {
 	types.TypeMeta `json:",inline"`

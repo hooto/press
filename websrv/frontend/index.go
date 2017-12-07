@@ -111,6 +111,7 @@ func (c Index) IndexAction() {
 	if len(uris) < 2 {
 		uris = append(uris, "")
 	}
+	// fmt.Println(uris, srvname, c.Params.Get("referid"), c.Params.Get("id"))
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
@@ -285,9 +286,12 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 
 	case "node.entry":
 
-		id := c.Params.Get("id")
+		id := c.Params.Get(ad.Name + "_id")
 		if id == "" {
-			return
+			id = c.Params.Get("id")
+			if id == "" {
+				return
+			}
 		}
 
 		nodeModel, err := config.SpecNodeModel(mod.Meta.Name, ad.Query.Table)

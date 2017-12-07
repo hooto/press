@@ -347,6 +347,59 @@ func (c ModSet) SpecActionSetAction() {
 	set.Kind = "Action"
 }
 
+func (c ModSet) SpecActionDelAction() {
+
+	var set api.Action
+
+	defer c.RenderJson(&set)
+
+	if !iamclient.SessionAccessAllowed(c.Session, "sys.admin", config.Config.InstanceID) {
+		set.Error = types.NewErrorMeta(iamapi.ErrCodeAccessDenied, "Access Denied")
+		return
+	}
+
+	err := c.Request.JsonDecode(&set)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Bad Argument "+err.Error())
+		return
+	}
+
+	set.Name, err = modset.ModelNameFilter(set.Name)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+		return
+	}
+
+	set.ModName, err = modset.ModNameFilter(set.ModName)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+		return
+	}
+
+	_, err = modset.SpecFetch(set.ModName)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "ModName Not Found")
+		return
+	}
+
+	err = modset.SpecActionDel(set.ModName, set)
+
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
+		return
+	}
+
+	seted, err := modset.SpecFetch(set.ModName)
+	if err != nil {
+		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
+		return
+	}
+
+	modset.SpecSchemaSync(seted)
+
+	set.Kind = "Action"
+}
+
 func (c ModSet) SpecRouteSetAction() {
 
 	var set api.Route

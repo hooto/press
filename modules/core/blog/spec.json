@@ -1,18 +1,17 @@
 {
   "meta": {
     "name": "core/blog",
-    "resourceVersion": "21",
-    "created": "2015-08-10T05:00:15Z",
-    "updated": "2017-12-10T07:12:18Z"
+    "resourceVersion": "23"
   },
   "srvname": "blog",
+  "status": 1,
   "title": "Blog",
   "nodeModels": [
     {
       "meta": {
         "name": "entry"
       },
-      "title": "Content Entry",
+      "title": "Blog",
       "fields": [
         {
           "name": "content",

@@ -23,7 +23,16 @@ var hpressSpec = {
         srvname: "",
         title: "",
     },
-
+    statuses: [
+        {
+            name: "Enable",
+            value: 1,
+        },
+        {
+            name: "Disable",
+            value: 0,
+        }
+    ],
     termdef: {
         kind: "TermModel",
         meta: {
@@ -44,6 +53,7 @@ var hpressSpec = {
             access_counter: false,
             comment_enable: false,
             comment_perentry: false,
+            node_refer: "",
         },
     },
 
@@ -171,9 +181,6 @@ var hpressSpec = {
     }, {
         type: "name",
         name: "Name",
-    }, {
-        type: "day-name",
-        name: "Day and Name",
     }],
 }
 
@@ -362,16 +369,14 @@ hpressSpec.InfoSetCommit = function() {
         },
         srvname: form.find("input[name=srvname]").val(),
         title: form.find("input[name=title]").val(),
+        status: parseInt(form.find("select[name=status]").val()),
     };
 
-    // console.log(req);
 
     hpressMgr.ApiCmd("mod-set/spec-info-set", {
         method: "PUT",
         data: JSON.stringify(req),
         callback: function(err, data) {
-
-            // console.log(data);
 
             if (!data || data.error || data.kind != "Spec") {
 
@@ -385,6 +390,7 @@ hpressSpec.InfoSetCommit = function() {
             l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
 
             hpressSpec.List();
+            hpressNode.navRefreshForce();
 
             window.setTimeout(function() {
                 l4iModal.Close();
@@ -609,7 +615,7 @@ hpressSpec.NodeList = function(modname) {
             l4iModal.Open({
                 id: "node-model-ls",
                 tplsrc: tpl,
-                width: 700,
+                width: 900,
                 height: 400,
                 title: "Node List",
                 // data   : data,
@@ -694,6 +700,9 @@ hpressSpec.NodeSet = function(modname, modelid) {
             if (!data.extensions.comment_perentry) {
                 data.extensions.comment_perentry = false;
             }
+            if (!data.extensions.node_refer) {
+                data.extensions.node_refer = "";
+            }
 
             data._field_idx_typedef = hpressSpec.field_idx_typedef;
             data._field_typedef = hpressSpec.field_typedef;
@@ -719,7 +728,7 @@ hpressSpec.NodeSet = function(modname, modelid) {
                 title: ptitle,
                 data: data,
                 width: 980,
-                height: 600,
+                height: 700,
                 success: function() {},
                 buttons: [{
                     onclick: "hpressSpec.NodeSetFieldAppend()",
@@ -815,6 +824,7 @@ hpressSpec.NodeSetCommit = function() {
             access_counter: false,
             comment_enable: false,
             comment_perentry: false,
+            node_refer: "",
         },
     };
 
@@ -831,6 +841,11 @@ hpressSpec.NodeSetCommit = function() {
     }
 
     req.extensions.permalink = form.find("select[name=ext_permalink]").val();
+
+    var node_refer = form.find("input[name=ext_node_refer]").val();
+    if (node_refer && node_refer != "") {
+        req.extensions.node_refer = node_refer;
+    }
 
     try {
 
@@ -853,7 +868,7 @@ hpressSpec.NodeSetCommit = function() {
                 throw "Invalid Field Name : " + field.name;
             }
 
-            $(this).find(".hpressm-spec-node-field-attrs").each(function() {
+            $(this).find(".hpressm-spec-node-field-attr-item").each(function() {
 
                 var attr_key = $(this).find("input[name=field_attr_key]").val();
 
@@ -898,9 +913,6 @@ hpressSpec.NodeSetCommit = function() {
         l4i.InnerAlert(alertid, 'alert-danger', err);
         return;
     }
-
-    // console.log(req);
-
 
     hpressMgr.ApiCmd("mod-set/spec-node-set", {
         method: "PUT",
@@ -968,6 +980,41 @@ hpressSpec.NodeSetCommit = function() {
 
 
 // Spec::Action
+hpressSpec.action_list_refresh = function(modname) {
+    hpressSpec.List();
+
+    hpressMgr.ApiCmd("mod-set/spec-entry?name=" + modname, {
+        callback: function(err, data) {
+
+            if (err || !data || !data.kind || data.kind != "Spec") {
+                return;
+            }
+
+            if (!data.actions) {
+                data.actions = [];
+            }
+
+            for (var i in data.actions) {
+
+                if (!data.actions[i].datax) {
+                    data.actions[i].datax = [];
+                }
+
+                data.actions[i]._dataxNum = data.actions[i].datax.length;
+            }
+
+            data._modname = modname;
+
+            l4iTemplate.Render({
+                dstid: "hpressm-spec-actionls",
+                tplid: "hpressm-spec-actionls-tpl",
+                data: data,
+            });
+        },
+    });
+
+}
+
 hpressSpec.ActionList = function(modname) {
     seajs.use(["ep"], function(EventProxy) {
 
@@ -1111,6 +1158,10 @@ hpressSpec.ActionSet = function(modname, modelid) {
                     }
                 },
                 buttons: [{
+                    onclick: "hpressSpec.ActionDel()",
+                    title: "Delete",
+                    style: "btn-danger",
+                }, {
                     onclick: "hpressSpec.ActionSetDataxAppend(\"" + modname + "\")",
                     title: "New Datax",
                     style: "btn-primary",
@@ -1321,38 +1372,53 @@ hpressSpec.ActionSetCommit = function() {
             window.setTimeout(function() {
 
                 l4iModal.Prev(function() {
+                    hpressSpec.action_list_refresh(req.modname);
+                });
 
-                    hpressSpec.List();
+            }, 1000);
+        },
+    });
+}
 
-                    hpressMgr.ApiCmd("mod-set/spec-entry?name=" + req.modname, {
-                        callback: function(err, data) {
+hpressSpec.ActionDel = function() {
+    var form = $("#hpressm-spec-actionset"),
+        alertid = "#hpressm-spec-actionset-alert",
+        namereg = /^[a-z][a-z0-9_]+$/;
 
-                            if (err || !data || !data.kind || data.kind != "Spec") {
-                                return;
-                            }
+    var req = {
+        name: form.find("input[name=name]").val(),
+        modname: form.find("input[name=modname]").val(),
+        datax: [],
+    };
 
-                            if (!data.actions) {
-                                data.actions = [];
-                            }
+    if (!namereg.test(req.name)) {
+        return l4i.InnerAlert(alertid, 'alert-danger', 'Invalid Action Name');
+    }
 
-                            for (var i in data.actions) {
+    if (!req.modname || req.modname == "") {
+        return l4i.InnerAlert(alertid, 'alert-danger', 'Invalid Module Name');
+    }
 
-                                if (!data.actions[i].datax) {
-                                    data.actions[i].datax = [];
-                                }
+    hpressMgr.ApiCmd("mod-set/spec-action-del", {
+        method: "PUT",
+        data: JSON.stringify(req),
+        callback: function(err, data) {
 
-                                data.actions[i]._dataxNum = data.actions[i].datax.length;
-                            }
+            if (!data || !data.kind || data.kind != "Action") {
 
-                            data._modname = req.modname;
+                if (data.error) {
+                    return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
+                }
 
-                            l4iTemplate.Render({
-                                dstid: "hpressm-spec-actionls",
-                                tplid: "hpressm-spec-actionls-tpl",
-                                data: data,
-                            });
-                        },
-                    });
+                return l4i.InnerAlert(alertid, 'alert-danger', 'Network Connection Exception');
+            }
+
+            l4i.InnerAlert(alertid, 'alert-success', "Successful updated");
+
+            window.setTimeout(function() {
+
+                l4iModal.Prev(function() {
+                    hpressSpec.action_list_refresh(req.modname);
                 });
 
             }, 1000);

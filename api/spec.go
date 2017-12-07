@@ -46,6 +46,15 @@ type Spec struct {
 	Router         Router           `json:"router,omitempty"`
 }
 
+func (it *Spec) NodeModelGet(name string) *NodeModel {
+	for _, v := range it.NodeModels {
+		if v.Meta.Name == name {
+			return &v
+		}
+	}
+	return nil
+}
+
 func SrvNameFilter(name string) (string, error) {
 
 	name = strings.Replace(strings.Trim(filepath.Clean(strings.ToLower(name)), "/"), "/", "-", -1)
@@ -94,11 +103,28 @@ type NodeModel struct {
 	Extensions     SpecExtensions   `json:"extensions,omitempty"`
 }
 
+var (
+	PermalinkNameReg = regexp.MustCompile("^[0-9a-z_-]{1,100}$")
+)
+
+func PermalinkNameFilter(name string) (string, error) {
+
+	name = strings.Replace(filepath.Clean(strings.ToLower(strings.TrimSpace(name))), " ", "-", -1)
+
+	if mat := PermalinkNameReg.MatchString(name); !mat {
+		return "", fmt.Errorf("Invalid Permalink Name (%s)", name)
+	}
+
+	return name, nil
+}
+
 type SpecExtensions struct {
 	AccessCounter   bool   `json:"access_counter,omitempty"`
 	CommentEnable   bool   `json:"comment_enable,omitempty"`
 	CommentPerEntry bool   `json:"comment_perentry,omitempty"`
 	Permalink       string `json:"permalink,omitempty"`
+	NodeRefer       string `json:"node_refer,omitempty"`
+	NodeSubRefer    string `json:"node_sub_refer,omitempty"`
 }
 
 type NodeModelList struct {

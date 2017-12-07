@@ -10,10 +10,9 @@
       <th>Version</th>
       <th>Nodes</th>
       <th>Actions</th>
-      <th>Views</th>
       <th>Routes</th>
-      <th>Created</th>
-      <th>Updated</th>
+      <th>Status</th>
+      <th></th>
     </tr>
   </thead>
   <tbody id="hpressm-specls"></tbody>
@@ -22,25 +21,25 @@
 <script id="hpressm-specls-tpl" type="text/html">  
 {[~it.items :v]}
 <tr>
-  <td><a class="hpressm-specls-infoset-item" href="#{[=v.meta.name]}">{[=v.title]}</a></td>
+  <td>{[=v.title]}</td>
   <td class="hpressm-font-fixspace">{[=v.meta.name]}</td>
   <td class="hpressm-font-fixspace">{[=v.srvname]}</td>
   <td>{[=v.meta.resourceVersion]}</td>
   <td><button class="btn btn-default btn-sm" onclick="hpressSpec.NodeList('{[=v.meta.name]}')">{[=v._nodeModelsNum]}</button></td>
   <td><button class="btn btn-default btn-sm" onclick="hpressSpec.ActionList('{[=v.meta.name]}')">{[=v._actionsNum]}</button></td>
-  <td><button class="btn btn-default btn-sm" onclick="hpressSpecEditor.Open('{[=v.meta.name]}')">Editor</button></td>
   <td><button class="btn btn-default btn-sm" onclick="hpressSpec.RouteList('{[=v.meta.name]}')">{[=v._routesNum]}</button></td>
-  <td>{[=l4i.TimeParseFormat(v.meta.created, "Y-m-d")]}</td>
-  <td>{[=l4i.TimeParseFormat(v.meta.updated, "Y-m-d")]}</td>
+  <td>
+    {[if (v.status) {]}
+      <span class="label label-success">Enable</span>
+    {[} else {]}
+      <span class="label label-default">Disable</span>
+    {[}]}
+  </td>
+  <td align="right">
+    <button class="btn btn-default btn-sm" onclick="hpressSpecEditor.Open('{[=v.meta.name]}')">Develop</button>
+    <button class="btn btn-default btn-sm" onclick="hpressSpec.InfoSet('{[=v.meta.name]}')">Setting</button>
+  </td>
 </tr>
 {[~]}
 </script>
 
-<script type="text/javascript">
-
-$("#hpressm-specls").on("click", ".hpressm-specls-infoset-item", function() {
-    var name = $(this).attr("href").substr(1);
-    hpressSpec.InfoSet(name);
-});
-
-</script>

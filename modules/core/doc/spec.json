@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "name": "core/doc",
+    "resourceVersion": "10"
+  },
+  "srvname": "doc",
+  "status": 1,
+  "title": "Document",
+  "nodeModels": [
+    {
+      "meta": {
+        "name": "doc"
+      },
+      "title": "Document",
+      "fields": [
+        {
+          "name": "preface",
+          "type": "text",
+          "length": "0",
+          "attrs": [
+            {
+              "key": "formats",
+              "value": "md"
+            },
+            {
+              "key": "ui_rows",
+              "value": "10"
+            }
+          ],
+          "title": "Preface"
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "length": "0",
+          "attrs": [
+            {
+              "key": "formats",
+              "value": "md"
+            },
+            {
+              "key": "ui_rows",
+              "value": "20"
+            }
+          ],
+          "title": "Table of Contents"
+        }
+      ],
+      "terms": [
+        {
+          "meta": {
+            "name": "categories"
+          },
+          "type": "taxonomy",
+          "title": "Categories"
+        },
+        {
+          "meta": {
+            "name": "tags"
+          },
+          "type": "tag",
+          "title": "Tags"
+        }
+      ],
+      "extensions": {
+        "access_counter": true,
+        "permalink": "name",
+        "node_sub_refer": "page"
+      }
+    },
+    {
+      "meta": {
+        "name": "page"
+      },
+      "title": "Page",
+      "fields": [
+        {
+          "name": "content",
+          "type": "text",
+          "length": "0",
+          "attrs": [
+            {
+              "key": "ui_rows",
+              "value": "18"
+            },
+            {
+              "key": "formats",
+              "value": "md"
+            }
+          ],
+          "title": "Content"
+        }
+      ],
+      "extensions": {
+        "permalink": "name",
+        "node_refer": "doc"
+      }
+    }
+  ],
+  "termModels": [
+    {
+      "meta": {
+        "name": "categories"
+      },
+      "type": "taxonomy",
+      "title": "Categories"
+    },
+    {
+      "meta": {
+        "name": "tags"
+      },
+      "type": "tag",
+      "title": "Tags"
+    }
+  ],
+  "actions": [
+    {
+      "name": "doc_view",
+      "datax": [
+        {
+          "name": "doc_entry",
+          "type": "node.entry",
+          "query": {
+            "table": "doc",
+            "limit": 1
+          },
+          "cache_ttl": 3600000
+        }
+      ]
+    },
+    {
+      "name": "page_view",
+      "datax": [
+        {
+          "name": "doc_entry",
+          "type": "node.entry",
+          "query": {
+            "table": "doc",
+            "limit": 1
+          },
+          "cache_ttl": 3600000
+        },
+        {
+          "name": "page_entry",
+          "type": "node.entry",
+          "query": {
+            "table": "page",
+            "limit": 1
+          },
+          "cache_ttl": 3600000
+        }
+      ]
+    },
+    {
+      "name": "doc_list",
+      "datax": [
+        {
+          "name": "doc_list",
+          "type": "node.list",
+          "pager": true,
+          "query": {
+            "table": "doc",
+            "limit": 50
+          },
+          "cache_ttl": 3600000
+        }
+      ]
+    }
+  ],
+  "router": {
+    "routes": [
+      {
+        "path": "list",
+        "dataAction": "doc_list",
+        "template": "doc_list.tpl",
+        "default": true
+      },
+      {
+        "path": "entry/:doc_entry_id/:page_entry_id",
+        "dataAction": "page_view",
+        "template": "page_entry.tpl"
+      },
+      {
+        "path": "entry/:doc_entry_id",
+        "dataAction": "doc_view",
+        "template": "doc_entry.tpl"
+      }
+    ]
+  }
+}

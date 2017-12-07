@@ -29,7 +29,7 @@ hpressEditor.Open = function(name, format) {
         ], function() {
 
             var lineNumbers = false;
-            if (format == "md" || format == "html") {
+            if (format == "md" || format == "html" || format == "shtml") {
                 lineNumbers = true;
             }
 

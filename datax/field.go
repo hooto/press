@@ -58,12 +58,29 @@ var (
 	regLineSpace  = regexp.MustCompile("\\n\\s*\\n")
 	mkp           = bluemonday.UGCPolicy()
 	htmlp         = bluemonday.UGCPolicy()
-	htmlphtml     = bluemonday.UGCPolicy()
+	shtmlp        = bluemonday.UGCPolicy()
 )
 
 func init() {
 	mkp.AllowAttrs("class").OnElements("code")
-	htmlphtml.AllowAttrs("class").OnElements("div")
+
+	//
+	shtmlp.AllowElements("button", "style")
+
+	//
+	shtmlp.AllowAttrs("class").OnElements("div")
+	shtmlp.AllowAttrs("style").OnElements("div")
+
+	//
+	shtmlp.AllowAttrs("class").OnElements("button")
+	shtmlp.AllowAttrs("onclick").OnElements("button")
+
+	//
+	shtmlp.AllowAttrs("href").OnElements("a")
+	shtmlp.AllowAttrs("target").OnElements("a")
+	shtmlp.AllowAttrs("class").OnElements("a")
+	shtmlp.AllowAttrs("class").OnElements("img")
+	shtmlp.AllowAttrs("class").OnElements("span")
 }
 
 func TimeFormat(timeString, formatFrom, formatTo string) string {
@@ -243,13 +260,11 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 	switch fm {
 
 	case "md":
-
 		unsafe := blackfriday.MarkdownCommon([]byte(val))
 		val = string(mkp.SanitizeBytes(unsafe))
 
 	case "html":
-
-		val = htmlphtml.Sanitize(val)
+		val = shtmlp.Sanitize(val)
 
 	case "text":
 		if lines := strings.Split(val, "\n\n"); len(lines) > 1 {

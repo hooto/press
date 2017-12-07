@@ -40,12 +40,10 @@
     <label id="field_{[=it.name]}_tools">
       <span>{[=it.title]}</span>
       <span id="field_{[=it.name]}_editor_nav" class="editor-nav">
-        <a class="tpltext-editor-item editor-nav-text" href="#" 
-          onclick="hpressEditor.Open('{[=it.name]}', 'text')">Text</a>
-        <a class="tpltext-editor-item editor-nav-html" href="#"
-          onclick="hpressEditor.Open('{[=it.name]}', 'html')">Html</a>
-        <a class="tpltext-editor-item editor-nav-md" href="#"
-          onclick="hpressEditor.Open('{[=it.name]}', 'md')">Markdown</a>
+        {[~it._formats :v]}
+        <a class="tpltext-editor-item editor-nav-{[=v.name]}" href="#" 
+          onclick="hpressEditor.Open('{[=it.name]}', '{[=v.name]}')">{[=v.value]}</a>
+        {[~]}
       </span>
       <span id="field_{[=it.name]}_editor_mdr" class="editor_mdr" style="display:none">
         <a class="tpltext-editor-item preview_open" href="#preview-open" onclick="hpressEditor.PreviewOpen('{[=it.name]}')" style="display:none">Open Markdown Preview</a>
@@ -92,9 +90,9 @@
 
 <script id="hpressm-nodeset-tplterm_taxonomy" type="text/html">
   <div class="l4i-form-group">
-    <label>{[=it.item.title]}</label>
+    <label>{[=it.model.title]}</label>
     <div>
-    <select class="form-control" name="term_{[=it.item.meta.name]}">
+    <select class="form-control" name="term_{[=it.model.meta.name]}">
     {[~it.items :v]}
       {[ if (v.pid == 0) { ]}
       <option value="{[=v.id]}" {[if (it.item.value == v.id) { ]}selected{[ } ]}>{[=v.title]}</option>
@@ -133,3 +131,14 @@
     </div>
   </div>
 </script>
+
+
+<script id="hpressm-nodeset-tplext_node_refer" type="text/html">
+  <div class="l4i-form-group">
+    <label>Refer ID</label>
+    <div>
+      <input type="text" name="ext_node_refer" class="l4i-form-control" value="{[=it.ext_node_refer]}">
+    </div>
+  </div>
+</script>
+

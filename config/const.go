@@ -19,7 +19,14 @@ import (
 )
 
 var (
-	coreModules = []string{"core/general", "core/comment", "core/blog", "core/portal", "ruilog/notebook"}
+	coreModules = []string{
+		"core/general",
+		"core/comment",
+		"core/portal",
+		"core/doc",
+		"core/blog",
+		"ruilog/notebook",
+	}
 
 	Perms = []iamapi.AppPrivilege{
 		{

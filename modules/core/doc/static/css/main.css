@@ -1,0 +1,90 @@
+.hpdoc_frame_box {
+  margin: 20px 0 20px 0;
+}
+
+.hpdoc_node_content {
+  font-size: 12pt !important;
+  line-height: 150% !important;
+}
+
+.hpdoc_index_frame_blue {
+  background-color: #096dd9;
+  color: #fff;
+  padding: 20px 5px;
+}
+
+.hpdoc_index_frame_dark {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 20px 5px;
+}
+
+.hpdoc_index_frame_title {
+  font-size: 30pt;
+}
+
+.hpdoc_bgimg_hexagons {
+  background-image: url("/hpress/+/static/doc/img/grid-hexagons.png");
+}
+
+.hpdoc_icon {
+  display: inline-block;
+  vertical-align: text-top;
+  fill: currentColor;
+}
+
+.hpdoc_icon_light {
+  fill: #f759ab !important;
+}
+
+.hpdoc_index_frame_dark_light {
+  background-color: #f5f5f5;
+}
+
+.hpdoc_entry_summary {
+  font-size: 10pt;
+}
+.hpdoc_entry_summary ul {
+  margin: 0;
+  padding: 0;
+}
+.hpdoc_entry_summary ul li {
+  list-style-type: none;
+}
+.hpdoc_entry_summary li ul {
+  padding: 0 0 10px 10px;
+}
+.hpdoc_entry_summary hr {
+  height: 0;
+  margin: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.hpdoc_page_content {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 1px 2px 0px #999;
+  padding: 20px;
+  min-height: 400px;
+}
+
+.hpdoc-nodels-item {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 1px 2px 0px #999;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+.hpdoc-nodels-item:hover {
+  box-shadow: 0px 1px 2px 0px #333;
+}
+.hpdoc-nodels-info a {
+  color: rgba(0, 0, 0, 0.85);
+}
+.hpdoc-nodels-info .tag-item {
+  margin-right: 10px;
+}
+.hpdoc-nodels-title a {
+  color: #096dd9;
+  font-size: 18pt;
+}

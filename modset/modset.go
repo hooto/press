@@ -21,6 +21,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -39,7 +40,7 @@ var (
 	modNamePattern        = regexp.MustCompile("^[0-9a-z/]{3,30}$")
 	modelNamePattern      = regexp.MustCompile("^[a-z]{1,1}[0-9a-z_]{1,20}$")
 	nodeFeildNamePattern  = regexp.MustCompile("^[a-z]{1,1}[0-9a-z_]{1,20}$")
-	routePathPattern      = regexp.MustCompile("^[0-9a-zA-Z_/\\-:]{1,30}$")
+	routePathPattern      = regexp.MustCompile("^[0-9a-zA-Z_/\\-:]{1,50}$")
 	routeParamNamePattern = regexp.MustCompile("^[a-z]{1,1}[0-9a-zA-Z_]{0,29}$")
 )
 
@@ -122,6 +123,8 @@ func SpecInfoNew(entry api.Spec) error {
 		return errors.New("Spec Already Exists ")
 	}
 
+	entry.Status = 1
+
 	entry.Meta.ResourceVersion = "1"
 	entry.Meta.Created = utilx.TimeNow("atom")
 
@@ -130,7 +133,7 @@ func SpecInfoNew(entry api.Spec) error {
 		return err
 	}
 
-	return _specSet(entry)
+	return spec_config_file_sync(entry)
 }
 
 func SpecInfoSet(entry api.Spec) error {
@@ -148,7 +151,15 @@ func SpecInfoSet(entry api.Spec) error {
 		return err
 	}
 
-	if prev.Title != entry.Title || prev.SrvName != entry.SrvName {
+	if entry.Meta.Name == "core/general" {
+		entry.Status = 1
+	} else if entry.Status != 1 {
+		entry.Status = 0
+	}
+
+	if prev.Title != entry.Title ||
+		prev.SrvName != entry.SrvName ||
+		prev.Status != entry.Status {
 
 		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
 
@@ -156,9 +167,10 @@ func SpecInfoSet(entry api.Spec) error {
 
 		prev.Title = entry.Title
 		prev.SrvName, err = api.SrvNameFilter(entry.SrvName)
+		prev.Status = entry.Status
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
-		if err := _specSet(prev); err != nil {
+		if err := spec_config_file_sync(prev); err != nil {
 			return err
 		}
 	}
@@ -205,7 +217,7 @@ func SpecTermSet(modname string, entry api.TermModel) error {
 
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
-		if err := _specSet(prev); err != nil {
+		if err := spec_config_file_sync(prev); err != nil {
 			return err
 		}
 	}
@@ -331,7 +343,7 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 
 			found = true
 
-			if prev.Title != entry.Title {
+			if nodeModel.Title != entry.Title {
 				prev.NodeModels[i].Title = entry.Title
 				sync = true
 			}
@@ -353,6 +365,19 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 
 			if nodeModel.Extensions.Permalink != entry.Extensions.Permalink {
 				prev.NodeModels[i].Extensions.Permalink = entry.Extensions.Permalink
+				sync = true
+			}
+
+			if nodeModel.Extensions.NodeRefer != entry.Extensions.NodeRefer &&
+				entry.Extensions.NodeRefer != "" {
+				if entry.Extensions.NodeRefer == nodeModel.Meta.Name {
+					return errors.New("Invalid Node Refer Value")
+				}
+				if refer_nm := prev.NodeModelGet(entry.Extensions.NodeRefer); refer_nm == nil {
+					return errors.New("Node Refer Not Found")
+				}
+
+				prev.NodeModels[i].Extensions.NodeRefer = entry.Extensions.NodeRefer
 				sync = true
 			}
 
@@ -428,6 +453,26 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 		sync = true
 	}
 
+	for i, v1 := range prev.NodeModels {
+
+		node_sub_refer := ""
+
+		if v1.Extensions.NodeRefer == "" {
+			for _, v2 := range prev.NodeModels {
+				if v2.Meta.Name != v1.Meta.Name &&
+					v2.Extensions.NodeRefer == v1.Meta.Name {
+					node_sub_refer = v2.Meta.Name
+					break
+				}
+			}
+		}
+
+		if node_sub_refer != v1.Extensions.NodeSubRefer {
+			prev.NodeModels[i].Extensions.NodeSubRefer = node_sub_refer
+			sync = true
+		}
+	}
+
 	if sync {
 
 		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
@@ -436,7 +481,7 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
-		if err := _specSet(prev); err != nil {
+		if err := spec_config_file_sync(prev); err != nil {
 			return err
 		}
 	}
@@ -585,12 +630,49 @@ func SpecActionSet(modname string, entry api.Action) error {
 
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
-		if err := _specSet(prev); err != nil {
+		if err := spec_config_file_sync(prev); err != nil {
 			return err
 		}
 	}
 
 	return err
+}
+
+func SpecActionDel(modname string, entry api.Action) error {
+
+	if modname == "" {
+		return errors.New("modname Not Found")
+	}
+
+	if mat := modelNamePattern.MatchString(entry.Name); !mat {
+		return fmt.Errorf("Invalid Action Name (%s)", entry.Name)
+	}
+
+	prev, err := SpecFetch(modname)
+	if err != nil {
+		return err
+	}
+
+	for i, action := range prev.Actions {
+
+		if action.Name != entry.Name {
+			continue
+		}
+
+		prev.Actions = append(prev.Actions[:i], prev.Actions[i+1:]...)
+
+		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
+
+		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
+
+		prev.Meta.Updated = utilx.TimeNow("atom")
+
+		if err := spec_config_file_sync(prev); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func _routeParamsEqual(a1, a2 map[string]string) bool {
@@ -690,6 +772,13 @@ func SpecRouteSet(modname string, entry api.Route) error {
 		}
 	}
 
+	sort.Slice(prev.Router.Routes, func(i, j int) bool {
+		if strings.Compare(prev.Router.Routes[i].Path, prev.Router.Routes[j].Path) < 0 {
+			return false
+		}
+		return true
+	})
+
 	if sync {
 
 		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
@@ -698,7 +787,7 @@ func SpecRouteSet(modname string, entry api.Route) error {
 
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
-		if err := _specSet(prev); err != nil {
+		if err := spec_config_file_sync(prev); err != nil {
 			return err
 		}
 	}
@@ -737,7 +826,7 @@ func SpecRouteDel(modname string, entry api.Route) error {
 
 		prev.Meta.Updated = utilx.TimeNow("atom")
 
-		if err := _specSet(prev); err != nil {
+		if err := spec_config_file_sync(prev); err != nil {
 			return err
 		}
 	}
@@ -745,8 +834,10 @@ func SpecRouteDel(modname string, entry api.Route) error {
 	return nil
 }
 
-func _specSet(entry api.Spec) error {
+func spec_config_file_sync(entry api.Spec) error {
 
+	entry.Meta.Created = ""
+	entry.Meta.Updated = ""
 	jsb, _ := json.Encode(entry, "  ")
 
 	//
@@ -859,6 +950,19 @@ func SpecSchemaSync(spec api.Spec) error {
 				Name: "ext_permalink_idx",
 				Type: modeler.IndexTypeIndex,
 				Cols: []string{"ext_permalink_idx"},
+			})
+		}
+
+		if nodeModel.Extensions.NodeRefer != "" {
+			tbl.AddColumn(&modeler.Column{
+				Name:   "ext_node_refer",
+				Type:   "string",
+				Length: "16",
+			})
+			tbl.AddIndex(&modeler.Index{
+				Name: "ext_node_refer",
+				Type: modeler.IndexTypeIndex,
+				Cols: []string{"ext_node_refer"},
 			})
 		}
 

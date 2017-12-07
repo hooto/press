@@ -3,8 +3,13 @@
 <div id="hpressm-nodels-pager"></div>
 
 <div id="hpressm-node-list-opts" class="hpressm-hide">
+  <li class="pure-button btapm-btn btapm-btn-primary" id="hpressm-node-list-refer-back" style="display:none">
+    <a href="#" onclick="hpressNode.ReferBack()">
+      Back
+    </a>
+  </li>
   <li class="pure-button btapm-btn btapm-btn-primary">
-    <a href="#" onclick="hpressNode.Set()">
+    <a href="#" onclick="hpressNode.Set()" id="hpressm-node-list-new-title">
       New Content
     </a>
   </li>
@@ -35,6 +40,9 @@
       {[if (it.model.extensions.access_counter) { ]}<th>Access</th>{[ } ]}
       <th>Created</th>
       <th>Updated</th>
+      {[if (it.model.extensions.node_sub_refer) {]}
+      <th></th>
+	  {[}]}
       <th></th>
     </tr>
   </thead>
@@ -46,7 +54,7 @@
           onclick="hpressNode.ListBatchSelectTodoBtnRefresh()">
       </td>
       <td>
-        <a class="node-item" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">{[=v.title]}</a>
+        <a class="node-item" onclick="hpressNode.Set('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')" href="#{[=v.id]}">{[=v.title]}</a>
       </td>
       <td>
       {[~it._status_def :sv]}
@@ -56,9 +64,15 @@
       {[if (it.model.extensions.access_counter) { ]}<td>{[=v.ext_access_counter]}</td>{[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
+      {[if (it.model.extensions.node_sub_refer) {]}
+      <td>
+        <!--<button class="pure-button button-xsmall" onclick="hpressNode.Set('{[=it.modname]}', '{[=it.model.extensions.node_sub_refer]}', null, '{[=v.id]}')">New Sub Content</button>-->
+        <button class="pure-button button-xsmall" onclick="hpressNode.List('{[=it.modname]}', '{[=it.model.extensions.node_sub_refer]}', '{[=v.id]}')">Sub Contents</button>
+      </td>
+      {[}]}
       <td align="right">
-        <a class="node-item-del btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Del</a>
-        <a class="node-item btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+        <button class="pure-button button-xsmall" onclick="hpressNode.Del('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')">Delete</button>
+        <button class="pure-button button-xsmall" onclick="hpressNode.Set('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')">Edit</button>
       </td>
     </tr>
   {[~]}
@@ -81,15 +95,3 @@
 {[ } ]}
 </script>
 
-<script type="text/javascript">
-
-$("#hpressm-nodels").on("click", ".node-item", function() {
-    var id = $(this).attr("href").substr(1);
-    hpressNode.Set($(this).attr("modname"), $(this).attr("modelid"), id);
-});
-
-$("#hpressm-nodels").on("click", ".node-item-del", function() {
-    var id = $(this).attr("href").substr(1);
-    hpressNode.Del($(this).attr("modname"), $(this).attr("modelid"), id);
-});
-</script>

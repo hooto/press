@@ -62,14 +62,14 @@
             </select>
           </td>
           <td>
-            <table class="hpressm-spec-node-field-attrs">
+            <table><tbody class="hpressm-spec-node-field-attrs">
               {[~v.attrs :atv]}
               <tr class="hpressm-spec-node-field-attr-item">
                 <td><input type="text" class="form-control input-sm" name="field_attr_key" size="8" value="{[=atv.key]}"></td>
                 <td><input type="text" class="form-control input-sm" name="field_attr_value" size="16" value="{[=atv.value]}"></td>
               </tr>
               {[~]}
-            </table>
+            </tbody></table>
           </td>
           <td>
             <button class="btn btn-default btn-sm" onclick="hpressSpec.NodeSetFieldAttrAppend('{[=v._seqid]}')">+ Attribute</button>
@@ -160,6 +160,21 @@
             </select>
           </td>
         </tr>
+        {[if (it.extensions.node_sub_refer) {]}
+        <tr>
+          <td>Node Sub Refer</td>
+          <td>
+		    {[=it.extensions.node_sub_refer]}
+          </td>
+        </tr>
+        {[} else {]}
+        <tr>
+          <td>Refer to Node Name</td>
+          <td>
+		    <input type="text" class="form-control input-sm" name="ext_node_refer" value="{[=it.extensions.node_refer]}">
+          </td>
+        </tr>
+        {[}]}
       </tbody>
       </table>
     </div>
@@ -187,7 +202,7 @@
       </select>
     </td>
     <td>
-      <table class="hpressm-spec-node-field-attrs"></table>
+      <table><tbody class="hpressm-spec-node-field-attrs"></tbody></table>
     </td>
     <td>
       <button class="btn btn-default btn-sm" onclick="hpressSpec.NodeSetFieldAttrAppend('{[=it._seqid]}')">+ Attribute</button>

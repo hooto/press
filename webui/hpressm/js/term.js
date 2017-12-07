@@ -59,6 +59,7 @@ hpressTerm.List = function(modname, modelid) {
             } else {
                 $(alertid).hide();
             }
+            $("#hpressm-term-list-new-title").text("New " + rsj.model.title);
 
             if (!rsj.items) {
                 rsj.items = [];

@@ -4,7 +4,7 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>Name</th>
+      <th>Path</th>
       <th>Data Action</th>
       <th>Template</th>
       <th>Params</th>

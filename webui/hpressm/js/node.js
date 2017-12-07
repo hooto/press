@@ -37,9 +37,33 @@ var hpressNode = {
         name: "Private",
     }],
     nodeOpToolsRefreshCurrent: null,
+    node_refer_back: null,
+    text_formats: [
+        {
+            name: "text",
+            value: "Text",
+        },
+        {
+            name: "html",
+            value: "Html",
+        },
+        {
+            name: "shtml",
+            value: "Script Html",
+        },
+        {
+            name: "md",
+            value: "Makedown",
+        },
+    ],
 }
 
 hpressNode.Init = function(cb) {
+    hpressNode.navRefresh(cb);
+}
+
+hpressNode.navRefreshForce = function(cb) {
+    hpressNode.speclsCurrent = [];
     hpressNode.navRefresh(cb);
 }
 
@@ -80,8 +104,13 @@ hpressNode.navRefresh = function(cb) {
                 return cb();
             }
 
+            hpressNode.speclsCurrent = [];
+
             //
             for (var i in data.items) {
+                if (!data.items[i].status || data.items[i].status != 1) {
+                    continue;
+                }
                 hpressNode.speclsCurrent.push(data.items[i]);
                 l4i.UrlEventRegister(
                     hpressNode.navPrefix + data.items[i].meta.name,
@@ -115,7 +144,7 @@ hpressNode.navRefresh = function(cb) {
     });
 }
 
-hpressNode.OpToolsRefresh = function(div_target) {
+hpressNode.OpToolsRefresh = function(div_target, fn) {
     if (typeof div_target == "string" && div_target == hpressNode.nodeOpToolsRefreshCurrent) {
         return;
     }
@@ -135,6 +164,10 @@ hpressNode.OpToolsRefresh = function(div_target) {
             $("#hpressm-node-optools").html(opt.html());
             hpressNode.nodeOpToolsRefreshCurrent = div_target;
         }
+    }
+
+    if (fn) {
+        fn();
     }
 }
 
@@ -269,7 +302,7 @@ hpressNode.Index = function(nav_href) {
     });
 }
 
-hpressNode.List = function(modname, modelid) {
+hpressNode.List = function(modname, modelid, referid) {
     var alertid = "#hpressm-node-alert",
         page = 0;
 
@@ -281,6 +314,15 @@ hpressNode.List = function(modname, modelid) {
         modelid = l4iStorage.Get("hpressm_nmodel_active");
     }
 
+    if (!referid && l4iStorage.Get("hpressm_node_refer_active")) {
+        referid = l4iStorage.Get("hpressm_node_refer_active");
+    }
+    if (!referid) {
+        referid = "";
+    } else {
+        l4iStorage.Set("hpressm_node_refer_active", referid);
+    }
+
     if (l4iStorage.Get("hpressm_nodels_page")) {
         page = l4iStorage.Get("hpressm_nodels_page");
     }
@@ -289,12 +331,11 @@ hpressNode.List = function(modname, modelid) {
         return;
     }
 
-    var uri = "modname=" + modname + "&modelid=" + modelid + "&page=" + page;
+    var uri = "modname=" + modname + "&modelid=" + modelid + "&ext_node_refer=" + referid + "&page=" + page;
     uri += "&fields=no_fields&terms=no_terms";
     if (document.getElementById("qry_text")) {
         uri += "&qry_text=" + $("#qry_text").val();
     }
-
     seajs.use(["ep"], function(EventProxy) {
 
         var ep = EventProxy.create("tpl", "data", function(tpl, rsj) {
@@ -313,6 +354,21 @@ hpressNode.List = function(modname, modelid) {
                 $(alertid).hide();
             }
 
+            if (!rsj.model.extensions.node_refer) {
+                hpressNode.node_refer_back = null;
+                $("#hpressm-node-list-refer-back").css({
+                    "display": "none"
+                });
+            } else {
+                hpressNode.node_refer_back = rsj.model.extensions.node_refer;
+                $("#hpressm-node-list-refer-back").css({
+                    "display": "block"
+                });
+            }
+            l4iStorage.Set("hpressm_spec_active", modname);
+            l4iStorage.Set("hpressm_nmodel_active", modelid);
+            $("#hpressm-node-list-new-title").text("New " + rsj.model.title);
+
             if (!rsj.items) {
                 rsj.items = [];
             }
@@ -328,6 +384,10 @@ hpressNode.List = function(modname, modelid) {
 
                 if (!rsj.items[i].ext_permalink_name) {
                     rsj.items[i].ext_permalink_name = "";
+                }
+
+                if (!rsj.items[i].ext_node_refer) {
+                    rsj.items[i].ext_node_refer = "";
                 }
             }
 
@@ -522,7 +582,13 @@ hpressNode.ListBatchSelectTodoDelete = function(modname, modelid) {
     });
 }
 
-hpressNode.Set = function(modname, modelid, nodeid) {
+hpressNode.ReferBack = function() {
+    if (hpressNode.node_refer_back) {
+        hpressNode.List(null, hpressNode.node_refer_back);
+    }
+}
+
+hpressNode.Set = function(modname, modelid, nodeid, referid) {
     var alertid = "#hpressm-node-alert";
 
     if (!modname && l4iStorage.Get("hpressm_spec_active")) {
@@ -530,6 +596,9 @@ hpressNode.Set = function(modname, modelid, nodeid) {
     }
     if (!modelid && l4iStorage.Get("hpressm_nmodel_active")) {
         modelid = l4iStorage.Get("hpressm_nmodel_active");
+    }
+    if (!referid && l4iStorage.Get("hpressm_node_refer_active")) {
+        referid = l4iStorage.Get("hpressm_node_refer_active");
     }
 
     // console.log(modname +","+ modelid +","+ nodeid);
@@ -578,6 +647,10 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                 data.ext_permalink_name = "";
             }
 
+            if (!data.ext_node_refer) {
+                data.ext_node_refer = "";
+            }
+
             $(alertid).hide();
 
             hpressNode.setCurrent = data;
@@ -619,6 +692,10 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                     }
 
                     if (data.model.extensions.permalink && data.model.extensions.permalink != "") {
+                        main_len += 1;
+                    }
+
+                    if (data.model.extensions.node_refer && data.model.extensions.node_refer != "") {
                         main_len += 1;
                     }
 
@@ -678,6 +755,34 @@ hpressNode.Set = function(modname, modelid, nodeid) {
 
                                 if (!field.attr_format) {
                                     field.attr_format = "text";
+                                }
+                                if (!field.attr_formats) {
+                                    field.attr_formats = "text,html,md";
+                                }
+
+                                var formats = field.attr_formats.split(",");
+                                var set_format = null;
+                                field._formats = [];
+
+                                for (var i in hpressNode.text_formats) {
+                                    if (formats.indexOf(hpressNode.text_formats[i].name) > -1) {
+                                        field._formats.push({
+                                            name: hpressNode.text_formats[i].name,
+                                            value: hpressNode.text_formats[i].value,
+                                        });
+                                        if (field.attr_format == hpressNode.text_formats[i].name) {
+                                            set_format = hpressNode.text_formats[i].name;
+                                        }
+                                    }
+                                }
+                                if (field._formats.length < 1) {
+                                    field._formats.push({
+                                        name: hpressNode.text_formats[0].name,
+                                        value: hpressNode.text_formats[0].value,
+                                    });
+                                }
+                                if (!set_format) {
+                                    field.attr_format = field._formats[0].name;
                                 }
 
                                 cb = function() {
@@ -743,7 +848,7 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                                     dstid: field_layout_target,
                                     tplid: tplid,
                                     prepend: true,
-                                    data: term,
+                                    data: data.model.terms[i],
                                 });
 
                                 break;
@@ -755,22 +860,23 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                                 }
 
                                 hpressMgr.ApiCmd("term/list?modname=" + modname + "&modelid=" + term.meta.name, {
-                                    callback: function(err, data) {
+                                    async: false,
+                                    callback: function(err, term_list) {
 
-                                        if (data.kind != "TermList") {
+                                        if (term_list.kind != "TermList") {
                                             return;
                                         }
 
-                                        data.item = term;
+                                        term_list.item = term;
 
-                                        for (var i in data.items) {
+                                        for (var i in term_list.items) {
 
-                                            if (!data.items[i].pid) {
-                                                data.items[i].pid = 0;
+                                            if (!term_list.items[i].pid) {
+                                                term_list.items[i].pid = 0;
                                             }
 
-                                            if (data.items[i].pid == 0) {
-                                                data.items[i]._subs = hpressTerm.ListSubRange(data.items, null, data.items[i].id, 0);
+                                            if (term_list.items[i].pid == 0) {
+                                                term_list.items[i]._subs = hpressTerm.ListSubRange(term_list.items, null, term_list.items[i].id, 0);
                                             }
                                         }
 
@@ -780,7 +886,7 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                                             dstid: field_layout_target,
                                             tplid: tplid,
                                             prepend: true,
-                                            data: data,
+                                            data: term_list,
                                         });
                                     },
                                 });
@@ -801,6 +907,22 @@ hpressNode.Set = function(modname, modelid, nodeid) {
                             data: {
                                 _general_onoff: hpressNode.general_onoff,
                                 ext_comment_perentry: data.ext_comment_perentry,
+                            },
+                        });
+                    }
+
+                    if (!data.ext_node_refer || data.ext_node_refer.length < 12) {
+                        if (referid) {
+                            data.ext_node_refer = referid;
+                        }
+                    }
+                    if (data.model.extensions.node_refer && data.model.extensions.node_refer != "") {
+                        l4iTemplate.Render({
+                            dstid: "hpressm-nodeset-tops",
+                            tplid: "hpressm-nodeset-tplext_node_refer",
+                            append: true,
+                            data: {
+                                ext_node_refer: data.ext_node_refer,
                             },
                         });
                     }
@@ -904,6 +1026,7 @@ hpressNode.SetCommit = function(options) {
         terms: [],
         ext_comment_perentry: form.find("select[name=ext_comment_perentry]").val(),
         ext_permalink_name: form.find("input[name=ext_permalink_name]").val(),
+        ext_node_refer: form.find("input[name=ext_node_refer]").val(),
     }
 
     if (req.ext_comment_perentry && req.ext_comment_perentry == "false") {
@@ -912,8 +1035,7 @@ hpressNode.SetCommit = function(options) {
         req.ext_comment_perentry = true;
     }
 
-    // console.log("DDD");
-    // console.log(req);
+    // return console.log(req);
     for (var i in hpressNode.setCurrent.model.fields) {
 
         var field = hpressNode.setCurrent.model.fields[i];

@@ -11,9 +11,11 @@
 
 <script id="hpressm-node-nmodels-tpl" type="text/html">
 {[~it.items :v]}
+{[if (!v.extensions.node_refer) {]}
   <li class="node-item pure-button {[if (it.active == v.meta.name) {]}active{[}]}" tgname="{[=v.meta.name]}">
     <a href="#{[=v.meta.name]}">{[=v.title]}</a>
   </li>
+{[}]}
 {[~]}
 </script>
 

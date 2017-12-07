@@ -5,7 +5,7 @@
 
 <div id="hpressm-node-term-opts" class="hpressm-hide">
   <li class="pure-button btapm-btn btapm-btn-primary">
-    <a href="#" onclick="hpressTerm.Set()">
+    <a href="#" onclick="hpressTerm.Set()" id="hpressm-term-list-new-title">
       New Term
     </a>
   </li>
@@ -45,7 +45,9 @@
       {[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
-      <td align="right"><a class="term-item btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v.id]}">Edit</a>
+	  <td align="right">
+        <button class="pure-button button-xsmall" onclick="hpressTerm.Set('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')">Edit</button>
+	  </td>
     </tr>
     {[? v._subs]}
     {[~v._subs :v2]}
@@ -55,7 +57,9 @@
       <td>{[=hpressTerm.Sprint(v2._dp)]}{[=v2.weight]}</td>
       <td>{[=v2.created]}</td>
       <td>{[=v2.updated]}</td>
-      <td align="right"><a class="term-item btn btn-default btn-xs" modname="{[=it.modname]}" modelid="{[=it.modelid]}" href="#{[=v2.id]}">Edit</a>
+      <td align="right">
+        <button class="pure-button button-xsmall" onclick="hpressTerm.Set('{[=it.modname]}', '{[=it.modelid]}', '{[=v2.id]}')">Edit</button>
+	  </td>
     </tr>
     {[~]}
     {[?]}

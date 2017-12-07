@@ -429,6 +429,10 @@ func (q *QuerySet) NodeEntry() api.Node {
 		rsp.ExtPermalinkName = rs.Field("ext_permalink_name").String()
 	}
 
+	if rsp.Model.Extensions.NodeRefer != "" {
+		rsp.ExtNodeRefer = rs.Field("ext_node_refer").String()
+	}
+
 	rsp.Kind = "Node"
 
 	// qryhash := q.Hash()

@@ -16,7 +16,6 @@ package v1
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"sync"
 
@@ -55,11 +54,10 @@ func (c *Node) Init() int {
 }
 
 var (
-	node_id_length                = 12
-	node_pid_default              = "00"
-	node_list_limit         int64 = 15
-	node_field_permalink_re       = regexp.MustCompile("^[0-9a-z_-]{1,100}$")
-	node_set_lock           sync.Mutex
+	node_id_length         = 12
+	node_pid_default       = "00"
+	node_list_limit  int64 = 15
+	node_set_lock    sync.Mutex
 )
 
 func (c Node) ListAction() {
@@ -70,6 +68,12 @@ func (c Node) ListAction() {
 
 	if !iamclient.SessionAccessAllowed(c.Session, "editor.list", config.Config.InstanceID) {
 		ls.Error = &types.ErrorMeta{iamapi.ErrCodeAccessDenied, "Access Denied"}
+		return
+	}
+
+	model, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid"))
+	if err != nil {
+		ls.Error = types.NewErrorMeta("400", "Invalid modname or modelid")
 		return
 	}
 
@@ -88,6 +92,13 @@ func (c Node) ListAction() {
 
 	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
 	dqc.Filter("status.gt", 0)
+
+	node_refer := c.Params.Get("ext_node_refer")
+	if model.Extensions.NodeRefer != "" &&
+		api.NodeExtNodeReferReg.MatchString(c.Params.Get("ext_node_refer")) {
+		dq.Filter("ext_node_refer", node_refer)
+		dqc.Filter("ext_node_refer", node_refer)
+	}
 
 	if c.Params.Get("qry_text") != "" {
 		dq.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
@@ -135,7 +146,6 @@ func (c Node) EntryAction() {
 func (c Node) SetAction() {
 
 	rsp := api.Node{}
-
 	defer c.RenderJson(&rsp)
 
 	if err := c.Request.JsonDecode(&rsp); err != nil {
@@ -164,26 +174,30 @@ func (c Node) SetAction() {
 	defer node_set_lock.Unlock()
 
 	var (
-		set = map[string]interface{}{}
+		set          = map[string]interface{}{}
+		table_prefix = fmt.Sprintf("nx%s_", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12))
+		table        = table_prefix + c.Params.Get("modelid")
 	)
 
 	//
-	table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
-
-	if model.Extensions.Permalink != "" {
-
-		rsp.ExtPermalinkName = strings.Replace(strings.ToLower(strings.TrimSpace(rsp.ExtPermalinkName)), " ", "-", -1)
-
-		if len(rsp.ExtPermalinkName) > 0 {
-
-			if !node_field_permalink_re.MatchString(rsp.ExtPermalinkName) {
-				rsp.Error = &types.ErrorMeta{
-					Code:    "400",
-					Message: "Invalid Permalink Name",
-				}
-				return
-			}
+	if model.Extensions.Permalink != "" && rsp.ExtPermalinkName != "" {
+		rsp.ExtPermalinkName, err = api.PermalinkNameFilter(rsp.ExtPermalinkName)
+		if err != nil || rsp.ExtPermalinkName == "" {
+			rsp.Error = types.NewErrorMeta("400", "Invalid Permalink Name")
+			return
 		}
+	}
+
+	if model.Extensions.NodeRefer != "" {
+		if !api.NodeExtNodeReferReg.MatchString(rsp.ExtNodeRefer) {
+			rsp.Error = types.NewErrorMeta("400", "Invalid Node Refer ID")
+			return
+		}
+	}
+
+	if rsp.Title == "" {
+		rsp.Error = types.NewErrorMeta("400", "Invalid Title")
+			return
 	}
 
 	if len(rsp.ID) > 0 {
@@ -217,6 +231,10 @@ func (c Node) SetAction() {
 
 		if model.Extensions.Permalink != "" {
 			set["ext_permalink_name"] = rs[0].Field("ext_permalink_name")
+		}
+
+		if model.Extensions.NodeRefer != "" {
+			set["ext_node_refer"] = rs[0].Field("ext_node_refer")
 		}
 
 		//
@@ -447,6 +465,22 @@ func (c Node) SetAction() {
 		}
 	}
 
+	if model.Extensions.NodeRefer != "" {
+
+		if prev, ok := set["ext_node_refer"]; !ok || prev != rsp.ExtNodeRefer {
+			ref_q := rdb.NewQuerySet().From(table_prefix + model.Extensions.NodeRefer).Limit(1)
+			ref_q.Where.And("id", rsp.ExtNodeRefer)
+			if rs, err := store.Data.Query(ref_q); err != nil {
+				rsp.Error = types.NewErrorMeta("500", "Server Error")
+				return
+			} else if len(rs) < 1 {
+				rsp.Error = types.NewErrorMeta("400", "Node Refer ID Not Found")
+				return
+			}
+			set["ext_node_refer"] = rsp.ExtNodeRefer
+		}
+	}
+
 	if len(set) > 0 {
 
 		set["updated"] = rdb.TimeNow("datetime")
@@ -484,7 +518,6 @@ func (c Node) SetAction() {
 func (c Node) DelAction() {
 
 	rsp := api.Node{}
-
 	defer c.RenderJson(&rsp)
 
 	if !iamclient.SessionAccessAllowed(c.Session, "editor.write", config.Config.InstanceID) {

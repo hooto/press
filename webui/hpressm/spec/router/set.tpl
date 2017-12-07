@@ -14,7 +14,7 @@
   <input type="hidden" name="path" value="{[=it.path]}">
   {[??]}
   <div class="form-group">
-    <label>Name</label>
+    <label>Path</label>
     <input type="text" class="form-control" name="path" 
       placeholder="Route Path" value="{[=it.path]}">
   </div>
@@ -47,8 +47,8 @@
   <div class="form-group">
     <label>Default</label>
     <select class="form-control" name="default">
-      <option value="1" {[if (v.default) { ]}selected{[ } ]}>Yes</option>
-      <option value="0" {[if (!v.default) { ]}selected{[ } ]}>No</option>
+      <option value="1" {[if (it.default) { ]}selected{[ } ]}>Yes</option>
+      <option value="0" {[if (!it.default) { ]}selected{[ } ]}>No</option>
     </select>
   </div>
 </script>

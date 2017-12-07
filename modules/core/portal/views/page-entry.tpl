@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-{{pagelet . "core/general" "html-header.tpl"}}
+{{pagelet . "core/portal" "html-header.tpl"}}
 <body>
 {{pagelet . "core/general" "nav-header.tpl" "topnav"}}
 

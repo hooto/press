@@ -1,0 +1,36 @@
+.pt_frame_box {
+    margin: 20px 0 20px 0;
+}
+
+.pt_node_content {
+    font-size: 14pt !important;
+    line-height: 180% !important;
+}
+
+.pt_index_frame_blue {
+  /* background-color: #1890ff; */
+  background-color: #096dd9;
+  color: #fff;
+  padding: 20px 5px;
+}
+
+.pt_index_frame_dark {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 20px 5px;
+}
+
+
+.pt_bgimg_hexagons {
+  background-image: url("/hpress/+/static/pt/img/grid-hexagons.png");
+}
+
+.pt_icon {
+  display: inline-block;
+  vertical-align: text-top;
+  fill: currentColor;
+}
+
+.pt_icon_light {
+  fill: #f759ab !important;
+}

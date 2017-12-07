@@ -1,10 +1,10 @@
 {
   "meta": {
     "name": "core/comment",
-    "resourceVersion": "3",
-    "updated": "2017-12-09T13:47:36Z"
+    "resourceVersion": "5"
   },
   "srvname": "core-comment",
+  "status": 1,
   "title": "Comment",
   "nodeModels": [
     {

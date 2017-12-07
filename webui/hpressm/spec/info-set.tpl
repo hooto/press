@@ -25,4 +25,14 @@
     <input type="text" class="form-control" name="title" 
       placeholder="Title" value="{[=it.title]}">
   </div>
+
+  {[if (it.meta.name != "core/general") {]}
+  <div class="form-group">
+    <label>Status</label>
+    <select class="form-control" name="status">
+      <option value="1" {[if (it.status) { ]}selected{[ } ]}>Enable</option>
+      <option value="0" {[if (!it.status) { ]}selected{[ } ]}>Disable</option>
+    </select>
+  </div>
+  {[}]}
 </div>
