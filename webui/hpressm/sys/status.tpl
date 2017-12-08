@@ -4,7 +4,7 @@
 	font-height: 100%;
 }
 .hpress-sys-table {
-  font-size: 12px;
+  font-size: 10pt;
 }
 .hpress-sys-table td {
   padding: 5px !important;
@@ -26,15 +26,15 @@
       
       <tr>
         <td width="30%">App Instance ID</td>
-        <td>{[=it.instance_id]}</td>
+        <td class="hpressm-font-fixspace">{[=it.instance_id]}</td>
       </tr>
       <tr>
         <td>App Version - Release</td>
-        <td>{[=it.app_version]} - {[=it.app_release]}</td>
+        <td class="hpressm-font-fixspace">{[=it.app_version]} - {[=it.app_release]}</td>
       </tr>
       <tr>
         <td>Runtime Version</td>
-        <td>{[=it.runtime_version]}</td>
+        <td class="hpressm-font-fixspace">{[=it.runtime_version]}</td>
       </tr>
       <tr>
         <td>Uptime</td>

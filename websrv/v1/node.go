@@ -197,7 +197,7 @@ func (c Node) SetAction() {
 
 	if rsp.Title == "" {
 		rsp.Error = types.NewErrorMeta("400", "Invalid Title")
-			return
+		return
 	}
 
 	if len(rsp.ID) > 0 {
