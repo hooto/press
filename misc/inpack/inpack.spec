@@ -1,6 +1,6 @@
 [project]
 name = hooto-press
-version = 0.3.3.alpha
+version = 0.3.4.alpha
 vendor = hooto.com
 homepage = https://github.com/hooto/hpress
 groups = app/other
