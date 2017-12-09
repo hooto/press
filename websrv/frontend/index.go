@@ -87,26 +87,40 @@ func (c Index) filter(rt []string, spec *api.Spec) (string, string, bool) {
 	return "", "", false
 }
 
+var (
+	srvname_default = "core-genereal"
+	uris_default    = []string{"core-general"}
+)
+
 func (c Index) IndexAction() {
 
 	c.AutoRender = false
+	start := time.Now().UnixNano()
 
 	if v := config.SysConfigList.FetchString("http_h_ac_allow_origin"); v != "" {
 		c.Response.Out.Header().Set("Access-Control-Allow-Origin", v)
 	}
 
 	var (
-		srvname = "core-general"
-		uris    = strings.Split(strings.Trim(filepath.Clean(c.Request.RequestPath), "/"), "/")
+		reqpath = filepath.Clean("/" + c.Request.RequestPath)
+		uris    = []string{}
 	)
-
-	start := time.Now().UnixNano()
+	if reqpath == "" || reqpath == "." {
+		reqpath = "/"
+	}
+	if len(reqpath) > 0 && reqpath != "/" {
+		uris = strings.Split(strings.Trim(reqpath, "/"), "/")
+	}
 
 	if len(uris) < 1 {
-		uris = append(uris, "core-general")
-	} else {
-		srvname = uris[0]
+		if config.RouterBasepathDefault != "/" {
+			reqpath = config.RouterBasepathDefault
+			uris = config.RouterBasepathDefaults
+		} else {
+			uris = uris_default
+		}
 	}
+	srvname := uris[0]
 
 	if len(uris) < 2 {
 		uris = append(uris, "")
@@ -115,7 +129,7 @@ func (c Index) IndexAction() {
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
-		srvname = "core-general"
+		srvname = srvname_default
 		mod, ok = config.Modules[srvname]
 		if !ok {
 			return
@@ -124,9 +138,6 @@ func (c Index) IndexAction() {
 
 	dataAction, template, mat := c.filter(uris[1:], mod)
 	if !mat {
-
-		srvname = "core-general"
-
 		if uris[1] == "" {
 			template = "index.tpl"
 		} else {
@@ -139,6 +150,7 @@ func (c Index) IndexAction() {
 	// }
 
 	c.Data["baseuri"] = "/" + srvname
+	c.Data["http_request_path"] = reqpath
 	c.Data["srvname"] = srvname
 	c.Data["modname"] = mod.Meta.Name
 	c.Data["sys_version_sign"] = config.SysVersionSign

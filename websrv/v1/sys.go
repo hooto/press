@@ -16,7 +16,9 @@ package v1
 
 import (
 	"fmt"
+	"path/filepath"
 	"runtime"
+	"strings"
 	"syscall"
 
 	"github.com/hooto/httpsrv"
@@ -124,6 +126,17 @@ func (c Sys) ConfigSetAction() {
 				Message: err.Error(),
 			}
 			return
+		}
+
+		if entry.Key == "router_basepath_default" {
+			entry.Value = filepath.Clean("/" + strings.TrimSpace(entry.Value))
+			if entry.Value == "" || entry.Value == "." || entry.Value == "/" {
+				entry.Value = "/"
+				config.RouterBasepathDefaults = []string{}
+			} else {
+				config.RouterBasepathDefaults = strings.Split(strings.Trim(entry.Value, "/"), "/")
+			}
+			config.RouterBasepathDefault = entry.Value
 		}
 
 		config.SysConfigList.Insert(entry)

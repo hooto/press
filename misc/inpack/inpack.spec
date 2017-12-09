@@ -26,10 +26,12 @@ webui/hpress/img/alpha2.png
 webui/hpress/img/search-16.png
 webui/hpress/img/ap.ico
 webui/bs/3.3/fonts/
-
+webui/octicons/
+webui/open-iconic/
 
 %js_compress
 webui/bs/3.3/js/bootstrap.js
+webui/bs/4.0/js/bootstrap.js
 webui/cm/5/
 webui/lessui/js/lessui.js
 webui/lessui/js/browser-detect.js
@@ -42,6 +44,7 @@ vendor/github.com/hooto/hchart/webui/
 
 %css_compress
 webui/bs/3.3/css/
+webui/bs/4.0/css/
 webui/cm/5/
 webui/purecss/pure.css
 webui/lessui/css/lessui.css

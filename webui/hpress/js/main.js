@@ -161,7 +161,7 @@ hpress.hchartRender = function(i, elem) {
     });
 }
 
-hpress.NavActive = function(tplid, path) {
+hpress.NavActive = function(tplid, nav_path) {
     if (!tplid) {
         return;
     }
@@ -171,7 +171,9 @@ hpress.NavActive = function(tplid, path) {
         return;
     }
 
-    var nav_path = window.location.pathname;
+    if (!nav_path || nav_path.length < 1) {
+        nav_path = window.location.pathname;
+    }
     if (!nav_path || nav_path == "") {
         nav_path = "/";
     }

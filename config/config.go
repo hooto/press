@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/hooto/hcaptcha/captcha4g"
@@ -56,8 +57,10 @@ var (
 		HomeDir:  "/home/action",
 	}
 
-	SysConfigList = api.SysConfigList{}
-	inited        = false
+	SysConfigList          = api.SysConfigList{}
+	inited                 = false
+	RouterBasepathDefault  = ""
+	RouterBasepathDefaults = []string{}
 )
 
 type ConfigCommon struct {
@@ -119,6 +122,11 @@ func init() {
 	SysConfigList.Insert(api.SysConfig{
 		"http_h_ac_allow_origin", "",
 		"HTTP Access-Control-Allow-Origin", "",
+	})
+
+	SysConfigList.Insert(api.SysConfig{
+		"router_basepath_default", "",
+		"Default basepath of router", "",
 	})
 
 	go func() {
@@ -200,10 +208,23 @@ func Initialize(prefix string) error {
 
 		for _, v := range rs {
 
-			SysConfigList.Insert(api.SysConfig{
+			item := api.SysConfig{
 				Key:   v.Field("key").String(),
 				Value: v.Field("value").String(),
-			})
+			}
+
+			if item.Key == "router_basepath_default" {
+				item.Value = filepath.Clean("/" + strings.TrimSpace(item.Value))
+				if item.Value == "" || item.Value == "." || item.Value == "/" {
+					item.Value = "/"
+					RouterBasepathDefaults = []string{}
+				} else {
+					RouterBasepathDefaults = strings.Split(strings.Trim(item.Value, "/"), "/")
+				}
+				RouterBasepathDefault = item.Value
+			}
+
+			SysConfigList.Insert(item)
 		}
 	}
 

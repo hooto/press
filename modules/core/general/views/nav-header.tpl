@@ -37,7 +37,7 @@
 
 <script type="text/javascript">
 window.onload_hooks.push(function() {
-    hpress.NavActive("hpress-topbar-nav-main", "{{.baseuri}}");
+    hpress.NavActive("hpress-topbar-nav-main", "{{.http_request_path}}");
     hpress.AuthSessionRefresh();
 });
 </script>
