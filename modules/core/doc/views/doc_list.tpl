@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 {{pagelet . "core/general" "bs4/html-header.tpl"}}
-<link rel="stylesheet" href="{{HttpSrvBasePath "hpress/+/static/doc/css/main.css"}}?v={{.sys_version_sign}}" type="text/css">
-<link rel="stylesheet" href="{{HttpSrvBasePath "hpress/~/open-iconic/font/css/open-iconic-bootstrap.css"}}?v={{.sys_version_sign}}" type="text/css">
+<link rel="stylesheet" href="{{HttpSrvBasePath "hp/-/static/doc/css/main.css"}}?v={{.sys_version_sign}}" type="text/css">
+<link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/open-iconic/font/css/open-iconic-bootstrap.css"}}?v={{.sys_version_sign}}" type="text/css">
 <body>
 {{pagelet . "core/general" "bs4/nav-header.tpl" "topnav"}}
 
@@ -23,7 +23,7 @@
       {{if eq $term.Name "tags"}}
         {{if $term.Items}}
           <span>
-            <img src="/hpress/~/open-iconic/svg/tags.svg" width="16" height="16" class="hpdoc_icon">&nbsp;          
+            <img src="/hp/~/open-iconic/svg/tags.svg" width="16" height="16" class="hpdoc_icon">&nbsp;          
             {{range $term_item := $term.Items}}
             <a href="{{$.baseuri}}/list?term_tags={{$term_item.Title}}" class="tag-item">{{$term_item.Title}}</a>
             {{end}}

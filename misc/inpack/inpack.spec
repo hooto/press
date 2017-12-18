@@ -12,8 +12,8 @@ mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache}
 go build -ldflags "-s -w -X main.version={{.project__version}} -X main.release={{.project__release}}" -o {{.buildroot}}/bin/hooto-press main.go
 
-sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpress/js/main.js
-sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpressm/js/main.js
+sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hp/js/main.js
+sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpm/js/main.js
 
 %files
 bin/hooto-press
@@ -21,10 +21,10 @@ bin/keeper
 etc/config.json.tpl
 i18n/
 modules/
-webui/hpressm/
-webui/hpress/img/alpha2.png
-webui/hpress/img/search-16.png
-webui/hpress/img/ap.ico
+webui/hpm/
+webui/hp/img/alpha2.png
+webui/hp/img/search-16.png
+webui/hp/img/ap.ico
 webui/bs/3.3/fonts/
 webui/octicons/
 webui/open-iconic/
@@ -37,8 +37,8 @@ webui/lessui/js/lessui.js
 webui/lessui/js/browser-detect.js
 webui/lessui/js/eventproxy.js
 webui/lessui/js/sea.js
-webui/hpress/js/
-webui/hpressm/js/
+webui/hp/js/
+webui/hpm/js/
 modules/
 vendor/github.com/hooto/hchart/webui/
 
@@ -48,17 +48,17 @@ webui/bs/4.0/css/
 webui/cm/5/
 webui/purecss/pure.css
 webui/lessui/css/lessui.css
-webui/hpress/css/
-webui/hpressm/css/
+webui/hp/css/
+webui/hpm/css/
 modules/
 
 
 %html_compress
 modules/
-webui/hpressm/
+webui/hpm/
 websrv/mgr/views/
 
 %png_compress
-webui/hpress/img/
-webui/hpressm/img/
+webui/hp/img/
+webui/hpm/img/
 

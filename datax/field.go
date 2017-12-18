@@ -65,6 +65,7 @@ func init() {
 	mkp.AllowAttrs("class").OnElements("code")
 
 	//
+	shtmlp.AllowElements("script")
 	shtmlp.AllowElements("button", "style")
 
 	//

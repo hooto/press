@@ -6,14 +6,14 @@
 
 <div class="container">
   
-  <div class="hpress-ctn-header">
+  <div class="hp-ctn-header">
     <h2>Content Entry</h2>
   </div>
 
   <div class="row">
     <div class="col-md-12">
     
-      <div class="hpress-nodev">
+      <div class="hp-nodev">
         
         <div class="header">
           <h2>{{.entry.Title}}</h2>
@@ -74,13 +74,13 @@ window.onload_hooks.push(function() {
         "+/comment/~/index.css",
     ],
     function() {
-        hpressComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
+        hpComment.EmbedLoader("core-blog-comments", "{{.modname}}", "{{.__datax_table__}}", "{{.entry.ID}}");
     });
 });
 {{end}}
 
 window.onload_hooks.push(function() {
-    hpress.CodeRender();
+    hp.CodeRender();
 });
 </script>
 

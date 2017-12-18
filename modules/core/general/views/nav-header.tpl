@@ -1,43 +1,43 @@
-<div id="hpress-topbar">
-  <div class="container hpress-topbar-collapse">
-    <ul class="hpress-nav">
+<div id="hp-topbar">
+  <div class="container hp-topbar-collapse">
+    <ul class="hp-nav">
       {{if SysConfig "frontend_header_site_logo_url"}}
-      <li><img class="hpress-topbar-logo" src="{{SysConfig "frontend_header_site_logo_url"}}"></li>
+      <li><img class="hp-topbar-logo" src="{{SysConfig "frontend_header_site_logo_url"}}"></li>
       {{end}}
-      <li class="hpress-topbar-brand">{{SysConfig "frontend_header_site_name"}}</li>
+      <li class="hp-topbar-brand">{{SysConfig "frontend_header_site_name"}}</li>
     </ul>
 
-    <ul class="hpress-nav hpress-topbar-nav" id="hpress-topbar-nav-main">
+    <ul class="hp-nav hp-topbar-nav" id="hp-topbar-nav-main">
       {{range $v := .topnav.Items}}
       <li><a class="" href="{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
       {{end}}
     </ul>
 
-    <ul class="hpress-nav hpress-nav-right" id="hpress-topbar-userbar"></ul>
+    <ul class="hp-nav hp-nav-right" id="hp-topbar-userbar"></ul>
   </div>
 </div>
 
-<script id="hpress-topbar-user-unsigned-tpl" type="text/html">
-<li class="iam-name"><a href="{{HttpSrvBasePath "hpress/auth/login"}}">Login</a></li>
+<script id="hp-topbar-user-unsigned-tpl" type="text/html">
+<li class="iam-name"><a href="{{HttpSrvBasePath "hp/auth/login"}}">Login</a></li>
 </script>
 
-<script id="hpress-topbar-user-signed-tpl" type="text/html">
+<script id="hp-topbar-user-signed-tpl" type="text/html">
 
 <li class="iam-name">{[=it.display_name]}</li>
-<li class="iam-photo" id="hpress-topbar-user-signed"><img src="{[=it.photo_url]}"/></li>
+<li class="iam-photo" id="hp-topbar-user-signed"><img src="{[=it.photo_url]}"/></li>
 
-<div id="hpress-topbar-user-signed-modal" style="display:none;">
+<div id="hp-topbar-user-signed-modal" style="display:none;">
   <img class="iam-photo" src="{[=it.photo_url]}">
   <div class="iam-name">{[=it.display_name]}</div>
-  {[? it.instance_owner]}<a class="btn btn-primary iam-btn" href="{[=hpress.HttpSrvBasePath('mgr')]}" target="_blank">Content Manage</a>{[?]}
+  {[? it.instance_owner]}<a class="btn btn-primary iam-btn" href="{[=hp.HttpSrvBasePath('mgr')]}" target="_blank">Content Manage</a>{[?]}
   <a class="btn btn-default iam-btn" href="{[=it.iam_url]}" target="_blank">Account Center</a>
-  <a class="btn btn-default iam-btn" href="{[=hpress.HttpSrvBasePath('auth/sign-out')]}">Sign out</a>
+  <a class="btn btn-default iam-btn" href="{[=hp.HttpSrvBasePath('auth/sign-out')]}">Sign out</a>
 </div>
 </script>
 
 <script type="text/javascript">
 window.onload_hooks.push(function() {
-    hpress.NavActive("hpress-topbar-nav-main", "{{.http_request_path}}");
-    hpress.AuthSessionRefresh();
+    hp.NavActive("hp-topbar-nav-main", "{{.http_request_path}}");
+    hp.AuthSessionRefresh();
 });
 </script>

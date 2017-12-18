@@ -1,4 +1,4 @@
-.hpress-comment-embed > header {
+.hp-comment-embed > header {
   margin: 5px 0;
   padding: 0;
   border: 0;
@@ -6,7 +6,7 @@
   display: block;
 }
 
-.hpress-comment-embed > header > .nav-primary {
+.hp-comment-embed > header > .nav-primary {
   padding: 0;
   border-bottom: 2px solid;
   border-bottom-color: rgba(0,0,0,.2);
@@ -15,19 +15,19 @@
   display: block;
 }
 
-.hpress-comment-embed > header > .nav-primary > ul {
+.hp-comment-embed > header > .nav-primary > ul {
   margin: 0 auto;
   padding: 0;
   border: 0;
 }
 
-.hpress-comment-embed > header > .nav-primary > ul > li {
+.hp-comment-embed > header > .nav-primary > ul > li {
   display: inline-block;
   line-height: 0;
   position: relative;
 }
 
-.hpress-comment-embed > header > .nav-primary > ul > li > span {
+.hp-comment-embed > header > .nav-primary > ul > li > span {
   line-height: 1;
   margin: 0 15px;
   padding: 12px 0;
@@ -37,7 +37,7 @@
   font-weight: bold;
 }
 
-.hpress-comment-embed > header > .nav-primary > ul > li > span:after {
+.hp-comment-embed > header > .nav-primary > ul > li > span:after {
   content: " ";
   display: block;
   background-color: #777;
@@ -48,42 +48,42 @@
   left: 0;
 }
 
-.hpress-comment-embed .entry {
+.hp-comment-embed .entry {
   margin: 20px 0;
   position: relative;
   display: block;
   clear: both;
 }
 
-.hpress-comment-embed .entry:after,
-.hpress-comment-embed .entry:before {
+.hp-comment-embed .entry:after,
+.hp-comment-embed .entry:before {
   content: "";
   display: table;
   line-height: 0;
 }
 
-.hpress-comment-embed .entry > .avatar {
+.hp-comment-embed .entry > .avatar {
   float: left;
   margin-right: 12px;
   background-color: #eee;
 }
 
-.hpress-comment-embed .entry > .avatar > img {
+.hp-comment-embed .entry > .avatar > img {
   width: 48px;
   height: 48px;
 }
 
-.hpress-comment-embed .entry > .body {
+.hp-comment-embed .entry > .body {
   margin: 0;
   padding: 0;
   overflow: hidden;
   display: block;
 }
 
-.hpress-comment-embed .new {
+.hp-comment-embed .new {
   margin-bottom: 20px;
 }
 
-#hpress-comment-embed-new-form-alert {
+#hp-comment-embed-new-form-alert {
   margin: 5px 0;
 }

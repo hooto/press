@@ -1,17 +1,17 @@
-var hpressComment = {
+var hpComment = {
 
 }
 
-hpressComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
+hpComment.EmbedLoader = function(dstid, ref_modname, ref_table, ref_id)
 {
-    hpress.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
+    hp.ActionLoader(dstid, "+/comment/comment/embed?refer_modname="+ ref_modname +
         "&refer_datax_table="+ ref_table +"&refer_id="+ ref_id );
 }
 
-hpressComment.EmbedCommit = function()
+hpComment.EmbedCommit = function()
 {
-    var form = $("#hpress-comment-embed-new-form"),
-        alertid = "#hpress-comment-embed-new-form-alert";
+    var form = $("#hp-comment-embed-new-form"),
+        alertid = "#hp-comment-embed-new-form-alert";
 
     var req = {
         pid               : "",
@@ -24,7 +24,7 @@ hpressComment.EmbedCommit = function()
         captcha_word      : form.find("input[name=captcha_word]").val(),
     };
 
-    hpress.ApiCmd("+/comment/comment/set", {
+    hp.ApiCmd("+/comment/comment/set", {
         method : "POST",
         data   : JSON.stringify(req),
         callback : function(err, data) {
@@ -41,8 +41,8 @@ hpressComment.EmbedCommit = function()
 
                     var captcha_token = Math.random();
                     form.find("input[name=captcha_token]").val(captcha_token);
-                    form.find("#hpress-comment-captcha-url").attr("src", 
-                        hpress.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+                    form.find("#hp-comment-captcha-url").attr("src", 
+                        hp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
                 }
 
                 return l4i.InnerAlert(alertid, 'alert-danger', data.error.message);
@@ -58,13 +58,13 @@ hpressComment.EmbedCommit = function()
             };
 
             l4iTemplate.Render({
-                dstid  : "hpress-comment-embed-list",
-                tplid  : "hpress-comment-embed-tpl",
+                dstid  : "hp-comment-embed-list",
+                tplid  : "hp-comment-embed-tpl",
                 data   : req,
                 append : true,
                 success : function() {
 
-                    $("#hpress-comment-embed-list-header").css({"display": "block"});
+                    $("#hp-comment-embed-list-header").css({"display": "block"});
                     
                     $("#entry-"+ req.meta.id).css({
                         "outline": "#5cb85c solid 2px",
@@ -84,7 +84,7 @@ hpressComment.EmbedCommit = function()
             l4i.InnerAlert(alertid, 'alert-success', "Successfully commited");
 
             setTimeout(function() {
-                hpressComment.EmbedFormHidden();
+                hpComment.EmbedFormHidden();
                 $(alertid).hide(500);
             }, 1500);
         },
@@ -92,18 +92,18 @@ hpressComment.EmbedCommit = function()
 }
 
 
-hpressComment.EmbedFormActive = function()
+hpComment.EmbedFormActive = function()
 {
-    $("#hpress-comment-embed-new-form-ctrl").css({"display": "none"});
+    $("#hp-comment-embed-new-form-ctrl").css({"display": "none"});
 
-    var form = $("#hpress-comment-embed-new-form"),
+    var form = $("#hp-comment-embed-new-form"),
         captcha_token = Math.random();
 
     form.css({"display": "block"});
 
     form.find("input[name=captcha_token]").val(captcha_token);
-    form.find("#hpress-comment-captcha-url").attr("src", 
-        hpress.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
+    form.find("#hp-comment-captcha-url").attr("src", 
+        hp.HttpSrvBasePath("+/hcaptcha/api/image?hcaptcha_token="+ captcha_token));
 
     form.find("textarea[name=content]").focus();
 
@@ -111,8 +111,8 @@ hpressComment.EmbedFormActive = function()
 }
 
 
-hpressComment.EmbedFormHidden = function()
+hpComment.EmbedFormHidden = function()
 {
-    $("#hpress-comment-embed-new-form-ctrl").css({"display": "block"});
-    $("#hpress-comment-embed-new-form").slideUp(500);//css({"display": "none"});
+    $("#hp-comment-embed-new-form-ctrl").css({"display": "block"});
+    $("#hp-comment-embed-new-form").slideUp(500);//css({"display": "none"});
 }

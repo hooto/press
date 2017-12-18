@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>Setup : Registration to IAM Service</title>
-  <link rel="stylesheet" href="{{HttpSrvBasePath "hpress/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
-  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "hpress/~/hpress/img/ap.ico"}}">
-  <script src="{{HttpSrvBasePath "hpress/~/hpress/js/jquery.js"}}"></script>
-  <script src="{{HttpSrvBasePath "hpress/~/lessui/js/lessui.js"}}"></script>
+  <link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/bs/3.3/css/bootstrap.css"}}" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "hp/~/hp/img/ap.ico"}}">
+  <script src="{{HttpSrvBasePath "hp/~/hp/js/jquery.js"}}"></script>
+  <script src="{{HttpSrvBasePath "hp/~/lessui/js/lessui.js"}}"></script>
   <script type="text/javascript">
     window.onload_hooks = [];
   </script>
@@ -16,8 +16,8 @@
 
 <div class="container" style="width:600px">
 
-<div class="hpress-mgr-setup-logo" style="text-align:center;padding:30px;">
-  <img src="{{HttpSrvBasePath "hpress/~/hpress/img/alpha2.png"}}">
+<div class="hp-mgr-setup-logo" style="text-align:center;padding:30px;">
+  <img src="{{HttpSrvBasePath "hp/~/hp/img/alpha2.png"}}">
 </div>
 
 <div class="panel panel-default">
@@ -29,9 +29,9 @@
   
   <div class="panel-body">
 
-    <form id="hpress-app-reg" action="#">
+    <form id="hp-app-reg" action="#">
       
-      <div id="hpress-app-reg-alert" class="alert alert-danger hide">...</div>
+      <div id="hp-app-reg-alert" class="alert alert-danger hide">...</div>
     
       <div class="form-group">
         <label>IAM Service URL</label>
@@ -77,15 +77,15 @@
 <script type="text/javascript">
 
 
-$("#hpress-app-reg").submit(function(event) {
+$("#hp-app-reg").submit(function(event) {
 
     event.preventDefault();
 
-    var alertid = "#hpress-app-reg-alert";
+    var alertid = "#hp-app-reg-alert";
 
     $.ajax({
         type    : "POST",
-        url     : "{{HttpSrvBasePath "hpress/mgr/setup/app-register-sync"}}",
+        url     : "{{HttpSrvBasePath "hp/mgr/setup/app-register-sync"}}",
         data    : $(this).serialize(),
         timeout : 3000,
         success : function(data) {
@@ -103,7 +103,7 @@ $("#hpress-app-reg").submit(function(event) {
                 l4i.InnerAlert(alertid, 'alert-success', 'Successfully registered ...');
 
                 window.setTimeout(function(){
-                    window.location = "{{HttpSrvBasePath "hpress/mgr"}}";
+                    window.location = "{{HttpSrvBasePath "hp/mgr"}}";
                 }, 1500);
             }
         },

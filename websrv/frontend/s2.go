@@ -54,7 +54,7 @@ func (c S2) IndexAction() {
 
 	var (
 		ipn      = c.Params.Get("ipn")
-		obj_path = strings.TrimPrefix(filepath.Clean(c.Request.RequestPath), "hpress/s2/")
+		obj_path = strings.TrimPrefix(filepath.Clean(c.Request.RequestPath), "hp/s2/")
 		abs_path = config.Prefix + "/var/storage/" + obj_path
 	)
 

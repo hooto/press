@@ -52,7 +52,7 @@ func (c Setup) IndexAction() {
 		}
 		http.SetCookie(c.Response.Out, ck)
 
-		c.Redirect("hpress/mgr")
+		c.Redirect("hp/mgr")
 		return
 	}
 

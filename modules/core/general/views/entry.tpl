@@ -6,13 +6,13 @@
 
 <div class="container">
   
-  <div class="hpress-ctn-header">
+  <div class="hp-ctn-header">
     <h2>{{.page.Title}}</h2>
   </div>
 
   <div class="row">
     <div class="col-md-12">    
-      <div class="hpress-nodev">
+      <div class="hp-nodev">
         <div class="content">{{FieldHtml .page.Fields "content"}}</div>
       </div>      
     </div>

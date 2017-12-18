@@ -25,7 +25,6 @@ var (
 		"core/portal",
 		"core/doc",
 		"core/blog",
-		"ruilog/notebook",
 	}
 
 	Perms = []iamapi.AppPrivilege{

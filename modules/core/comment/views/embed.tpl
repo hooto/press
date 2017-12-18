@@ -1,6 +1,6 @@
-<div class="hpress-comment-embed">
+<div class="hp-comment-embed">
 
-  <header id="hpress-comment-embed-list-header" style="display:{{if len .list.Items}}block{{else}}none{{end}}">
+  <header id="hp-comment-embed-list-header" style="display:{{if len .list.Items}}block{{else}}none{{end}}">
     <nav class="nav-primary">
       <ul>
         <li>
@@ -10,11 +10,11 @@
     </nav>
   </header>
 
-  <div id="hpress-comment-embed-list" class="list">
+  <div id="hp-comment-embed-list" class="list">
     {{range $v := .list.Items}}
     <div class="entry">
       <div class="avatar">
-        <img src="{{HttpSrvBasePath "hpress/+/comment/~/img/user-default.png"}}">
+        <img src="{{HttpSrvBasePath "hp/+/comment/~/img/user-default.png"}}">
       </div>  
       
       <div class="body">
@@ -41,21 +41,21 @@
   <div class="list">
     <div class="entry">
       <div class="avatar">
-        <img src="{{HttpSrvBasePath "hpress/+/comment/~/img/user-default.png"}}">
+        <img src="{{HttpSrvBasePath "hp/+/comment/~/img/user-default.png"}}">
       </div>  
       
-      <div id="hpress-comment-embed-new-form-ctrl" class="body">
+      <div id="hp-comment-embed-new-form-ctrl" class="body">
         <div>
           <div class="info"><strong>Guest</strong></div>
           <div>
-            <input type="text" class="form-control" name="author" placeholder="Leave a comment ..." onclick="hpressComment.EmbedFormActive()">
+            <input type="text" class="form-control" name="author" placeholder="Leave a comment ..." onclick="hpComment.EmbedFormActive()">
           </div>
         </div>
       </div>
 
-      <div id="hpress-comment-embed-new-form" class="body new" style="display:none;">
+      <div id="hp-comment-embed-new-form" class="body new" style="display:none;">
 
-        <div id="hpress-comment-embed-new-form-alert"></div>
+        <div id="hp-comment-embed-new-form-alert"></div>
 
         <input type="hidden" name="refer_id" value="{{.new_form_refer_id}}">
         <input type="hidden" name="refer_modname" value="{{.new_form_refer_modname}}">
@@ -81,23 +81,23 @@
                 <span class="help-block">Type the characters you see in the right picture</span>
               </div>
               <div class="col-xs-6" style="background-color: #dce6ff;">
-                <img id="hpress-comment-captcha-url" src="">
+                <img id="hp-comment-captcha-url" src="">
               </div>
             </div>        
           </div>
         </div>
 
-        <button class="btn btn-default" onclick="hpressComment.EmbedCommit()">Commit</button>
+        <button class="btn btn-default" onclick="hpComment.EmbedCommit()">Commit</button>
 
       </div>
     </div>
   </div>
 </div>
 
-<script id="hpress-comment-embed-tpl" type="text/html">
+<script id="hp-comment-embed-tpl" type="text/html">
 <div class="entry" id="entry-{[=it.meta.id]}">
   <div class="avatar">
-    <img src="{[=hpress.HttpSrvBasePath('+/comment/~/img/user-default.png')]}">
+    <img src="{[=hp.HttpSrvBasePath('+/comment/~/img/user-default.png')]}">
   </div>
   <div class="body">
     <div class="info">

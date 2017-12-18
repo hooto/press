@@ -39,14 +39,14 @@ func (c Index) IndexAction() {
 	if !iamclient.SessionIsLogin(c.Session) {
 		c.Redirect(iamclient.AuthServiceUrl(
 			config.Config.InstanceID,
-			c.UrlBase("hpress/auth/cb"),
+			c.UrlBase("hp/auth/cb"),
 			c.Request.RawAbsUrl(),
 		))
 		return
 	}
 
 	if status.IamServiceStatus == status.IamServiceUnRegistered {
-		c.Redirect("hpress/mgr/setup/index")
+		c.Redirect("hp/mgr/setup/index")
 		return
 	}
 

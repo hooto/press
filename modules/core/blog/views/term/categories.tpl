@@ -1,5 +1,5 @@
 {{if .categories}}
-<div class="hpress-sidebar-section">
+<div class="hp-sidebar-section">
   <div class="header">
     <h3>{{.categories.Model.Title}}</h3>
   </div>

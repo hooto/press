@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 {{pagelet . "core/general" "bs4/html-header.tpl"}}
-<link rel="stylesheet" href="{{HttpSrvBasePath "hpress/+/static/doc/css/main.css"}}?v={{.sys_version_sign}}" type="text/css">
-<link rel="stylesheet" href="{{HttpSrvBasePath "hpress/~/open-iconic/font/css/open-iconic-bootstrap.css"}}?v={{.sys_version_sign}}" type="text/css">
+<link rel="stylesheet" href="{{HttpSrvBasePath "hp/-/static/doc/css/main.css"}}?v={{.sys_version_sign}}" type="text/css">
+<link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/open-iconic/font/css/open-iconic-bootstrap.css"}}?v={{.sys_version_sign}}" type="text/css">
 <body>
 {{pagelet . "core/general" "bs4/nav-header.tpl" "topnav"}}
 
@@ -29,7 +29,7 @@
 
 <script type="text/javascript">
 window.onload_hooks.push(function() {
-    hpress.CodeRender();
+    hp.CodeRender();
 });
 </script>
 

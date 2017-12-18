@@ -114,7 +114,7 @@ func init() {
 		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text",
 	})
 	SysConfigList.Insert(api.SysConfig{
-		"ls2_uri", "//127.0.0.1:9533/hpress/s2",
+		"ls2_uri", "//127.0.0.1:9533/hp/s2",
 		"Storage Service URI", "",
 	})
 
