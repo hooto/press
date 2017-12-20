@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/blog",
-    "resourceVersion": "24"
+    "version": "0.0.25"
   },
   "srvname": "blog",
   "title": "Blog",

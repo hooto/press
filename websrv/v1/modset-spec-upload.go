@@ -22,7 +22,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/hooto/iam/iamapi"
@@ -150,6 +149,11 @@ func (c ModSet) SpecUploadCommitAction() {
 		return
 	}
 
+	if !api.NewSpecVersion(spec.Meta.Version).Valid() {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Invalid Version Format")
+		return
+	}
+
 	//
 	spec.Meta.Name, err = modset.ModNameFilter(spec.Meta.Name)
 	if err != nil {
@@ -163,11 +167,8 @@ func (c ModSet) SpecUploadCommitAction() {
 		return
 	}
 
-	specVersion, _ := strconv.Atoi(spec.Meta.ResourceVersion)
-
 	if prev, err := modset.SpecFetch(spec.Meta.Name); err == nil {
-		prevVersion, _ := strconv.Atoi(prev.Meta.ResourceVersion)
-		if prevVersion > specVersion {
+		if api.NewSpecVersion(prev.Meta.Version).Compare(api.NewSpecVersion(spec.Meta.Version)) == 1 {
 			set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Invalid Version")
 			return
 		}
@@ -182,53 +183,7 @@ func (c ModSet) SpecUploadCommitAction() {
 		}
 	}
 
-	// timenow := rdb.TimeNow("datetime")
-	// jsb, _ := json.Encode(spec, "  ")
-
-	// q := rdb.NewQuerySet().From("modules").Limit(1)
-	// q.Where.And("name", spec.Meta.Name)
-
-	// fields := map[string]interface{}{
-	// 	"title":   spec.Title,
-	// 	"version": spec.Meta.ResourceVersion,
-	// 	"updated": timenow,
-	// 	"body":    string(jsb),
-	// }
-
-	// if _, err := store.Data.Fetch(q); err == nil {
-	// 	fr := rdb.NewFilter()
-	// 	fr.And("name", spec.Meta.Name)
-	// 	store.Data.Update("modules", fields, fr)
-	// } else {
-	// 	fields["name"] = spec.Meta.Name
-	// 	fields["srvname"] = spec.SrvName
-	// 	fields["created"] = timenow
-	// 	fields["status"] = 1
-
-	// 	store.Data.Insert("modules", fields)
-	// }
-
-	// config.SpecSet(&spec)
-
-	// config.SpecSrvRefresh(spec.SrvName)
-
 	modset.SpecSchemaSync(spec)
-
-	// } else {
-
-	// 	if err = modset.SpecInfoSet(set); err != nil {
-	// 		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
-	// 		return
-	// 	}
-	// }
-
-	// seted, err := modset.SpecFetch(set.Meta.Name)
-	// if err != nil {
-	// 	set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())
-	// 	return
-	// }
-
-	// modset.SpecSchemaSync(seted)
 
 	set.Kind = "Spec"
 }

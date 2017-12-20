@@ -17,10 +17,7 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -111,6 +108,7 @@ func module_init() error {
 				if mod.SrvName == "" || strings.Contains(mod.SrvName, "/") {
 					mod.SrvName, _ = api.SrvNameFilter(v.Field("srvname").String())
 				}
+
 				Modules[mod.SrvName] = &mod
 			} else {
 				hlog.Printf("error", "Module.Init(%s) Failed", v.Field("name").String())
@@ -121,42 +119,25 @@ func module_init() error {
 	//
 	for _, modname := range coreModules {
 
-		//
-		file := fmt.Sprintf("%s/modules/%s/spec.json", Prefix, modname)
-		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
-			return errors.New("Error: config file is not exists")
-		}
-
-		fp, err := os.Open(file)
-		if err != nil {
-			return errors.New(fmt.Sprintf("Error: Can not open (%s)", file))
-		}
-		defer fp.Close()
-
-		cfgstr, err := ioutil.ReadAll(fp)
-		if err != nil {
-			return errors.New(fmt.Sprintf("Error: Can not read (%s)", file))
-		}
-
 		var spec api.Spec
-		if err := json.Decode([]byte(cfgstr), &spec); err != nil {
+		err := json.DecodeFile(fmt.Sprintf("%s/modules/%s/spec.json", Prefix, modname), &spec)
+		if err != nil {
 			return err
 		}
 
-		specResVersion, _ := strconv.Atoi(spec.Meta.ResourceVersion)
-		instResVersion := 0
+		if !api.NewSpecVersion(spec.Meta.Version).Valid() {
+			return fmt.Errorf("Invalid Version of %s", modname)
+		}
 
+		var instResVersion api.SpecVersion
 		for _, mod := range Modules {
-
 			if mod.Meta.Name == modname {
-
-				instResVersion, _ = strconv.Atoi(mod.Meta.ResourceVersion)
-
+				instResVersion = api.SpecVersion(mod.Meta.Version)
 				break
 			}
 		}
 
-		if specResVersion <= instResVersion {
+		if api.NewSpecVersion(spec.Meta.Version).Compare(&instResVersion) <= 0 {
 			continue
 		}
 
@@ -172,7 +153,7 @@ func module_init() error {
 		set := map[string]interface{}{
 			"status":  1,
 			"title":   spec.Title,
-			"version": spec.Meta.ResourceVersion,
+			"version": spec.Meta.Version,
 			"updated": timenow,
 			"body":    string(jsb),
 		}
@@ -201,11 +182,9 @@ func module_init() error {
 
 	//
 	for _, mod := range Modules {
-
 		if err := _instance_schema_sync(mod); err != nil {
 			return err
 		}
-
 		SpecSrvRefresh(mod.SrvName)
 	}
 
@@ -215,7 +194,6 @@ func module_init() error {
 func SpecRefresh(modname string) {
 
 	for srvname, spec := range Modules {
-
 		if spec.Meta.Name == modname {
 			SpecSrvRefresh(srvname)
 			break

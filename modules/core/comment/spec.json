@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/comment",
-    "resourceVersion": "5"
+    "version": "0.0.6"
   },
   "srvname": "core-comment",
   "status": 1,

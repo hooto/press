@@ -24,7 +24,7 @@
   <td>{[=v.title]}</td>
   <td class="hpm-font-fixspace">{[=v.meta.name]}</td>
   <td class="hpm-font-fixspace">{[=v.srvname]}</td>
-  <td>{[=v.meta.resourceVersion]}</td>
+  <td>{[=v.meta.version]}</td>
   <td><button class="btn btn-default btn-sm" onclick="hpSpec.NodeList('{[=v.meta.name]}')">{[=v._nodeModelsNum]}</button></td>
   <td><button class="btn btn-default btn-sm" onclick="hpSpec.ActionList('{[=v.meta.name]}')">{[=v._actionsNum]}</button></td>
   <td><button class="btn btn-default btn-sm" onclick="hpSpec.RouteList('{[=v.meta.name]}')">{[=v._routesNum]}</button></td>

@@ -27,6 +27,7 @@ import (
 
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
+	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utilx"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/rdb/modeler"
@@ -125,8 +126,8 @@ func SpecInfoNew(entry api.Spec) error {
 
 	entry.Status = 1
 
-	entry.Meta.ResourceVersion = "1"
-	entry.Meta.Created = utilx.TimeNow("atom")
+	entry.Meta.Version = "0.1.0"
+	entry.Meta.Created = types.MetaTimeNow()
 
 	dir := fmt.Sprintf("%s/modules/%s", config.Prefix, entry.Meta.Name)
 	if err := os.MkdirAll(dir, 0750); err != nil {
@@ -161,14 +162,11 @@ func SpecInfoSet(entry api.Spec) error {
 		prev.SrvName != entry.SrvName ||
 		prev.Status != entry.Status {
 
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
 		prev.Title = entry.Title
 		prev.SrvName, err = api.SrvNameFilter(entry.SrvName)
 		prev.Status = entry.Status
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -211,11 +209,8 @@ func SpecTermSet(modname string, entry api.TermModel) error {
 
 	if sync {
 
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -475,11 +470,8 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 
 	if sync {
 
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -624,11 +616,8 @@ func SpecActionSet(modname string, entry api.Action) error {
 
 	if sync {
 
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -660,12 +649,8 @@ func SpecActionDel(modname string, entry api.Action) error {
 		}
 
 		prev.Actions = append(prev.Actions[:i], prev.Actions[i+1:]...)
-
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -781,11 +766,8 @@ func SpecRouteSet(modname string, entry api.Route) error {
 
 	if sync {
 
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -820,11 +802,8 @@ func SpecRouteDel(modname string, entry api.Route) error {
 
 		prev.Router.Routes = append(prev.Router.Routes[:i], prev.Router.Routes[i+1:]...)
 
-		ver, _ := strconv.ParseUint(prev.Meta.ResourceVersion, 10, 64)
-
-		prev.Meta.ResourceVersion = strconv.FormatUint((ver + 1), 10)
-
-		prev.Meta.Updated = utilx.TimeNow("atom")
+		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
+		prev.Meta.Updated = types.MetaTimeNow()
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err
@@ -836,8 +815,8 @@ func SpecRouteDel(modname string, entry api.Route) error {
 
 func spec_config_file_sync(entry api.Spec) error {
 
-	entry.Meta.Created = ""
-	entry.Meta.Updated = ""
+	entry.Meta.Created = 0
+	entry.Meta.Updated = 0
 	jsb, _ := json.Encode(entry, "  ")
 
 	//
@@ -853,7 +832,7 @@ func spec_config_file_sync(entry api.Spec) error {
 	fp.Truncate(int64(len(jsb)))
 
 	if _, err = fp.Write(jsb); err == nil {
-		// fmt.Println("config.Modules refresh", entry.Meta.ResourceVersion)
+		// fmt.Println("config.Modules refresh", entry.Meta.Version)
 		// config.SpecSet(&entry)
 	}
 
@@ -885,7 +864,7 @@ func SpecSchemaSync(spec api.Spec) error {
 		"srvname": spec.SrvName,
 		"status":  1,
 		"title":   spec.Title,
-		"version": spec.Meta.ResourceVersion,
+		"version": spec.Meta.Version,
 		"updated": timenow,
 		"body":    string(jsb),
 	}

@@ -34,16 +34,16 @@ type KeyValue struct {
 
 type Spec struct {
 	types.TypeMeta `json:",inline"`
-	Meta           types.ObjectMeta `json:"meta,omitempty"`
-	SrvName        string           `json:"srvname"`
-	Status         int16            `json:"status,omitempty"`
-	Title          string           `json:"title"`
-	Comment        string           `json:"comment,omitempty"`
-	NodeModels     []NodeModel      `json:"nodeModels,omitempty"`
-	TermModels     []TermModel      `json:"termModels,omitempty"`
-	Actions        []Action         `json:"actions,omitempty"`
-	Views          []View           `json:"views,omitempty"`
-	Router         Router           `json:"router,omitempty"`
+	Meta           types.InnerObjectMeta `json:"meta,omitempty"`
+	SrvName        string                `json:"srvname"`
+	Status         int16                 `json:"status,omitempty"`
+	Title          string                `json:"title"`
+	Comment        string                `json:"comment,omitempty"`
+	NodeModels     []NodeModel           `json:"nodeModels,omitempty"`
+	TermModels     []TermModel           `json:"termModels,omitempty"`
+	Actions        []Action              `json:"actions,omitempty"`
+	Views          []View                `json:"views,omitempty"`
+	Router         Router                `json:"router,omitempty"`
 }
 
 func (it *Spec) NodeModelGet(name string) *NodeModel {
