@@ -1,6 +1,6 @@
 [project]
 name = hooto-press
-version = 0.3.4.alpha
+version = 0.3.5.alpha
 vendor = hooto.com
 homepage = https://github.com/hooto/hpress
 groups = app/other
@@ -9,7 +9,7 @@ groups = app/other
 export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
-mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache}
+mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache,tmp}
 go build -ldflags "-s -w -X main.version={{.project__version}} -X main.release={{.project__release}}" -o {{.buildroot}}/bin/hooto-press main.go
 
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hp/js/main.js
@@ -20,7 +20,7 @@ bin/hooto-press
 bin/keeper
 etc/config.json.tpl
 i18n/
-modules/
+modules/core/
 webui/hpm/
 webui/hp/img/alpha2.png
 webui/hp/img/search-16.png
@@ -39,7 +39,7 @@ webui/lessui/js/eventproxy.js
 webui/lessui/js/sea.js
 webui/hp/js/
 webui/hpm/js/
-modules/
+modules/core/
 vendor/github.com/hooto/hchart/webui/
 
 %css_compress
@@ -50,11 +50,11 @@ webui/purecss/pure.css
 webui/lessui/css/lessui.css
 webui/hp/css/
 webui/hpm/css/
-modules/
+modules/core/
 
 
 %html_compress
-modules/
+modules/core/
 webui/hpm/
 websrv/mgr/views/
 
