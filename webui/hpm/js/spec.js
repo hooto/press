@@ -305,6 +305,115 @@ hpSpec.List = function() {
     });
 }
 
+
+hpSpec.Upload = function() {
+    seajs.use(["ep"], function(EventProxy) {
+
+        var ep = EventProxy.create("tpl", function(tpl) {
+
+            l4iModal.Open({
+                tplsrc: tpl,
+                width: 700,
+                height: 350,
+                title: "Upload Package to Install or Upgrade Module",
+                buttons: [{
+                    onclick: "l4iModal.Close()",
+                    title: "Close",
+                }, {
+                    onclick: "hpSpec.UploadCommit()",
+                    title: "Upload",
+                    style: "btn-primary",
+                }],
+            });
+        });
+
+        ep.fail(function(err) {
+            alert("Network Abort, Please try again later");
+        });
+
+        hpMgr.TplCmd("spec/upload", {
+            callback: ep.done('tpl'),
+        });
+    });
+}
+
+
+hpSpec.UploadCommit = function() {
+
+    var files = document.getElementById('hpm-spec-upload-file').files,
+        alertid = "#hpm-spec-upload-alert";
+
+    if (!files.length) {
+        l4i.InnerAlert(alertid, "alert-danger", 'Please select a file');
+        return;
+    }
+
+    for (var i = 0, file; file = files[i]; i++) {
+
+        if (file.size > 8 * 1024 * 1024) {
+            return l4i.InnerAlert(alertid, "alert-danger", 'The file is too large to upload (less than 8MB)');
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = (function(file) {
+
+            return function(e) {
+
+                if (e.target.readyState != FileReader.DONE) {
+                    return;
+                }
+
+                var req = {
+                    kind: "SpecUploadCommit",
+                    size: file.size,
+                    name: file.name,
+                    data: e.target.result,
+                }
+
+                hpMgr.ApiCmd("mod-set/spec-upload-commit", {
+                    method: "POST",
+                    data: JSON.stringify(req),
+                    timeout: 600000,
+                    callback: function(err, rsj) {
+
+
+                        if (err || !rsj) {
+                            if (err) {
+                                return l4i.InnerAlert(alertid, 'alert-danger', err);
+                            }
+                            if (rsj && rsj.error) {
+                                return l4i.InnerAlert(alertid, 'alert-danger', rsj.error.message);
+                            }
+                            return l4i.InnerAlert(alertid, 'alert-danger', "Can not connect service");
+                        }
+
+                        if (rsj.error) {
+                            l4i.InnerAlert(alertid, 'alert-danger', rsj.error.message);
+                            return;
+                        }
+
+                        if (rsj.kind != "Spec") {
+                            l4i.InnerAlert(alertid, 'alert-danger', "unknown error");
+                            return;
+                        }
+
+                        l4i.InnerAlert(alertid, 'alert-success', "Successfully commit");
+
+                        window.setTimeout(function() {
+                            l4iModal.Close();
+                            hpSpec.List();
+                        }, 1000);
+                    }
+                });
+            };
+
+        })(file);
+
+        reader.readAsDataURL(file);
+    }
+}
+
 hpSpec.InfoSet = function(name) {
     seajs.use(["ep"], function(EventProxy) {
 

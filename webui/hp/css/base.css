@@ -34,7 +34,7 @@ body {
 #hp-topbar-userbar>.iam-name {
   font-size: 16px;
   color: #666;
-  max-width: 160px;
+  max-width: 100px;
   margin-right: 5px;
   text-overflow: ellipsis;
   white-space: nowrap;

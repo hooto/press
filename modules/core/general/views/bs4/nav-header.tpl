@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="sbackground-color: #1890FF;" id="hp-topbar">
+<nav class="navbar navbar-expand navbar-light bg-light" style="sbackground-color: #1890FF;" id="hp-topbar">
 <div class="container">
   {{if SysConfig "frontend_header_site_logo_url"}}
   <span class="navbar-brand">
@@ -7,8 +7,8 @@
   {{end}}
   <span class="navbar-brand mb-0 h1">{{SysConfig "frontend_header_site_name"}}</span>
 
-  <div class="collapse navbar-collapse">
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0" id="hp-topbar-nav-main">
+  <div class="collapse navbar-collapse" id="hpex-topbar-nav-main">
+    <ul class="navbar-nav mr-auto" id="hp-topbar-nav-main">
       {{range $v := .topnav.Items}}
       <li class="nav-item"><a class="nav-link" href="{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
       {{end}}

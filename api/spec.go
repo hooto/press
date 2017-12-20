@@ -55,6 +55,13 @@ func (it *Spec) NodeModelGet(name string) *NodeModel {
 	return nil
 }
 
+type SpecUploadCommit struct {
+	types.TypeMeta `json:",inline"`
+	Size           int64  `json:"size"`
+	Name           string `json:"name"`
+	Data           string `json:"data"`
+}
+
 func SrvNameFilter(name string) (string, error) {
 
 	name = strings.Replace(strings.Trim(filepath.Clean(strings.ToLower(name)), "/"), "/", "-", -1)

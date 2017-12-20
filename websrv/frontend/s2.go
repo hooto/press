@@ -97,15 +97,6 @@ func (c S2) IndexAction() {
 		return
 	}
 
-	hid := "s2." + idhash.HashToHexString([]byte(obj_path+"."+ipn), 12)
-
-	if rs := store.LocalCache.KvGet([]byte(hid)); rs.OK() {
-		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-		c.Response.Out.Header().Set("Content-type", meta_type)
-		c.Response.Out.Write(rs.Bytex().Bytes())
-		return
-	}
-
 	width, height, crop := 200, 200, true
 
 	switch ipn {
@@ -129,6 +120,15 @@ func (c S2) IndexAction() {
 
 	default:
 		c.RenderError(400, "Bad Request (ipn)")
+		return
+	}
+
+	hid := "s2." + idhash.HashToHexString([]byte(obj_path+"."+ipn), 12)
+
+	if rs := store.LocalCache.KvGet([]byte(hid)); rs.OK() {
+		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+		c.Response.Out.Header().Set("Content-type", meta_type)
+		c.Response.Out.Write(rs.Bytex().Bytes())
 		return
 	}
 

@@ -1,13 +1,18 @@
 <div style="padding:0 10px;">
   <ul class="hpm-node-nav">
-  	<li>Modules</li>
+    <li>Modules</li>
   </ul>
   <ul class="hpm-node-nav hpm-nav-right">
-	<li class="pure-button btapm-btn btapm-btn-primary">
+    <li class="pure-button btapm-btn btapm-btn-primary">
+      <a href="#" onclick="hpSpec.Upload()">
+        Install or Upgrade from Package
+      </a>
+    </li>
+    <li class="pure-button btapm-btn btapm-btn-primary">
       <a href="#" onclick="hpSpec.InfoSet()">
         New Module
       </a>
-  	</li>
+    </li>
   </ul>
 </div>
 
