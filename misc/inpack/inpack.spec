@@ -48,6 +48,7 @@ webui/bs/4.0/css/
 webui/cm/5/
 webui/purecss/pure.css
 webui/lessui/css/lessui.css
+webui/lessui/css/base.css
 webui/hp/css/
 webui/hpm/css/
 modules/core/

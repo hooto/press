@@ -17,6 +17,7 @@ package v1
 import (
 	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -57,8 +58,13 @@ func (c ModSet) SpecUploadCommitAction() {
 		return
 	}
 
-	if len(set.Name) < 10 || !strings.HasSuffix(set.Name, ".txz") {
+	if len(set.Name) < 10 {
 		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Invalid Name")
+		return
+	}
+	ext := filepath.Ext(set.Name)
+	if ext != ".txz" && ext != ".tgz" {
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Invalid file name extension")
 		return
 	}
 
@@ -82,27 +88,37 @@ func (c ModSet) SpecUploadCommitAction() {
 		return
 	}
 
-	xzr, err := xz.NewReader(bytes.NewReader(filedata))
-	if err != nil {
-		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+	var cpr io.Reader
+
+	switch ext {
+	case ".txz":
+		if cpr, err = xz.NewReader(bytes.NewReader(filedata)); err != nil {
+			set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+			return
+		}
+
+	case ".tgz":
+		if cpr, err = gzip.NewReader(bytes.NewReader(filedata)); err != nil {
+			set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
+			return
+		}
+
+	default:
+		set.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Invalid EXT")
 		return
 	}
 
-	tr := tar.NewReader(xzr)
+	tr := tar.NewReader(cpr)
 	if tr == nil {
 		set.Error = types.NewErrorMeta("400", "Invalid Encoded Data")
 		return
 	}
 
-	pkg_name := set.Name[:len(set.Name)-4]
-
-	tmpdir := config.Prefix + "/var/tmp/" + pkg_name
-
-	// if _, err := os.Stat(tmpdir); err == nil {
-	// 	return
-	// }
-
-	files := map[string]int64{}
+	var (
+		pkg_name = set.Name[:len(set.Name)-4]
+		tmpdir   = config.Prefix + "/var/tmp/" + pkg_name
+		files    = map[string]int64{}
+	)
 
 	for {
 
