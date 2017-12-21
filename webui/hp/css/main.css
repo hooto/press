@@ -371,9 +371,16 @@ body {
   ;
 }
 
-.hp-nodev .content pre:hover {
-  /*border-radius: 3px !important;*/
-  /*outline: 2px solid #ccc;*/
+.hp-nodev .content pre {
+  margin: 0;
+  padding: 0 !important;
+}
+
+.hp-nodev .content pre>code {
+  display: block;
+  margin: 0;
+  padding: 10px;
+  height: auto !important;
 }
 
 .hp-nodev .content>table {
@@ -394,12 +401,7 @@ body {
 }
 
 
-
-
-
-
 /** sidebar **/
-
 .hp-sidebar-section {
   margin-bottom: 20px;
 }
@@ -939,7 +941,7 @@ body {
   padding-bottom: 0.2em;
   margin: 0;
   font-size: 85%;
-  background-color: rgba(0, 0, 0, 0.04);
+  /*background-color: rgba(0, 0, 0, 0.04);*/
   border-radius: 3px;
 }
 

@@ -44,13 +44,13 @@ hp.Boot = function() {
     seajs.config({
         base: hp.base,
         alias: {
-            ep: '~/lessui/js/eventproxy.js' + hp.urlver(),
+            ep: '~/lessui/js/eventproxy.js' + hp.urlver(true),
         },
     });
 
     seajs.use([
-        "~/hp/js/jquery.js" + hp.urlver(),
-        "~/lessui/js/eventproxy.js" + hp.urlver(),
+        "~/hp/js/jquery.js" + hp.urlver(true),
+        "~/lessui/js/eventproxy.js" + hp.urlver(true),
         "~/lessui/css/base.css" + hp.urlver(),
     ], function() {
 
@@ -97,12 +97,12 @@ hp.CodeRender = function(options) {
         switch (lang) {
 
             case "php":
-                modes.push("~/cm/5/mode/php/php.js" + hp.urlver());
+                modes.push("~/cm/5/mode/php/php.js" + hp.urlver(true));
             case "htmlmixed":
-                modes.push("~/cm/5/mode/xml/xml.js" + hp.urlver());
-                modes.push("~/cm/5/mode/javascript/javascript.js" + hp.urlver());
-                modes.push("~/cm/5/mode/css/css.js" + hp.urlver());
-                modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js" + hp.urlver());
+                modes.push("~/cm/5/mode/xml/xml.js" + hp.urlver(true));
+                modes.push("~/cm/5/mode/javascript/javascript.js" + hp.urlver(true));
+                modes.push("~/cm/5/mode/css/css.js" + hp.urlver(true));
+                modes.push("~/cm/5/mode/htmlmixed/htmlmixed.js" + hp.urlver(true));
                 break;
 
             case "c":
@@ -113,7 +113,7 @@ hp.CodeRender = function(options) {
                 break;
 
             case "json":
-                modes.push("~/cm/5/mode/javascript/javascript.js" + hp.urlver());
+                modes.push("~/cm/5/mode/javascript/javascript.js" + hp.urlver(true));
                 lang = "application/ld+json";
                 break;
 
@@ -130,7 +130,7 @@ hp.CodeRender = function(options) {
             case "swift":
             case "erlang":
             case "nginx":
-                modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js" + hp.urlver());
+                modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js" + hp.urlver(true));
                 break;
 
             default:
@@ -138,22 +138,23 @@ hp.CodeRender = function(options) {
         }
 
         var deps = [
-            "~/cm/5/lib/codemirror.css" + hp.urlver(),
-            "~/cm/5/lib/codemirror.js" + hp.urlver(),
+            "~/cm/5/lib/codemirror.css" + hp.urlver(true),
+            "~/cm/5/lib/codemirror.js" + hp.urlver(true),
         ];
         if (options.theme && options.theme == "monokai") {
-            deps.push("~/cm/5/theme/monokai.css" + hp.urlver());
+            deps.push("~/cm/5/theme/monokai.css" + hp.urlver(true));
         } else {
             options.theme = "default";
         }
-
         seajs.use(deps, function() {
-            modes.push("~/cm/5/addon/runmode/runmode.js" + hp.urlver());
-            modes.push("~/cm/5/mode/clike/clike.js" + hp.urlver());
+            modes.push("~/cm/5/addon/runmode/runmode.js" + hp.urlver(true));
+            modes.push("~/cm/5/mode/clike/clike.js" + hp.urlver(true));
             seajs.use(modes, function() {
-                $(el).addClass('CodeMirror');
+                if (options.theme != "default") {
+                    $(el).addClass('CodeMirror');
+                }
                 $(el).addClass('cm-s-' + options.theme); // apply a theme class
-                CodeMirror.runMode($(el).text(), lang, $(el)[0]);
+                CodeMirror.runMode($(el).text().trim(), lang, $(el)[0]);
             });
         });
     });
@@ -163,7 +164,7 @@ hp.hchartRender = function(i, elem) {
     var elem_id = "hchart-id-" + i;
     elem.setAttribute("id", elem_id);
     seajs.use([
-        "~/hchart/hchart.js" + hp.urlver(),
+        "~/hchart/hchart.js" + hp.urlver(true),
     ], function() {
         hooto_chart.basepath = hp.base + "/~/hchart";
         hooto_chart.opts_width = "600px";
@@ -212,7 +213,6 @@ hp.NavActive = function(tplid, nav_path) {
         if (nav_path.lastIndexOf("/") > 0) {
             nav_path = nav_path.substr(0, nav_path.lastIndexOf("/"));
         } else {
-            console.log("break 2");
             break;
         }
     }
