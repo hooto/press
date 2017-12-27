@@ -4,7 +4,7 @@
       &copy; {{SysConfig "frontend_footer_copyright"}}
     </div>
 	<div class="pull-right">
-      <span class="hp-footer-powerby-item">Published by <strong><a href="https://github.com/hooto/hp" target="_blank">Hooto Press CMS</a></strong>,</span>
+      <span class="hp-footer-powerby-item">Published by <strong><a href="https://github.com/hooto/hpress" target="_blank">Hooto Press CMS</a></strong>,</span>
       <span class="hp-footer-powerby-item">Hosted by <strong><a href="https://www.sysinner.com" target="_blank">Sysinner PaaS Engine</a></strong></span>
     </div>
   </div>
