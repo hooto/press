@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/blog",
-    "version": "0.0.25"
+    "version": "0.0.26"
   },
   "srvname": "blog",
   "title": "Blog",
@@ -20,6 +20,10 @@
             {
               "key": "ui_rows",
               "value": "15"
+            },
+            {
+              "key": "formats",
+              "value": "text,md"
             }
           ],
           "title": "Content"

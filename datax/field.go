@@ -228,7 +228,7 @@ func FieldDebug(fields []*api.NodeField, colname string, length int) template.HT
 			v = "html"
 		}
 
-		if v == "html" {
+		if v == "html" || v == "shtml" {
 			val = TextHtml2Str(val)
 		}
 	}
@@ -265,6 +265,9 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 		val = string(mkp.SanitizeBytes(unsafe))
 
 	case "html":
+		val = htmlp.Sanitize(val)
+
+	case "shtml":
 		val = shtmlp.Sanitize(val)
 
 	case "text":

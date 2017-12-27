@@ -255,7 +255,7 @@ func (c Node) SetAction() {
 					attrs := []api.KeyValue{}
 
 					for _, attr := range valField.Attrs {
-						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
 							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 						}
 					}
@@ -328,7 +328,7 @@ func (c Node) SetAction() {
 					attrs := []api.KeyValue{}
 
 					for _, attr := range valField.Attrs {
-						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html"}) {
+						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html","shtml"}) {
 							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 						}
 					}
