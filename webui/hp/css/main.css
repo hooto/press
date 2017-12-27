@@ -354,7 +354,8 @@ body {
 }
 
 .hp-nodev .content pre {
-  padding: 10px !important;
+  margin: 0 0 10px 0;
+  padding: 0 !important;
   border: 0 !important;
   background-color: rgba(0, 0, 0, 0.05);
   line-height: 160% !important;
@@ -368,12 +369,6 @@ body {
 
 .hp-nodev .content>p:last-child {
   margin-bottom: 0 !important;
-  ;
-}
-
-.hp-nodev .content pre {
-  margin: 0;
-  padding: 0 !important;
 }
 
 .hp-nodev .content pre>code {
