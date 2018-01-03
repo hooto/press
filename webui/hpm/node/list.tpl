@@ -36,13 +36,13 @@
         <input class="row-checkbox hpm-nodels-chk-all" type="checkbox" onclick="hpNode.ListBatchSelectAll()">
       </th>
       <th>Title</th>
+      {[if (it.model.extensions.node_sub_refer) {]}
+      <th></th>
+	  {[}]}
       <th>Status</th>
       {[if (it.model.extensions.access_counter) { ]}<th>Access</th>{[ } ]}
       <th>Created</th>
       <th>Updated</th>
-      {[if (it.model.extensions.node_sub_refer) {]}
-      <th></th>
-	  {[}]}
       <th></th>
     </tr>
   </thead>
@@ -56,6 +56,12 @@
       <td>
         <a class="node-item" onclick="hpNode.Set('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')" href="#{[=v.id]}">{[=v.title]}</a>
       </td>
+      {[if (it.model.extensions.node_sub_refer) {]}
+      <td>
+        <!--<button class="pure-button button-xsmall" onclick="hpNode.Set('{[=it.modname]}', '{[=it.model.extensions.node_sub_refer]}', null, '{[=v.id]}')">New Sub Content</button>-->
+        <button class="pure-button button-xsmall" onclick="hpNode.List('{[=it.modname]}', '{[=it.model.extensions.node_sub_refer]}', '{[=v.id]}')">Sub Contents</button>
+      </td>
+      {[}]}
       <td>
       {[~it._status_def :sv]}
         {[if (sv.type == v.status) { ]}{[=sv.name]}{[ } ]}
@@ -64,12 +70,6 @@
       {[if (it.model.extensions.access_counter) { ]}<td>{[=v.ext_access_counter]}</td>{[ } ]}
       <td>{[=v.created]}</td>
       <td>{[=v.updated]}</td>
-      {[if (it.model.extensions.node_sub_refer) {]}
-      <td>
-        <!--<button class="pure-button button-xsmall" onclick="hpNode.Set('{[=it.modname]}', '{[=it.model.extensions.node_sub_refer]}', null, '{[=v.id]}')">New Sub Content</button>-->
-        <button class="pure-button button-xsmall" onclick="hpNode.List('{[=it.modname]}', '{[=it.model.extensions.node_sub_refer]}', '{[=v.id]}')">Sub Contents</button>
-      </td>
-      {[}]}
       <td align="right">
         <button class="pure-button button-xsmall" onclick="hpNode.Del('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')">Delete</button>
         <button class="pure-button button-xsmall" onclick="hpNode.Set('{[=it.modname]}', '{[=it.modelid]}', '{[=v.id]}')">Edit</button>

@@ -16,7 +16,10 @@
 <div class="container hpdoc_node_content">
   <div class="row" style="padding: 20px 0;">
     <div class="col-3">
-      <div class="hpdoc_entry_summary markdown-body" style="">{{FieldHtml .doc_entry.Fields "content"}}</div>
+      <div class="hpdoc_entry_summary markdown-body" style="">
+        <ul><li><a href=".">Preface</a></li></ul>
+        {{FieldHtml .doc_entry.Fields "content"}}
+      </div>
     </div>
     <div class="col-9">
       <div class="hpdoc_entry_content hpdoc_page_content markdown-body">{{FieldHtml .page_entry.Fields "content"}}</div>

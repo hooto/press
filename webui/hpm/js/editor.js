@@ -56,16 +56,30 @@ hpEditor.Open = function(name, format) {
                 return;
             }
 
-            var height = $("#field_" + name + "_layout").height(),
-                width = $("#field_" + name + "_layout").width();
+            var elem_layout = $("#field_" + name + "_layout");
+            if (!elem_layout) {
+                return;
+            }
+            var height = elem_layout.height(),
+                width = elem_layout.width();
 
-            hpEditor.editors[name] = CodeMirror.fromTextArea(document.getElementById("field_" + name), {
+            // var elem_layout_editor = document.getElementById("field_"+name+"_editor");
+                // if (!elem_layout_editor) {
+                // 	return;
+                // }
+                // elem_layout_editor.className = "hpm-nodeset-auto-height";
+
+            var elem = document.getElementById("field_" + name);
+            if (!elem) {
+                return;
+            }
+            hpEditor.editors[name] = CodeMirror.fromTextArea(elem, {
                 mode: "markdown",
                 lineNumbers: lineNumbers,
                 theme: "default",
                 lineWrapping: true,
                 styleActiveLine: true,
-            // viewportMargin  : Infinity,
+            // viewportMargin: Infinity,
             });
 
             hpEditor.editors[name].setSize(width, height);

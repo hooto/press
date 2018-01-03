@@ -44,10 +44,15 @@
 .hpdoc_entry_summary {
   font-size: 10pt;
 }
+.hpdoc_entry_summary p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
 .hpdoc_entry_summary ul {
   margin: 0;
   padding: 0;
 }
+
 .hpdoc_entry_summary ul li {
   list-style-type: none;
 }
@@ -64,8 +69,9 @@
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0px 1px 2px 0px #999;
-  padding: 20px;
   min-height: 400px;
+  padding: 20px;
+  line-height: 200%;
 }
 
 .hpdoc-nodels-item {

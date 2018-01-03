@@ -272,6 +272,10 @@ body {
   /*height: auto;*/
 }
 
+.hpm-nodeset-auto-height > .CodeMirror {
+  height: auto !important;
+}
+
 .hpm-div-light {
   clear: both;
   background-color: #fff;

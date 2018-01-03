@@ -91,7 +91,7 @@ func init() {
 		"", "",
 	})
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_footer_copyright", "2015~2017 hooto.com",
+		"frontend_footer_copyright", "2015~2018 hooto.com",
 		"", "",
 	})
 
