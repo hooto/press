@@ -350,7 +350,7 @@ body {
 }
 
 .hp-nodev .content pre {
-  margin: 0 0 10px 0;
+  margin: 0 0 1.0em 0;
   padding: 0 !important;
   border: 0 !important;
   background-color: rgba(0, 0, 0, 0.05);
@@ -389,6 +389,7 @@ body {
 
 .hp-nodev .content .hooto-chart-entry {
   margin: 0 auto !important;
+  padding: 5px 10px;
 }
 
 
