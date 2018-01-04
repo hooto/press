@@ -14,6 +14,8 @@ go build -ldflags "-s -w -X main.version={{.project__version}} -X main.release={
 
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hp/js/main.js
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpm/js/main.js
+sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hp/js/main.js
+sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hpm/js/main.js
 
 %files
 bin/hooto-press
