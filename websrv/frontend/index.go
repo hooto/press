@@ -167,8 +167,7 @@ func (c Index) IndexAction() {
 			}
 
 			for _, datax := range action.Datax {
-				// fmt.Println("dataRender", datax.Name)
-				c.dataRender(srvname, datax)
+				c.dataRender(srvname, action.Name, datax)
 				c.Data["__datax_table__"] = datax.Query.Table
 			}
 
@@ -189,7 +188,7 @@ func (c Index) IndexAction() {
 	}
 }
 
-func (c *Index) dataRender(srvname string, ad api.ActionData) {
+func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
@@ -311,11 +310,26 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 			return
 		}
 
-		if len(id) > 5 && id[len(id)-5:] == ".html" {
-			id = id[:len(id)-5]
+		node_refer := ""
+		if nodeModel.Extensions.NodeRefer != "" {
+			if mv, ok := c.Data[action_name+"_nsr_"+nodeModel.Extensions.NodeRefer]; ok {
+				node_refer = mv.(string)
+			}
+		}
+
+		id_ext := ""
+		if i := strings.LastIndex(id, "."); i > 0 {
+			id_ext = id[i:]
+			id = id[:i]
+		}
+
+		if id_ext == ".html" {
 			qry.Filter("id", id)
 		} else if nodeModel.Extensions.Permalink != "" {
-			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(id), 12))
+			if nodeModel.Extensions.NodeRefer != "" && node_refer == "" {
+				return
+			}
+			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(node_refer+id), 12))
 		} else {
 			return
 		}
@@ -353,6 +367,11 @@ func (c *Index) dataRender(srvname string, ad api.ActionData) {
 				table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(mod.Meta.Name), 12), ad.Query.Table)
 				store.LocalCache.KvPut([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1", nil)
 			}
+		}
+
+		if nodeModel.Extensions.NodeSubRefer != "" {
+			// fmt.Println("setting", action_name, ad.Query.Table, nodeModel.Extensions.NodeSubRefer, "_id", entry.ID)
+			c.Data[action_name+"_nsr_"+ad.Query.Table] = entry.ID
 		}
 
 		if entry.Title != "" {

@@ -177,6 +177,7 @@ func (c Node) SetAction() {
 		set          = map[string]interface{}{}
 		table_prefix = fmt.Sprintf("nx%s_", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12))
 		table        = table_prefix + c.Params.Get("modelid")
+		node_refer   = ""
 	)
 
 	//
@@ -193,6 +194,7 @@ func (c Node) SetAction() {
 			rsp.Error = types.NewErrorMeta("400", "Invalid Node Refer ID")
 			return
 		}
+		node_refer = rsp.ExtNodeRefer
 	}
 
 	if rsp.Title == "" {
@@ -328,7 +330,7 @@ func (c Node) SetAction() {
 					attrs := []api.KeyValue{}
 
 					for _, attr := range valField.Attrs {
-						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html","shtml"}) {
+						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
 							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
 						}
 					}
@@ -427,7 +429,7 @@ func (c Node) SetAction() {
 						permaname = fmt.Sprintf("%s-%d", rsp.ExtPermalinkName, i)
 					}
 
-					permaidx := idhash.HashToHexString([]byte(permaname), 12)
+					permaidx := idhash.HashToHexString([]byte(node_refer+permaname), 12)
 
 					q := rdb.NewQuerySet().From(table).Limit(1)
 					q.Where.And("ext_permalink_idx", permaidx)
