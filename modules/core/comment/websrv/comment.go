@@ -138,17 +138,19 @@ func (c Comment) SetAction() {
 
 	//
 	item := map[string]interface{}{
-		"id":             set.Meta.ID,
-		"pid":            "00",
-		"title":          re_title,
-		"status":         1,
-		"userid":         utils.StringEncode16("guest", 8),
-		"field_refer_id": set.ReferID,
-		"field_refer":    set.ReferModName + "." + set.ReferDataxTable,
-		"field_author":   set.Author,
-		"field_content":  set.Content,
-		"created":        set.Meta.Created,
-		"updated":        set.Meta.Created,
+		"id":                  set.Meta.ID,
+		"pid":                 "00",
+		"title":               re_title,
+		"status":              1,
+		"userid":              utils.StringEncode16("guest", 8),
+		"field_refer_id":      set.ReferID,
+		"field_refer":         set.ReferModName + "." + set.ReferDataxTable,
+		"field_author":        set.Author,
+		"field_content":       set.Content,
+		"field_address":       "",
+		"created":             set.Meta.Created,
+		"updated":             set.Meta.Created,
+		"field_content_attrs": "[]",
 	}
 
 	if _, err := store.Data.Insert("nx"+utils.StringEncode16("core/comment", 12)+"_entry", item); err != nil {
