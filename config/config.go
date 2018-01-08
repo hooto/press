@@ -59,7 +59,7 @@ var (
 
 	SysConfigList          = api.SysConfigList{}
 	inited                 = false
-	RouterBasepathDefault  = ""
+	RouterBasepathDefault  = "/"
 	RouterBasepathDefaults = []string{}
 )
 
