@@ -139,6 +139,7 @@ func (c Comment) SetAction() {
 	//
 	item := map[string]interface{}{
 		"id":             set.Meta.ID,
+		"pid":            "00",
 		"title":          re_title,
 		"status":         1,
 		"userid":         utils.StringEncode16("guest", 8),
