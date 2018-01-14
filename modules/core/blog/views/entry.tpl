@@ -16,7 +16,7 @@
       <div class="hp-nodev">
         
         <div class="header">
-          <h2>{{.entry.Title}}</h2>
+          <h2>{{FieldStringPrint .entry "title" .LANG}}</h2>
           <div class="hinfo">
             <span class="section">
               <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <div class="content">{{FieldHtml .entry.Fields "content"}}</div>
+        <div class="content">{{FieldHtmlPrint .entry "content" .LANG}}</div>
       </div>
 
       {{if .entry.ExtCommentEnable}}

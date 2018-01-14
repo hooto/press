@@ -813,6 +813,7 @@ hpSpec.NodeSet = function(modname, modelid) {
                 data.extensions.node_refer = "";
             }
 
+
             data._field_idx_typedef = hpSpec.field_idx_typedef;
             data._field_typedef = hpSpec.field_typedef;
             data._general_onoff = hpSpec.general_onoff;
@@ -836,8 +837,8 @@ hpSpec.NodeSet = function(modname, modelid) {
                 tplsrc: tpl,
                 title: ptitle,
                 data: data,
-                width: 980,
-                height: 700,
+                width: "max",
+                height: "max",
                 success: function() {},
                 buttons: [{
                     onclick: "hpSpec.NodeSetFieldAppend()",

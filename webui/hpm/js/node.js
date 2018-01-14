@@ -56,6 +56,7 @@ var hpNode = {
             value: "Makedown",
         },
     ],
+    langs: null,
 }
 
 hpNode.Init = function(cb) {
@@ -615,7 +616,7 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
     // console.log(uri);
     seajs.use(["ep"], function(EventProxy) {
 
-        var ep = EventProxy.create("tpl", "data", function(tpl, data) {
+        var ep = EventProxy.create("tpl", "langs", "data", function(tpl, langs, data) {
 
             if (!tpl) {
                 return; // TODO
@@ -653,10 +654,100 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
 
             $(alertid).hide();
 
+
+            for (var i in data.model.fields) {
+
+                var field = data.model.fields[i];
+
+                if (!field.attrs) {
+                    field.attrs = [];
+                }
+
+                for (var j in field.attrs) {
+                    field["attr_" + field.attrs[j].key] = field.attrs[j].value;
+                }
+
+                if (field.attr_langs) {
+                    var attr_langs = field.attr_langs.split(",");
+                    field.attr_lang_list = [];
+                    for (var k in attr_langs) {
+                        for (var l in langs.items) {
+                            if (attr_langs[k] == langs.items[l].id) {
+                                field.attr_lang_list.push(langs.items[l]);
+                            }
+                        }
+                    }
+                    if (field.attr_lang_list.lengh < 2) {
+                        field.attr_lang_list = null;
+                    } else {
+                        field.attr_lang_active = field.attr_lang_list[0].id;
+                    }
+                }
+
+                var field_entry = {};
+
+                for (var j in data.fields) {
+                    if (data.fields[j].name == field.name) {
+                        field_entry = data.fields[j];
+                        field.value = data.fields[j].value;
+                        if (field.attr_lang_active && data.fields[j].langs) {
+                            field.value_langs = data.fields[j].langs;
+                        }
+                        break;
+                    }
+                }
+                if (!field.value) {
+                    field.value = "";
+                }
+                if (field.attr_lang_active && !field.value_langs) {
+                    field.value_langs = {
+                        "items": []
+                    };
+                }
+
+                if (field.type == "text") {
+                    for (var j in field_entry.attrs) {
+                        field["attr_" + field_entry.attrs[j].key] = field_entry.attrs[j].value;
+                    }
+
+                    if (!field.attr_format) {
+                        field.attr_format = "text";
+                    }
+                    if (!field.attr_formats) {
+                        field.attr_formats = "text,html,md";
+                    }
+
+                    var formats = field.attr_formats.split(",");
+                    var set_format = null;
+                    field._formats = [];
+
+                    for (var j in hpNode.text_formats) {
+                        if (formats.indexOf(hpNode.text_formats[j].name) > -1) {
+                            field._formats.push({
+                                name: hpNode.text_formats[j].name,
+                                value: hpNode.text_formats[j].value,
+                            });
+                            if (field.attr_format == hpNode.text_formats[j].name) {
+                                set_format = hpNode.text_formats[j].name;
+                            }
+                        }
+                    }
+                    if (field._formats.length < 1) {
+                        field._formats.push({
+                            name: hpNode.text_formats[0].name,
+                            value: hpNode.text_formats[0].value,
+                        });
+                    }
+                    if (!set_format) {
+                        field.attr_format = field._formats[0].name;
+                    }
+                }
+
+                data.model.fields[i] = field;
+            }
+
             hpNode.setCurrent = data;
             data._status_def = hpNode.status_def;
-
-            // console.log(data);
 
             l4iTemplate.Render({
                 dstid: "hpm-nodeset-laymain",
@@ -710,16 +801,7 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                     for (var i in data.model.fields) {
 
                         var field = data.model.fields[i];
-
-                        var field_entry = {};
-
-                        for (var j in data.fields) {
-                            if (data.fields[i].name == field.name) {
-                                field_entry = data.fields[i];
-                                field.value = data.fields[i].value;
-                                break;
-                            }
-                        }
+                        var dstid = "hpm-nodeset-fields";
 
                         var tplid = null;
                         var cb = null;
@@ -727,68 +809,13 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                         switch (field.type) {
 
                             case "string":
-
-                                if (!field.value) {
-                                    field.value = "";
-                                }
-
                                 tplid = "hpm-nodeset-tplstring";
                                 break;
 
                             case "text":
-
-                                if (field.attrs) {
-                                    for (var j in field.attrs) {
-                                        field["attr_" + field.attrs[j].key] = field.attrs[j].value;
-                                    }
-                                }
-
-                                if (field_entry.attrs) {
-                                    for (var j in field_entry.attrs) {
-                                        field["attr_" + field_entry.attrs[j].key] = field_entry.attrs[j].value;
-                                    }
-                                }
-
-                                if (!field.value) {
-                                    field.value = "";
-                                }
-
-                                if (!field.attr_format) {
-                                    field.attr_format = "text";
-                                }
-                                if (!field.attr_formats) {
-                                    field.attr_formats = "text,html,md";
-                                }
-
-                                var formats = field.attr_formats.split(",");
-                                var set_format = null;
-                                field._formats = [];
-
-                                for (var i in hpNode.text_formats) {
-                                    if (formats.indexOf(hpNode.text_formats[i].name) > -1) {
-                                        field._formats.push({
-                                            name: hpNode.text_formats[i].name,
-                                            value: hpNode.text_formats[i].value,
-                                        });
-                                        if (field.attr_format == hpNode.text_formats[i].name) {
-                                            set_format = hpNode.text_formats[i].name;
-                                        }
-                                    }
-                                }
-                                if (field._formats.length < 1) {
-                                    field._formats.push({
-                                        name: hpNode.text_formats[0].name,
-                                        value: hpNode.text_formats[0].value,
-                                    });
-                                }
-                                if (!set_format) {
-                                    field.attr_format = field._formats[0].name;
-                                }
-
                                 cb = function() {
                                     hpEditor.Open(field.name, field.attr_format);
                                 };
-
                                 tplid = "hpm-nodeset-tpltext";
                                 break;
 
@@ -800,11 +827,9 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                             case "uint16":
                             case "uint32":
                             case "uint64":
-
-                                if (!field.value) {
+                                if (field.value == "") {
                                     field.value = "0";
                                 }
-
                                 tplid = "hpm-nodeset-tplint";
                                 break;
 
@@ -812,8 +837,13 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                                 continue;
                         }
 
+                        if (field.name == "title") {
+                            dstid = "hpm-nodeset-top-title";
+                        }
+
+
                         l4iTemplate.Render({
-                            dstid: "hpm-nodeset-fields",
+                            dstid: dstid,
                             tplid: tplid,
                             append: true,
                             data: field,
@@ -968,13 +998,26 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
 
         hpMgr.TplCmd("node/set", {
             callback: function(err, tpl) {
-
                 if (err) {
                     return ep.emit('error', err);
                 }
                 ep.emit("tpl", tpl);
             }
         });
+
+        if (hpNode.langs) {
+            ep.emit("langs", hpNode.langs);
+        } else {
+            hpMgr.ApiCmd("mod-set/spec-lang-list", {
+                callback: function(err, data) {
+                    if (err) {
+                        return ep.emit('error', err);
+                    }
+                    hpNode.langs = data;
+                    ep.emit("langs", data);
+                },
+            });
+        }
 
         if (nodeid) {
             hpMgr.ApiCmd("node/entry?" + uri + "&id=" + nodeid, {
@@ -997,6 +1040,90 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
     });
 }
 
+hpNode.SetFieldLang = function(field_name) {
+    var lang = $("#field_" + field_name + "_langs").val();
+    if (!lang || lang.length < 2) {
+        return;
+    }
+    var field = null,
+        field_idx = null;
+
+    for (var i in hpNode.setCurrent.model.fields) {
+        if (hpNode.setCurrent.model.fields[i].name == field_name) {
+            field = hpNode.setCurrent.model.fields[i];
+            field_idx = i;
+            break;
+        }
+    }
+    if (!field) {
+        return false;
+    }
+
+    if (!field.attr_lang_active || field.attr_lang_active == lang) {
+        return false;
+    }
+
+    var elem = document.getElementById("field_" + field.name);
+    if (!elem) {
+        return;
+    }
+
+    var field_value = null;
+    if (field.type == "text") {
+        field_value = hpEditor.Content(field.name);
+    } else {
+        field_value = elem.value;
+    }
+    if (!field_value) {
+        field_value = "";
+    }
+    if (field.attr_lang_active == field.attr_lang_list[0].id) {
+        field.value = field_value;
+    } else {
+        var ok = false;
+        for (var i in field.value_langs.items) {
+            if (field.value_langs.items[i].key == field.attr_lang_active) {
+                field.value_langs.items[i].value = field_value;
+                ok = true;
+                break;
+            }
+        }
+        if (!ok) {
+            field.value_langs.items.push({
+                key: field.attr_lang_active,
+                value: field_value
+            });
+        }
+    }
+
+    var elem = document.getElementById("field_" + field.name);
+    if (!elem) {
+        return;
+    }
+
+    var field_value_set = null;
+    if (lang == field.attr_lang_list[0].id) {
+        field_value_set = field.value;
+    } else {
+        for (var i in field.value_langs.items) {
+            if (field.value_langs.items[i].key == lang) {
+                field_value_set = field.value_langs.items[i].value;
+                break;
+            }
+        }
+    }
+    if (!field_value_set) {
+        field_value_set = "";
+    }
+    elem.value = field_value_set;
+    if (field.type == "text") {
+        hpEditor.ContentSet(field.name, field_value_set);
+    }
+    field.attr_lang_active = lang;
+
+    hpNode.setCurrent.model.fields[field_idx] = field;
+}
+
 hpNode.SetSave = function() {
     if (!hpNode.setCurrent) {
         hpMgr.hotkey_ctrl_s = null;
@@ -1016,11 +1143,8 @@ hpNode.SetCommit = function(options) {
         return;
     }
 
-    hpNode.setCurrent.title = form.find("input[name=title]").val();
-
     var req = {
         id: form.find("input[name=id]").val(),
-        title: form.find("input[name=title]").val(),
         status: parseInt(form.find("select[name=status]").val()),
         fields: [],
         terms: [],
@@ -1059,33 +1183,66 @@ hpNode.SetCommit = function(options) {
                     key: "format",
                     value: format
                 });
-                field_set.value = hpEditor.Content(field.name);
 
-                // console.log(format);
+                var field_set_value = hpEditor.Content(field.name);
+                if (field.attr_lang_active && field.attr_lang_active != field.attr_lang_list[0].id) {
 
-                // if (field.attrs) {
+                    var ok = false;
+                    for (var j in field.value_langs.items) {
+                        if (field.attr_lang_active != field.value_langs.items[j].key) {
+                            continue;
+                        }
+                        field.value_langs.items[j].value = field_set_value;
+                        ok = true;
+                        break;
+                    }
+                    if (!ok) {
+                        field.value_langs.items.push({
+                            "key": field.attr_lang_active,
+                            "value": field_set_value
+                        });
+                    }
+                    field_set.value = field.value;
 
-                //     for (var j in field.attrs) {
+                } else {
+                    field_set.value = field_set_value;
+                }
 
-                //         if (field.attrs[j].key == "format" && field.attrs[j].value == "md") {
-
-                //             field_set.value = hpEditor.Content(field.name);
-
-                //             field_set.attrs.push({key: "format", value: "md"});
-
-                //             break;
-                //         }
-                //     }
-                // }
-
-                // if (!field_set.value) {
-                //     field_set.value = form.find("textarea[name=field_"+ field.name +"]").val();
-                // }
+                if (field.value_langs) {
+                    field_set.langs = field.value_langs;
+                }
 
                 break;
 
             case "string":
-                field_set.value = form.find("input[name=field_" + field.name + "]").val();
+                var field_set_value = form.find("input[name=field_" + field.name + "]").val();
+                if (field.attr_lang_active && field.attr_lang_active != field.attr_lang_list[0].id) {
+
+                    var ok = false;
+                    for (var j in field.value_langs.items) {
+                        if (field.attr_lang_active != field.value_langs.items[j].key) {
+                            continue;
+                        }
+                        field.value_langs.items[j].value = field_set_value;
+                        ok = true;
+                        break;
+                    }
+                    if (!ok) {
+                        field.value_langs.items.push({
+                            "key": field.attr_lang_active,
+                            "value": field_set_value
+                        });
+                    }
+                    field_set.value = field.value;
+
+                } else {
+                    field_set.value = field_set_value;
+                }
+
+                if (field.value_langs) {
+                    field_set.langs = field.value_langs;
+                }
+
                 break;
 
             case "int8":
@@ -1131,7 +1288,7 @@ hpNode.SetCommit = function(options) {
     }
 
     // console.log(hpNode.setCurrent.model.terms);
-    // console.log(JSON.stringify(req));
+    // return console.log(req);
 
     //
     var uri = "modname=" + l4iStorage.Get("hpm_spec_active");

@@ -166,9 +166,15 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 }
 
 func templateRender(data map[string]interface{}, module, templatePath string) template.HTML {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 
 	tplset, err := httpsrv.GlobalService.TemplateLoader.Template(module, templatePath)
 	if err != nil {
+		fmt.Println(err)
 		return ""
 	}
 

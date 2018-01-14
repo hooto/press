@@ -10,7 +10,7 @@
   <div class="collapse navbar-collapse" id="hpex-topbar-nav-main">
     <ul class="navbar-nav mr-auto" id="hp-topbar-nav-main">
       {{range $v := .topnav.Items}}
-      <li class="nav-item"><a class="nav-link" href="{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{FieldString $v.Fields "url"}}">{{FieldStringPrint $v "title" $.LANG}}</a></li>
       {{end}}
     </ul>
     <div class="form-inline my-2 my-lg-0" id="hp-topbar-userbar"></div>

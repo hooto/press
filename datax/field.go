@@ -314,21 +314,39 @@ func StringSub(s string, start, length int) string {
 
 func FieldSubHtml(fields []*api.NodeField, colname string, length int) template.HTML {
 
+	var field *api.NodeField
+	for _, v := range fields {
+		if v.Name == colname {
+			field = v
+			break
+		}
+	}
+	if field == nil {
+		return ""
+	}
+
 	if length < 1 {
 		length = fieldStringMaxLen
 	}
 
-	val, attrs, cached := fieldValueCache(fields, colname, fmt.Sprintf("FieldSubHtml_%d", length))
-	if cached {
-		return template.HTML(val)
+	var (
+		cache_key = fmt.Sprintf("fhsp_%d", length)
+	)
+
+	if v := field.Caches.Get(cache_key); v != nil {
+		return template.HTML(v.String())
 	}
 
-	if v, ok := attrs["format"]; ok {
+	val := field.Value
 
-		if v == "md" {
-			unsafe := blackfriday.MarkdownCommon([]byte(val))
-			val = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
-		}
+	fm := "text"
+	if attr := field.Attrs.Get("format"); attr != nil {
+		fm = attr.String()
+	}
+
+	if fm == "md" {
+		unsafe := blackfriday.MarkdownCommon([]byte(val))
+		val = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 	}
 
 	ustr := []rune(TextHtml2Str(val))
@@ -345,7 +363,181 @@ func FieldSubHtml(fields []*api.NodeField, colname string, length int) template.
 		val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"
 	}
 
-	fieldValueCacheSet(fields, colname, val, fmt.Sprintf("FieldSubHtml_%d", length))
+	field.Caches.Set(cache_key, val)
 
 	return template.HTML(val)
+}
+
+func FieldHtmlSubPrint(node_entry api.Node, colname string, length int, lang string) template.HTML {
+
+	var field *api.NodeField
+	for _, v := range node_entry.Fields {
+		if v.Name == colname {
+			field = v
+			break
+		}
+	}
+	if field == nil {
+		return ""
+	}
+
+	if length < 1 {
+		length = fieldStringMaxLen
+	}
+
+	var (
+		cache_key = fmt.Sprintf("fhsp_%d", length)
+		val       string
+	)
+
+	if field.Langs != nil {
+
+		if lang := field.Caches.Get(cache_key + lang); lang != nil {
+			return template.HTML(lang.String())
+		}
+
+		if lang := field.Langs.Items.Get(lang); lang != nil {
+			val = lang.String()
+		}
+	}
+
+	if val == "" {
+		if v := field.Caches.Get(cache_key); v != nil {
+			return template.HTML(v.String())
+		}
+		val = field.Value
+		lang = ""
+	}
+
+	fm := "text"
+	if attr := field.Attrs.Get("format"); attr != nil {
+		fm = attr.String()
+	}
+
+	if fm == "md" {
+		unsafe := blackfriday.MarkdownCommon([]byte(val))
+		val = string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+	}
+
+	ustr := []rune(TextHtml2Str(val))
+
+	if len(ustr) > length {
+		val = string(ustr[0:length]) + "..."
+	} else {
+		val = string(ustr)
+	}
+
+	val = strings.Replace(val, "\n", "<br>", -1)
+
+	if lines := strings.Split(val, "\n\n"); len(lines) > 1 {
+		val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"
+	}
+
+	field.Caches.Set(cache_key+lang, val)
+
+	return template.HTML(val)
+}
+
+func FieldStringPrint(node_entry api.Node, colname, lang string) string {
+	for _, field := range node_entry.Fields {
+		if field.Name == colname {
+			if field.Langs != nil {
+				if v := field.Langs.Items.Get(lang); v != nil {
+					return v.String()
+				}
+			}
+			return field.Value
+		}
+	}
+	return ""
+}
+
+func FieldHtmlPrint(node_entry api.Node, colname, lang string) template.HTML {
+
+	var field *api.NodeField
+	for _, v := range node_entry.Fields {
+		if v.Name == colname {
+			field = v
+			break
+		}
+	}
+	if field == nil {
+		return ""
+	}
+
+	var (
+		cache_key = "fhp"
+		val       string
+	)
+
+	if field.Langs != nil {
+
+		if lang := field.Caches.Get(cache_key + lang); lang != nil {
+			return template.HTML(lang.String())
+		}
+
+		if lang := field.Langs.Items.Get(lang); lang != nil {
+			val = lang.String()
+		}
+	}
+
+	if val == "" {
+		if v := field.Caches.Get(cache_key); v != nil {
+			return template.HTML(v.String())
+		}
+	}
+
+	fm := "text"
+	if attr := field.Attrs.Get("format"); attr != nil {
+		fm = attr.String()
+	}
+
+	val = field_value_html_convert(fm, field.Value)
+	field.Caches.Set(cache_key, val)
+
+	if field.Langs != nil {
+		for _, v := range field.Langs.Items {
+			v.Value = field_value_html_convert(fm, v.Value)
+			field.Caches.Set(cache_key+v.Key, v.Value)
+			if v.Key == lang {
+				val = v.Value
+			}
+		}
+	}
+
+	return template.HTML(val)
+}
+
+func field_value_html_convert(fm, val string) string {
+
+	val = strings.TrimSpace(strings.Replace(val, "\r\n", "\n", -1))
+	val = regMultiLine.ReplaceAllString(val, "\n\n")
+
+	val = strings.Replace(val, "{{lessos_storage_service_uri}}",
+		config.SysConfigList.FetchString("ls2_uri"), -1)
+
+	switch fm {
+
+	case "md":
+		unsafe := blackfriday.MarkdownCommon([]byte(val))
+		val = string(mkp.SanitizeBytes(unsafe))
+
+	case "html":
+		val = htmlp.Sanitize(val)
+
+	case "shtml":
+		val = shtmlp.Sanitize(val)
+
+	case "text":
+		if lines := strings.Split(val, "\n\n"); len(lines) > 1 {
+			val = "<p>" + strings.Join(lines, "</p><p>") + "</p>"
+			val = strings.Replace(val, "\n", "<br>", -1)
+		}
+		fallthrough
+
+	default:
+		val = htmlp.Sanitize(val)
+	}
+
+	return val
 }

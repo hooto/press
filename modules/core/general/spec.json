@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/general",
-    "version": "0.0.17"
+    "version": "0.0.19"
   },
   "srvname": "core-general",
   "status": 1,
@@ -15,6 +15,18 @@
       "comment": "Customize the site navigation menu",
       "fields": [
         {
+          "name": "title",
+          "type": "string",
+          "length": "100",
+          "attrs": [
+            {
+              "key": "langs",
+              "value": "en-us,zh-cn"
+            }
+          ],
+          "title": "Title"
+        },
+        {
           "name": "url",
           "type": "string",
           "length": "100",
@@ -23,6 +35,7 @@
         {
           "name": "weight",
           "type": "int32",
+          "length": "0",
           "title": "Weight"
         }
       ],
@@ -35,6 +48,12 @@
       "title": "Basic Page",
       "comment": "Use basic pages for your static content, such as an 'About us' page",
       "fields": [
+        {
+          "name": "title",
+          "type": "string",
+          "length": "100",
+          "title": "Title"
+        },
         {
           "name": "content",
           "type": "text",

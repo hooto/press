@@ -171,7 +171,6 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 				PID:     v.Field("pid").String(),
 				Status:  v.Field("status").Int16(),
 				UserID:  v.Field("userid").String(),
-				Title:   v.Field("title").String(),
 				Created: v.Field("created").TimeFormat("datetime", "atom"),
 				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
 			}
@@ -199,7 +198,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 			for _, field := range model.Fields {
 
-				if len(ar_fields) > 0 && !ar_fields.Contain(field.Name) {
+				if field.Name != "title" && len(ar_fields) > 0 && !ar_fields.Contain(field.Name) {
 					continue
 				}
 
@@ -211,10 +210,24 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 				if field.Type == "text" &&
 					len(v.Field("field_"+field.Name+"_attrs").String()) > 10 {
 
-					var attrs []api.KeyValue
+					var attrs types.KvPairs
 					if err := v.Field("field_" + field.Name + "_attrs").JsonDecode(&attrs); err == nil {
 						nodeField.Attrs = attrs
 					}
+				}
+
+				if l := field.Attrs.Get("langs"); len(l) > 3 {
+
+					if len(v.Field("field_"+field.Name+"_langs").String()) > 5 {
+						var node_langs api.NodeFieldLangs
+						if err := v.Field("field_" + field.Name + "_langs").JsonDecode(&node_langs); err == nil {
+							nodeField.Langs = &node_langs
+						}
+					}
+				}
+
+				if field.Name == "title" {
+					item.Title = nodeField.Value
 				}
 
 				item.Fields = append(item.Fields, &nodeField)
@@ -382,10 +395,24 @@ func (q *QuerySet) NodeEntry() api.Node {
 		if field.Type == "text" &&
 			len(rs.Field("field_"+field.Name+"_attrs").String()) > 10 {
 
-			var attrs []api.KeyValue
+			var attrs types.KvPairs
 			if err := rs.Field("field_" + field.Name + "_attrs").JsonDecode(&attrs); err == nil {
 				nodeField.Attrs = attrs
 			}
+		}
+
+		if l := field.Attrs.Get("langs"); len(l) > 3 {
+
+			if len(rs.Field("field_"+field.Name+"_langs").String()) > 5 {
+				var node_langs api.NodeFieldLangs
+				if err := rs.Field("field_" + field.Name + "_langs").JsonDecode(&node_langs); err == nil {
+					nodeField.Langs = &node_langs
+				}
+			}
+		}
+
+		if field.Name == "title" {
+			rsp.Title = nodeField.Value
 		}
 
 		rsp.Fields = append(rsp.Fields, &nodeField)
@@ -405,7 +432,6 @@ func (q *QuerySet) NodeEntry() api.Node {
 	rsp.ID = rs.Field("id").String()
 	rsp.Status = rs.Field("status").Int16()
 	rsp.UserID = rs.Field("userid").String()
-	rsp.Title = rs.Field("title").String()
 	rsp.Created = rs.Field("created").TimeFormat("datetime", "atom")
 	rsp.Updated = rs.Field("updated").TimeFormat("datetime", "atom")
 

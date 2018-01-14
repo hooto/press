@@ -7,13 +7,13 @@
 <div class="container">
   
   <div class="hp-ctn-header">
-    <h2>{{.page.Title}}</h2>
+    <h2>{{FieldStringPrint .page "title" .LANG}}</h2>
   </div>
 
   <div class="row">
     <div class="col-md-12">    
       <div class="hp-nodev">
-        <div class="content">{{FieldHtml .page.Fields "content"}}</div>
+        <div class="content">{{FieldHtmlPrint .page "content" .LANG}}</div>
       </div>      
     </div>
   </div>  

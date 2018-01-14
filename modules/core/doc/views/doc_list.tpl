@@ -17,7 +17,7 @@
   {{range $v := .doc_list.Items}}
   <div class="hpdoc-nodels-item row">
   <div class="col-sm-10">
-    <div class="hpdoc-nodels-title"><a href="{{$.baseuri}}/entry/{{$v.ExtPermalinkName}}/">{{$v.Title}}</a></div>
+    <div class="hpdoc-nodels-title"><a href="{{$.baseuri}}/entry/{{$v.ExtPermalinkName}}/">{{FieldStringPrint $v "title" $.LANG}}</a></div>
     <div class="hpdoc-nodels-info">
     {{range $term := $v.Terms}}
       {{if eq $term.Name "tags"}}

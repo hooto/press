@@ -164,14 +164,14 @@
         <tr>
           <td>Node Sub Refer</td>
           <td>
-		    {[=it.extensions.node_sub_refer]}
+            {[=it.extensions.node_sub_refer]}
           </td>
         </tr>
         {[} else {]}
         <tr>
           <td>Refer to Node Name</td>
           <td>
-		    <input type="text" class="form-control input-sm" name="ext_node_refer" value="{[=it.extensions.node_refer]}">
+            <input type="text" class="form-control input-sm" name="ext_node_refer" value="{[=it.extensions.node_refer]}">
           </td>
         </tr>
         {[}]}

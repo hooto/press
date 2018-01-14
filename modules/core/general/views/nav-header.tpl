@@ -9,7 +9,7 @@
 
     <ul class="hp-nav hp-topbar-nav" id="hp-topbar-nav-main">
       {{range $v := .topnav.Items}}
-      <li><a class="" href="{{FieldString $v.Fields "url"}}">{{$v.Title}}</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{FieldString $v.Fields "url"}}">{{FieldStringPrint $v "title" $.LANG}}</a></li>
       {{end}}
     </ul>
 

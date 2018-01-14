@@ -141,6 +141,7 @@ func (c Comment) SetAction() {
 		"id":                  set.Meta.ID,
 		"pid":                 "00",
 		"title":               re_title,
+		"field_title":         re_title,
 		"status":              1,
 		"userid":              utils.StringEncode16("guest", 8),
 		"field_refer_id":      set.ReferID,

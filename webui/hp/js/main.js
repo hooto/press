@@ -277,3 +277,8 @@ hp.AuthSessionRefresh = function() {
     });
 }
 
+hp.LangChange = function(t) {
+    l4iCookie.Set("lang", t.value, null, "/");
+    window.location.reload(true);
+}
+

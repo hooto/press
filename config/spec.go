@@ -25,6 +25,7 @@ import (
 	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
+	"github.com/lessos/lessgo/utils"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/rdb/modeler"
 
@@ -97,7 +98,7 @@ func module_init() error {
 
 	//
 	q := rdb.NewQuerySet().From("modules").Limit(200)
-	q.Where.And("status", 1)
+	// q.Where.And("status", 1)
 	if rs, err := store.Data.Query(q); err == nil {
 
 		for _, v := range rs {
@@ -108,6 +109,75 @@ func module_init() error {
 				if mod.SrvName == "" || strings.Contains(mod.SrvName, "/") {
 					mod.SrvName, _ = api.SrvNameFilter(v.Field("srvname").String())
 				}
+
+				// upgrade
+				sync := false
+				for j, v2 := range mod.NodeModels {
+
+					if ft := v2.Field("title"); ft == nil {
+						v2.Fields = append([]api.FieldModel{
+							{
+								Name:   "title",
+								Type:   "string",
+								Length: "100",
+								Title:  "Title",
+							},
+						}, v2.Fields...)
+						mod.NodeModels[j] = v2
+						sync = true
+
+						if err := _instance_schema_sync(&mod); err != nil {
+							hlog.Printf("error", err.Error())
+							return err
+						}
+					}
+
+					//
+					table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), v2.Meta.Name)
+					qs := rdb.NewQuerySet().
+						Select("id,title,field_title").
+						From(table).
+						Limit(10000)
+
+					if rs, err := store.Data.Query(qs); err == nil && len(rs) > 0 {
+
+						num := 0
+
+						for _, v3 := range rs {
+							if len(v3.Field("field_title").String()) < 2 {
+
+								fmt.Println("id", v3.Field("id").String(), v3.Field("title").String())
+
+								fr := rdb.NewFilter()
+								fr.And("id", v3.Field("id").String())
+
+								set := map[string]interface{}{
+									"field_title": v3.Field("title").String(),
+								}
+								store.Data.Update(table, set, fr)
+								num++
+							}
+						}
+
+						hlog.Printf("warn", "upgrade %s/%s %d/%d", mod.Meta.Name, table, num, len(rs))
+					}
+				}
+
+				if sync {
+					js, _ := json.Encode(mod, "  ")
+
+					fr := rdb.NewFilter()
+					fr.And("name", mod.Meta.Name)
+
+					set := map[string]interface{}{
+						"body": string(js),
+					}
+					store.Data.Update("modules", set, fr)
+				}
+
+				// if v.Field("status").String() != "1" {
+				// 	continue
+				// }
 
 				Modules[mod.SrvName] = &mod
 			} else {
@@ -127,6 +197,26 @@ func module_init() error {
 
 		if !api.NewSpecVersion(spec.Meta.Version).Valid() {
 			return fmt.Errorf("Invalid Version of %s", modname)
+		}
+
+		// upgrade
+		sync := false
+		for j, v2 := range spec.NodeModels {
+			if ft := v2.Field("title"); ft == nil {
+				v2.Fields = append([]api.FieldModel{
+					{
+						Name:   "title",
+						Type:   "string",
+						Length: "100",
+						Title:  "Title",
+					},
+				}, v2.Fields...)
+				spec.NodeModels[j] = v2
+				sync = true
+			}
+		}
+		if sync {
+			spec.Meta.Version = api.NewSpecVersion(spec.Meta.Version).Add(0, 0, 1).String()
 		}
 
 		var instResVersion api.SpecVersion
@@ -151,7 +241,6 @@ func module_init() error {
 		//
 		jsb, _ := json.Encode(spec, "  ")
 		set := map[string]interface{}{
-			"status":  1,
 			"title":   spec.Title,
 			"version": spec.Meta.Version,
 			"updated": timenow,
@@ -173,6 +262,7 @@ func module_init() error {
 			set["name"] = spec.Meta.Name
 			set["srvname"] = spec.SrvName
 			set["created"] = timenow
+			set["status"] = 1
 
 			store.Data.Insert("modules", set)
 		}
@@ -186,6 +276,9 @@ func module_init() error {
 			return err
 		}
 		SpecSrvRefresh(mod.SrvName)
+
+		// upgrade
+		json.EncodeToFile(mod, fmt.Sprintf("%s/modules/%s/spec.json", Prefix, mod.Meta.Name), "  ")
 	}
 
 	return nil
@@ -293,11 +386,23 @@ func _instance_schema_sync(spec *api.Spec) error {
 
 			case "string":
 
+				if field.Name == "title" {
+					field.Length = "100"
+				}
+
 				tbl.AddColumn(&modeler.Column{
 					Name:   "field_" + field.Name,
 					Type:   "string",
 					Length: field.Length,
 				})
+
+				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
+					tbl.AddColumn(&modeler.Column{
+						Name:     "field_" + field.Name + "_langs",
+						Type:     "string-text",
+						NullAble: true,
+					})
+				}
 
 				switch field.IndexType {
 				case modeler.IndexTypeUnique, modeler.IndexTypeIndex:
@@ -320,6 +425,14 @@ func _instance_schema_sync(spec *api.Spec) error {
 					Type:   "string",
 					Length: "200",
 				})
+
+				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
+					tbl.AddColumn(&modeler.Column{
+						Name:     "field_" + field.Name + "_langs",
+						Type:     "string-text",
+						NullAble: true,
+					})
+				}
 
 			case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64":
 

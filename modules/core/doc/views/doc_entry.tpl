@@ -8,7 +8,7 @@
 
 <div class="hpdoc_index_frame_blue hpdoc_node_content hpdoc_bgimg_hexagons">
 <div class="container" style="padding: 20px 10px; text-align: center;">
-  <div class="hpdoc_index_frame_title">{{.doc_entry.Title}}</div>
+  <div class="hpdoc_index_frame_title">{{FieldStringPrint .doc_entry "title" .LANG}}</div>
 </div>
 </div>
 
@@ -18,11 +18,11 @@
     <div class="col-3">
       <div class="hpdoc_entry_summary markdown-body" style="">
         <ul><li><a href=".">Preface</a></li></ul>
-        {{FieldHtml .doc_entry.Fields "content"}}
+        {{FieldHtmlPrint .doc_entry "content" .LANG}}
       </div>
     </div>
     <div class="col-9">
-      <div class="hpdoc_entry_content hpdoc_page_content markdown-body">{{FieldHtml .doc_entry.Fields "preface"}}</div>
+      <div class="hpdoc_entry_content hpdoc_page_content markdown-body">{{FieldHtmlPrint .doc_entry "preface" .LANG}}</div>
     </div>
   </div>
 </div>

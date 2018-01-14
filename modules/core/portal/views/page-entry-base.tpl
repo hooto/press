@@ -6,7 +6,7 @@
 <body>
 {{pagelet . "core/general" "bs4/nav-header.tpl" "topnav"}}
 
-<div>{{FieldHtml .page_entry.Fields "content"}}</div>
+<div>{{FieldHtmlPrint .page_entry "content" .LANG}}</div>
 
 {{pagelet . "core/general" "footer.tpl"}}
 

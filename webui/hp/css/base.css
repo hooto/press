@@ -27,6 +27,7 @@ body {
 
 
 
+
 /** user bar **/
 
 #hp-topbar-userbar {}
@@ -116,6 +117,15 @@ body {
   margin: 0;
 }
 
+.hp-footer-langs {
+  padding: 2px 5px;
+  font-size: 0.9em;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  line-height: 1.2;
+}
+
 .hp-ctn-header {
   margin: 20px 0;
 }
@@ -126,6 +136,7 @@ body {
   font-weight: normal;
   color: #f04c5c;
 }
+
 
 
 
@@ -213,6 +224,7 @@ body {
   margin-bottom: 0 !important;
   ;
 }
+
 
 
 
@@ -325,7 +337,9 @@ body {
 }
 
 
+
 /** sidebar **/
+
 .hp-sidebar-section {
   margin-bottom: 20px;
 }
@@ -377,6 +391,7 @@ body {
 
 
 
+
 /** scroll **/
 
 .hp-scroll {
@@ -416,6 +431,7 @@ body {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   font-size: 1em;
 }
+
 
 
 

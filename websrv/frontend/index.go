@@ -145,6 +145,16 @@ func (c Index) IndexAction() {
 		}
 	}
 
+	if lang, ok := c.Data["LANG"]; ok {
+		c.Data["LANG"] = strings.ToLower(lang.(string))
+	} else {
+		c.Data["LANG"] = ""
+	}
+
+	if len(config.Languages) > 1 {
+		c.Data["frontend_langs"] = config.Languages
+	}
+
 	// if session, err := c.Session.Instance(); err == nil {
 	// 	c.Data["session"] = session
 	// }
@@ -255,7 +265,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		}
 
 		if c.Params.Get("qry_text") != "" {
-			qry.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
+			qry.Filter("field_title.like", "%"+c.Params.Get("qry_text")+"%")
 			c.Data["qry_text"] = c.Params.Get("qry_text")
 		}
 

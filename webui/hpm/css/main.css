@@ -272,7 +272,7 @@ body {
   /*height: auto;*/
 }
 
-.hpm-nodeset-auto-height > .CodeMirror {
+.hpm-nodeset-auto-height>.CodeMirror {
   height: auto !important;
 }
 
@@ -292,6 +292,11 @@ body {
 #hpm-nodeset-layside {
   margin: 0 0 0 10px;
   background-color: transparent;
+}
+
+.hpm-nodeset-tplstring label {
+  margin: 0;
+  width: 100%;
 }
 
 .hpm-nodeset-tpltext label {
@@ -325,9 +330,22 @@ body {
   cursor: pointer;
 }
 
+.hpm-nodeset-tplstring label select.field-nav-lang,
+.hpm-nodeset-tpltext label select.field-nav-lang {
+  padding: 1px 5px !important;
+  font-size: 12px;
+  line-height: 100%;
+  display: inline;
+  width: 120px;
+  height: auto;
+  float: right;
+}
+
 .hpm-nodeset-tpltext table.editor-fra {
   margin: 0;
 }
+
+
 
 #hpm-termls,
 #hpm-termset {

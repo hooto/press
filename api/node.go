@@ -44,6 +44,15 @@ var (
 	NodeExtNodeReferReg = regexp.MustCompile("^[0-9a-f]{12,16}$")
 )
 
+func (item *Node) Field(name string) *NodeField {
+	for _, v := range item.Fields {
+		if v.Name == name {
+			return v
+		}
+	}
+	return nil
+}
+
 type NodeList struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.ListMeta `json:"meta,omitempty"`
@@ -92,10 +101,15 @@ var (
 )
 
 type NodeField struct {
-	Name   string        `json:"name"`
-	Value  string        `json:"value,omitempty"`
-	Attrs  []KeyValue    `json:"attrs,omitempty"`
-	Caches types.KvPairs `json:"caches,omitempty"`
+	Name   string          `json:"name"`
+	Value  string          `json:"value,omitempty"`
+	Langs  *NodeFieldLangs `json:"langs,omitempty"`
+	Attrs  types.KvPairs   `json:"attrs,omitempty"`
+	Caches types.KvPairs   `json:"caches,omitempty"`
+}
+
+type NodeFieldLangs struct {
+	Items types.KvPairs `json:"items,omitempty"`
 }
 
 type NodeTerm struct {

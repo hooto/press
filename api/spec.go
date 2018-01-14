@@ -27,11 +27,6 @@ var (
 	SrvNameReg = regexp.MustCompile("^[0-9a-z\\-_]{1,50}$")
 )
 
-type KeyValue struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
 type Spec struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.InnerObjectMeta `json:"meta,omitempty"`
@@ -88,14 +83,14 @@ type SpecList struct {
 }
 
 type FieldModel struct {
-	Name      string     `json:"name"`
-	Type      string     `json:"type"`
-	Length    string     `json:"length,omitempty"`
-	Extra     []string   `json:"extra,omitempty"`
-	Attrs     []KeyValue `json:"attrs,omitempty"`
-	IndexType int        `json:"indexType,omitempty"`
-	Title     string     `json:"title"`
-	Comment   string     `json:"comment,omitempty"`
+	Name      string        `json:"name"`
+	Type      string        `json:"type"`
+	Length    string        `json:"length,omitempty"`
+	Extra     []string      `json:"extra,omitempty"`
+	Attrs     types.KvPairs `json:"attrs,omitempty"`
+	IndexType int           `json:"indexType,omitempty"`
+	Title     string        `json:"title"`
+	Comment   string        `json:"comment,omitempty"`
 }
 
 type NodeModel struct {
@@ -108,6 +103,15 @@ type NodeModel struct {
 	Fields         []FieldModel     `json:"fields,omitempty"`
 	Terms          []TermModel      `json:"terms,omitempty"`
 	Extensions     SpecExtensions   `json:"extensions,omitempty"`
+}
+
+func (item *NodeModel) Field(name string) *FieldModel {
+	for _, v := range item.Fields {
+		if name == v.Name {
+			return &v
+		}
+	}
+	return nil
 }
 
 var (

@@ -220,37 +220,6 @@ func SpecTermSet(modname string, entry api.TermModel) error {
 	return err
 }
 
-func _keyValueListEqual(ls1, ls2 []api.KeyValue) bool {
-
-	if len(ls1) != len(ls2) {
-		return false
-	}
-
-	for _, kv1 := range ls1 {
-
-		found := false
-
-		for _, kv2 := range ls2 {
-
-			if kv1.Key == kv2.Key {
-
-				if kv1.Value != kv2.Value {
-					return false
-				}
-
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			return false
-		}
-	}
-
-	return true
-}
-
 func _termListEqual(ls1, ls2 []api.TermModel) bool {
 
 	if len(ls1) != len(ls2) {
@@ -318,11 +287,29 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 			}
 		}
 
-		for _, attr := range field.Attrs {
+		attr_dels := []string{}
+
+		for j, attr := range field.Attrs {
 
 			if mat := nodeFeildNamePattern.MatchString(attr.Key); !mat {
 				return fmt.Errorf("Invalid Field Attribute Key (%s)", attr.Key)
 			}
+
+			if attr.Key == "langs" {
+				if field.Type == "string" || field.Type == "text" {
+					entry.Fields[i].Attrs[j].Value = api.LangsStringFilter(attr.Value)
+				} else {
+					entry.Fields[i].Attrs[j].Value = ""
+				}
+			}
+
+			if entry.Fields[i].Attrs[j].Value == "" {
+				attr_dels = append(attr_dels, attr.Key)
+			}
+		}
+
+		for _, v := range attr_dels {
+			entry.Fields[i].Attrs.Del(v)
 		}
 	}
 
@@ -395,7 +382,7 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 								curField.Type == prevField.Type &&
 								curField.IndexType == prevField.IndexType &&
 								curField.Length == prevField.Length &&
-								_keyValueListEqual(curField.Attrs, prevField.Attrs) {
+								curField.Attrs.Equal(prevField.Attrs) {
 
 								field_sync = false
 							}
@@ -951,11 +938,23 @@ func SpecSchemaSync(spec api.Spec) error {
 
 			case "string":
 
+				if field.Name == "title" {
+					field.Length = "100"
+				}
+
 				tbl.AddColumn(&modeler.Column{
 					Name:   "field_" + field.Name,
 					Type:   "string",
 					Length: field.Length,
 				})
+
+				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
+					tbl.AddColumn(&modeler.Column{
+						Name:     "field_" + field.Name + "_langs",
+						Type:     "string-text",
+						NullAble: true,
+					})
+				}
 
 				switch field.IndexType {
 
@@ -979,6 +978,14 @@ func SpecSchemaSync(spec api.Spec) error {
 					Type:   "string",
 					Length: "200",
 				})
+
+				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
+					tbl.AddColumn(&modeler.Column{
+						Name:     "field_" + field.Name + "_langs",
+						Type:     "string-text",
+						NullAble: true,
+					})
+				}
 
 			case "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64":
 

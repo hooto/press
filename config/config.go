@@ -61,6 +61,7 @@ var (
 	inited                 = false
 	RouterBasepathDefault  = "/"
 	RouterBasepathDefaults = []string{}
+	Languages              = []api.LangEntry{}
 )
 
 type ConfigCommon struct {
@@ -113,6 +114,12 @@ func init() {
 		"frontend_footer_analytics_scripts", "",
 		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text",
 	})
+
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_languages", "",
+		"Multi languages support list", "",
+	})
+
 	SysConfigList.Insert(api.SysConfig{
 		"ls2_uri", "//127.0.0.1:9533/hp/s2",
 		"Storage Service URI", "",
@@ -222,6 +229,20 @@ func Initialize(prefix string) error {
 					RouterBasepathDefaults = strings.Split(strings.Trim(item.Value, "/"), "/")
 				}
 				RouterBasepathDefault = item.Value
+			}
+
+			if item.Key == "frontend_languages" {
+				if langs := api.LangsStringFilterArray(item.Value); len(langs) > 1 {
+					Languages = []api.LangEntry{}
+					for _, lv := range langs {
+
+						for _, lv2 := range api.LangArray {
+							if lv == lv2.Id {
+								Languages = append(Languages, lv2)
+							}
+						}
+					}
+				}
 			}
 
 			SysConfigList.Insert(item)

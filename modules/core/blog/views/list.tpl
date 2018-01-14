@@ -17,7 +17,7 @@
     <ul class="hp-nodels">
       {{range $v := .list.Items}}
       <li class="hp-nodels-item">
-        <h4 class="hp-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{$v.Title}}</a></h4>
+        <h4 class="hp-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{FieldStringPrint $v "title" $.LANG}}</a></h4>
         <span class="hp-nodels-info">
             
             <span class="section">
@@ -53,7 +53,7 @@
 
         </span>
 
-        <div class="hp-nodels-text">{{FieldSubHtml $v.Fields "content" 200}}</div>
+        <div class="hp-nodels-text">{{FieldHtmlSubPrint $v "content" 200 $.LANG}}</div>
       </li>
       {{end}}
     </ul>

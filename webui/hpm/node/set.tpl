@@ -14,10 +14,7 @@
 
 <script id="hpm-nodeset-tpl" type="text/html">
   <input type="hidden" name="id" value="{[=it.id]}">
-  <div class="l4i-form-group">
-    <label>Title</label>
-    <p><input name="title" type="text" value="{[=it.title]}" class="l4i-form-control"></p>
-  </div>
+  <div id="hpm-nodeset-top-title"></div>
   <div id="hpm-nodeset-tops"></div>
   <div id="hpm-nodeset-fields"></div>
 </script>
@@ -49,6 +46,13 @@
         <a class="tpltext-editor-item preview_open" href="#preview-open" onclick="hpEditor.PreviewOpen('{[=it.name]}')" style="display:none">Open Markdown Preview</a>
         <a class="tpltext-editor-item preview_close" href="#preview-close" onclick="hpEditor.PreviewClose('{[=it.name]}')" style="display:none">Close Markdown Preview</a>
       </span>
+      {[? it.attr_lang_list]}
+      <select id="field_{[=it.name]}_langs" class="field-nav-lang form-control" onchange="hpNode.SetFieldLang('{[=it.name]}')">
+        {[~it.attr_lang_list :v]}
+		<option value="{[=v.id]}">{[=v.name]}</option>
+        {[~]}
+	  </select>
+      {[?]}
     </label>
     <input type="hidden" id="field_{[=it.name]}_attr_format" name="field_{[=it.name]}_attr_format" value="{[=it.attr_format]}">
     
@@ -75,9 +79,18 @@
 </script>
 
 <script id="hpm-nodeset-tplstring" type="text/html">
-  <div class="l4i-form-group">
-    <label>{[=it.title]}</label>
-    <input type="text" name="field_{[=it.name]}" class="l4i-form-control" value="{[=it.value]}">
+  <div class="l4i-form-group hpm-nodeset-tplstring">
+    <label>
+      <span>{[=it.title]}</span>
+      {[? it.attr_lang_list]}
+      <select id="field_{[=it.name]}_langs" class="field-nav-lang form-control" onchange="hpNode.SetFieldLang('{[=it.name]}')">
+        {[~it.attr_lang_list :v]}
+		<option value="{[=v.id]}">{[=v.name]}</option>
+        {[~]}
+	  </select>
+      {[?]}
+    </label>
+    <input type="text" id="field_{[=it.name]}" name="field_{[=it.name]}" class="l4i-form-control" value="{[=it.value]}">
   </div>
 </script>
 

@@ -95,6 +95,7 @@ hpEditor.Open = function(name, format) {
     });
 }
 
+
 hpEditor.sizeRefresh = function() {
     // console.log("hpEditor.sizeRefresh");
 
@@ -260,6 +261,14 @@ hpEditor.Content = function(name) {
         return editor.getValue();
     }
 
+    return null;
+}
+
+hpEditor.ContentSet = function(name, value) {
+    var editor = hpEditor.editors[name];
+    if (editor) {
+        return editor.setValue(value);
+    }
     return null;
 }
 

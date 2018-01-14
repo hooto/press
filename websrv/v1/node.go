@@ -101,8 +101,8 @@ func (c Node) ListAction() {
 	}
 
 	if c.Params.Get("qry_text") != "" {
-		dq.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
-		dqc.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
+		dq.Filter("field_title.like", "%"+c.Params.Get("qry_text")+"%")
+		dqc.Filter("field_title.like", "%"+c.Params.Get("qry_text")+"%")
 	}
 
 	var (
@@ -197,8 +197,11 @@ func (c Node) SetAction() {
 		node_refer = rsp.ExtNodeRefer
 	}
 
-	if rsp.Title == "" {
-		rsp.Error = types.NewErrorMeta("400", "Invalid Title")
+	if ft := rsp.Field("title"); ft == nil {
+		rsp.Error = types.NewErrorMeta("400", "Title Not Found")
+		return
+	} else if ft.Value = strings.TrimSpace(ft.Value); ft.Value == "" {
+		rsp.Error = types.NewErrorMeta("400", "Title can not be empty")
 		return
 	}
 
@@ -223,9 +226,11 @@ func (c Node) SetAction() {
 			return
 		}
 
-		if rs[0].Field("title").String() != rsp.Title {
-			set["title"] = rsp.Title
-		}
+		/*
+			if rs[0].Field("title").String() != rsp.Title {
+				set["title"] = rsp.Title
+			}
+		*/
 
 		if rs[0].Field("status").Int16() != rsp.Status {
 			set["status"] = rsp.Status
@@ -252,20 +257,48 @@ func (c Node) SetAction() {
 					set["field_"+modField.Name] = valField.Value
 				}
 
-				if modField.Type == "text" {
+				// upgrade
+				if modField.Name == "title" {
+					set["title"] = valField.Value
+				}
 
-					attrs := []api.KeyValue{}
+				if modField.Type == "text" {
+					attrs := types.KvPairs{}
 
 					for _, attr := range valField.Attrs {
-						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
-							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
+						if modField.Type == "text" && attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
+							attrs.Set(attr.Key, attr.Value)
 						}
 					}
 
-					attrs_js, _ := json.Encode(attrs, "  ")
+					if len(attrs) > 0 {
+						attrs_js, _ := json.Encode(attrs, "  ")
+						if string(attrs_js) != rs[0].Field("field_"+modField.Name+"_attrs").String() {
+							set["field_"+modField.Name+"_attrs"] = string(attrs_js)
+						}
+					}
+				}
 
-					if string(attrs_js) != rs[0].Field("field_"+modField.Name+"_attrs").String() {
-						set["field_"+modField.Name+"_attrs"] = string(attrs_js)
+				if modField.Type == "text" || modField.Type == "string" {
+					// langs
+					if attr := modField.Attrs.Get("langs"); attr != nil && valField.Langs != nil {
+
+						var langs api.NodeFieldLangs
+						if len(rs[0].Field("field_"+modField.Name+"_langs").String()) > 5 {
+							rs[0].Field("field_" + modField.Name + "_langs").JsonDecode(&langs)
+						}
+
+						attr_langs := api.LangsStringFilterArray(attr.String())
+						for li := 1; li < len(attr_langs); li++ {
+							if lang_entry := valField.Langs.Items.Get(attr_langs[li]); lang_entry != nil {
+								langs.Items.Set(attr_langs[li], lang_entry.String())
+							}
+						}
+
+						if len(langs.Items) > 0 {
+							langs_js, _ := json.Encode(langs, "")
+							set["field_"+modField.Name+"_langs"] = string(langs_js)
+						}
 					}
 				}
 
@@ -303,7 +336,7 @@ func (c Node) SetAction() {
 	} else {
 
 		set["id"] = idhash.RandHexString(node_id_length)
-		set["title"] = rsp.Title
+		// set["title"] = rsp.Title
 		set["status"] = rsp.Status
 		set["created"] = rdb.TimeNow("datetime")
 
@@ -325,18 +358,45 @@ func (c Node) SetAction() {
 
 				set["field_"+valField.Name] = valField.Value
 
+				// upgrade
+				if modField.Name == "title" {
+					set["title"] = valField.Value
+				}
+
 				if modField.Type == "text" {
 
-					attrs := []api.KeyValue{}
+					attrs := types.KvPairs{}
 
 					for _, attr := range valField.Attrs {
-						if attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
-							attrs = append(attrs, api.KeyValue{attr.Key, attr.Value})
+						if modField.Type == "text" && attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
+							attrs.Set(attr.Key, attr.Value)
 						}
 					}
 
-					jsb, _ := json.Encode(attrs, "  ")
-					set["field_"+valField.Name+"_attrs"] = string(jsb)
+					if len(attrs) > 0 {
+						attrs_js, _ := json.Encode(attrs, "  ")
+						set["field_"+modField.Name+"_attrs"] = string(attrs_js)
+					}
+				}
+
+				if modField.Type == "text" || modField.Type == "string" {
+					// langs
+					if attr := modField.Attrs.Get("langs"); attr != nil && valField.Langs != nil {
+
+						var langs api.NodeFieldLangs
+
+						attr_langs := api.LangsStringFilterArray(attr.String())
+						for li := 1; li < len(attr_langs); li++ {
+							if lang_entry := valField.Langs.Items.Get(attr_langs[li]); lang_entry != nil {
+								langs.Items.Set(attr_langs[li], lang_entry.String())
+							}
+						}
+
+						if len(langs.Items) > 0 {
+							langs_js, _ := json.Encode(langs, "")
+							set["field_"+modField.Name+"_langs"] = string(langs_js)
+						}
+					}
 				}
 
 				break

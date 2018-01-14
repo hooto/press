@@ -104,6 +104,8 @@ func (c Sys) ConfigSetAction() {
 			"value": entry.Value,
 		}
 
+		sync := false
+
 		if len(rs) > 0 {
 
 			if rs[0].Field("value").String() != entry.Value {
@@ -111,6 +113,7 @@ func (c Sys) ConfigSetAction() {
 				ft := rdb.NewFilter()
 				ft.And("key", entry.Key)
 				_, err = store.Data.Update("sys_config", set, ft)
+				sync = true
 			}
 
 		} else {
@@ -118,6 +121,7 @@ func (c Sys) ConfigSetAction() {
 			set["key"] = entry.Key
 
 			_, err = store.Data.Insert("sys_config", set)
+			sync = true
 		}
 
 		if err != nil {
@@ -137,6 +141,20 @@ func (c Sys) ConfigSetAction() {
 				config.RouterBasepathDefaults = strings.Split(strings.Trim(entry.Value, "/"), "/")
 			}
 			config.RouterBasepathDefault = entry.Value
+		}
+
+		if sync && entry.Key == "frontend_languages" {
+			config.Languages = []api.LangEntry{}
+			if langs := api.LangsStringFilterArray(entry.Value); len(langs) > 1 {
+				for _, lv := range langs {
+
+					for _, lv2 := range api.LangArray {
+						if lv == lv2.Id {
+							config.Languages = append(config.Languages, lv2)
+						}
+					}
+				}
+			}
 		}
 
 		config.SysConfigList.Insert(entry)

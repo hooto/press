@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/doc",
-    "version": "0.0.11"
+    "version": "0.0.28"
   },
   "srvname": "doc",
   "status": 1,
@@ -14,6 +14,18 @@
       "title": "Document",
       "fields": [
         {
+          "name": "title",
+          "type": "string",
+          "length": "100",
+          "attrs": [
+            {
+              "key": "langs",
+              "value": "en-us,zh-cn"
+            }
+          ],
+          "title": "Title"
+        },
+        {
           "name": "preface",
           "type": "text",
           "length": "0",
@@ -25,6 +37,10 @@
             {
               "key": "ui_rows",
               "value": "10"
+            },
+            {
+              "key": "langs",
+              "value": "en-us,zh-cn"
             }
           ],
           "title": "Preface"
@@ -41,6 +57,10 @@
             {
               "key": "ui_rows",
               "value": "20"
+            },
+            {
+              "key": "langs",
+              "value": "en-us,zh-cn"
             }
           ],
           "title": "Table of Contents"
@@ -75,6 +95,18 @@
       "title": "Page",
       "fields": [
         {
+          "name": "title",
+          "type": "string",
+          "length": "100",
+          "attrs": [
+            {
+              "key": "langs",
+              "value": "en-us,zh-cn"
+            }
+          ],
+          "title": "Title"
+        },
+        {
           "name": "content",
           "type": "text",
           "length": "0",
@@ -86,12 +118,17 @@
             {
               "key": "formats",
               "value": "md"
+            },
+            {
+              "key": "langs",
+              "value": "en-us,zh-cn"
             }
           ],
           "title": "Content"
         }
       ],
       "extensions": {
+        "access_counter": true,
         "permalink": "name",
         "node_refer": "doc"
       }

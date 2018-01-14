@@ -498,3 +498,11 @@ func (c ModSet) SpecRouteDelAction() {
 
 	set.Kind = "SpecRoute"
 }
+
+func (c ModSet) SpecLangListAction() {
+	ls := api.LangList{
+		Items: api.LangArray,
+	}
+	ls.Kind = "SpecLangList"
+	c.RenderJson(ls)
+}
