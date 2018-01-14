@@ -166,7 +166,9 @@ func fieldValueCache(fields []*api.NodeField, colname string, cache_key string) 
 			attrs[v.Key] = v.Value
 		}
 
-		if val, cached = field.ValueCaches[cache_key]; !cached {
+		if v := field.Caches.Get(cache_key); v != nil && len(v) > 0 {
+			val, cached = v.String(), true
+		} else {
 			val = field.Value
 		}
 
@@ -177,11 +179,10 @@ func fieldValueCache(fields []*api.NodeField, colname string, cache_key string) 
 }
 
 func fieldValueCacheSet(fields []*api.NodeField, colname, value, cache_key string) {
-
 	for _, field := range fields {
 
 		if field.Name == colname {
-			field.ValueCaches[cache_key] = value
+			field.Caches.Set(cache_key, value)
 			break
 		}
 	}

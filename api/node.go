@@ -92,10 +92,10 @@ var (
 )
 
 type NodeField struct {
-	Name        string            `json:"name"`
-	Value       string            `json:"value,omitempty"`
-	ValueCaches map[string]string `json:"value_caches,omitempty"`
-	Attrs       []KeyValue        `json:"attrs,omitempty"`
+	Name   string        `json:"name"`
+	Value  string        `json:"value,omitempty"`
+	Attrs  []KeyValue    `json:"attrs,omitempty"`
+	Caches types.KvPairs `json:"caches,omitempty"`
 }
 
 type NodeTerm struct {

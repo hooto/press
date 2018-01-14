@@ -204,9 +204,8 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 				}
 
 				nodeField := api.NodeField{
-					Name:        field.Name,
-					Value:       v.Field("field_" + field.Name).String(),
-					ValueCaches: map[string]string{},
+					Name:  field.Name,
+					Value: v.Field("field_" + field.Name).String(),
 				}
 
 				if field.Type == "text" &&
@@ -376,9 +375,8 @@ func (q *QuerySet) NodeEntry() api.Node {
 	for _, field := range rsp.Model.Fields {
 
 		nodeField := api.NodeField{
-			Name:        field.Name,
-			Value:       rs.Field("field_" + field.Name).String(),
-			ValueCaches: map[string]string{},
+			Name:  field.Name,
+			Value: rs.Field("field_" + field.Name).String(),
 		}
 
 		if field.Type == "text" &&
