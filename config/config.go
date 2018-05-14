@@ -42,7 +42,7 @@ var (
 	Prefix         string
 	Config         ConfigCommon
 	AppName        = "hooto-press"
-	Version        = "0.3"
+	Version        = "0.4"
 	Release        = "1"
 	SysVersionSign = ""
 	CaptchaConfig  = captcha4g.DefaultConfig
