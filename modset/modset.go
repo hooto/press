@@ -856,12 +856,12 @@ func SpecSchemaSync(spec api.Spec) error {
 		"body":    string(jsb),
 	}
 
-	q := rdb.NewQuerySet().From("modules")
-	q.Where.And("name", spec.Meta.Name)
+	q := store.Data.NewQueryer().From("modules")
+	q.Where().And("name", spec.Meta.Name)
 
 	if _, err := store.Data.Fetch(q); err == nil {
 
-		fr := rdb.NewFilter()
+		fr := store.Data.NewFilter()
 		fr.And("name", spec.Meta.Name)
 
 		_, err = store.Data.Update("modules", set, fr)

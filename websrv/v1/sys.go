@@ -26,7 +26,6 @@ import (
 	"github.com/hooto/iam/iamclient"
 	"github.com/lessos/lessgo/net/httpclient"
 	"github.com/lessos/lessgo/types"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -88,8 +87,8 @@ func (c Sys) ConfigSetAction() {
 			continue
 		}
 
-		q := rdb.NewQuerySet().From("sys_config").Limit(1)
-		q.Where.And("key", entry.Key)
+		q := store.Data.NewQueryer().From("sys_config").Limit(1)
+		q.Where().And("key", entry.Key)
 
 		rs, err := store.Data.Query(q)
 		if err != nil {
@@ -110,7 +109,7 @@ func (c Sys) ConfigSetAction() {
 
 			if rs[0].Field("value").String() != entry.Value {
 
-				ft := rdb.NewFilter()
+				ft := store.Data.NewFilter()
 				ft.And("key", entry.Key)
 				_, err = store.Data.Update("sys_config", set, ft)
 				sync = true

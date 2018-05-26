@@ -20,7 +20,6 @@ import (
 	"sync"
 
 	"github.com/lessos/lessgo/utils"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -50,8 +49,8 @@ func _termTaxonomyCacheRefresh(modname, table string) {
 
 	tx_table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), table)
 
-	qs := rdb.NewQuerySet().From(tx_table).Limit(200).Order("weight desc")
-	qs.Where.And("status", 1)
+	qs := store.Data.NewQueryer().From(tx_table).Limit(200).Order("weight desc")
+	qs.Where().And("status", 1)
 
 	rs, err := store.Data.Query(qs)
 	if err != nil || len(rs) < 1 {

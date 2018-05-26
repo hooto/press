@@ -174,7 +174,7 @@ func (c Term) SetAction() {
 		table = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 	)
 
-	q := rdb.NewQuerySet().From(table).Limit(1)
+	q := store.Data.NewQueryer().From(table).Limit(1)
 
 	switch model.Type {
 
@@ -187,7 +187,7 @@ func (c Term) SetAction() {
 		rsp.UID = fmt.Sprintf("%x", h.Sum(nil))[:16]
 		rsp.ID = 0
 
-		q.Where.And("uid", rsp.UID)
+		q.Where().And("uid", rsp.UID)
 
 		rs, err := store.Data.Query(q)
 		if err != nil {
@@ -223,7 +223,7 @@ func (c Term) SetAction() {
 
 		if rsp.ID > 0 {
 
-			q.Where.And("id", rsp.ID)
+			q.Where().And("id", rsp.ID)
 
 			rs, err := store.Data.Query(q)
 			if err != nil {
@@ -284,7 +284,7 @@ func (c Term) SetAction() {
 
 		if rsp.ID > 0 {
 
-			ft := rdb.NewFilter()
+			ft := store.Data.NewFilter()
 			ft.And("id", rsp.ID)
 			_, err = store.Data.Update(table, set, ft)
 

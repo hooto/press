@@ -30,7 +30,6 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
-	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/rdb/modeler"
 	"github.com/sysinner/incore/inapi"
 
@@ -207,8 +206,9 @@ func Initialize(prefix string) error {
 
 	//
 	{
-		rs, err := store.Data.Query(rdb.NewQuerySet().From("sys_config").Limit(1000))
+		rs, err := store.Data.Query(store.Data.NewQueryer().From("sys_config").Limit(1000))
 		if err != nil {
+			fmt.Println(store.Data.NewQueryer().From("sys_config").Limit(1000))
 			hlog.Print("error", err.Error())
 			return err
 		}
@@ -280,12 +280,13 @@ func sync_sysinner_config() error {
 		optref    *inapi.AppOption
 		data_opts = Config.IoConnectors.Options(types.NameIdentifier("hpress_database"))
 		sync      = false
+		box_port  = uint16(5432)
+		db_driver = types.NameIdentifier("lynkdb/postgrego")
 	)
 
 	for _, app := range inst.Apps {
 
-		if app.Spec.Meta.ID != "hooto-press" &&
-			app.Spec.Meta.ID != "hooto-press-x1" {
+		if !strings.HasPrefix(app.Spec.Meta.ID, "hooto-press-") {
 			continue
 		}
 
@@ -295,7 +296,15 @@ func sync_sysinner_config() error {
 		}
 
 		if optref == nil {
+			optref = app.Operate.Options.Get("cfg/sysinner-postgresql") // TODO
+			box_port = 5432
+			db_driver = "lynkdb/postgrego"
+		}
+
+		if optref == nil {
 			optref = app.Operate.Options.Get("cfg/sysinner-mysql") // TODO
+			box_port = 3306
+			db_driver = "lynkdb/mysqlgo"
 		}
 	}
 
@@ -338,8 +347,9 @@ func sync_sysinner_config() error {
 
 	if data_opts == nil {
 		data_opts = &connect.ConnOptions{
-			Name:   types.NameIdentifier("hpress_database"),
-			Driver: "lynkdb/mysqlgo",
+			Name:      types.NameIdentifier("hpress_database"),
+			Connector: "iomix/rdb/Connector",
+			Driver:    db_driver,
 		}
 	}
 
@@ -370,7 +380,7 @@ func sync_sysinner_config() error {
 	}
 
 	// TODO
-	if srv := nsz.Get(3306); srv == nil || len(srv.Items) == 0 {
+	if srv := nsz.Get(box_port); srv == nil || len(srv.Items) == 0 {
 		return errors.New("No Pod ServicePort Found")
 	} else {
 		if data_opts.Value("host") != srv.Items[0].Ip {
@@ -422,10 +432,13 @@ func store_init() error {
 		opts := Config.IoConnectors.Options(io_name)
 
 		if opts == nil {
+			if Config.RunMode != "local-dev" {
+				return errors.New("iomix/rdb/Connector " + io_name.String() + " Not Found")
+			}
 			opts = &connect.ConnOptions{
 				Name:      io_name,
 				Connector: "iomix/rdb/Connector",
-				Driver:    types.NewNameIdentifier("lynkdb/mysqlgo"),
+				Driver:    types.NewNameIdentifier("lynkdb/postgrego"),
 			}
 		}
 
@@ -434,7 +447,7 @@ func store_init() error {
 		}
 
 		if opts.Value("port") == "" {
-			opts.SetValue("port", "3306")
+			opts.SetValue("port", "5432")
 		}
 
 		dbname = opts.Value("dbname")

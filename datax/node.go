@@ -23,7 +23,6 @@ import (
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -88,12 +87,12 @@ func Worker() {
 						continue
 					}
 
-					q := rdb.NewQuerySet().From(ks[0]).Limit(1)
-					q.Where.And("id", ks[1])
+					q := store.Data.NewQueryer().From(ks[0]).Limit(1)
+					q.Where().And("id", ks[1])
 
 					if rs, err := store.Data.Query(q); err == nil && len(rs) > 0 {
 
-						ft := rdb.NewFilter()
+						ft := store.Data.NewFilter()
 						ft.And("id", ks[1])
 
 						store.Data.Update(ks[0], map[string]interface{}{
@@ -132,7 +131,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdb.NewQuerySet().
+	qs := store.Data.NewQueryer().
 		Select(q.cols).
 		From(table).
 		Limit(q.limit).
@@ -144,7 +143,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 		qs.Order("created desc")
 	}
 
-	qs.Where = q.filter
+	qs.SetFilter(q.filter)
 
 	rs, err := store.Data.Query(qs)
 	if err != nil {
@@ -282,8 +281,8 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 		case api.TermTaxonomy:
 
 			table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), term.Meta.Name)
-			qs := rdb.NewQuerySet().From(table).Limit(1000)
-			qs.Where.And("id.in", ids...)
+			qs := store.Data.NewQueryer().From(table).Limit(1000)
+			qs.Where().And("id.in", ids...)
 
 			if rs, err := store.Data.Query(qs); err == nil && len(rs) > 0 {
 
@@ -366,15 +365,15 @@ func (q *QuerySet) NodeEntry() api.Node {
 
 	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdb.NewQuerySet().
+	qs := store.Data.NewQueryer().
 		Select(q.cols).
 		From(table).
 		Order(q.order).
 		Limit(1).
 		Offset(q.offset)
 
-	qs.Where = q.filter
-	// qs.Where.And("id", c.Params.Get("id"))
+	qs.SetFilter(q.filter)
+	// qs.Where().And("id", c.Params.Get("id"))
 
 	rs, err := store.Data.Fetch(qs)
 	if err != nil {

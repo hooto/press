@@ -38,7 +38,7 @@ func (q *QuerySet) TermCount() (int64, error) {
 
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	fr := rdb.NewFilter()
+	fr := store.Data.NewFilter()
 	fr.And("status", 1)
 
 	return store.Data.Count(table, fr)
@@ -66,7 +66,7 @@ func (q *QuerySet) TermList() api.TermList {
 	// q.limit = 100
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdb.NewQuerySet().
+	qs := store.Data.NewQueryer().
 		Select(q.cols).
 		From(table).
 		Offset(q.offset)
@@ -80,7 +80,7 @@ func (q *QuerySet) TermList() api.TermList {
 
 	qs.Limit(q.limit)
 
-	qs.Where = q.filter
+	qs.SetFilter(q.filter)
 
 	rs, err := store.Data.Query(qs)
 	if err != nil {
@@ -200,14 +200,14 @@ func (q *QuerySet) TermEntry() api.Term {
 
 	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
-	qs := rdb.NewQuerySet().
+	qs := store.Data.NewQueryer().
 		Select(q.cols).
 		From(table).
 		Order(q.order).
 		Limit(1).
 		Offset(q.offset)
 
-	qs.Where = q.filter
+	qs.SetFilter(q.filter)
 
 	rs, err := store.Data.Query(qs)
 	if err != nil {
@@ -316,9 +316,9 @@ func NodeTermQuery(modname string, model *api.NodeModel, terms []api.NodeTerm) [
 
 				table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), modTerm.Meta.Name)
 
-				q := rdb.NewQuerySet().From(table)
+				q := store.Data.NewQueryer().From(table)
 				q.Limit(1)
-				q.Where.And("id", term.Value)
+				q.Where().And("id", term.Value)
 
 				if rs, err := store.Data.Query(q); err == nil && len(rs) > 0 {
 
@@ -382,8 +382,8 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 
 	if len(ids) > 0 {
 
-		q := rdb.NewQuerySet().From(table).Limit(int64(len(ids)))
-		q.Where.And("uid.in", ids...)
+		q := store.Data.NewQueryer().From(table).Limit(int64(len(ids)))
+		q.Where().And("uid.in", ids...)
 
 		if rs, err := store.Data.Query(q); err == nil {
 

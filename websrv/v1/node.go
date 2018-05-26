@@ -207,8 +207,8 @@ func (c Node) SetAction() {
 
 	if len(rsp.ID) > 0 {
 
-		q := rdb.NewQuerySet().From(table).Limit(1)
-		q.Where.And("id", rsp.ID)
+		q := store.Data.NewQueryer().From(table).Limit(1)
+		q.Where().And("id", rsp.ID)
 		rs, err := store.Data.Query(q)
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{
@@ -491,11 +491,11 @@ func (c Node) SetAction() {
 
 					permaidx := idhash.HashToHexString([]byte(node_refer+permaname), 12)
 
-					q := rdb.NewQuerySet().From(table).Limit(1)
-					q.Where.And("ext_permalink_idx", permaidx)
+					q := store.Data.NewQueryer().From(table).Limit(1)
+					q.Where().And("ext_permalink_idx", permaidx)
 
 					if len(rsp.ID) > 0 {
-						q.Where.And("id.ne", rsp.ID)
+						q.Where().And("id.ne", rsp.ID)
 					}
 
 					if rs, err := store.Data.Query(q); err == nil && len(rs) < 1 {
@@ -530,8 +530,8 @@ func (c Node) SetAction() {
 	if model.Extensions.NodeRefer != "" {
 
 		if prev, ok := set["ext_node_refer"]; !ok || prev != rsp.ExtNodeRefer {
-			ref_q := rdb.NewQuerySet().From(table_prefix + model.Extensions.NodeRefer).Limit(1)
-			ref_q.Where.And("id", rsp.ExtNodeRefer)
+			ref_q := store.Data.NewQueryer().From(table_prefix + model.Extensions.NodeRefer).Limit(1)
+			ref_q.Where().And("id", rsp.ExtNodeRefer)
 			if rs, err := store.Data.Query(ref_q); err != nil {
 				rsp.Error = types.NewErrorMeta("500", "Server Error")
 				return
@@ -549,7 +549,7 @@ func (c Node) SetAction() {
 
 		if len(rsp.ID) > 0 {
 
-			ft := rdb.NewFilter()
+			ft := store.Data.NewFilter()
 			ft.And("id", rsp.ID)
 			_, err = store.Data.Update(table, set, ft)
 
@@ -609,8 +609,8 @@ func (c Node) DelAction() {
 
 	for _, id := range ids {
 
-		q := rdb.NewQuerySet().From(table).Limit(1)
-		q.Where.And("id", id)
+		q := store.Data.NewQueryer().From(table).Limit(1)
+		q.Where().And("id", id)
 
 		if rs, err := store.Data.Query(q); err != nil {
 			rsp.Error = &types.ErrorMeta{
@@ -626,7 +626,7 @@ func (c Node) DelAction() {
 			return
 		}
 
-		ft := rdb.NewFilter()
+		ft := store.Data.NewFilter()
 		ft.And("id", id)
 
 		if _, err := store.Data.Update(table, set, ft); err != nil {

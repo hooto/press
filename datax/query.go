@@ -50,7 +50,7 @@ func NewQuery(modname, table string) *QuerySet {
 
 func (q *QuerySet) Hash() string {
 
-	sql, params := q.filter.Parse()
+	sql, params := q.Where().Parse()
 
 	ps := []string{}
 	for _, p := range params {
@@ -68,14 +68,14 @@ func (q *QuerySet) Hash() string {
 
 func (q *QuerySet) Query() []rdb.Entry {
 
-	qs := rdb.NewQuerySet().
+	qs := store.Data.NewQueryer().
 		Select(q.cols).
 		From(q.Table).
 		Order(q.order).
 		Limit(q.limit).
 		Offset(q.offset)
 
-	qs.Where = q.filter
+	qs.SetFilter(q.filter)
 
 	rs, err := store.Data.Query(qs)
 	if err != nil {
@@ -120,12 +120,19 @@ func (q *QuerySet) Offset(num int64) string {
 	return ""
 }
 
+func (q *QuerySet) Where() rdb.Filter {
+	if q.filter == nil {
+		q.filter = store.Data.NewFilter()
+	}
+	return q.filter
+}
+
 func (q *QuerySet) Filter(expr string, args ...interface{}) string {
-	q.filter.And(expr, args...)
+	q.Where().And(expr, args...)
 	return ""
 }
 
 func (q *QuerySet) FilterOr(expr string, args ...interface{}) string {
-	q.filter.Or(expr, args...)
+	q.Where().Or(expr, args...)
 	return ""
 }

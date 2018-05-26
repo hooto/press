@@ -24,6 +24,7 @@ import (
 	"github.com/lynkdb/iomix/skv"
 	"github.com/lynkdb/kvgo"
 	"github.com/lynkdb/mysqlgo"
+	"github.com/lynkdb/postgrego"
 )
 
 var (
@@ -43,18 +44,27 @@ func Init(cfg connect.MultiConnOptions) error {
 		return fmt.Errorf("Can Not Connect To %s, Error: %s", opts.Name, err.Error())
 	}
 
-	opts = cfg.Options("hpress_database")
-	if opts == nil {
+	if opts = cfg.Options("hpress_database"); opts == nil {
 		hlog.Print("error", err.Error())
 		return errors.New("No hpress_database Config.IoConnectors Found")
 	}
 
-	conn, err := mysqlgo.NewConnector(*opts)
+	switch opts.Driver {
+
+	case "lynkdb/mysqlgo":
+		Data, err = mysqlgo.NewConnector(*opts)
+
+	case "lynkdb/postgrego":
+		Data, err = postgrego.NewConnector(*opts)
+
+	default:
+		return errors.New("Invalid lynkdb/driver")
+	}
+
 	if err != nil {
 		hlog.Printf("error", "store_init %s", err.Error())
 		return err
 	}
-	Data = conn
 
 	return nil
 }

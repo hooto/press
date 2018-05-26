@@ -97,7 +97,7 @@ func module_init() error {
 	}
 
 	//
-	q := rdb.NewQuerySet().From("modules").Limit(200)
+	q := store.Data.NewQueryer().From("modules").Limit(200)
 	// q.Where.And("status", 1)
 	if rs, err := store.Data.Query(q); err == nil {
 
@@ -134,7 +134,7 @@ func module_init() error {
 
 					//
 					table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), v2.Meta.Name)
-					qs := rdb.NewQuerySet().
+					qs := store.Data.NewQueryer().
 						Select("id,title,field_title").
 						From(table).
 						Limit(10000)
@@ -148,7 +148,7 @@ func module_init() error {
 
 								fmt.Println("id", v3.Field("id").String(), v3.Field("title").String())
 
-								fr := rdb.NewFilter()
+								fr := store.Data.NewFilter()
 								fr.And("id", v3.Field("id").String())
 
 								set := map[string]interface{}{
@@ -166,7 +166,7 @@ func module_init() error {
 				if sync {
 					js, _ := json.Encode(mod, "  ")
 
-					fr := rdb.NewFilter()
+					fr := store.Data.NewFilter()
 					fr.And("name", mod.Meta.Name)
 
 					set := map[string]interface{}{
@@ -247,12 +247,12 @@ func module_init() error {
 			"body":    string(jsb),
 		}
 
-		q = rdb.NewQuerySet().From("modules")
-		q.Where.And("name", spec.Meta.Name)
+		q = store.Data.NewQueryer().From("modules")
+		q.Where().And("name", spec.Meta.Name)
 
 		if _, err := store.Data.Fetch(q); err == nil {
 
-			fr := rdb.NewFilter()
+			fr := store.Data.NewFilter()
 			fr.And("name", spec.Meta.Name)
 
 			store.Data.Update("modules", set, fr)

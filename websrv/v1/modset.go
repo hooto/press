@@ -19,7 +19,6 @@ import (
 
 	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/types"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
@@ -62,7 +61,7 @@ func (c ModSet) SpecListAction() {
 		return
 	}
 
-	q := rdb.NewQuerySet().From("modules").Limit(100)
+	q := store.Data.NewQueryer().From("modules").Limit(100)
 	rs, err := store.Data.Query(q)
 	if err != nil {
 		rsp.Error = types.NewErrorMeta(api.ErrCodeInternalError, "Can not pull database instance")
@@ -104,8 +103,8 @@ func (c ModSet) SpecEntryAction() {
 		return
 	}
 
-	q := rdb.NewQuerySet().From("modules").Limit(1)
-	q.Where.And("name", name)
+	q := store.Data.NewQueryer().From("modules").Limit(1)
+	q.Where().And("name", name)
 	rs, err := store.Data.Query(q)
 	if err != nil {
 		rsp.Error = types.NewErrorMeta(api.ErrCodeInternalError, "Can not pull database instance")
