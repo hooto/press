@@ -76,13 +76,26 @@
 
 .hpdoc-nodels-item {
   background-color: #fff;
-  border-radius: 4px;
+  /* border-radius: 4px;
   box-shadow: 0px 1px 2px 0px #999;
-  padding: 15px;
+  padding: 15px; */
   margin-bottom: 20px;
 }
+.hpdoc-nodels-item .card {
+  background: url("/hp/~/octicons/lib/svg/repo.svg") no-repeat 5px;;
+  background-size: 40px 40px;
+  background-position: 20px 20px;
+  min-height: 160px;
+}
+.hpdoc-nodels-item .card-body,
+.hpdoc-nodels-item .card-footer {
+  margin-left: 60px !important;
+}
+.hpdoc-nodels-item .card-body {
+  padding-bottom: 0 !important;
+}
 .hpdoc-nodels-item:hover {
-  box-shadow: 0px 1px 2px 0px #333;
+  /* box-shadow: 0px 1px 2px 0px #333; */
 }
 .hpdoc-nodels-info a {
   color: rgba(0, 0, 0, 0.85);
@@ -93,4 +106,7 @@
 .hpdoc-nodels-title a {
   color: #096dd9;
   font-size: 18pt;
+}
+.hpdoc-nodels-item .card-footer {
+  border-top: 0 !important;
 }

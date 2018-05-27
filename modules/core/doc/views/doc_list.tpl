@@ -13,13 +13,16 @@
 </div>
 
 <div class="container">
-<div class="hpdoc-nodels" style="padding: 20px 0;">
+<div class="hpdoc-nodels row" style="padding: 20px 0;">
   {{range $v := .doc_list.Items}}
-  <div class="hpdoc-nodels-item row">
-  <div class="col-sm-10">
-    <div class="hpdoc-nodels-title"><a href="{{$.baseuri}}/entry/{{$v.ExtPermalinkName}}/">{{FieldStringPrint $v "title" $.LANG}}</a></div>
-    <div class="hpdoc-nodels-info">
-    {{range $term := $v.Terms}}
+  <div class="hpdoc-nodels-item col-sm-6">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">
+        <a href="{{$.baseuri}}/entry/{{$v.ExtPermalinkName}}/">{{FieldStringPrint $v "title" $.LANG}}</a>
+      </h5>
+      <div class="_hpdoc-nodels-info card-text">
+      {{range $term := $v.Terms}}
       {{if eq $term.Name "tags"}}
         {{if $term.Items}}
           <span>
@@ -30,11 +33,12 @@
           </span>
         {{end}}
       {{end}}
-    {{end}}
+      {{end}}
+      </div>
     </div>
-  </div>
-  <div class="col-sm-2" style="text-align:right;padding-right:0">
-    <a class="btn btn-success" href="{{$.baseuri}}/entry/{{$v.ExtPermalinkName}}/">Read</a>
+    <div class="card-footer bg-transparent">
+      <a class="btn btn-primary" href="{{$.baseuri}}/entry/{{$v.ExtPermalinkName}}/">Read</a>
+    </div>
   </div>
   </div>
   {{end}}
