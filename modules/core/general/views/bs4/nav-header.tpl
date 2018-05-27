@@ -13,6 +13,17 @@
       <li class="nav-item"><a class="nav-link" href="{{FieldString $v.Fields "url"}}">{{FieldStringPrint $v "title" $.LANG}}</a></li>
       {{end}}
     </ul>
+    <ul class="navbar-nav hp-nav-right">
+      {{if $.frontend_langs}}
+      <li class="hp-footer-powerby-item">
+      <select onclick="hp.LangChange(this)" class="hp-footer-langs">
+        {{range $v := $.frontend_langs}}
+        <option value="{{$v.Id}}" {{if eq $v.Id $.LANG}}selected{{end}}>{{$v.Name}}</option>
+        {{end}}
+      </select>
+      </li>
+      {{end}}
+    </ul>
     <div class="form-inline my-2 my-lg-0" id="hp-topbar-userbar"></div>
   </div>
 </div>

@@ -118,12 +118,16 @@ body {
 }
 
 .hp-footer-langs {
-  padding: 2px 5px;
-  font-size: 0.9em;
+  margin: 1px 5px;
+  padding: 2px 5px 2px 20px;
+  color: #666;
+  font-size: 12px;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   line-height: 1.2;
+  background: url(/hp/~/octicons/lib/svg/globe.svg) no-repeat 5px;
+  background-size: 12px 12px;
 }
 
 .hp-ctn-header {
