@@ -20,9 +20,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hooto/hlog4g/hlog"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
 	"github.com/lessos/lessgo/utilx"
+	"github.com/lynkdb/iomix/rdb"
+	"github.com/lynkdb/mysqlgo"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -51,7 +54,7 @@ func Worker() {
 
 		for {
 
-			time.Sleep(60e9)
+			time.Sleep(6e9)
 			if store.LocalCache == nil {
 				continue
 			}
@@ -105,8 +108,186 @@ func Worker() {
 					break
 				}
 			}
+
+			if err := data_sync_pull(); err != nil {
+				fmt.Println(err)
+			}
 		}
 	}()
+}
+
+func data_sync_pull() error {
+
+	if len(config.Config.ExtUpDatabases) == 0 {
+		return nil
+	}
+
+	var cfgs types.KvPairs
+	if rs := store.LocalCache.KvGet(api.NsSysDataPull()); rs.OK() {
+		rs.Decode(&cfgs)
+	}
+
+	var (
+		limit int64 = 100
+		src   rdb.Connector
+		err   error
+		tng   = time.Now().Format("2006-01-02 15:04:05")
+		dtbs  types.ArrayString
+	)
+
+	dmr, err := store.Data.Modeler()
+	if err != nil {
+		return err
+	}
+
+	if tbs, err := dmr.TableQuery(store.DataOptions.Value("dbname")); err != nil {
+		return err
+	} else {
+
+		for _, vt := range tbs {
+			dtbs.Set(vt.Name)
+		}
+	}
+
+	for _, cv := range config.Config.ExtUpDatabases {
+
+		// fmt.Println("\n\ndb sync", cv.Name)
+
+		if cv.Driver == "lynkdb/mysqlgo" {
+			src, err = mysqlgo.NewConnector(*cv)
+			if err != nil {
+				return err
+			}
+		}
+
+		if src == nil {
+			continue
+		}
+
+		mr, err := src.Modeler()
+		if err != nil {
+			return err
+		}
+
+		tbs, err := mr.TableQuery(cv.Value("dbname"))
+		if err != nil {
+			return err
+		}
+
+		for _, vt := range tbs {
+
+			if !strings.HasPrefix(vt.Name, "tx") &&
+				!strings.HasPrefix(vt.Name, "nx") {
+				continue
+			}
+
+			if !dtbs.Has(vt.Name) {
+				continue
+			}
+
+			var (
+				cn, cu  = 0, 0
+				q       = src.NewQueryer().From(vt.Name).Limit(limit)
+				offset  = int64(0)
+				tn      = ""
+				up_name = fmt.Sprintf("time/%s:%s/%s",
+					cv.Value("host"), cv.Value("port"), vt.Name)
+			)
+			err = nil
+
+			if pv := cfgs.Get(up_name); pv.String() != "" {
+				tn = pv.String()
+			}
+
+			if len(tn) > 10 {
+				q.Where().And("updated.le", tng)
+			}
+			q.Where().And("updated.ge", tn)
+
+			// fmt.Println("\nTABLE", vt.Name, tn, tng)
+
+			for {
+
+				rs, err := src.Query(q)
+				if err != nil {
+					break
+				}
+
+				for _, v := range rs {
+
+					sets := map[string]interface{}{}
+					for k, f := range v.Fields {
+						if k == "ext_access_counter" {
+							continue
+						}
+						sets[k] = f.String()
+					}
+
+					qr := store.Data.NewQueryer().From(vt.Name)
+					fr := store.Data.NewFilter().And("id", v.Field("id").String())
+					qr.SetFilter(fr)
+					rsi, err := store.Data.Fetch(qr)
+					if err != nil {
+						break
+						// fmt.Printf("  ER %s\n", err.Error())
+					} else {
+
+						var (
+							tup = v.Field("updated").TimeFormat("datetime", "datetime")
+							tlc = rsi.Field("updated").TimeFormat("datetime", "datetime")
+						)
+
+						if strings.Compare(tup, tlc) > 0 {
+							_, err = store.Data.Update(vt.Name, sets, fr)
+							if err != nil {
+								break
+								// fmt.Println("  ER UPDATE", vt.Name, v.Field("id").String())
+							} else {
+								// fmt.Println("  OK UPDATE", vt.Name, v.Field("id").String())
+								cu += 1
+							}
+						}
+
+						continue
+					}
+
+					_, err = store.Data.InsertIgnore(vt.Name, sets)
+					if err != nil {
+						break
+						// fmt.Println("  ER INSERT", vt.Name, v.Field("id").String())
+					} else {
+						// fmt.Println("  OK INSERT", vt.Name, v.Field("id").String())
+						cn += 1
+					}
+				}
+
+				if len(rs) < int(limit) {
+					// fmt.Printf("  DONE INSERT/IGNORE %d, UPDATE %d, ALL %d\n",
+					// 	cn, cu, int(offset)+len(rs))
+					break
+				}
+
+				offset += limit
+			}
+
+			if cn > 0 || cu > 0 {
+				hlog.Printf("info", "data INSERT/IGNORE %d, UPDATE %d", cn, cu)
+			}
+
+			if err == nil {
+				cfgs.Set(up_name, tng)
+			} else {
+				hlog.Printf("warn", "data sync ((%s) error : %s",
+					up_name, err.Error())
+			}
+		}
+	}
+
+	if rs := store.LocalCache.KvPut(api.NsSysDataPull(), cfgs, nil); !rs.OK() {
+		// fmt.Println("  DATA PULL TAG ERROR")
+	}
+
+	return nil
 }
 
 func (q *QuerySet) NodeCount() (int64, error) {

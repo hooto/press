@@ -23,3 +23,7 @@ const (
 	ErrCodeInternalError = "InternalError"
 	ErrCodeNotFound      = "NotFound"
 )
+
+func NsSysDataPull() []byte {
+	return []byte("/sys/config/ext_data_pull")
+}

@@ -28,9 +28,10 @@ import (
 )
 
 var (
-	err        error
-	Data       rdb.Connector
-	LocalCache skv.Connector
+	err         error
+	Data        rdb.Connector
+	DataOptions *connect.ConnOptions
+	LocalCache  skv.Connector
 )
 
 func Init(cfg connect.MultiConnOptions) error {
@@ -65,6 +66,8 @@ func Init(cfg connect.MultiConnOptions) error {
 		hlog.Printf("error", "store_init %s", err.Error())
 		return err
 	}
+
+	DataOptions = opts
 
 	return nil
 }

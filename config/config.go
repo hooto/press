@@ -75,6 +75,7 @@ type ConfigCommon struct {
 	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend"`
 	IoConnectors          connect.MultiConnOptions `json:"io_connectors"`
 	RunMode               string                   `json:"run_mode,omitempty"`
+	ExtUpDatabases        connect.MultiConnOptions `json:"ext_up_databases,omitempty"`
 }
 
 func init() {
