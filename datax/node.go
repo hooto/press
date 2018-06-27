@@ -26,6 +26,7 @@ import (
 	"github.com/lessos/lessgo/utilx"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/mysqlgo"
+	"github.com/lynkdb/postgrego"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -153,11 +154,26 @@ func data_sync_pull() error {
 
 		// fmt.Println("\n\ndb sync", cv.Name)
 
-		if cv.Driver == "lynkdb/mysqlgo" {
+		if src != nil {
+			// TODO
+			// src.Close()
+		}
+
+		switch cv.Driver {
+		case "lynkdb/mysqlgo":
 			src, err = mysqlgo.NewConnector(*cv)
-			if err != nil {
-				return err
-			}
+
+		case "lynkdb/postgrego":
+			src, err = postgrego.NewConnector(*cv)
+
+		default:
+			continue
+		}
+
+		if err != nil {
+			hlog.Printf("warn", "data connect ((%s) error : %s",
+				cv.Name, err.Error())
+			continue
 		}
 
 		if src == nil {
@@ -190,7 +206,7 @@ func data_sync_pull() error {
 				q       = src.NewQueryer().From(vt.Name).Limit(limit)
 				offset  = int64(0)
 				tn      = ""
-				up_name = fmt.Sprintf("time/%s:%s/%s",
+				up_name = fmt.Sprintf("sync-time/%s:%s/%s",
 					cv.Value("host"), cv.Value("port"), vt.Name)
 			)
 			err = nil
@@ -227,9 +243,18 @@ func data_sync_pull() error {
 					fr := store.Data.NewFilter().And("id", v.Field("id").String())
 					qr.SetFilter(fr)
 					rsi, err := store.Data.Fetch(qr)
-					if err != nil {
+
+					if rsi.NotFound() {
+						if _, err = store.Data.Insert(vt.Name, sets); err != nil {
+							// fmt.Println("  ER INSERT", vt.Name, v.Field("id").String(), err.Error())
+							break
+						} else {
+							// fmt.Println("  OK INSERT", vt.Name, v.Field("id").String())
+							cn += 1
+						}
+					} else if err != nil {
+						// fmt.Printf(" TABLE %s, ID %s, ER %s\n", vt.Name, v.Field("id").String(), err.Error())
 						break
-						// fmt.Printf("  ER %s\n", err.Error())
 					} else {
 
 						var (
@@ -238,10 +263,10 @@ func data_sync_pull() error {
 						)
 
 						if strings.Compare(tup, tlc) > 0 {
-							_, err = store.Data.Update(vt.Name, sets, fr)
-							if err != nil {
-								break
+
+							if _, err = store.Data.Update(vt.Name, sets, fr); err != nil {
 								// fmt.Println("  ER UPDATE", vt.Name, v.Field("id").String())
+								break
 							} else {
 								// fmt.Println("  OK UPDATE", vt.Name, v.Field("id").String())
 								cu += 1
@@ -251,17 +276,9 @@ func data_sync_pull() error {
 						continue
 					}
 
-					_, err = store.Data.InsertIgnore(vt.Name, sets)
-					if err != nil {
-						break
-						// fmt.Println("  ER INSERT", vt.Name, v.Field("id").String())
-					} else {
-						// fmt.Println("  OK INSERT", vt.Name, v.Field("id").String())
-						cn += 1
-					}
 				}
 
-				if len(rs) < int(limit) {
+				if err != nil || len(rs) < int(limit) {
 					// fmt.Printf("  DONE INSERT/IGNORE %d, UPDATE %d, ALL %d\n",
 					// 	cn, cu, int(offset)+len(rs))
 					break
@@ -270,12 +287,11 @@ func data_sync_pull() error {
 				offset += limit
 			}
 
-			if cn > 0 || cu > 0 {
-				hlog.Printf("info", "data INSERT/IGNORE %d, UPDATE %d", cn, cu)
-			}
-
 			if err == nil {
-				cfgs.Set(up_name, tng)
+				if cn > 0 || cu > 0 {
+					hlog.Printf("info", "data sync (%s) INSERT %d, UPDATE %d", up_name, cn, cu)
+					cfgs.Set(up_name, tng)
+				}
 			} else {
 				hlog.Printf("warn", "data sync ((%s) error : %s",
 					up_name, err.Error())
