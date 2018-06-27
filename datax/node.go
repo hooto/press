@@ -111,7 +111,7 @@ func Worker() {
 			}
 
 			if err := data_sync_pull(); err != nil {
-				fmt.Println(err)
+				// fmt.Println(err)
 			}
 		}
 	}()

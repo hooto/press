@@ -18,6 +18,5 @@ go-rpm
 image.lua
 nginx.conf
 *.txz
-.build_bin
-.build_src
+.build_tempdir
 
