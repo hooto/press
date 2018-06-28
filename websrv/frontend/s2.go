@@ -174,7 +174,8 @@ func (c S2) IndexAction() {
 		dst_buf    = new(bytes.Buffer)
 		src_bounds = src_img.Bounds()
 	)
-	if width < src_bounds.Dx() && height < src_bounds.Dy() {
+
+	if width < src_bounds.Dx() || height < src_bounds.Dy() {
 
 		if crop {
 			if im, err := cutter.Crop(src_img, cutter.Config{
@@ -184,6 +185,22 @@ func (c S2) IndexAction() {
 				Options: cutter.Ratio,
 			}); err == nil {
 				dst_img = resize.Thumbnail(uint(width), uint(height), im, resize.Lanczos3)
+			}
+		} else {
+
+			rate := float32(1.0)
+
+			if hrate := float32(height) / float32(src_bounds.Dy()); hrate < rate {
+				rate = hrate
+			}
+
+			if wrate := float32(width) / float32(src_bounds.Dx()); wrate < rate {
+				rate = wrate
+			}
+
+			if rate < 1 {
+				width = int(float32(src_bounds.Dx()) * rate)
+				height = int(float32(src_bounds.Dy()) * rate)
 			}
 		}
 
