@@ -117,19 +117,36 @@ hp.CodeRender = function(options) {
                 lang = "application/ld+json";
                 break;
 
-            case "go":
-            case "javascript":
+            case "clojure":
+            case "cmake":
+            case "coffeescript":
+            case "commonlisp":
             case "css":
-            case "xml":
-            case "yaml":
+            case "d":
+            case "dart":
+            case "diff":
+            case "django":
+            case "dockerfile":
+            case "erlang":
+            case "go":
+            case "groovy":
+            case "haskell":
+            case "http":
+            case "javascript":
             case "lua":
             case "markdown":
+            case "nginx":
+            case "perl":
+            case "python":
             case "r":
+            case "rpm":
+            case "ruby":
+            case "rust":
             case "shell":
             case "sql":
             case "swift":
-            case "erlang":
-            case "nginx":
+            case "xml":
+            case "yaml":
                 modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js" + hp.urlver(true));
                 break;
 
