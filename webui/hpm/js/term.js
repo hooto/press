@@ -16,15 +16,30 @@ var hpTerm = {
     taxonomy_ls_cache: null,
 }
 
+hpTerm.SpecActive = function() {
+    return l4iStorage.Get("hpm_spec_active");
+}
+
+hpTerm.SpecTermModelActive = function(value) {
+    if (!hpTerm.SpecActive()) {
+        return null;
+    }
+    var k = "hpm_stm_" + hpTerm.SpecActive();
+    if (value && value.length > 1) {
+        l4iStorage.Set(k, value);
+    }
+    return l4iStorage.Get(k);
+}
+
 hpTerm.List = function(modname, modelid) {
     var alertid = "#hpm-node-alert",
         page = 0;
 
-    if (!modname && l4iStorage.Get("hpm_spec_active")) {
-        modname = l4iStorage.Get("hpm_spec_active");
+    if (!modname && hpTerm.SpecActive()) {
+        modname = hpTerm.SpecActive();
     }
-    if (!modelid && l4iStorage.Get("hpm_tmodel_active")) {
-        modelid = l4iStorage.Get("hpm_tmodel_active");
+    if (!modelid && hpTerm.SpecTermModelActive()) {
+        modelid = hpTerm.SpecTermModelActive();
     }
     if (l4iStorage.Get("hpm_termls_page")) {
         page = l4iStorage.Get("hpm_termls_page");
@@ -47,7 +62,7 @@ hpTerm.List = function(modname, modelid) {
                 $("#work-content").html(tpl);
             }
 
-            l4iStorage.Set("hpm_tmodel_active", modelid);
+            hpTerm.SpecTermModelActive(modelid);
 
             if (!rsj || rsj.kind != "TermList" ||
                 !rsj.items || rsj.items.length < 1) {
@@ -183,11 +198,11 @@ hpTerm.ListPage = function(page) {
 hpTerm.Set = function(modname, modelid, termid) {
     var alertid = "#hpm-node-alert";
 
-    if (!modname && l4iStorage.Get("hpm_spec_active")) {
-        modname = l4iStorage.Get("hpm_spec_active");
+    if (!modname && hpTerm.SpecActive()) {
+        modname = hpTerm.SpecActive();
     }
-    if (!modelid && l4iStorage.Get("hpm_tmodel_active")) {
-        modelid = l4iStorage.Get("hpm_tmodel_active");
+    if (!modelid && hpTerm.SpecTermModelActive()) {
+        modelid = hpTerm.SpecTermModelActive();
     }
 
     if (!modname || !modelid) {
@@ -290,8 +305,8 @@ hpTerm.SetCommit = function() {
     }
 
     //
-    var uri = "modname=" + l4iStorage.Get("hpm_spec_active") +
-    "&modelid=" + l4iStorage.Get("hpm_tmodel_active");
+    var uri = "modname=" + hpTerm.SpecActive() +
+    "&modelid=" + hpTerm.SpecTermModelActive();
 
     hpMgr.ApiCmd("term/set?" + uri, {
         method: "POST",

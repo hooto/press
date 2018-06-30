@@ -73,14 +73,14 @@ hpNode.navRefresh = function(cb) {
 
     if (hpNode.speclsCurrent.length > 0) {
 
-        // if (!l4iStorage.Get("hpm_spec_active")) {
+        // if (!hpNode.SpecActive()) {
         //     for (var i in hpNode.speclsCurrent) {
-        //         l4iStorage.Set("hpm_spec_active", hpNode.speclsCurrent[i].meta.name);
+        //         hpNode.SpecActive( hpNode.speclsCurrent[i].meta.name);
         //         break;
         //     }
         // }
 
-        // if (!l4iStorage.Get("hpm_spec_active")) {
+        // if (!hpNode.SpecActive()) {
         //     return cb();
         // }
 
@@ -90,7 +90,7 @@ hpNode.navRefresh = function(cb) {
             dstid: "hpm-topbar-nav-node-specls",
             tplid: "hpm-topbar-nav-node-specls-tpl",
             data: {
-                active: l4iStorage.Get("hpm_spec_active"),
+                active: hpNode.SpecActive(),
                 items: hpNode.speclsCurrent,
             },
         });
@@ -121,13 +121,13 @@ hpNode.navRefresh = function(cb) {
             }
 
             //
-            if (!l4iStorage.Get("hpm_spec_active")) {
+            if (!hpNode.SpecActive()) {
                 for (var i in hpNode.speclsCurrent) {
-                    l4iStorage.Set("hpm_spec_active", hpNode.speclsCurrent[i].meta.name);
+                    hpNode.SpecActive(hpNode.speclsCurrent[i].meta.name);
                     break;
                 }
             }
-            if (!l4iStorage.Get("hpm_spec_active")) {
+            if (!hpNode.SpecActive()) {
                 return cb();
             }
 
@@ -135,7 +135,7 @@ hpNode.navRefresh = function(cb) {
                 dstid: "hpm-topbar-nav-node-specls",
                 tplid: "hpm-topbar-nav-node-specls-tpl",
                 data: {
-                    // active : l4iStorage.Get("hpm_spec_active"),
+                    // active : hpNode.SpecActive(),
                     items: hpNode.speclsCurrent,
                 },
             });
@@ -143,6 +143,24 @@ hpNode.navRefresh = function(cb) {
             cb();
         },
     });
+}
+
+hpNode.SpecActive = function(value) {
+    if (value && value.length > 1) {
+        l4iStorage.Set("hpm_spec_active", value);
+    }
+    return l4iStorage.Get("hpm_spec_active");
+}
+
+hpNode.SpecNodeModelActive = function(value) {
+    if (!hpNode.specCurrent) {
+        return null;
+    }
+    var k = "hpm_snm_" + hpNode.specCurrent.meta.name;
+    if (value && value.length > 1) {
+        l4iStorage.Set(k, value);
+    }
+    return l4iStorage.Get(k);
 }
 
 hpNode.OpToolsRefresh = function(div_target, fn) {
@@ -186,7 +204,7 @@ hpNode.Index = function(nav_href) {
 
     hpNode.nodeOpToolsRefreshCurrent = null;
     l4iStorage.Set("hpm_nav_last_active", nav_href);
-    l4iStorage.Set("hpm_spec_active", nav_href.substr(hpNode.navPrefix.length));
+    hpNode.SpecActive(nav_href.substr(hpNode.navPrefix.length));
 
     var alertid = "#hpm-node-alert";
 
@@ -202,7 +220,7 @@ hpNode.Index = function(nav_href) {
 
             for (var i in hpNode.speclsCurrent) {
 
-                if (hpNode.speclsCurrent[i].meta.name == l4iStorage.Get("hpm_spec_active")) {
+                if (hpNode.speclsCurrent[i].meta.name == hpNode.SpecActive()) {
                     current = hpNode.speclsCurrent[i];
                     break;
                 }
@@ -213,6 +231,7 @@ hpNode.Index = function(nav_href) {
             }
 
             hpNode.specCurrent = current;
+
 
             if (!hpNode.specCurrent.nodeModels) {
                 hpNode.specCurrent.nodeModels = [];
@@ -229,27 +248,26 @@ hpNode.Index = function(nav_href) {
                     node_model_active = hpNode.specCurrent.nodeModels[i].meta.name;
                 }
 
-                if (l4iStorage.Get("hpm_nmodel_active") == hpNode.specCurrent.nodeModels[i].meta.name) {
+                if (hpNode.SpecNodeModelActive() == hpNode.specCurrent.nodeModels[i].meta.name) {
                     node_model_active = hpNode.specCurrent.nodeModels[i].meta.name;
                     break;
                 }
             }
 
-            // console.log(l4iStorage.Get("hpm_nmodel_active"));
 
             if (!node_model_active) {
                 return; // TODO
             }
 
             //
-            if (node_model_active != l4iStorage.Get("hpm_nmodel_active")) {
-                l4iStorage.Set("hpm_nmodel_active", node_model_active);
+            if (node_model_active != hpNode.SpecNodeModelActive()) {
+                hpNode.SpecNodeModelActive(node_model_active);
             }
 
             //
             for (var i in hpNode.specCurrent.nodeModels) {
                 if (node_model_active == hpNode.specCurrent.nodeModels[i].meta.name) {
-                    hpNode.List(l4iStorage.Get("hpm_spec_active"), node_model_active);
+                    hpNode.List(hpNode.SpecActive(), node_model_active);
                 }
             }
 
@@ -307,12 +325,12 @@ hpNode.List = function(modname, modelid, referid) {
     var alertid = "#hpm-node-alert",
         page = 0;
 
-    if (!modname && l4iStorage.Get("hpm_spec_active")) {
-        modname = l4iStorage.Get("hpm_spec_active");
+    if (!modname && hpNode.SpecActive()) {
+        modname = hpNode.SpecActive();
     }
 
-    if (!modelid && l4iStorage.Get("hpm_nmodel_active")) {
-        modelid = l4iStorage.Get("hpm_nmodel_active");
+    if (!modelid && hpNode.SpecNodeModelActive()) {
+        modelid = hpNode.SpecNodeModelActive();
     }
 
     if (!referid && l4iStorage.Get("hpm_node_refer_active")) {
@@ -366,8 +384,8 @@ hpNode.List = function(modname, modelid, referid) {
                     "display": "block"
                 });
             }
-            l4iStorage.Set("hpm_spec_active", modname);
-            l4iStorage.Set("hpm_nmodel_active", modelid);
+            hpNode.SpecActive(modname);
+            hpNode.SpecNodeModelActive(modelid);
             $("#hpm-node-list-new-title").text("New " + rsj.model.title);
 
             if (!rsj.items) {
@@ -543,11 +561,11 @@ hpNode.ListBatchSelectTodo = function() {
 }
 
 hpNode.ListBatchSelectTodoDelete = function(modname, modelid) {
-    if (!modname && l4iStorage.Get("hpm_spec_active")) {
-        modname = l4iStorage.Get("hpm_spec_active");
+    if (!modname && hpNode.SpecActive()) {
+        modname = hpNode.SpecActive();
     }
-    if (!modelid && l4iStorage.Get("hpm_nmodel_active")) {
-        modelid = l4iStorage.Get("hpm_nmodel_active");
+    if (!modelid && hpNode.SpecNodeModelActive()) {
+        modelid = hpNode.SpecNodeModelActive();
     }
 
     if (!modname || !modelid) {
@@ -592,11 +610,11 @@ hpNode.ReferBack = function() {
 hpNode.Set = function(modname, modelid, nodeid, referid) {
     var alertid = "#hpm-node-alert";
 
-    if (!modname && l4iStorage.Get("hpm_spec_active")) {
-        modname = l4iStorage.Get("hpm_spec_active");
+    if (!modname && hpNode.SpecActive()) {
+        modname = hpNode.SpecActive();
     }
-    if (!modelid && l4iStorage.Get("hpm_nmodel_active")) {
-        modelid = l4iStorage.Get("hpm_nmodel_active");
+    if (!modelid && hpNode.SpecNodeModelActive()) {
+        modelid = hpNode.SpecNodeModelActive();
     }
     if (!referid && l4iStorage.Get("hpm_node_refer_active")) {
         referid = l4iStorage.Get("hpm_node_refer_active");
@@ -1291,8 +1309,8 @@ hpNode.SetCommit = function(options) {
     // return console.log(req);
 
     //
-    var uri = "modname=" + l4iStorage.Get("hpm_spec_active");
-    uri += "&modelid=" + l4iStorage.Get("hpm_nmodel_active");
+    var uri = "modname=" + hpNode.SpecActive();
+    uri += "&modelid=" + hpNode.SpecNodeModelActive();
 
     hpMgr.ApiCmd("node/set?" + uri, {
         method: "POST",

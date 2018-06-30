@@ -35,7 +35,7 @@ $("#hpm-node-nmodels").on("click", ".node-item", function() {
     $("#hpm-node-tmodels").find(".active").removeClass("active");
     $(this).addClass("active");
 
-    l4iStorage.Set("hpm_nmodel_active", $(this).attr("tgname"));
+	hpNode.SpecNodeModelActive($(this).attr("tgname"));
     l4iStorage.Del("hpm_nodels_page");
     l4iStorage.Del("hpm_termls_page");
 
@@ -48,7 +48,7 @@ $("#hpm-node-tmodels").on("click", ".term-item", function() {
     $("#hpm-node-tmodels").find(".active").removeClass("active");
     $(this).addClass("active");
 
-    l4iStorage.Set("hpm_tmodel_active", $(this).attr("tgname"));
+	hpTerm.SpecTermModelActive($(this).attr("tgname"));
     l4iStorage.Del("hpm_nodels_page");
     l4iStorage.Del("hpm_termls_page");
 
