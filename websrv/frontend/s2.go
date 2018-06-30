@@ -16,6 +16,7 @@ package frontend
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -24,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -54,11 +56,17 @@ func (c S2) IndexAction() {
 
 	var (
 		ipn      = c.Params.Get("ipn")
+		ipl      = c.Params.Get("ipl")
+		ipls     = [2]int{0, 0} // width, height
+		iplc     = false
+		ipl_step = 64
+		ipl_smin = 64
+		ipl_smax = 2048
 		obj_path = strings.TrimPrefix(filepath.Clean(c.Request.RequestPath), "hp/s2/")
 		abs_path = config.Prefix + "/var/storage/" + obj_path
 	)
 
-	if ipn == "" {
+	if ipn == "" && ipl == "" {
 
 		if fp, err := os.Open(abs_path); err == nil {
 
@@ -97,33 +105,79 @@ func (c S2) IndexAction() {
 		return
 	}
 
-	width, height, crop := 200, 200, true
+	if ipl != "" {
 
-	switch ipn {
-	case "i6040":
-		width, height = 60, 40
+		ar := strings.Split(ipl, ",")
 
-	case "s800":
-		width, height, crop = 800, 800, false
+		for _, k := range ar {
 
-	case "s800x":
-		width, height, crop = 800, 8000, false
+			if k[0] < 'a' || k[0] > 'z' {
+				continue
+			}
 
-	case "thumb":
-		width, height = 150, 150
+			switch k[0] {
+			case 'w':
+				if len(k) > 1 {
+					ipls[0], _ = strconv.Atoi(k[1:])
+				}
 
-	case "medium":
-		width, height = 300, 168
+			case 'h':
+				if len(k) > 1 {
+					ipls[1], _ = strconv.Atoi(k[1:])
+				}
 
-	case "large":
-		width, height = 800, 450
+			case 'c':
+				iplc = true
+			}
+		}
 
-	default:
-		c.RenderError(400, "Bad Request (ipn)")
-		return
+	} else if ipn != "" { // TORM
+
+		switch ipn {
+		case "i6040":
+			ipls[0], ipls[1] = 60, 40
+
+		case "s800":
+			ipls[0], ipls[1], iplc = 800, 800, false
+
+		case "s800x":
+			ipls[0], ipls[1], iplc = 800, 8000, false
+
+		case "thumb":
+			ipls[0], ipls[1] = 150, 150
+
+		case "medium":
+			ipls[0], ipls[1] = 300, 168
+
+		case "large":
+			ipls[0], ipls[1] = 800, 450
+
+		default:
+			c.RenderError(400, "Bad Request (ipn)")
+			return
+		}
 	}
 
-	hid := "s2." + idhash.HashToHexString([]byte(obj_path+"."+ipn), 12)
+	if ipls[0] > 0 && ipls[1] < 1 {
+		ipls[1] = ipls[0]
+	} else if ipls[1] > 0 && ipls[0] < 1 {
+		ipls[0] = ipls[1]
+	}
+
+	for i := range ipls {
+		ipls[i] = ipls[i] - (ipls[i] % ipl_step)
+
+		if ipls[i] < ipl_smin {
+			ipls[i] = ipl_smin
+		} else if ipls[i] > ipl_smax {
+			ipls[i] = ipl_smax
+		}
+	}
+
+	var (
+		key = fmt.Sprintf("%s.%d.%d.%t", obj_path, ipls[0], ipls[1], iplc)
+		hid = "s2." + idhash.HashToHexString([]byte(key), 12)
+	)
 
 	if rs := store.LocalCache.KvGet([]byte(hid)); rs.OK() {
 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
@@ -175,37 +229,37 @@ func (c S2) IndexAction() {
 		src_bounds = src_img.Bounds()
 	)
 
-	if width < src_bounds.Dx() || height < src_bounds.Dy() {
+	if ipls[0] < src_bounds.Dx() || ipls[1] < src_bounds.Dy() {
 
-		if crop {
+		if iplc {
 			if im, err := cutter.Crop(src_img, cutter.Config{
-				Width:   width,
-				Height:  height,
+				Width:   ipls[0],
+				Height:  ipls[1],
 				Mode:    cutter.Centered,
 				Options: cutter.Ratio,
 			}); err == nil {
-				dst_img = resize.Thumbnail(uint(width), uint(height), im, resize.Lanczos3)
+				dst_img = resize.Thumbnail(uint(ipls[0]), uint(ipls[1]), im, resize.Lanczos3)
 			}
 		} else {
 
 			rate := float32(1.0)
 
-			if hrate := float32(height) / float32(src_bounds.Dy()); hrate < rate {
+			if hrate := float32(ipls[1]) / float32(src_bounds.Dy()); hrate < rate {
 				rate = hrate
 			}
 
-			if wrate := float32(width) / float32(src_bounds.Dx()); wrate < rate {
+			if wrate := float32(ipls[0]) / float32(src_bounds.Dx()); wrate < rate {
 				rate = wrate
 			}
 
 			if rate < 1 {
-				width = int(float32(src_bounds.Dx()) * rate)
-				height = int(float32(src_bounds.Dy()) * rate)
+				ipls[0] = int(float32(src_bounds.Dx()) * rate)
+				ipls[1] = int(float32(src_bounds.Dy()) * rate)
 			}
 		}
 
 		if dst_img == nil {
-			dst_img = resize.Thumbnail(uint(width), uint(height), src_img, resize.Lanczos3)
+			dst_img = resize.Thumbnail(uint(ipls[0]), uint(ipls[1]), src_img, resize.Lanczos3)
 		}
 
 	} else {
