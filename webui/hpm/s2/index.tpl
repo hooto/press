@@ -13,10 +13,9 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th width="80px"></th>
+      <th width="64px"></th>
       <th>Name</th>
-      <th>Dir</th>
-      <th>Size</th>
+      <th style="text-align:right">Size</th>
       <th></th>
       <th></th>
     </tr>
@@ -38,7 +37,7 @@
   {[ if (v.isdir) { ]}
     <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
   {[ } else if (v._isimg) { ]}
-    <a href="{[=v.self_link]}" target="_blank"><img src="{[=v.self_link]}?ipn=i6040"></a>
+    <a href="{[=v.self_link]}" target="_blank"><img src="{[=v.self_link]}?ipl=w64,h64"></a>
   {[ } ]}
   </td>
   <td class="ts3-fontmono">
@@ -48,10 +47,7 @@
     <a class="obj-item-file" href="{[=v.self_link]}" target="_blank">{[=v.name]}</a>
   {[ } ]}
   </td>
-  <td>
-  {[?v.isdir]}YES{[?]}
-  </td>
-  <td>
+  <td align="right">
   {[?!v.isdir]}
     {[=hpS2.UtilResourceSizeFormat(v.size)]}</td>
   {[?]}
@@ -68,16 +64,40 @@
 </script>
 
 <!-- TPL : File New -->
+<style type="text/css">
+._hpm_s2_fsupload_area {
+    margin: 0;
+    display: inline-block;
+    width: 100%;
+    color: #333;
+    font-size: 18px;
+    padding: 20px;
+    border: 3px dashed rgb(0, 120, 231);
+    border-radius: 10px;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+</style>
+
 <script id="hpm-s2-objnew-tpl" type="text/html"> 
 <form id="{[=it.formid]}" action="#" onsubmit="hpS2.ObjNewSave('{[=it.formid]}');return false;">
 <input type="hidden" name="type" value="{[=it.type]}">
 <div class="form-group">
-  <label>Folder Path</label>
+  <label>The target upload directory</label>
   <input type="text" name="path" class="form-control" placeholder="Folder Path" value="{[=it.path]}">
 </div>
 <div class="form-group">
-  <label>Select File</label>
+  <label>Select a single file to upload</label>
   <input id="hpm-s2-objnew-files" type="file" name="file" class="form-control" placeholder="File Path" value="">
+</div>
+<div class="form-group">
+  <label>Select multifile to upload</label>
+  <div id="hpm-s2-fsupload-area" class="_hpm_s2_fsupload_area">
+    Drag and Drop your files or folders to here
+  </div>
 </div>
 </form>
 <div id="{[=it.formid]}-alert" class="alert alert-success" style="display:none"></div>

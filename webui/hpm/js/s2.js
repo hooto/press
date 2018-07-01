@@ -32,15 +32,16 @@ hpS2.Index = function() {
 }
 
 hpS2.ObjList = function(path) {
+
     if (!path) {
         path = l4iStorage.Get("hpm_s2_obj_path_active");
+        if (!path) {
+            path = "/";
+        }
+    } else {
+        path = path.replace(/\/+/g, '/');
+        l4iStorage.Set("hpm_s2_obj_path_active", path);
     }
-
-    if (!path) {
-        path = "/";
-    }
-
-    l4iStorage.Set("hpm_s2_obj_path_active", path);
 
     hpMgr.ApiCmd("s2-obj/list?path=" + path, {
         callback: function(err, data) {
@@ -111,21 +112,143 @@ hpS2.ObjList = function(path) {
     });
 }
 
+// html5 file uploader
+var hps2_fsUploadRequestId = "";
+var hps2_fsUploadAreaId = "";
+var hps2_fsUploadBind = null;
+
+function hps2_fsUploadTraverseTree(reqid, item, path, cap) {
+    path = path || "";
+
+    if (item.isFile) {
+
+        // Get file
+        item.file(function(file) {
+
+            //console.log("File:", path + file.name);
+            if (file.size > 10 * 1024 * 1024) {
+                $("#" + reqid + " .state").show().append("<div>" + path + " Failed: File is too large to upload</div>");
+                return;
+            }
+
+            hps2_fsUploadCommit(reqid, file, cap);
+        });
+
+    } else if (item.isDirectory) {
+        // Get folder contents
+        var dirReader = item.createReader();
+        dirReader.readEntries(function(entries) {
+            for (var i = 0; i < entries.length; i++) {
+                hps2_fsUploadTraverseTree(reqid, entries[i], path + item.name + "/", cap);
+            }
+        });
+    }
+}
+
+function hps2_fsUploadHanderDragEnter(evt) {
+    this.setAttribute('style', 'border-style:dashed;');
+}
+
+function hps2_fsUploadHanderDragLeave(evt) {
+    this.setAttribute('style', '');
+}
+
+function hps2_fsUploadHanderDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+}
+
+function hps2_fsUploadCommit(reqid, file, cap) {
+
+    var reader = new FileReader();
+
+    reader.onload = (function(file) {
+
+        return function(e) {
+
+            if (e.target.readyState != FileReader.DONE) {
+                return;
+            }
+
+            var ppath = $("#" + reqid + " :input[name=path]").val();
+
+            hpMgr.ApiCmd("s2-obj/put", {
+                method: "POST",
+                data: JSON.stringify({
+                    path: ppath + "/" + file.name,
+                    size: file.size,
+                    body: e.target.result,
+                    encode: "base64",
+                }),
+                callback: function(err, rsp) {
+
+                    if (err) {
+                        return;
+                    }
+
+                    if (rsp && rsp.kind && rsp.kind == "FsFile") {
+                        $("#" + reqid + "-alert").show().append("<div class='hps2-fsupload-item'>" + file.name + " OK</div>");
+                    } else {
+
+                        if (rsp.error) {
+                            $("#" + reqid + "-alert").show().append("<div class='hps2-fsupload-item'>" + file.name + " Failed: " + rsp.error.message + "</div>");
+                        } else {
+                            $("#" + reqid + "-alert").show().append("<div class='hps2-fsupload-item'>" + file.name + " Failed</div>");
+                        }
+                    }
+
+                    if (cap && cap > 0) {
+                        var items = $("#" + reqid + "-alert").find(".hps2-fsupload-item");
+                        if (items.length >= cap) {
+                            setTimeout(function() {
+                                hpS2.ObjList(ppath);
+                                l4iModal.Close();
+                            }, 1000);
+                        }
+                    }
+                }
+            });
+        };
+
+    })(file);
+
+    reader.readAsDataURL(file);
+}
+
+function hps2_fsUploadHander(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var items = evt.dataTransfer.items;
+    for (var i = 0; i < items.length; i++) {
+        // webkitGetAsEntry is where the magic happens
+        var item = items[i].webkitGetAsEntry();
+        if (item) {
+            hps2_fsUploadTraverseTree(hps2_fsUploadRequestId, item, null, items.length);
+        }
+    }
+}
+
+
+hpS2.fsUploadRequestId = "hpm-s2-fsupload";
+hpS2.fsUploadAreaId = "hpm-s2-fsupload-area";
+
 hpS2.ObjNew = function(type, path, file) {
     if (!path) {
         path = l4iStorage.Get("hpm_s2_obj_path_active");
-
         if (!path) {
             path = "/";
         }
     }
+    path = "/" + l4i.StringTrim(path.replace(/\/+/g, "/"), "/") + "/";
+
 
     var formid = Math.random().toString(36).slice(2);
 
     var req = {
         title: (type == "dir") ? "New Folder" : "New File",
-        width: 700,
-        height: 350,
+        width: 850,
+        height: 550,
         tplid: "hpm-s2-objnew-tpl",
         data: {
             formid: formid,
@@ -133,30 +256,53 @@ hpS2.ObjNew = function(type, path, file) {
             path: path,
             type: type
         },
-        buttons: [{
-            onclick: "hpS2.ObjNewSave(\"" + formid + "\")",
-            title: "Upload",
-            style: "btn-primary"
-        },
+        buttons: [
+            {
+                onclick: "hpS2.ObjNewSave(\"" + formid + "\")",
+                title: "Upload",
+                style: "btn-primary"
+            },
             {
                 onclick: "l4iModal.Close()",
                 title: "Close"
             }
-        ]
-    }
+        ],
+        callback: function(err, data) {
 
-    // req.success = function() {
-    //     $("#"+ formid +" :input[name=name]").focus();
-    // }
+
+            hps2_fsUploadRequestId = formid;
+
+            // console.log("ids: "+ hps2_fsUploadRequestId +", "+ areaid);
+
+            if (hps2_fsUploadBind != null) {
+
+                hps2_fsUploadBind.removeEventListener('dragenter', hps2_fsUploadHanderDragEnter, false);
+                hps2_fsUploadBind.removeEventListener('dragover', hps2_fsUploadHanderDragOver, false);
+                hps2_fsUploadBind.removeEventListener('drop', hps2_fsUploadHander, false);
+                hps2_fsUploadBind.removeEventListener('dragleave', hps2_fsUploadHanderDragLeave, false);
+
+                hps2_fsUploadBind = null;
+            }
+
+            // console.log("id:"+ areaid);
+
+            hps2_fsUploadBind = document.getElementById(hpS2.fsUploadAreaId);
+
+            // console.log(hps2_fsUploadBind);
+
+            hps2_fsUploadBind.addEventListener('dragenter', hps2_fsUploadHanderDragEnter, false);
+            hps2_fsUploadBind.addEventListener('dragover', hps2_fsUploadHanderDragOver, false);
+            hps2_fsUploadBind.addEventListener('drop', hps2_fsUploadHander, false);
+            hps2_fsUploadBind.addEventListener('dragleave', hps2_fsUploadHanderDragLeave, false);
+        },
+    }
 
     l4iModal.Open(req);
 }
 
 hpS2.ObjNewSave = function(formid) {
     var elem = document.getElementById("hpm-s2-objnew-files");
-
     for (var i = 0; i < elem.files.length; i++) {
-
         hpS2._objNewUpload(formid, elem.files[i]);
     }
 }
