@@ -105,11 +105,10 @@ body {
   width: 200px;
 }
 
-.hpm-editor-cm {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
+// .hpm-editor-cm {
+//   border: 1px solid #ccc;
+//   border-radius: 5px;
+// }
 #hpm-node-workspace {
   clear: both;
   /*padding: 0 10px;*/
@@ -266,7 +265,7 @@ body {
 
 #hpm-nodeset .CodeMirror {
   clear: both;
-  border-right: 1px solid #ccc;
+  /*border-right: 1px solid #ccc; */
   font-size: 13px;
   line-height: 1.4em;
   /*height: auto;*/
@@ -289,9 +288,27 @@ body {
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
+
 #hpm-nodeset-layside {
-  margin: 0 0 0 10px;
+  margin: 10px 0 10px 10px;
   background-color: transparent;
+}
+
+.hpm-nodeset-tplx {
+  margin: 10px 0 0 0 !important;
+}
+
+.hpm-nodeset-tplx label {
+  margin: 5px 0 0 0 !important;
+  font-weight: normal;
+}
+
+#hpm-nodeset-top-title>.hpm-nodeset-tplx:first-child {
+  margin-top: 0 !important;
+}
+
+#hpm-nodeset-layside>.hpm-nodeset-tplx:first-child {
+  margin-top: 0 !important;
 }
 
 .hpm-nodeset-tplstring label {
@@ -302,7 +319,6 @@ body {
 .hpm-nodeset-tpltext label {
   margin: 0;
   width: 100%;
-  border-bottom: 1px solid #666;
 }
 
 .hpm-nodeset-tpltext label a {
@@ -310,13 +326,13 @@ body {
 }
 
 .hpm-nodeset-tpltext label span.editor-nav {
-  height: 28px;
+  height: 40px;
 }
 
 .hpm-nodeset-tpltext label a.tpltext-editor-item {
   margin-left: 5px;
   font-size: 12px;
-  padding: 5px 20px;
+  padding: 5px 30px;
 }
 
 .hpm-nodeset-tpltext label a.active {
@@ -336,7 +352,7 @@ body {
   font-size: 12px;
   line-height: 100%;
   display: inline;
-  width: 120px;
+  max-width: 120px;
   height: auto;
   float: right;
 }
@@ -345,7 +361,33 @@ body {
   margin: 0;
 }
 
+.hpm-nodeset-tpltext .editor-outbox {
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
 
+.hpm-nodeset-tpltext .editor-inner-toolbar {
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+}
+
+.hpm-nodeset-tpltext .editor-fra {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.hpm-nodeset-tpltext .editor-fra .editor-fra-item {
+  flex-grow: 2;
+}
+
+.hpm-nodeset-tpltext .editor-inner-toolbar .vline {
+  width: 1px;
+  margin: 0 5px;
+  padding: 0;
+  height: 30px;
+  border-left: 1px solid #ccc;
+}
 
 #hpm-termls,
 #hpm-termset {

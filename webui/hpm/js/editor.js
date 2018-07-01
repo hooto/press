@@ -39,8 +39,8 @@ hpEditor.Open = function(name, format) {
                 $("#field_" + name + "_editor_mdr").hide();
             }
 
-            $("#field_" + name + "_editor_nav").find("a.active").removeClass("active");
-            $("#field_" + name + "_editor_nav").find("a.editor-nav-" + format).addClass("active");
+            $("#field_" + name + "_editor_nav").find("button.pure-button-active").removeClass("pure-button-active");
+            $("#field_" + name + "_editor_nav").find("button.editor-nav-" + format).addClass("pure-button-active");
 
             var editor = hpEditor.editors[name];
             if (editor) {
@@ -82,7 +82,8 @@ hpEditor.Open = function(name, format) {
             // viewportMargin: Infinity,
             });
 
-            hpEditor.editors[name].setSize(width, height);
+            // TODO hpEditor.editors[name].setSize(width, height);
+            hpEditor.editors[name].setSize("100%", height);
 
             hpEditor.editors[name].on("change", function(cm) {
                 hpEditor.previewChanged(name);
@@ -90,7 +91,7 @@ hpEditor.Open = function(name, format) {
 
             // console.log("post width: "+ $("#field_"+ name +"_layout").width());
             $("#field_" + name + "_layout").addClass("hpm-editor-cm");
-            $("#field_" + name + "_tools").find(".preview_open").show();
+            $("#field_" + name + "_inner_toolbar").find(".preview_open").show();
         });
     });
 }
@@ -122,29 +123,20 @@ hpEditor.sizeRefresh = function() {
 }
 
 hpEditor.PreviewOpen = function(name) {
-    // console.log($("#field_"+ name +"_preview"));
 
     var width = $("#field_" + name + "_layout").width(),
         height = $("#field_" + name + "_layout").height();
 
     var width5 = (width - 20) / 2;
 
-    $("#field_" + name + "_editor").css({
-        width: width5 + "px"
-    });
     $("#field_" + name + "_editor").find(".CodeMirror").css({
         width: width5 + "px"
     });
-    $("#field_" + name + "_colpreview").css({
-        width: width5 + "px",
-        height: height + "px"
-    });
+
     $("#field_" + name + "_preview").css({
-        width: width5 + "px",
         height: height + "px"
     });
 
-    $("#field_" + name + "_colspace").show();
     $("#field_" + name + "_colpreview").show();
 
     $("#field_" + name + "_editor").find(".CodeMirror").hover(function() {
@@ -161,8 +153,8 @@ hpEditor.PreviewOpen = function(name) {
 
     hpEditor.previewChanged(name);
 
-    $("#field_" + name + "_tools").find(".preview_close").show();
-    $("#field_" + name + "_tools").find(".preview_open").hide();
+    $("#field_" + name + "_inner_toolbar").find(".preview_close").show();
+    $("#field_" + name + "_inner_toolbar").find(".preview_open").hide();
 }
 
 hpEditor.PreviewClose = function(name) {
@@ -171,15 +163,14 @@ hpEditor.PreviewClose = function(name) {
 
     $("#field_" + name + "_preview").empty();
 
-    $("#field_" + name + "_colspace").hide();
     $("#field_" + name + "_colpreview").hide();
 
-    $("#field_" + name + "_editor").css({
-        width: "100%"
+    $("#field_" + name + "_editor").find(".CodeMirror").css({
+        width: "100%",
     });
 
-    $("#field_" + name + "_tools").find(".preview_close").hide();
-    $("#field_" + name + "_tools").find(".preview_open").show();
+    $("#field_" + name + "_inner_toolbar").find(".preview_close").hide();
+    $("#field_" + name + "_inner_toolbar").find(".preview_open").show();
 }
 
 hpEditor.previewChanged = function(name) {

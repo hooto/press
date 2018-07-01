@@ -13,73 +13,84 @@
 </div>
 
 <script id="hpm-nodeset-tpl" type="text/html">
-  <input type="hidden" name="id" value="{[=it.id]}">
-  <div id="hpm-nodeset-top-title"></div>
-  <div id="hpm-nodeset-tops"></div>
-  <div id="hpm-nodeset-fields"></div>
+<input type="hidden" name="id" value="{[=it.id]}">
+<div id="hpm-nodeset-top-title"></div>
+<div id="hpm-nodeset-tops"></div>
+<div id="hpm-nodeset-fields"></div>
 </script>
 
 <script id="hpm-nodeset-tplstatus" type="text/html">
-  <div class="l4i-form-group">
-    <label>Status</label>
-    <p>
-      <select name="status" class="l4i-form-control">
-      {[~it._status_def :sv]}
-        <option value="{[=sv.type]}" {[if (sv.type == it.status) { ]}selected{[ } ]}>{[=sv.name]}</option>
-      {[~]}
-      </select>
-    </p>
-  </div>
+<div class="hpm-nodeset-tplx">
+  <label>Status</label>
+  <p>
+    <select name="status" class="l4i-form-control">
+    {[~it._status_def :sv]}
+      <option value="{[=sv.type]}" {[if (sv.type == it.status) { ]}selected{[ } ]}>{[=sv.name]}</option>
+    {[~]}
+    </select>
+  </p>
+</div>
 </script>
 
 <script id="hpm-nodeset-tpltext" type="text/html">
-  <div class="l4i-form-group hpm-nodeset-tpltext">
-    <label id="field_{[=it.name]}_tools">
-      <span>{[=it.title]}</span>
-      <span id="field_{[=it.name]}_editor_nav" class="editor-nav">
+<div class="hpm-nodeset-tplx hpm-nodeset-tpltext">
+
+  <label>
+    <span>{[=it.title]}</span>
+
+    {[? it.attr_lang_list]}
+    <select id="field_{[=it.name]}_langs" class="field-nav-lang form-control" onchange="hpNode.SetFieldLang('{[=it.name]}')">
+      {[~it.attr_lang_list :v]}
+  	<option value="{[=v.id]}">{[=v.name]}</option>
+      {[~]}
+    </select>
+    {[?]}
+  </label>
+
+  <input type="hidden" id="field_{[=it.name]}_attr_format" name="field_{[=it.name]}_attr_format" value="{[=it.attr_format]}">
+
+  <div class="editor-outbox">  
+    <div id="field_{[=it.name]}_inner_toolbar" class="editor-inner-toolbar">
+
+      <span id="field_{[=it.name]}_editor_nav" class="editor-nav pure-button-group">
         {[~it._formats :v]}
-        <a class="tpltext-editor-item editor-nav-{[=v.name]}" href="#" 
-          onclick="hpEditor.Open('{[=it.name]}', '{[=v.name]}')">{[=v.value]}</a>
+        <button class="tpltext-editor-item editor-nav-{[=v.name]} pure-button button-xsmall" 
+          onclick="hpEditor.Open('{[=it.name]}', '{[=v.name]}')">{[=v.value]}</button>
         {[~]}
       </span>
-      <span id="field_{[=it.name]}_editor_mdr" class="editor_mdr" style="display:none">
-        <a class="tpltext-editor-item preview_open" href="#preview-open" onclick="hpEditor.PreviewOpen('{[=it.name]}')" style="display:none">Open Markdown Preview</a>
-        <a class="tpltext-editor-item preview_close" href="#preview-close" onclick="hpEditor.PreviewClose('{[=it.name]}')" style="display:none">Close Markdown Preview</a>
+
+	  <span class="vline"></span>
+
+      <span id="field_{[=it.name]}_editor_mdr" class="" style="display:none">
+        <button class="pure-button button-xsmall preview_open" onclick="hpEditor.PreviewOpen('{[=it.name]}')" style="display:none">Preview</button>
+        <button class="pure-button button-xsmall preview_close" onclick="hpEditor.PreviewClose('{[=it.name]}')" style="display:none">Close Preview</button>
       </span>
-      {[? it.attr_lang_list]}
-      <select id="field_{[=it.name]}_langs" class="field-nav-lang form-control" onchange="hpNode.SetFieldLang('{[=it.name]}')">
-        {[~it.attr_lang_list :v]}
-		<option value="{[=v.id]}">{[=v.name]}</option>
-        {[~]}
-	  </select>
-      {[?]}
-    </label>
-    <input type="hidden" id="field_{[=it.name]}_attr_format" name="field_{[=it.name]}_attr_format" value="{[=it.attr_format]}">
-    
-    <table width="100%" id="field_{[=it.name]}_layout" class="editor-fra">
-    <tr>
-      <td id="field_{[=it.name]}_editor" valign="top">
+
+	</div>
+
+    <div id="field_{[=it.name]}_layout" class="editor-fra">
+      <div id="field_{[=it.name]}_editor" class="editor-fra-item">
         <textarea class="l4i-form-control" id="field_{[=it.name]}" name="field_{[=it.name]}" rows="{[if (it.attr_ui_rows) {]}{[=it.attr_ui_rows]}{[} else {]}6{[}]}">{[=it.value]}</textarea>
-      </td>
-      <td id="field_{[=it.name]}_colspace" style="display:none"></td>
-      <td id="field_{[=it.name]}_colpreview" valign="top" style="display:none" classs="hp-scroll">
+      </div>
+      <div id="field_{[=it.name]}_colpreview" style="display:none" classs="editor-fra-item">
         <div class="markdown-body hp-scroll" 
-          id="field_{[=it.name]}_preview" style="float:right;padding:5px"></div>
-      </td>
-    </tr>
-    </table>
+          id="field_{[=it.name]}_preview" style="padding:10px"></div>
+      </div>
+    </div>
+ 
   </div>
+</div>
 </script>
 
 <script id="hpm-nodeset-tplint" type="text/html">
-  <div class="l4i-form-group">
+  <div class="hpm-nodeset-tplx">
     <label>{[=it.title]}</label>
     <input type="text" name="field_{[=it.name]}" class="l4i-form-control" value="{[=it.value]}">
   </div>
 </script>
 
 <script id="hpm-nodeset-tplstring" type="text/html">
-  <div class="l4i-form-group hpm-nodeset-tplstring">
+  <div class="hpm-nodeset-tplx hpm-nodeset-tplstring">
     <label>
       <span>{[=it.title]}</span>
       {[? it.attr_lang_list]}
@@ -95,14 +106,14 @@
 </script>
 
 <script id="hpm-nodeset-tplterm_tag" type="text/html">
-  <div class="l4i-form-group">
+  <div class="hpm-nodeset-tplx">
     <label>{[=it.title]}</label>
     <input type="text" name="term_{[=it.meta.name]}" class="l4i-form-control" value="{[=it.value]}">
   </div>
 </script>
 
 <script id="hpm-nodeset-tplterm_taxonomy" type="text/html">
-  <div class="l4i-form-group">
+  <div class="hpm-nodeset-tplx">
     <label>{[=it.model.title]}</label>
     <div>
     <select class="form-control" name="term_{[=it.model.meta.name]}">
@@ -123,7 +134,7 @@
 
 
 <script id="hpm-nodeset-tplext_comment_perentry" type="text/html">
-  <div class="l4i-form-group">
+  <div class="hpm-nodeset-tplx">
     <label>Comment On/Off</label>
     <div>
     <select class="form-control" name="ext_comment_perentry">
@@ -137,7 +148,7 @@
 
 
 <script id="hpm-nodeset-tplext_permalink" type="text/html">
-  <div class="l4i-form-group">
+  <div class="hpm-nodeset-tplx">
     <label>Permalink Name</label>
     <div>
       <input type="text" name="ext_permalink_name" class="l4i-form-control" value="{[=it.ext_permalink_name]}">
@@ -147,7 +158,7 @@
 
 
 <script id="hpm-nodeset-tplext_node_refer" type="text/html">
-  <div class="l4i-form-group">
+  <div class="hpm-nodeset-tplx">
     <label>Refer ID</label>
     <div>
       <input type="text" name="ext_node_refer" class="l4i-form-control" value="{[=it.ext_node_refer]}">
