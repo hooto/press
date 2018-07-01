@@ -121,8 +121,8 @@ func init() {
 	})
 
 	SysConfigList.Insert(api.SysConfig{
-		"ls2_uri", "//127.0.0.1:9533/hp/s2",
-		"Storage Service URI", "",
+		"storage_service_endpoint", "/hp/s2/deft",
+		"Storage Service Endpoint", "",
 	})
 
 	//

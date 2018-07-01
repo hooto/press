@@ -14,6 +14,7 @@
 
 var hpEditor = {
     editors: {},
+    s2_bucket_default: "/deft/",
 }
 
 hpEditor.Open = function(name, format) {
@@ -244,6 +245,38 @@ hpEditor.previewBindScroll = function(name) {
 
 hpEditor.previewUnBindScroll = function(name) {
     $("#field_" + name + "_preview").unbind("scroll");
+}
+
+hpEditor.StorageImageSelector = function(name) {
+    var editor = hpEditor.editors[name];
+    if (!editor) {
+        return;
+    }
+    hpS2.ObjListSelector(hpEditor.StorageImageSelectorCallback, {
+        name: name,
+        image_only: true,
+    });
+}
+
+hpEditor.StorageImageSelectorCallback = function(options) {
+    if (!options || !options.name || !options.path) {
+        return;
+    }
+    var editor = hpEditor.editors[options.name];
+    if (!editor) {
+        return;
+    }
+    var cs = editor.getCursor();
+    options.path = options.path.replace(hpEditor.s2_bucket_default, "");
+    var line = '\n![FIG]({{hp_storage_service_endpoint}}/' + options.path + '?ipl=w960,h960)\n\n';
+    line = line.replace(/\/+/g, '/');
+    editor.replaceRange(line, {
+        line: cs.line,
+        ch: cs.ch
+    }, {
+        line: cs.line,
+        ch: cs.ch
+    });
 }
 
 hpEditor.Content = function(name) {

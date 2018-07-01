@@ -13,7 +13,7 @@
 // limitations under the License.
 
 var hpS2 = {
-
+    bucket: "/deft",
 }
 
 hpS2.Init = function() {
@@ -31,17 +31,191 @@ hpS2.Index = function() {
     });
 }
 
-hpS2.ObjList = function(path) {
+hpS2.selector_cb = null;
+hpS2.selector_opts = null;
+
+hpS2.ObjListSelector = function(cb, options) {
+
+    hpS2.selector_cb = null;
+    hpS2.selector_opts = null;
+
+    if (cb) {
+        hpS2.selector_cb = cb;
+    }
+    if (!options) {
+        options = {};
+    }
+    hpS2.selector_opts = options;
+
+    hpS2.ObjListSelectorRefresh();
+}
+
+
+hpS2.ObjListSelectorRefreshRender = function(path, data) {
+
+    l4iTemplate.Render({
+        dstid: "hpm-s2-objls",
+        tplid: "hpm-s2-objls-tpl",
+        data: data,
+    });
+
+
+    var dirnav = [];
+
+    //
+    path = l4i.StringTrim(path.replace(/\/+/g, "/"), "/");
+
+    if (path.length > 0) {
+
+        var prs = path.split("/");
+        var ppath = "";
+        for (var i in prs) {
+            ppath += "/" + prs[i];
+            dirnav.push({
+                path: ppath,
+                name: prs[i],
+            });
+        }
+        dirnav[0].name = "Bucket: deft";
+    }
+
+    l4iTemplate.Render({
+        dstid: "hpm-s2-objls-dirnav",
+        tplid: "hpm-s2-objls-dirnav-tpl",
+        data: {
+            items: dirnav,
+        },
+    });
+}
+
+hpS2.ObjListSelectorRefresh = function(path) {
 
     if (!path) {
         path = l4iStorage.Get("hpm_s2_obj_path_active");
-        if (!path) {
-            path = "/";
-        }
     } else {
         path = path.replace(/\/+/g, '/');
         l4iStorage.Set("hpm_s2_obj_path_active", path);
     }
+    if (path) {
+        path = path.replace(/\/+/g, "/");
+    }
+    if (path.indexOf(hpS2.bucket) != 0) {
+        path = hpS2.bucket;
+        l4iStorage.Set("hpm_s2_obj_path_active", path);
+    }
+
+    seajs.use(["ep"], function(EventProxy) {
+
+        var ep = EventProxy.create("tpl", "data", function(tpl, data) {
+
+            if (!data || !data.kind) {
+                return;
+            }
+
+            if (!data.items) {
+                data.items = [];
+            }
+
+            data._path = path;
+
+            var items = [];
+
+            for (var i in data.items) {
+
+                var name = data.items[i].name;
+
+                data.items[i]._id = l4iString.CryptoMd5(path + "/" + name);
+                data.items[i]._abspath = path + "/" + name;
+
+                var ext = null;
+                var n = name.lastIndexOf(".");
+                if (n > 0) {
+                    ext = name.toLowerCase().substr(n + 1);
+                } else {
+                    continue;
+                }
+
+
+                if (ext == "jpg" || ext == "jpeg" ||
+                    ext == "png" || ext == "gif" || ext == "svg") {
+                    data.items[i]._isimg = true;
+                } else {
+                    data.items[i]._isimg = false;
+                }
+                if (!data.items[i]._isimg && hpS2.selector_opts.image_only) {
+                    continue
+                }
+                items.push(data.items[i]);
+            }
+
+            data.items = items;
+
+            if (tpl) {
+                l4iModal.Open({
+                    title: "Select Images",
+                    tplsrc: tpl,
+                    width: 1000,
+                    height: 700,
+                    buttons: [{
+                        title: "Cancel",
+                        onclick: "l4iModal.Close()",
+                    }],
+                    callback: function() {
+                        hpS2.ObjListSelectorRefreshRender(path, data);
+                    },
+                });
+            } else {
+                hpS2.ObjListSelectorRefreshRender(path, data);
+            }
+
+        });
+
+        ep.fail(function(err) {
+            // TODO
+            alert("SpecListRefresh error, Please try again later (EC:app-nodelist)");
+        });
+
+        var el = document.getElementById("hpm-s2-objls");
+        if (!el || el.length < 1) {
+            hpMgr.TplCmd("s2/selector", {
+                callback: ep.done("tpl"),
+            });
+        } else {
+            ep.emit("tpl", null);
+        }
+
+
+        hpMgr.ApiCmd("s2-obj/list?path=" + path, {
+            callback: ep.done("data"),
+        });
+    });
+}
+
+hpS2.ObjListSelectorEntry = function(path) {
+    if (!hpS2.selector_cb) {
+        return;
+    }
+    hpS2.selector_opts.path = path;
+    hpS2.selector_cb(hpS2.selector_opts);
+    l4iModal.Close();
+}
+
+hpS2.ObjList = function(path) {
+
+    if (!path) {
+        path = l4iStorage.Get("hpm_s2_obj_path_active");
+    } else {
+        path = path.replace(/\/+/g, '/');
+        l4iStorage.Set("hpm_s2_obj_path_active", path);
+    }
+    if (path) {
+        path = path.replace(/\/+/g, "/");
+    }
+    if (path.indexOf(hpS2.bucket) != 0) {
+        path = hpS2.bucket;
+        l4iStorage.Set("hpm_s2_obj_path_active", path);
+    }
+
 
     hpMgr.ApiCmd("s2-obj/list?path=" + path, {
         callback: function(err, data) {
@@ -64,13 +238,20 @@ hpS2.ObjList = function(path) {
 
                 data.items[i]._abspath = path + "/" + name;
 
-                if (name.toLowerCase().substr(-4) == ".jpg" || name.toLowerCase().substr(-5) == ".jpeg" ||
-                    name.toLowerCase().substr(-4) == ".png" || name.toLowerCase().substr(-4) == ".gif") {
+                var ext = "bin";
+                var n = name.lastIndexOf(".");
+                if (n > 0) {
+                    ext = name.toLowerCase().substr(n + 1);
+                }
+
+                if (ext == "jpg" || ext == "jpeg" ||
+                    ext == "png" || ext == "gif" || ext == "svg") {
                     data.items[i]._isimg = true;
                 } else {
                     data.items[i]._isimg = false;
                 }
             }
+
 
             l4iTemplate.Render({
                 dstid: "hpm-s2-objls",
@@ -81,13 +262,8 @@ hpS2.ObjList = function(path) {
 
             var dirnav = [];
 
-            dirnav.push({
-                path: "/",
-                name: "Home",
-            });
-
             //
-            path = l4i.StringTrim(path.replace(/\/+/g, "/"), "/");
+            path = l4i.StringTrim(path, "/");
             if (path.length > 0) {
 
                 var prs = path.split("/");
@@ -99,6 +275,7 @@ hpS2.ObjList = function(path) {
                         name: prs[i],
                     });
                 }
+                dirnav[0].name = "Bucket: deft";
             }
 
             l4iTemplate.Render({

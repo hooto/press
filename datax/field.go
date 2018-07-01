@@ -47,6 +47,7 @@ var (
 		"atom", time.RFC3339,
 	}
 	timeFormator = strings.NewReplacer(timeFormatMap...)
+	s2Replacer   *strings.Replacer
 )
 
 var (
@@ -82,6 +83,15 @@ func init() {
 	shtmlp.AllowAttrs("class").OnElements("a")
 	shtmlp.AllowAttrs("class").OnElements("img")
 	shtmlp.AllowAttrs("class").OnElements("span")
+}
+
+func s2_replace(s string) string {
+	if s2Replacer == nil {
+		s2Replacer = strings.NewReplacer(
+			"{{hp_storage_service_endpoint}}", config.SysConfigList.FetchString("storage_service_endpoint"),
+		)
+	}
+	return s2Replacer.Replace(s)
 }
 
 func TimeFormat(timeString, formatFrom, formatTo string) string {
@@ -256,8 +266,7 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 	val = strings.TrimSpace(strings.Replace(val, "\r\n", "\n", -1))
 	val = regMultiLine.ReplaceAllString(val, "\n\n")
 
-	val = strings.Replace(val, "{{lessos_storage_service_uri}}",
-		config.SysConfigList.FetchString("ls2_uri"), -1)
+	val = s2_replace(val)
 
 	switch fm {
 
@@ -513,8 +522,7 @@ func field_value_html_convert(fm, val string) string {
 	val = strings.TrimSpace(strings.Replace(val, "\r\n", "\n", -1))
 	val = regMultiLine.ReplaceAllString(val, "\n\n")
 
-	val = strings.Replace(val, "{{lessos_storage_service_uri}}",
-		config.SysConfigList.FetchString("ls2_uri"), -1)
+	val = s2_replace(val)
 
 	switch fm {
 

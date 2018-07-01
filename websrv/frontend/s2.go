@@ -16,6 +16,7 @@ package frontend
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"image"
 	"image/gif"
@@ -25,6 +26,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -42,8 +44,25 @@ import (
 )
 
 var (
-	rezlocker = sync.NewPermitPool(1)
+	rezlocker      = sync.NewPermitPool(1)
+	s2_path_reg    = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
+	s2_bucket_deft = "/deft/"
+	s2_url_prefix  = "hp/s2"
 )
+
+func path_filter(path string) (string, error) {
+
+	path = filepath.Clean(strings.Replace(strings.TrimSpace(path), " ", "-", -1))
+	if !s2_path_reg.MatchString(path) {
+		return path, fmt.Errorf("Invalid File Name")
+	}
+
+	if !strings.HasPrefix(path, s2_bucket_deft) {
+		return "", errors.New("Invalid Bucket Name")
+	}
+
+	return path, nil
+}
 
 type S2 struct {
 	*httpsrv.Controller
@@ -54,34 +73,21 @@ func (c S2) IndexAction() {
 
 	c.AutoRender = false
 
-	var (
-		ipn      = c.Params.Get("ipn")
-		ipl      = c.Params.Get("ipl")
-		ipls     = [2]int{0, 0} // width, height
-		iplc     = false
-		ipl_step = 64
-		ipl_smin = 64
-		ipl_smax = 2048
-		obj_path = strings.TrimPrefix(filepath.Clean(c.Request.RequestPath), "hp/s2/")
-		abs_path = config.Prefix + "/var/storage/" + obj_path
-	)
-
-	if ipn == "" && ipl == "" {
-
-		if fp, err := os.Open(abs_path); err == nil {
-
-			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-			http.ServeContent(c.Response.Out, c.Request.Request, obj_path, time.Now(), fp)
-			fp.Close()
-
-		} else {
-			c.RenderError(404, "Object Not Found")
-		}
-
+	obj_path, err := path_filter(strings.TrimPrefix(c.Request.RequestPath, s2_url_prefix))
+	if err != nil {
+		c.RenderError(404, "Object Not Found")
 		return
 	}
 
 	var (
+		ipn       = c.Params.Get("ipn")
+		ipl       = c.Params.Get("ipl")
+		ipls      = [2]int{0, 0} // width, height
+		iplc      = false
+		ipl_step  = 64
+		ipl_smin  = 64
+		ipl_smax  = 2048
+		abs_path  = config.Prefix + "/var/storage/" + obj_path
 		ext       = strings.ToLower(filepath.Ext(obj_path))
 		meta_type = ""
 	)
@@ -102,6 +108,22 @@ func (c S2) IndexAction() {
 
 	default:
 		c.RenderError(400, "Bad Request #01")
+		return
+	}
+
+	if (ipn == "" && ipl == "") ||
+		meta_type == "image/svg+xml" {
+
+		if fp, err := os.Open(abs_path); err == nil {
+
+			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
+			http.ServeContent(c.Response.Out, c.Request.Request, obj_path, time.Now(), fp)
+			fp.Close()
+
+		} else {
+			c.RenderError(404, "Object Not Found")
+		}
+
 		return
 	}
 

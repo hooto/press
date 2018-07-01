@@ -19,7 +19,8 @@ import (
 )
 
 var (
-	coreModules = []string{
+	StorageServiceEndpoint = "/hp/s2/deft"
+	coreModules            = []string{
 		"core/general",
 		"core/comment",
 		"core/portal",

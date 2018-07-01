@@ -64,6 +64,7 @@
       <span id="field_{[=it.name]}_editor_mdr" class="" style="display:none">
         <button class="pure-button button-xsmall preview_open" onclick="hpEditor.PreviewOpen('{[=it.name]}')" style="display:none">Preview</button>
         <button class="pure-button button-xsmall preview_close" onclick="hpEditor.PreviewClose('{[=it.name]}')" style="display:none">Close Preview</button>
+        <button class="pure-button button-xsmall storage-image-insert" onclick="hpEditor.StorageImageSelector('{[=it.name]}')">Image</button>
       </span>
 
 	</div>

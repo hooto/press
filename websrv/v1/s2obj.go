@@ -16,6 +16,7 @@ package v1
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -34,7 +35,8 @@ import (
 )
 
 var (
-	s2_path_reg = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
+	s2_path_reg    = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
+	s2_bucket_deft = "/deft"
 )
 
 func path_filter(path string) (string, error) {
@@ -44,7 +46,16 @@ func path_filter(path string) (string, error) {
 		return path, fmt.Errorf("Invalid File Name")
 	}
 
+	if !strings.HasPrefix(path, s2_bucket_deft) ||
+		(len(path) > len(s2_bucket_deft) && path[len(s2_bucket_deft)] != '/') {
+		return "", errors.New("Invalid Bucket Name")
+	}
+
 	return path, nil
+}
+
+func abs_path(path string) string {
+	return filepath.Clean(config.Prefix + "/var/storage/" + path)
 }
 
 type S2Obj struct {
@@ -91,10 +102,14 @@ func (c S2Obj) RenameAction() {
 		return
 	}
 
-	path = filepath.Clean(config.Prefix + "/var/storage/" + path)
+	pathset, err := path_filter(req.PathSet)
+	if err != nil {
+		rsp.Error = &types.ErrorMeta{"400", err.Error()}
+		return
+	}
 
-	pathset := filepath.Clean(req.PathSet)
-	pathset = filepath.Clean(config.Prefix + "/var/storage/" + pathset)
+	path = abs_path(path)
+	pathset = abs_path(pathset)
 
 	dir := filepath.Dir(pathset)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -128,7 +143,7 @@ func (c S2Obj) DelAction() {
 		rsp.Error = &types.ErrorMeta{"400", err.Error()}
 		return
 	}
-	path = filepath.Clean(config.Prefix + "/var/storage/" + path)
+	path = abs_path(path)
 
 	if err := os.Remove(path); err != nil {
 		rsp.Error = &types.ErrorMeta{"500", err.Error()}
@@ -164,8 +179,6 @@ func (c S2Obj) PutAction() {
 		return
 	}
 
-	path = filepath.Clean(config.Prefix + "/var/storage/" + path)
-
 	var body []byte
 	if req.Encode == "base64" {
 
@@ -188,7 +201,7 @@ func (c S2Obj) PutAction() {
 		return
 	}
 
-	projfp := filepath.Clean(path)
+	path = abs_path(path)
 
 	if req.Encode == "jm" {
 
@@ -200,7 +213,7 @@ func (c S2Obj) PutAction() {
 			return
 		}
 
-		file, _, err := fsFileGetRead(projfp)
+		file, _, err := fsFileGetRead(path)
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{"500", err.Error()}
 			return
@@ -218,7 +231,7 @@ func (c S2Obj) PutAction() {
 		body, _ = json.Encode(jsMerged, "")
 	}
 
-	if err := fsFilePutWrite(projfp, body); err != nil {
+	if err := fsFilePutWrite(path, body); err != nil {
 		rsp.Error = &types.ErrorMeta{"500", err.Error()}
 		return
 	}
@@ -243,17 +256,14 @@ func (c S2Obj) ListAction() {
 		return
 	}
 
-	if path == "." {
-		path = ""
-	}
-
-	projfp := filepath.Clean(config.Prefix + "/var/storage/" + path)
-
 	rsp.Path = path
-	rsp.Items = fsDirList(projfp, "", false)
+	rsp.Items = fsDirList(abs_path(path), "", false)
+
+	relpath := strings.Replace(path, s2_bucket_deft, "", -1)
 
 	for i := range rsp.Items {
-		rsp.Items[i].SelfLink = config.SysConfigList.FetchString("ls2_uri") + filepath.Clean(path+"/"+rsp.Items[i].Name)
+		rsp.Items[i].SelfLink = config.SysConfigList.FetchString("storage_service_endpoint") +
+			relpath + "/" + rsp.Items[i].Name
 	}
 
 	rsp.Kind = "FsFileList"

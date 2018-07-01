@@ -37,7 +37,7 @@
   {[ if (v.isdir) { ]}
     <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
   {[ } else if (v._isimg) { ]}
-    <a href="{[=v.self_link]}" target="_blank"><img src="{[=v.self_link]}?ipl=w64,h64"></a>
+    <a href="{[=v.self_link]}" target="_blank"><img src="{[=v.self_link]}?ipl=w64,h64,c" width="64" height="64"></a>
   {[ } ]}
   </td>
   <td class="ts3-fontmono">

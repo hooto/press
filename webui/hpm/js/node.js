@@ -1142,6 +1142,7 @@ hpNode.SetFieldLang = function(field_name) {
     hpNode.setCurrent.model.fields[field_idx] = field;
 }
 
+
 hpNode.SetSave = function() {
     if (!hpNode.setCurrent) {
         hpMgr.hotkey_ctrl_s = null;
