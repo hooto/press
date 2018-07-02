@@ -156,6 +156,7 @@ lcEditor.LoadInstance = function(entry) {
         return;
     }
 
+    var modes = [];
     var ext = item.url.split('.').pop();
     switch (ext) {
         case "c":
@@ -166,6 +167,7 @@ lcEditor.LoadInstance = function(entry) {
         case "java":
             mode = "clike";
             break;
+
         case "php":
         case "css":
         case "xml":
@@ -285,14 +287,6 @@ lcEditor.LoadInstance = function(entry) {
 
     $("#lctab-body" + item.target).empty();
 
-    // seajs.use(l9r.basecm +"mode/"+ mode +"/"+ mode +".js");
-
-    // seajs.use([
-    //     "cm",
-    //     l9r.basecm +"mode/"+ mode +"/"+ mode +".js",
-    // ], function() {
-
-    //     return;
 
     l9rTab.frame[item.target].editor = CodeMirror(
         document.getElementById("lctab-body" + item.target), {
@@ -341,6 +335,11 @@ lcEditor.LoadInstance = function(entry) {
         lcEditor.Changed(entry.id);
     });
 
+    l9rTab.frame[item.target].editor.on("cursorActivity", function(cm) {
+        lcEditor.CursorActivity(entry.id);
+    });
+
+
     CodeMirror.commands.find = function(cm) {
         lcEditor.Search();
     };
@@ -354,6 +353,41 @@ lcEditor.LoadInstance = function(entry) {
 // });
 }
 
+lcEditor.CursorActivity = function(urid) {
+
+    var item = l9rTab.pool[urid];
+    if (!item) {
+        return;
+    }
+
+    if (urid != l9rTab.frame[item.target].urid) {
+        return;
+    }
+
+    lcData.Get("files", urid, function(entry) {
+
+        if (!entry || entry.id != urid) {
+            return;
+        }
+
+        var editor = l9rTab.frame[item.target].editor;
+
+        var prevEditorScrollInfo = editor.getScrollInfo();
+        var prevEditorCursorInfo = editor.getCursor();
+
+        entry.scrlef = prevEditorScrollInfo.left;
+        entry.scrtop = prevEditorScrollInfo.top;
+
+        entry.curlin = prevEditorCursorInfo.line;
+        entry.curch = prevEditorCursorInfo.ch;
+
+
+        lcData.Put("files", entry, function(ret) {
+            // TODO
+        });
+    });
+
+}
 
 lcEditor.Changed = function(urid) {
     //console.log("lcEditor.Changed:"+ urid);
@@ -373,8 +407,20 @@ lcEditor.Changed = function(urid) {
             return;
         }
 
-        entry.ctn1_src = l9rTab.frame[item.target].editor.getValue();
+        var editor = l9rTab.frame[item.target].editor;
+
+        entry.ctn1_src = editor.getValue();
         entry.ctn1_sum = l4iString.CryptoMd5(entry.ctn1_src);
+
+        var prevEditorScrollInfo = editor.getScrollInfo();
+        var prevEditorCursorInfo = editor.getCursor();
+
+        entry.scrlef = prevEditorScrollInfo.left;
+        entry.scrtop = prevEditorScrollInfo.top;
+
+        entry.curlin = prevEditorCursorInfo.line;
+        entry.curch = prevEditorCursorInfo.ch;
+
 
         lcData.Put("files", entry, function(ret) {
             // TODO
@@ -537,14 +583,15 @@ lcEditor.HookOnBeforeUnload = function() {
     if (l9rTab.frame[lcEditor.TabDefault].editor != null &&
         l9rTab.frame[lcEditor.TabDefault].urid == lcEditor.Config.TmpUrid) {
 
-        var prevEditorScrollInfo = l9rTab.frame[lcEditor.TabDefault].editor.getScrollInfo();
-        var prevEditorCursorInfo = l9rTab.frame[lcEditor.TabDefault].editor.getCursor();
-
         lcData.Get("files", l9rTab.frame[lcEditor.TabDefault].urid, function(prevEntry) {
 
             if (!prevEntry) {
                 return;
             }
+
+            var prevEditorScrollInfo = l9rTab.frame[lcEditor.TabDefault].editor.getScrollInfo();
+            var prevEditorCursorInfo = l9rTab.frame[lcEditor.TabDefault].editor.getCursor();
+
 
             prevEntry.scrlef = prevEditorScrollInfo.left;
             prevEntry.scrtop = prevEditorScrollInfo.top;

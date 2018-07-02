@@ -136,11 +136,12 @@ l9rTab.Open = function(options) {
         });
     }
 
-    l9rTab.Switch(urid);
+    l9rTab.Switch(urid, options);
 }
 
-l9rTab.Switch = function(urid) {
+l9rTab.Switch = function(urid, options) {
     // console.log(l9rTab.pool);
+    options = options || {};
     var item = l9rTab.pool[urid];
     if (!item) {
         return;
@@ -212,7 +213,10 @@ l9rTab.Switch = function(urid) {
                 l9rTab.TabletTitleImage(urid);
                 l9rTab.frame[item.target].urid = urid;
                 // l4iStorage.Set("tab.fra.urid."+ item.target, urid);
-                l4iStorage.Set(l4iSession.Get("hp-speceditor-modname") + ".cab." + item.target, urid);
+
+                if (!options.refreshActiveStorageOff) {
+                    l4iStorage.Set(l4iSession.Get("hp-speceditor-modname") + ".cab." + item.target, urid);
+                }
 
                 item.success();
             });
@@ -227,16 +231,16 @@ l9rTab.Switch = function(urid) {
 l9rTab.TabletTitleImage = function(urid, imgsrc) {
     var item = l9rTab.pool[urid];
 
-    if (imgsrc === undefined && item.icon !== undefined) {
+    if (!imgsrc && item.icon) {
 
         if (item.icon.slice(0, 1) == "/") {
             imgsrc = item.icon;
         } else {
-            imgsrc = hpMgr.frtbase + "~/hpm/img/" + item.icon + ".png";
+            imgsrc = hpMgr.frtbase + "~/hpm/img/mtypes/" + item.icon + ".png";
         }
     }
 
-    if (imgsrc !== undefined) {
+    if (imgsrc) {
         $("#pgtab" + urid + " .ico img").attr("src", imgsrc);
     }
 }
@@ -261,7 +265,7 @@ l9rTab.TabletTitle = function(urid, loading) {
             if (loading) {
                 var imgsrc = hpMgr.frtbase + "~/hpm/img/loading4.gif";
             } else {
-                var imgsrc = hpMgr.frtbase + "~/hpm/img/" + item.icon + ".png";
+                var imgsrc = hpMgr.frtbase + "~/hpm/img/mtypes/" + item.icon + ".png";
             }
 
             //
@@ -331,7 +335,7 @@ l9rTab.TabletMore = function(tg) {
 
         var href = "javascript:l9rTab.Switch('" + i + "')";
         ol += '<div class="ltm-item lctab-nav-moreitem">';
-        ol += '<div class="ltm-ico"><img src="' + hpMgr.frtbase + '~/hpm/img/' + l9rTab.pool[i].icon + '.png" align="absmiddle" /></div>';
+        ol += '<div class="ltm-ico"><img src="' + hpMgr.frtbase + '~/hpm/img/mtypes/' + l9rTab.pool[i].icon + '.png" align="absmiddle" /></div>';
         ol += '<div class="ltm-ctn"><a href="' + href + '">' + l9rTab.pool[i].title + '</a></div>';
         ol += '</div>';
     }

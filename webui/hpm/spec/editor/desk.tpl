@@ -1,6 +1,4 @@
 
-<div style="height:10px;"></div>
-
 <table id="lcbind-layout" border="0" cellpadding="0" cellspacing="0" class="" width="100%">
   <tr>
     <td id="lcbind-proj-filenav" class="lcx-lay-colbg" width="220px"></td>
@@ -42,7 +40,7 @@
     <ul class="lfn-menus">
         <li class="lfnm-item">
             
-            <i class="glyphicon glyphicon-search lfnm-item-ico" style="height:20px"></i>
+            <i class="glyphicon glyphicon-cloud-upload lfnm-item-ico" style="height:20px"></i>
 
             <ul class="lfnm-item-submenu">
                 <li>
@@ -81,7 +79,7 @@
 {[~it :v]}
 <div id="ptp{[=v.fsid]}" class="lcx-fsitem" 
   lc-fspath="{[=v.path]}" lc-fstype="{[=v.fstype]}" lc-fsico="{[=v.ico]}">
-    <img src="{[=hpMgr.frtbase]}~/hpm/img/{[=v.ico]}.png" align="absmiddle">
+    <img src="{[=hpMgr.frtbase]}~/hpm/img/mtypes/{[=v.ico]}.png" align="absmiddle">
     <a href="#" class="anoline">{[=v.name]}</a>
 </div>
 {[~]}
@@ -123,12 +121,12 @@
 <!-- TPL : File New -->
 <script id="lcbind-fstpl-filenew" type="text/html"> 
 <form id="{[=it.formid]}" action="#" onsubmit="l9rProjFs.FileNewSave('{[=it.formid]}');return false;">
-  <div class="input-prepend" style="margin-left:2px">
-    <span class="add-on">
+  <div class="input-group" style="margin-left:2px">
+    <span class="input-group-addon">
         <img src="{[=hpMgr.frtbase]}~/hpm/img/folder_add.png" class="h5c_icon">
-        {[=it.path]}
+        <span>{[=it.path]}</span>
     </span>
-    <input type="text" name="name" value="{[=it.file]}" class="span2">
+    <input type="text" name="name" value="{[=it.file]}" class="form-control">
     <input type="hidden" name="path" value="{[=it.path]}">
     <input type="hidden" name="type" value="{[=it.type]}">
   </div>
@@ -139,11 +137,11 @@
 <!-- TPL : File Rename -->
 <script id="lcbind-fstpl-filerename" type="text/html"> 
 <form id="{[=it.formid]}" action="#" onsubmit="l9rProjFs.FileRenameSave('{[=it.formid]}');return false;">
-  <div class="input-prepend" style="margin-left:2px">
-    <span class="add-on">
+  <div class="input-group" style="margin-left:2px">
+    <span class="input-group-addon">
         <img src="{[=hpMgr.frtbase]}~/hpm/img/folder_edit.png" class="h5c_icon">
     </span>
-    <input type="text" name="pathset" value="{[=it.path]}" style="width:500px;">
+    <input type="text" name="pathset" value="{[=it.path]}" class="form-control">
     <input type="hidden" name="path" value="{[=it.path]}">
   </div>
 </form>
@@ -189,9 +187,9 @@
 </style>
 <div id="{[=it.reqid]}">
   <div>The target of Upload directory</div>
-  <div class="input-prepend">
-    <span class="add-on"><img src="{[=hpMgr.frtbase]}~/hpm/img/page_white_get.png" align="absmiddle"></span>
-    <input style="width:400px;" name="path" type="text" value="{[=it.path]}">
+  <div class="input-group">
+    <span class="input-group-addon"><img src="{[=hpMgr.frtbase]}~/hpm/img/page_white_get.png" align="absmiddle"></span>
+    <input class="form-control" name="path" type="text" value="{[=it.path]}">
     <button class="btn hide" type="button" onclick="_fs_upl_chgdir()">Change directory</button>
   </div>
   <div id="{[=it.areaid]}" class="lsarea">

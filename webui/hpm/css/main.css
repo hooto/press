@@ -105,10 +105,7 @@ body {
   width: 200px;
 }
 
-// .hpm-editor-cm {
-//   border: 1px solid #ccc;
-//   border-radius: 5px;
-// }
+
 #hpm-node-workspace {
   clear: both;
   /*padding: 0 10px;*/
@@ -585,4 +582,8 @@ body {
 
 .hpm-breadcrumb>li:first-child {
   margin-left: 0 !important;
+}
+
+#lcbind-layout {
+  margin-left: 10px;
 }

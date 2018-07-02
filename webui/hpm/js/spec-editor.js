@@ -110,7 +110,7 @@ l9rProjFs.OpenHistoryTabs = function() {
     lcData.Query("files", "projdir", l4iSession.Get("hp-speceditor-modname"), function(ret) {
 
         // console.log("Query files");
-        if (ret == null) {
+        if (!ret) {
             return;
         }
 
@@ -122,16 +122,15 @@ l9rProjFs.OpenHistoryTabs = function() {
             }
 
             var cab = l9rTab.frame[ret.value.cabid];
-            if (cab === undefined) {
+            if (!cab) {
                 ret.value.cabid = l9rTab.def;
                 cab = l9rTab.frame[l9rTab.def];
             }
 
             var tabLastActive = l4iStorage.Get(l4iSession.Get("hp-speceditor-modname") + ".cab." + ret.value.cabid);
-            // console.log("tabLastActive: "+ tabLastActive);
 
             var titleOnly = true;
-            if (cab.actived === false || tabLastActive == ret.value.id) {
+            if (!cab.actived || tabLastActive == ret.value.id) {
                 l9rTab.frame[ret.value.cabid].actived = true;
                 titleOnly = false;
             }
@@ -142,6 +141,7 @@ l9rProjFs.OpenHistoryTabs = function() {
                 icon: icon,
                 close: true,
                 titleOnly: titleOnly,
+                refreshActiveStorageOff: true,
                 success: function() {
                     // $('#pgtab'+ ret.value.id).addClass("current");
                 }
@@ -273,7 +273,8 @@ l9rProjFs.UiTreeLoad = function(options) {
             } else if (ls[i].mime.slice(-5) == "image" ||
                 ls[i].name.slice(-4) == ".jpg" ||
                 ls[i].name.slice(-4) == ".png" ||
-                ls[i].name.slice(-4) == ".gif"
+                ls[i].name.slice(-4) == ".gif" ||
+                ls[i].name.slice(-4) == ".svg"
             ) {
                 ico = "page_white_picture";
             }
@@ -417,8 +418,8 @@ l9rProjFs.FileNew = function(type, path, file) {
     var req = {
         title: (type == "dir") ? "New Folder" : "New File",
         position: "cursor",
-        width: 550,
-        height: 160,
+        width: 600,
+        height: 200,
         tplid: "lcbind-fstpl-filenew",
         data: {
             formid: formid,
@@ -554,7 +555,6 @@ function _fsUploadCommit(reqid, file) {
                 encode: "base64",
                 success: function(rsp) {
 
-                    console.log(reqid + file.name);
 
                     $("#" + reqid).find(".alert").show().append("<div>" + file.name + " OK</div>");
 
@@ -621,7 +621,7 @@ l9rProjFs.FileUpload = function(path) {
     var req = {
         title: "Upload File From Location",
         position: "cursor",
-        width: 600,
+        width: 700,
         height: 400,
         tplid: "lcbind-fstpl-fileupload",
         data: {
@@ -685,8 +685,8 @@ l9rProjFs.FileRename = function(path) {
     var req = {
         title: "Rename File/Folder",
         position: "cursor",
-        width: 550,
-        height: 160,
+        width: 600,
+        height: 200,
         tplid: "lcbind-fstpl-filerename",
         data: {
             formid: formid,
@@ -763,8 +763,8 @@ l9rProjFs.FileDel = function(path) {
     var req = {
         title: "Delete File or Folder",
         position: "cursor",
-        width: 550,
-        height: 230,
+        width: 600,
+        height: 260,
         tplid: "lcbind-fstpl-filedel",
         data: {
             formid: formid,
@@ -1246,7 +1246,7 @@ l9rLayout.Resize = function() {
 
     //
     var bodyHeight = $("body").height();
-    var bodyWidth = $("body").width() - 30;
+    var bodyWidth = $("body").width() - 20;
     if (bodyWidth != l9rLayout.width) {
         l9rLayout.width = bodyWidth;
         $("#lcbind-layout").width(l9rLayout.width);
@@ -1282,7 +1282,7 @@ l9rLayout.Resize = function() {
     var rangeUsed = 0.0;
     for (var i in l9rLayout.cols) {
 
-        if (l9rLayout.cols[i].minWidth !== undefined) {
+        if (l9rLayout.cols[i].minWidth) {
             if ((l9rLayout.cols[i].width * l9rLayout.width / 100) < l9rLayout.cols[i].minWidth) {
                 l9rLayout.cols[i].width = 100 * ((l9rLayout.cols[i].minWidth + 50) / l9rLayout.width);
             }

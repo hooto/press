@@ -557,6 +557,9 @@
   min-height: 30px;
   color: #4a5a6a;
   background-color: rgba(255, 255, 255, 0.95);
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 }
 
 .lcx-fstree {
