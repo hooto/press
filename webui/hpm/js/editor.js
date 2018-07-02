@@ -90,7 +90,6 @@ hpEditor.Open = function(name, format) {
                 hpEditor.previewChanged(name);
             });
 
-            // console.log("post width: "+ $("#field_"+ name +"_layout").width());
             $("#field_" + name + "_layout").addClass("hpm-editor-cm");
             $("#field_" + name + "_inner_toolbar").find(".preview_open").show();
         });
@@ -99,7 +98,6 @@ hpEditor.Open = function(name, format) {
 
 
 hpEditor.sizeRefresh = function() {
-    // console.log("hpEditor.sizeRefresh");
 
     var dels = [];
     for (var name in hpEditor.editors) {
@@ -111,7 +109,6 @@ hpEditor.sizeRefresh = function() {
         }
 
         if (!$("#field_" + name + "_colpreview").is(":visible")) {
-            // console.log("preview skip");
             continue;
         }
 
@@ -131,11 +128,13 @@ hpEditor.PreviewOpen = function(name) {
     var width5 = (width - 20) / 2;
 
     $("#field_" + name + "_editor").find(".CodeMirror").css({
-        width: width5 + "px"
+        width: width5 + "px",
+        height: height + "px",
     });
 
     $("#field_" + name + "_preview").css({
-        height: height + "px"
+        width: width5 + "px",
+        height: height + "px",
     });
 
     $("#field_" + name + "_colpreview").show();
