@@ -81,28 +81,27 @@ hp.HttpSrvBasePath = function(url) {
 
 hp.CodeRender = function(options) {
 
-    $(".markdown-body").each(function(i, el) {
+    $(".hp-content").each(function(i, el) {
         var isMath = /\$\$(.*)\$\$/g.test(el.innerHTML);
         if (!isMath) {
             return;
         }
-        seajs.use([
-            "~/katex/0.9/katex.css",
-            "~/katex/0.9/katex.js",
-        ], function() {
-            el.innerHTML = el.innerHTML.replace(/(\$\$([^\$]*)\$\$)+/g, function(v) {
-                return katex.renderToString(v.replace(/\$/g, ""));
-            });
+        el.innerHTML = el.innerHTML.replace(/(\$\$([^\$]*)\$\$)+/g, function(v) {
+            return '<span class="language-math">' + v.replace(/\$/g, "") + '</span>';
         });
     });
 
     options = options || {};
-    $("code[class^='language-']").each(function(i, el) {
+    $("[class^='language-']").each(function(i, el) {
 
         var lang = el.className.substr("language-".length);
 
         if (lang == "hchart" || lang == "hooto_chart") {
             return hp.hchartRender(i, el);
+        }
+
+        if (lang == "math") {
+            return hp.mathRender(i, el);
         }
 
         var modes = [];
@@ -204,6 +203,15 @@ hp.hchartRender = function(i, elem) {
         hooto_chart.opts_width = "600px";
         hooto_chart.opts_height = "400px";
         hooto_chart.JsonRenderElement(elem, elem_id);
+    });
+}
+
+hp.mathRender = function(i, elem) {
+    seajs.use([
+        "~/katex/0.9/katex.css",
+        "~/katex/0.9/katex.js",
+    ], function() {
+        elem.innerHTML = katex.renderToString(elem.innerHTML);
     });
 }
 

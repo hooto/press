@@ -68,7 +68,7 @@ func main() {
 		return
 	}
 
-	tbs, err := mr.TableQuery("hootopress")
+	tbs, err := mr.TableQuery("dbaction")
 	if err != nil {
 		fmt.Println(err)
 		return

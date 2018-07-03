@@ -31,6 +31,7 @@ webui/hp/img/ap.ico
 webui/bs/3.3/fonts/
 webui/octicons/
 webui/open-iconic/
+webui/katex/
 
 %js_compress
 webui/bs/3.3/js/bootstrap.js
@@ -42,6 +43,7 @@ webui/lessui/js/eventproxy.js
 webui/lessui/js/sea.js
 webui/hp/js/
 webui/hpm/js/
+webui/katex/
 modules/core/
 vendor/github.com/hooto/hchart/webui/
 
@@ -54,6 +56,7 @@ webui/lessui/css/lessui.css
 webui/lessui/css/base.css
 webui/hp/css/
 webui/hpm/css/
+webui/katex/
 modules/core/
 
 

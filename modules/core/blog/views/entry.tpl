@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <div class="content">{{FieldHtmlPrint .entry "content" .LANG}}</div>
+        <div class="content hp-content">{{FieldHtmlPrint .entry "content" .LANG}}</div>
       </div>
 
       {{if .entry.ExtCommentEnable}}

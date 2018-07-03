@@ -1,5 +1,6 @@
 .pt_frame_box {
     margin: 20px 0 20px 0;
+    padding 0 5px !important;
 }
 
 .pt_node_content {
@@ -11,13 +12,13 @@
   /* background-color: #1890ff; */
   background-color: #096dd9;
   color: #fff;
-  padding: 20px 5px;
+  padding: 20px 5px !important;
 }
 
 .pt_index_frame_dark {
   background-color: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 20px 5px;
+  padding: 20px 5px !important;
 }
 
 

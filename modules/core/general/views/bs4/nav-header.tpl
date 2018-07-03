@@ -24,7 +24,7 @@
       </li>
       {{end}}
     </ul>
-    <div class="form-inline my-2 my-lg-0" id="hp-topbar-userbar"></div>
+    <ul class="form-inline my-2 my-lg-0" id="hp-topbar-userbar"></ul>
   </div>
 </div>
 </nav>

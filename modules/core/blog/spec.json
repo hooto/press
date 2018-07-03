@@ -1,9 +1,10 @@
 {
   "meta": {
     "name": "core/blog",
-    "version": "0.0.29"
+    "version": "0.0.30"
   },
   "srvname": "blog",
+  "status": 1,
   "title": "Blog",
   "nodeModels": [
     {
