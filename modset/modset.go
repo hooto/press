@@ -17,7 +17,6 @@ package modset
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -79,30 +78,10 @@ func RoutePathFilter(name string) (string, error) {
 }
 
 func SpecFetch(modname string) (api.Spec, error) {
-
 	var entry api.Spec
-
 	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Prefix, modname)
-	if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
-		return entry, errors.New("Error: config file is not exists")
-	}
-
-	fp, err := os.Open(file)
-	if err != nil {
-		return entry, errors.New(fmt.Sprintf("Error: Can not open (%s)", file))
-	}
-	defer fp.Close()
-
-	str, err := ioutil.ReadAll(fp)
-	if err != nil {
-		return entry, err
-	}
-
-	if err := json.Decode([]byte(str), &entry); err != nil {
-		return entry, err
-	}
-
-	return entry, nil
+	err := json.DecodeFile(file, &entry)
+	return entry, err
 }
 
 func SpecInfoNew(entry api.Spec) error {
@@ -804,32 +783,17 @@ func spec_config_file_sync(entry api.Spec) error {
 
 	entry.Meta.Created = 0
 	entry.Meta.Updated = 0
-	jsb, _ := json.Encode(entry, "  ")
 
 	//
 	file := fmt.Sprintf("%s/modules/%s/spec.json", config.Prefix, entry.Meta.Name)
 
-	fp, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE, 0640)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error: Can not open (%s)", file))
-	}
-	defer fp.Close()
-
-	fp.Seek(0, 0)
-	fp.Truncate(int64(len(jsb)))
-
-	if _, err = fp.Write(jsb); err == nil {
-		// fmt.Println("config.Modules refresh", entry.Meta.Version)
-		// config.SpecSet(&entry)
-	}
-
-	return err
+	return json.EncodeToFile(entry, file, "  ")
 }
 
 func SpecSchemaSync(spec api.Spec) error {
 
 	var (
-		ds      modeler.DatabaseEntry
+		ds      = &modeler.Schema{}
 		timenow = rdb.TimeNow("datetime")
 		err     error
 	)
@@ -1105,9 +1069,5 @@ func SpecSchemaSync(spec api.Spec) error {
 	if err != nil {
 		return err
 	}
-	opts := config.Config.IoConnectors.Options("hpress_database")
-	if opts == nil {
-		return errors.New("No Database Setup")
-	}
-	return ms.Sync(opts.Value("dbname"), ds)
+	return ms.SchemaSync(ds)
 }

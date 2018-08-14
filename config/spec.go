@@ -320,7 +320,7 @@ func _instance_schema_sync(spec *api.Spec) error {
 		return errors.New("No RDB Connector Found")
 	}
 
-	ds := modeler.DatabaseEntry{}
+	ds := &modeler.Schema{}
 
 	// nodes
 	for _, nodeModel := range spec.NodeModels {
@@ -551,13 +551,9 @@ func _instance_schema_sync(spec *api.Spec) error {
 	}
 
 	// sync
-	ms, err := store.Data.Modeler()
+	dm, err := store.Data.Modeler()
 	if err != nil {
 		return err
 	}
-	opts := Config.IoConnectors.Options("hpress_database")
-	if opts == nil {
-		return errors.New("No Database Setup")
-	}
-	return ms.Sync(opts.Value("dbname"), ds)
+	return dm.SchemaSync(ds)
 }

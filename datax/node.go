@@ -141,7 +141,7 @@ func data_sync_pull() error {
 		return err
 	}
 
-	if tbs, err := dmr.TableQuery(store.DataOptions.Value("dbname")); err != nil {
+	if tbs, err := dmr.TableQuery(); err != nil {
 		return err
 	} else {
 
@@ -185,7 +185,7 @@ func data_sync_pull() error {
 			return err
 		}
 
-		tbs, err := mr.TableQuery(cv.Value("dbname"))
+		tbs, err := mr.TableQuery()
 		if err != nil {
 			return err
 		}

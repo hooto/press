@@ -211,6 +211,8 @@ hp.mathRender = function(i, elem) {
         "~/katex/0.9/katex.css",
         "~/katex/0.9/katex.js",
     ], function() {
+		// console.log(elem.innerHTML);
+		// katex.render(elem.innerHTML, elem);
         elem.innerHTML = katex.renderToString(elem.innerHTML);
     });
 }

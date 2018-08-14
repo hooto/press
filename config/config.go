@@ -30,7 +30,6 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
-	"github.com/lynkdb/iomix/rdb/modeler"
 	"github.com/sysinner/incore/inapi"
 
 	"github.com/hooto/hpress/api"
@@ -427,7 +426,6 @@ func store_init() error {
 		Config.IoConnectors.SetOptions(*opts)
 	}
 
-	var dbname = "dbaction"
 	{
 		io_name := types.NewNameIdentifier("hpress_database")
 		opts := Config.IoConnectors.Options(io_name)
@@ -451,8 +449,6 @@ func store_init() error {
 			opts.SetValue("port", "5432")
 		}
 
-		dbname = opts.Value("dbname")
-
 		Config.IoConnectors.SetOptions(*opts)
 	}
 
@@ -461,18 +457,13 @@ func store_init() error {
 		return err
 	}
 
-	ds, err := modeler.NewDatabaseEntryFromJson(dsBase)
-	if err != nil {
-		return err
-	}
-
-	mor, err := store.Data.Modeler()
+	dm, err := store.Data.Modeler()
 	if err != nil {
 		hlog.Printf("error", "store_init %s", err.Error())
 		return err
 	}
 
-	err = mor.Sync(dbname, ds)
+	err = dm.SchemaSyncByJson(dsBase)
 	if err != nil {
 		hlog.Printf("error", "store_init %s", err.Error())
 	}
