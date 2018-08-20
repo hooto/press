@@ -141,7 +141,7 @@ func data_sync_pull() error {
 		return err
 	}
 
-	if tbs, err := dmr.TableQuery(); err != nil {
+	if tbs, err := dmr.TableDump(); err != nil {
 		return err
 	} else {
 
@@ -185,7 +185,7 @@ func data_sync_pull() error {
 			return err
 		}
 
-		tbs, err := mr.TableQuery()
+		tbs, err := mr.TableDump()
 		if err != nil {
 			return err
 		}

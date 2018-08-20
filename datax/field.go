@@ -57,6 +57,7 @@ var (
 	regMultiLine  = regexp.MustCompile("\\n\\n+")
 	regMultiSpace = regexp.MustCompile("\\s{2,}")
 	regLineSpace  = regexp.MustCompile("\\n\\s*\\n")
+	regMath       = regexp.MustCompile("\\$\\$(.*?)\\$\\$")
 	mkp           = bluemonday.UGCPolicy()
 	htmlp         = bluemonday.UGCPolicy()
 	shtmlp        = bluemonday.UGCPolicy()
@@ -271,6 +272,12 @@ func FieldHtml(fields []*api.NodeField, colname string) template.HTML {
 	switch fm {
 
 	case "md":
+
+		if strings.Index(val, `$$`) > 0 {
+			// val = regMath.ReplaceAllString(val, "<code class=\"language-math\">$1</code>")
+			val = strings.Replace(val, `\\`, `\\\\`, -1)
+		}
+
 		unsafe := blackfriday.MarkdownCommon([]byte(val))
 		val = string(mkp.SanitizeBytes(unsafe))
 
@@ -527,6 +534,12 @@ func field_value_html_convert(fm, val string) string {
 	switch fm {
 
 	case "md":
+
+		if strings.Index(val, `$$`) > 0 {
+			// val = regMath.ReplaceAllString(val, "<code class=\"language-math\">$1</code>")
+			val = strings.Replace(val, `\\`, `\\\\`, -1)
+		}
+
 		unsafe := blackfriday.MarkdownCommon([]byte(val))
 		val = string(mkp.SanitizeBytes(unsafe))
 

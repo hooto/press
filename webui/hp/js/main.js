@@ -208,12 +208,15 @@ hp.hchartRender = function(i, elem) {
 
 hp.mathRender = function(i, elem) {
     seajs.use([
-        "~/katex/0.9/katex.css",
-        "~/katex/0.9/katex.js",
+        "~/katex/0.10/katex.css",
+        "~/katex/0.10/katex.js",
     ], function() {
-		// console.log(elem.innerHTML);
-		// katex.render(elem.innerHTML, elem);
-        elem.innerHTML = katex.renderToString(elem.innerHTML);
+        var txt = elem.innerHTML.replace(/\\‘/g, `\'`);
+        txt = txt.replace(/\\“/g, `\"`);
+        txt = txt.replace(/\&amp;/g, `&`);
+        elem.innerHTML = katex.renderToString(txt, {
+            throwOnError: true
+        });
     });
 }
 
