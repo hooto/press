@@ -68,7 +68,7 @@ func main() {
 		return
 	}
 
-	tbs, err := mr.TableQuery("dbaction")
+	tbs, err := mr.TableDump()
 	if err != nil {
 		fmt.Println(err)
 		return

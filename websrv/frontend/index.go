@@ -280,7 +280,15 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 		if len(ls.Items) == 0 {
 
-			ls = qry.NodeList([]string{}, []string{})
+			if c.Params.Get("qry_text") != "" {
+				ls = qry.NodeListSearch(c.Params.Get("qry_text"))
+				if ls.Error != nil {
+					fmt.Println(ls.Error.Message)
+					ls = qry.NodeList([]string{}, []string{})
+				}
+			} else {
+				ls = qry.NodeList([]string{}, []string{})
+			}
 			// fmt.Println("index node.list")
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
 				c.hookPosts = append(

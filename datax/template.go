@@ -35,7 +35,9 @@ func FilterUri(data map[string]interface{}, args ...interface{}) template.URL {
 
 	for key, val := range data {
 
-		if len(key) > 5 && key[:5] == "term_" {
+		if key == "qry_text" {
+			uris = append(uris, fmt.Sprintf("qry_text=%v", val))
+		} else if len(key) > 5 && key[:5] == "term_" {
 			uris = append(uris, fmt.Sprintf("%s=%v", key, val))
 		}
 	}

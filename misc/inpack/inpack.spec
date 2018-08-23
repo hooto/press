@@ -18,6 +18,21 @@ sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hpm/js/main.js
 sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hp/js/main.js
 sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hpm/js/main.js
 
+
+cd {{.inpack__pack_dir}}/deps/sphinxsearch
+
+./configure --prefix=/home/action/apps/hootopress --without-mysql --without-pgsql --with-libexpat
+make -j4
+
+install src/indexer   {{.buildroot}}/bin/sph-indexer
+install src/indextool {{.buildroot}}/bin/sph-indextool
+install src/searchd   {{.buildroot}}/bin/sph-searchd
+
+strip -s {{.buildroot}}/bin/sph-indexer
+strip -s {{.buildroot}}/bin/sph-indextool
+strip -s {{.buildroot}}/bin/sph-searchd
+
+
 %files
 bin/hooto-press
 bin/keeper

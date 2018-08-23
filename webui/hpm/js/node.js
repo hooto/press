@@ -670,6 +670,10 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                 data.ext_node_refer = "";
             }
 
+            if (!data.ext_text_search) {
+                data.ext_text_search = false;
+            }
+
             $(alertid).hide();
 
 

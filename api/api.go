@@ -14,6 +14,12 @@
 
 package api
 
+import (
+	"fmt"
+
+	"github.com/lessos/lessgo/encoding/json"
+)
+
 const (
 	Version = "0.0.0.dev00"
 )
@@ -26,4 +32,17 @@ const (
 
 func NsSysDataPull() []byte {
 	return []byte("/sys/config/ext_data_pull")
+}
+
+func NsSysNodeSearch(bukname string) []byte {
+	return []byte("/sys/config/ext_node_search/" + bukname)
+}
+
+func NsTextSearchCacheNodeEntry(bukname, id string) []byte {
+	return []byte("/cache/node/" + bukname + "/" + id)
+}
+
+func ObjPrint(name string, obj interface{}) {
+	js, _ := json.Encode(obj, "  ")
+	fmt.Println(name, string(js))
 }

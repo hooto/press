@@ -342,6 +342,11 @@ func SpecNodeSet(modname string, entry api.NodeModel) error {
 				sync = true
 			}
 
+			if nodeModel.Extensions.TextSearch != entry.Extensions.TextSearch {
+				prev.NodeModels[i].Extensions.TextSearch = entry.Extensions.TextSearch
+				sync = true
+			}
+
 			if len(nodeModel.Fields) != len(entry.Fields) && len(entry.Fields) > 0 {
 
 				prev.NodeModels[i].Fields = entry.Fields

@@ -175,6 +175,16 @@
           </td>
         </tr>
         {[}]}
+        <tr>
+          <td>Full Text Search Enable</td>
+          <td>
+            <select class="form-control input-sm" name="ext_text_search">
+            {[~it._general_onoff :gv]}
+            <option value="{[=gv.type]}" {[ if (it.extensions.text_search == gv.type) { ]}selected{[ } ]}>{[=gv.name]}</option>
+            {[~]}
+            </select>
+          </td>
+        </tr>
       </tbody>
       </table>
     </div>

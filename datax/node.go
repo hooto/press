@@ -15,6 +15,8 @@
 package datax
 
 import (
+	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"strings"
 	"sync"
@@ -38,6 +40,18 @@ var (
 	worker_pending        = false
 )
 
+func hex16ToUint64(str string) uint64 {
+	if n := len(str); n > 0 {
+		if n < 16 {
+			str = strings.Repeat("0", 16-n) + str
+		}
+		if bs, err := hex.DecodeString(str); err == nil && len(bs) >= 8 {
+			return binary.BigEndian.Uint64(bs)
+		}
+	}
+	return 0
+}
+
 func Worker() {
 
 	worker_counter_locker.Lock()
@@ -55,7 +69,7 @@ func Worker() {
 
 		for {
 
-			time.Sleep(6e9)
+			time.Sleep(1e9)
 			if store.LocalCache == nil {
 				continue
 			}
@@ -108,6 +122,10 @@ func Worker() {
 				if len(ls) < limit {
 					break
 				}
+			}
+
+			if err := data_search_sync(); err != nil {
+				hlog.Printf("error", "data_search_sync error : %s", err.Error())
 			}
 
 			if err := data_sync_pull(); err != nil {
@@ -216,9 +234,10 @@ func data_sync_pull() error {
 			}
 
 			if len(tn) > 10 {
-				q.Where().And("updated.le", tng)
+				// q.Where().And("updated.le", tng)
+				q.Where().And("updated.ge", tn)
 			}
-			q.Where().And("updated.ge", tn)
+			// q.Where().And("updated.ge", tn)
 
 			// fmt.Println("\nTABLE", vt.Name, tn, tng)
 

@@ -136,6 +136,7 @@ type SpecExtensions struct {
 	Permalink       string `json:"permalink,omitempty"`
 	NodeRefer       string `json:"node_refer,omitempty"`
 	NodeSubRefer    string `json:"node_sub_refer,omitempty"`
+	TextSearch      bool   `json:"text_search,omitempty"`
 }
 
 type NodeModelList struct {
