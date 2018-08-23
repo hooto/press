@@ -632,6 +632,7 @@ func (it *NodeSphinxSearchEngine) Query(bukname string, q string, qs *QuerySet) 
 
 	client.SetLimits(int(qs.offset), int(qs.limit), 1000, 0)
 	client.SetFilter("status", []uint64{1}, false)
+	client.SetMatchMode(sphinxsearch.SPH_MATCH_EXTENDED)
 
 	rss, err := client.Query(q, bukname, "")
 	if err != nil {
@@ -684,11 +685,10 @@ func sphTextFilter(txt string) string {
 		"'",
 		"<",
 		">",
-		" ",
 		"\r",
 		"\n",
 	} {
-		txt = strings.Replace(txt, v, "", -1)
+		txt = strings.Replace(txt, v, " ", -1)
 	}
 
 	return txt

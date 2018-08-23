@@ -211,11 +211,11 @@ hp.mathRender = function(i, elem) {
         "~/katex/0.10/katex.css",
         "~/katex/0.10/katex.js",
     ], function() {
-        var txt = elem.innerHTML.replace(/\\‘/g, `\'`);
-        txt = txt.replace(/\\“/g, `\"`);
-        txt = txt.replace(/\&amp;/g, `&`);
+        var txt = elem.innerHTML.replace(/\\‘/g, "'");
+        txt = txt.replace(/\\“/g, "\"");
+        txt = txt.replace(/\&amp;/g, "&");
         elem.innerHTML = katex.renderToString(txt, {
-            throwOnError: true
+            throwOnError: false
         });
     });
 }

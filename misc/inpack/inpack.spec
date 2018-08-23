@@ -1,6 +1,6 @@
 [project]
 name = hooto-press
-version = 0.4.4.alpha
+version = 0.4.5.alpha
 vendor = hooto.com
 homepage = https://github.com/hooto/hpress
 groups = app/other
@@ -47,6 +47,7 @@ webui/bs/3.3/fonts/
 webui/octicons/
 webui/open-iconic/
 webui/katex/
+misc/sphinxsearch
 
 %js_compress
 webui/bs/3.3/js/bootstrap.js
