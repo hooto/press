@@ -4,3 +4,6 @@
 [submodule "vendor/github.com/hooto/hchart"]
 	path = vendor/github.com/hooto/hchart
 	url = git@github.com:hooto/hchart.git
+[submodule "deps/sphinxsearch"]
+	path = deps/sphinxsearch
+	url = https://github.com/lynkdb/sphinx.git
