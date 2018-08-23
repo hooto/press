@@ -677,6 +677,23 @@ func (it *NodeSphinxSearchEngine) Query(bukname string, q string, qs *QuerySet) 
 	return ls
 }
 
+func sphTextFilter(txt string) string {
+
+	for _, v := range []string{
+		`"`,
+		"'",
+		"<",
+		">",
+		" ",
+		"\r",
+		"\n",
+	} {
+		txt = strings.Replace(txt, v, "", -1)
+	}
+
+	return txt
+}
+
 func sphDocumentXml(node *api.Node, active *sphinxSearchBucketActive) string {
 
 	u64 := sphHex16ToUint64(node.ID)
@@ -688,7 +705,7 @@ func sphDocumentXml(node *api.Node, active *sphinxSearchBucketActive) string {
 
 	xml += fmt.Sprintf(`<%s>%s</%s>`, "nid", node.ID, "nid")
 	xml += fmt.Sprintf(`<%s>%d</%s>`, "status", node.Status, "status")
-	xml += fmt.Sprintf(`<%s><![CDATA[%s]]></%s>`, "title", node.Title, "title")
+	xml += fmt.Sprintf(`<%s><![CDATA[%s]]></%s>`, "title", sphTextFilter(node.Title), "title")
 
 	if len(node.Terms) > 0 {
 		terms := ""
@@ -704,7 +721,7 @@ func sphDocumentXml(node *api.Node, active *sphinxSearchBucketActive) string {
 			}
 		}
 		if len(terms) > 0 {
-			xml += fmt.Sprintf(`<%s><![CDATA[%s]]></%s>`, "term_tags", terms, "term_tags")
+			xml += fmt.Sprintf(`<%s><![CDATA[%s]]></%s>`, "term_tags", sphTextFilter(terms), "term_tags")
 		}
 	}
 
@@ -715,7 +732,7 @@ func sphDocumentXml(node *api.Node, active *sphinxSearchBucketActive) string {
 		}
 	}
 	if len(content) > 0 {
-		xml += fmt.Sprintf(`<%s><![CDATA[%s]]></%s>`, "content", content, "content")
+		xml += fmt.Sprintf(`<%s><![CDATA[%s]]></%s>`, "content", sphTextFilter(content), "content")
 	}
 
 	xml += "</sphinx:document>\n"
