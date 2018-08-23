@@ -15,6 +15,8 @@
 package datax
 
 import (
+	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -314,4 +316,16 @@ func (q *QuerySet) NodeListSearch(qry string) api.NodeList {
 		idhash.HashToHexString([]byte(q.ModName), 12), q.Table)
 
 	return nodeSearcher.Query(table, qry, q)
+}
+
+func hex16ToUint64(str string) uint64 {
+	if n := len(str); n > 0 {
+		if n < 16 {
+			str = strings.Repeat("0", 16-n) + str
+		}
+		if bs, err := hex.DecodeString(str); err == nil && len(bs) >= 8 {
+			return binary.BigEndian.Uint64(bs)
+		}
+	}
+	return 0
 }
