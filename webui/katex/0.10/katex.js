@@ -301,42 +301,22 @@ ParseError_ParseError.prototype.__proto__ = Error.prototype;
 
 
 /**
- * Provide an `indexOf` function which works in IE8, but defers to native if
- * possible.
- */
-var nativeIndexOf = Array.prototype.indexOf;
-/**
- * This file contains a list of utility functions which are useful in other
- * files.
- */
-
-var indexOf = function indexOf(list, elem) {
-    if (list == null) {
-        return -1;
-    }
-    if (nativeIndexOf && list.indexOf === nativeIndexOf) {
-        return list.indexOf(elem);
-    }
-    var l = list.length;
-    for (var i = 0; i < l; i++) {
-        if (list[i] === elem) {
-            return i;
-        }
-    }
-    return -1;
-};
-
-/**
  * Return whether an element is contained in a list
  */
 var contains = function contains(list, elem) {
-    return indexOf(list, elem) !== -1;
+    return list.indexOf(elem) !== -1;
 };
 
 /**
  * Provide a default value if a setting is undefined
  * NOTE: Couldn't use `T` as the output type due to facebook/flow#5022.
  */
+
+/**
+ * This file contains a list of utility functions which are useful in other
+ * files.
+ */
+
 var deflt = function deflt(setting, defaultIfUndefined) {
     return setting === undefined ? defaultIfUndefined : setting;
 };
@@ -365,31 +345,6 @@ function utils_escape(text) {
     return String(text).replace(ESCAPE_REGEX, function (match) {
         return ESCAPE_LOOKUP[match];
     });
-}
-
-/**
- * A function to set the text content of a DOM element in all supported
- * browsers. Note that we don't define this if there is no document.
- */
-var setTextContent = void 0;
-if (typeof document !== "undefined") {
-    var testNode = document.createElement("span");
-    if ("textContent" in testNode) {
-        setTextContent = function setTextContent(node, text) {
-            node.textContent = text;
-        };
-    } else {
-        setTextContent = function setTextContent(node, text) {
-            node.innerText = text;
-        };
-    }
-}
-
-/**
- * A function to clear a node.
- */
-function clearNode(node) {
-    setTextContent(node, "");
 }
 
 /**
@@ -453,9 +408,6 @@ var assertType = function assertType(val, Cls) {
     deflt: deflt,
     escape: utils_escape,
     hyphenate: hyphenate,
-    indexOf: indexOf,
-    setTextContent: setTextContent,
-    clearNode: clearNode,
     getBaseElem: getBaseElem,
     isCharacterBox: utils_isCharacterBox
 });
@@ -11132,7 +11084,6 @@ defineFunction({
 
 
 
-
 function sizingGroup(value, options, baseOptions) {
     var inner = buildHTML_buildExpression(value, options, false);
     var multiplier = options.sizeMultiplier / baseOptions.sizeMultiplier;
@@ -11140,7 +11091,7 @@ function sizingGroup(value, options, baseOptions) {
     // Add size-resetting classes to the inner list and set maxFontSize
     // manually. Handle nested size changes.
     for (var i = 0; i < inner.length; i++) {
-        var pos = utils.indexOf(inner[i].classes, "sizing");
+        var pos = inner[i].classes.indexOf("sizing");
         if (pos < 0) {
             Array.prototype.push.apply(inner[i].classes, options.sizingClasses(baseOptions));
         } else if (inner[i].classes[pos + 1] === "reset-size" + options.size) {
@@ -11186,7 +11137,7 @@ defineFunction({
             type: "sizing",
             mode: parser.mode,
             // Figure out what size to use based on the list of functions above
-            size: utils.indexOf(sizeFuncs, funcName) + 1,
+            size: sizeFuncs.indexOf(funcName) + 1,
             body: body
         };
     },
@@ -15752,13 +15703,12 @@ var parseTree_parseTree = function parseTree(toParse, settings) {
 
 
 
-
 /**
  * Parse and build an expression, and place that expression in the DOM node
  * given.
  */
 var katex_render = function render(expression, baseNode, options) {
-    utils.clearNode(baseNode);
+    baseNode.textContent = "";
     var node = katex_renderToDomTree(expression, options).toNode();
     baseNode.appendChild(node);
 };
@@ -15838,7 +15788,7 @@ var katex_renderToHTMLTree = function renderToHTMLTree(expression, options) {
     /**
      * Current KaTeX version
      */
-    version: "0.10.0-rc",
+    version: "0.10.0-rc.1",
     /**
      * Renders the given LaTeX into an HTML+MathML combination, and adds
      * it as a child to the specified DOM node.
