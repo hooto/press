@@ -85,7 +85,8 @@ func main() {
 
 	for _, vt := range tbs {
 
-		if !strings.HasPrefix(vt.Name, "nx") {
+		if !strings.HasPrefix(vt.Name, "nx") &&
+			!strings.HasPrefix(vt.Name, "hpn_") {
 			continue
 		}
 		var (

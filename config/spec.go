@@ -20,13 +20,13 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/utils"
-	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/rdb/modeler"
 
 	"github.com/hooto/hpress/api"
@@ -90,14 +90,14 @@ func SpecTermModel(modname, modelName string) (*api.TermModel, error) {
 
 func module_init() error {
 
-	timenow := rdb.TimeNow("datetime")
+	timenow := uint32(time.Now().Unix())
 
 	if store.Data == nil {
 		return errors.New("No RDB Connector Found")
 	}
 
 	//
-	q := store.Data.NewQueryer().From("modules").Limit(200)
+	q := store.Data.NewQueryer().From("hp_modules").Limit(200)
 	// q.Where.And("status", 1)
 	if rs, err := store.Data.Query(q); err == nil {
 
@@ -133,7 +133,7 @@ func module_init() error {
 					}
 
 					//
-					table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(mod.Meta.Name, 12), v2.Meta.Name)
+					table := fmt.Sprintf("hpn_%s_%s", utils.StringEncode16(mod.Meta.Name, 12), v2.Meta.Name)
 					qs := store.Data.NewQueryer().
 						Select("id,title,field_title").
 						From(table).
@@ -172,7 +172,7 @@ func module_init() error {
 					set := map[string]interface{}{
 						"body": string(js),
 					}
-					store.Data.Update("modules", set, fr)
+					store.Data.Update("hp_modules", set, fr)
 				}
 
 				// if v.Field("status").String() != "1" {
@@ -247,7 +247,7 @@ func module_init() error {
 			"body":    string(jsb),
 		}
 
-		q = store.Data.NewQueryer().From("modules")
+		q = store.Data.NewQueryer().From("hp_modules")
 		q.Where().And("name", spec.Meta.Name)
 
 		if _, err := store.Data.Fetch(q); err == nil {
@@ -255,7 +255,7 @@ func module_init() error {
 			fr := store.Data.NewFilter()
 			fr.And("name", spec.Meta.Name)
 
-			store.Data.Update("modules", set, fr)
+			store.Data.Update("hp_modules", set, fr)
 
 		} else {
 
@@ -264,7 +264,7 @@ func module_init() error {
 			set["created"] = timenow
 			set["status"] = 1
 
-			store.Data.Insert("modules", set)
+			store.Data.Insert("hp_modules", set)
 		}
 
 		Modules[spec.SrvName] = &spec
@@ -331,7 +331,7 @@ func _instance_schema_sync(spec *api.Spec) error {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
 
 		if nodeModel.Extensions.AccessCounter {
 			tbl.AddColumn(&modeler.Column{
@@ -501,7 +501,7 @@ func _instance_schema_sync(spec *api.Spec) error {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("hpt_%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
 
 		switch termModel.Type {
 

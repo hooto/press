@@ -95,6 +95,24 @@ func s2_replace(s string) string {
 	return s2Replacer.Replace(s)
 }
 
+func UnixtimeFormat(timeValue interface{}, formatTo string) string {
+
+	var tp time.Time
+
+	switch timeValue.(type) {
+	case uint32:
+		tp = time.Unix(int64(timeValue.(uint32)), 0)
+
+	case int64:
+		tp = time.Unix(timeValue.(int64), 0)
+
+	default:
+		tp = time.Now()
+	}
+
+	return tp.Format(timeFormator.Replace(formatTo))
+}
+
 func TimeFormat(timeString, formatFrom, formatTo string) string {
 
 	tp, err := time.ParseInLocation(timeFormator.Replace(formatFrom), timeString, time.Local)

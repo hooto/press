@@ -206,9 +206,9 @@ func Initialize(prefix string) error {
 
 	//
 	{
-		rs, err := store.Data.Query(store.Data.NewQueryer().From("sys_config").Limit(1000))
+		rs, err := store.Data.Query(store.Data.NewQueryer().From("hp_sys_config").Limit(1000))
 		if err != nil {
-			fmt.Println(store.Data.NewQueryer().From("sys_config").Limit(1000))
+			fmt.Println(store.Data.NewQueryer().From("hp_sys_config").Limit(1000))
 			hlog.Print("error", err.Error())
 			return err
 		}

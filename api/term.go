@@ -28,8 +28,8 @@ type Term struct {
 	UserID         string     `json:"userid,omitempty"`
 	Title          string     `json:"title"`
 	Weight         int32      `json:"weight,omitempty"`
-	Created        string     `json:"created,omitempty"`
-	Updated        string     `json:"updated,omitempty"`
+	Created        uint32     `json:"created,omitempty"`
+	Updated        uint32     `json:"updated,omitempty"`
 }
 
 type TermList struct {

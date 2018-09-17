@@ -394,8 +394,8 @@ hpNode.List = function(modname, modelid, referid) {
 
             for (var i in rsj.items) {
 
-                rsj.items[i].created = l4i.TimeParseFormat(rsj.items[i].created, "Y-m-d");
-                rsj.items[i].updated = l4i.TimeParseFormat(rsj.items[i].updated, "Y-m-d");
+                rsj.items[i].created = l4i.UnixTimeFormat(rsj.items[i].created, "Y-m-d");
+                rsj.items[i].updated = l4i.UnixTimeFormat(rsj.items[i].updated, "Y-m-d");
 
                 if (!rsj.items[i].ext_access_counter) {
                     rsj.items[i].ext_access_counter = 0;

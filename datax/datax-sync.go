@@ -17,6 +17,7 @@ package datax
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/lessos/lessgo/types"
@@ -44,7 +45,7 @@ func data_sync_pull() error {
 		limit int64 = 100
 		src   rdb.Connector
 		err   error
-		tng   = rdb.TimeNow("datetime")
+		tng   = uint32(time.Now().Unix())
 		dtbs  types.ArrayString
 	)
 
@@ -104,8 +105,8 @@ func data_sync_pull() error {
 
 		for _, vt := range tbs {
 
-			if !strings.HasPrefix(vt.Name, "tx") &&
-				!strings.HasPrefix(vt.Name, "nx") {
+			if !strings.HasPrefix(vt.Name, "hpt_") &&
+				!strings.HasPrefix(vt.Name, "hpn_") {
 				continue
 			}
 
@@ -164,11 +165,11 @@ func data_sync_pull() error {
 					} else {
 
 						var (
-							tup = v.Field("updated").TimeFormat("datetime", "datetime")
-							tlc = rsi.Field("updated").TimeFormat("datetime", "datetime")
+							tup = v.Field("updated").Uint32()
+							tlc = rsi.Field("updated").Uint32()
 						)
 
-						if strings.Compare(tup, tlc) > 0 {
+						if tup > tlc {
 
 							if _, err = store.Data.Update(vt.Name, sets, fr); err != nil {
 								// fmt.Println("  ER UPDATE", vt.Name, v.Field("id").String())

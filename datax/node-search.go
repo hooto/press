@@ -26,7 +26,6 @@ import (
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/types"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -71,7 +70,7 @@ func data_search_sync() error {
 
 	var (
 		limit        int64 = 100
-		indexUpdated       = rdb.TimeNow("datetime")
+		indexUpdated       = uint32(time.Now().Unix())
 	)
 
 	if nodeSearcher == nil {
@@ -113,7 +112,7 @@ func data_search_sync() error {
 
 			case api.TermTaxonomy:
 
-				table := fmt.Sprintf("tx%s_%s", modid, term.Meta.Name)
+				table := fmt.Sprintf("hpt_%s_%s", modid, term.Meta.Name)
 				qs := store.Data.NewQueryer().From(table).Limit(2000)
 
 				if rs, err := store.Data.Query(qs); err == nil && len(rs) > 0 {
@@ -137,7 +136,7 @@ func data_search_sync() error {
 			var (
 				indexStart = time.Now()
 				indexNum   = 0
-				tblname    = fmt.Sprintf("nx%s_%s", modid, model.Meta.Name)
+				tblname    = fmt.Sprintf("hpn_%s_%s", modid, model.Meta.Name)
 				cfgs       types.KvPairs
 				offset     = int64(0)
 				q          = store.Data.NewQueryer().From(tblname).Limit(limit)
@@ -174,8 +173,8 @@ func data_search_sync() error {
 						PID:     v.Field("pid").String(),
 						Status:  v.Field("status").Int16(),
 						UserID:  v.Field("userid").String(),
-						Created: v.Field("created").TimeFormat("datetime", "atom"),
-						Updated: v.Field("updated").TimeFormat("datetime", "atom"),
+						Created: v.Field("created").Uint32(),
+						Updated: v.Field("updated").Uint32(),
 					}
 
 					if model.Extensions.AccessCounter {
@@ -312,7 +311,7 @@ func (q *QuerySet) NodeListSearch(qry string) api.NodeList {
 		return rsp
 	}
 
-	table := fmt.Sprintf("nx%s_%s",
+	table := fmt.Sprintf("hpn_%s_%s",
 		idhash.HashToHexString([]byte(q.ModName), 12), q.Table)
 
 	return nodeSearcher.Query(table, qry, q)

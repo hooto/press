@@ -29,8 +29,8 @@ type Node struct {
 	Status             int16        `json:"status,omitempty"`
 	UserID             string       `json:"userid,omitempty"`
 	Title              string       `json:"title,omitempty"`
-	Created            string       `json:"created,omitempty"`
-	Updated            string       `json:"updated,omitempty"`
+	Created            uint32       `json:"created,omitempty"`
+	Updated            uint32       `json:"updated,omitempty"`
 	Fields             []*NodeField `json:"fields,omitempty"`
 	Terms              []NodeTerm   `json:"terms,omitempty"`
 	ExtAccessCounter   uint32       `json:"ext_access_counter,omitempty"`

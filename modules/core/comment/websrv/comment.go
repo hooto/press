@@ -16,6 +16,7 @@ package websrv
 
 import (
 	"strings"
+	"time"
 
 	"github.com/hooto/hcaptcha/captcha4g"
 	"github.com/hooto/httpsrv"
@@ -136,6 +137,8 @@ func (c Comment) SetAction() {
 	set.Meta.ID = utils.StringNewRand(16)
 	set.Meta.Created = rdb.TimeNow("datetime")
 
+	tn := uint32(time.Now().Unix())
+
 	//
 	item := map[string]interface{}{
 		"id":                  set.Meta.ID,
@@ -149,12 +152,12 @@ func (c Comment) SetAction() {
 		"field_author":        set.Author,
 		"field_content":       set.Content,
 		"field_address":       "",
-		"created":             set.Meta.Created,
-		"updated":             set.Meta.Created,
+		"created":             tn,
+		"updated":             tn,
 		"field_content_attrs": "[]",
 	}
 
-	if _, err := store.Data.Insert("nx"+utils.StringEncode16("core/comment", 12)+"_entry", item); err != nil {
+	if _, err := store.Data.Insert("hpn_"+utils.StringEncode16("core/comment", 12)+"_entry", item); err != nil {
 		set.Error = &types.ErrorMeta{
 			Code:    "500",
 			Message: err.Error(),

@@ -87,7 +87,7 @@ func (c Sys) ConfigSetAction() {
 			continue
 		}
 
-		q := store.Data.NewQueryer().From("sys_config").Limit(1)
+		q := store.Data.NewQueryer().From("hp_sys_config").Limit(1)
 		q.Where().And("key", entry.Key)
 
 		rs, err := store.Data.Query(q)
@@ -111,7 +111,7 @@ func (c Sys) ConfigSetAction() {
 
 				ft := store.Data.NewFilter()
 				ft.And("key", entry.Key)
-				_, err = store.Data.Update("sys_config", set, ft)
+				_, err = store.Data.Update("hp_sys_config", set, ft)
 				sync = true
 			}
 
@@ -119,7 +119,7 @@ func (c Sys) ConfigSetAction() {
 
 			set["key"] = entry.Key
 
-			_, err = store.Data.Insert("sys_config", set)
+			_, err = store.Data.Insert("hp_sys_config", set)
 			sync = true
 		}
 

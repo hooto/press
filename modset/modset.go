@@ -23,12 +23,12 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utilx"
-	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/iomix/rdb/modeler"
 
 	"github.com/hooto/hpress/api"
@@ -799,7 +799,7 @@ func SpecSchemaSync(spec api.Spec) error {
 
 	var (
 		ds      = &modeler.Schema{}
-		timenow = rdb.TimeNow("datetime")
+		timenow = uint32(time.Now().Unix())
 		err     error
 	)
 
@@ -825,7 +825,7 @@ func SpecSchemaSync(spec api.Spec) error {
 		"body":    string(jsb),
 	}
 
-	q := store.Data.NewQueryer().From("modules")
+	q := store.Data.NewQueryer().From("hp_modules")
 	q.Where().And("name", spec.Meta.Name)
 
 	if _, err := store.Data.Fetch(q); err == nil {
@@ -833,14 +833,14 @@ func SpecSchemaSync(spec api.Spec) error {
 		fr := store.Data.NewFilter()
 		fr.And("name", spec.Meta.Name)
 
-		_, err = store.Data.Update("modules", set, fr)
+		_, err = store.Data.Update("hp_modules", set, fr)
 
 	} else {
 
 		set["name"] = spec.Meta.Name
 		set["created"] = timenow
 
-		_, err = store.Data.Insert("modules", set)
+		_, err = store.Data.Insert("hp_modules", set)
 	}
 
 	//
@@ -852,7 +852,7 @@ func SpecSchemaSync(spec api.Spec) error {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), nodeModel.Meta.Name)
 
 		if nodeModel.Extensions.AccessCounter {
 			tbl.AddColumn(&modeler.Column{
@@ -1020,7 +1020,7 @@ func SpecSchemaSync(spec api.Spec) error {
 			continue
 		}
 
-		tbl.Name = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
+		tbl.Name = fmt.Sprintf("hpt_%s_%s", idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
 
 		switch termModel.Type {
 

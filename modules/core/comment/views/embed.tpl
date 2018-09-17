@@ -20,7 +20,7 @@
       <div class="body">
         <div class="info">
           <strong>{{FieldSubString $v.Fields "author" 50}}</strong>
-          <small>@{{TimeFormat $v.Created "atom" "Y-m-d H:i"}}</small>
+          <small>@{{UnixtimeFormat $v.Created "Y-m-d H:i"}}</small>
         </div>
         <p>{{FieldSubHtml $v.Fields "content" 2000}}</p>
       </div>

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hooto/httpsrv"
 	"github.com/hooto/iam/iamapi"
@@ -26,7 +27,6 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utilx"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -175,7 +175,7 @@ func (c Node) SetAction() {
 
 	var (
 		set          = map[string]interface{}{}
-		table_prefix = fmt.Sprintf("nx%s_", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12))
+		table_prefix = fmt.Sprintf("hpn_%s_", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12))
 		table        = table_prefix + c.Params.Get("modelid")
 		node_refer   = ""
 	)
@@ -338,7 +338,7 @@ func (c Node) SetAction() {
 		set["id"] = idhash.RandHexString(node_id_length)
 		// set["title"] = rsp.Title
 		set["status"] = rsp.Status
-		set["created"] = rdb.TimeNow("datetime")
+		set["created"] = uint32(time.Now().Unix())
 
 		// TODO
 		set["userid"] = c.us.UserId()
@@ -545,7 +545,7 @@ func (c Node) SetAction() {
 
 	if len(set) > 0 {
 
-		set["updated"] = rdb.TimeNow("datetime")
+		set["updated"] = uint32(time.Now().Unix())
 
 		if len(rsp.ID) > 0 {
 
@@ -597,12 +597,12 @@ func (c Node) DelAction() {
 
 	//
 	set := map[string]interface{}{
-		"updated": rdb.TimeNow("datetime"),
+		"updated": uint32(time.Now().Unix()),
 		"status":  0,
 	}
 
 	//
-	table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
+	table := fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 
 	//
 	ids := strings.Split(c.Params.Get("id"), ",")

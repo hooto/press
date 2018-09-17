@@ -61,7 +61,7 @@ func (c ModSet) SpecListAction() {
 		return
 	}
 
-	q := store.Data.NewQueryer().From("modules").Limit(100)
+	q := store.Data.NewQueryer().From("hp_modules").Limit(100)
 	rs, err := store.Data.Query(q)
 	if err != nil {
 		rsp.Error = types.NewErrorMeta(api.ErrCodeInternalError, "Can not pull database instance")
@@ -103,7 +103,7 @@ func (c ModSet) SpecEntryAction() {
 		return
 	}
 
-	q := store.Data.NewQueryer().From("modules").Limit(1)
+	q := store.Data.NewQueryer().From("hp_modules").Limit(1)
 	q.Where().And("name", name)
 	rs, err := store.Data.Query(q)
 	if err != nil {

@@ -44,11 +44,11 @@ const (
         },
         {
             "name": "created",
-            "type": "datetime"
+            "type": "uint32"
         },
         {
             "name": "updated",
-            "type": "datetime"
+            "type": "uint32"
         }
     ],
     "indexes": [
@@ -110,11 +110,11 @@ const (
         },
         {
             "name": "created",
-            "type": "datetime"
+            "type": "uint32"
         },
         {
             "name": "updated",
-            "type": "datetime"
+            "type": "uint32"
         }
     ],
     "indexes": [

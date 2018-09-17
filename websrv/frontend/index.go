@@ -382,7 +382,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 			if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
 
-				table := fmt.Sprintf("nx%s_%s", idhash.HashToHexString([]byte(mod.Meta.Name), 12), ad.Query.Table)
+				table := fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(mod.Meta.Name), 12), ad.Query.Table)
 				store.LocalCache.KvPut([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1", nil)
 			}
 		}

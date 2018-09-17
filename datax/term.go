@@ -20,10 +20,10 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/utils"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -36,7 +36,7 @@ var (
 
 func (q *QuerySet) TermCount() (int64, error) {
 
-	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+	table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	fr := store.Data.NewFilter()
 	fr.And("status", 1)
@@ -64,7 +64,7 @@ func (q *QuerySet) TermList() api.TermList {
 	}
 
 	// q.limit = 100
-	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+	table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := store.Data.NewQueryer().
 		Select(q.cols).
@@ -101,8 +101,8 @@ func (q *QuerySet) TermList() api.TermList {
 				Status:  v.Field("status").Int16(),
 				UserID:  v.Field("userid").String(),
 				Title:   v.Field("title").String(),
-				Created: v.Field("created").TimeFormat("datetime", "atom"),
-				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
+				Created: v.Field("created").Uint32(),
+				Updated: v.Field("updated").Uint32(),
 			}
 
 			switch model.Type {
@@ -198,7 +198,7 @@ func (q *QuerySet) TermEntry() api.Term {
 		return rsp
 	}
 
-	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+	table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := store.Data.NewQueryer().
 		Select(q.cols).
@@ -245,8 +245,8 @@ func (q *QuerySet) TermEntry() api.Term {
 	rsp.Status = rs[0].Field("status").Int16()
 	rsp.UserID = rs[0].Field("userid").String()
 	rsp.Title = rs[0].Field("title").String()
-	rsp.Created = rs[0].Field("created").TimeFormat("datetime", "atom")
-	rsp.Updated = rs[0].Field("updated").TimeFormat("datetime", "atom")
+	rsp.Created = rs[0].Field("created").Uint32()
+	rsp.Updated = rs[0].Field("updated").Uint32()
 
 	rsp.Kind = "Term"
 
@@ -314,7 +314,7 @@ func NodeTermQuery(modname string, model *api.NodeModel, terms []api.NodeTerm) [
 
 			case api.TermTaxonomy:
 
-				table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), modTerm.Meta.Name)
+				table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(modname, 12), modTerm.Meta.Name)
 
 				q := store.Data.NewQueryer().From(table)
 				q.Limit(1)
@@ -378,7 +378,7 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 		ids = append(ids, tag.UID)
 	}
 
-	table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), modelid)
+	table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(modname, 12), modelid)
 
 	if len(ids) > 0 {
 
@@ -401,7 +401,7 @@ func TermSync(modname, modelid, terms string) (TermList, error) {
 		}
 	}
 
-	timenow := rdb.TimeNow("datetime")
+	timenow := uint32(time.Now().Unix())
 
 	for tk, tv := range ls.Items {
 

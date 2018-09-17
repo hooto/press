@@ -20,7 +20,7 @@ const dsBase = `
     "charset": "utf8",
     "tables": [
     	{
-            "name": "modules",
+            "name": "hp_modules",
             "columns": [
                 {
                     "name": "name",
@@ -54,11 +54,11 @@ const dsBase = `
                 },
                 {
                     "name": "created",
-                    "type": "datetime"
+                    "type": "uint32"
                 },
                 {
                     "name": "updated",
-                    "type": "datetime"
+                    "type": "uint32"
                 }
             ],
             "indexes": [
@@ -90,7 +90,7 @@ const dsBase = `
             ]
         },
         {
-            "name": "sys_config",
+            "name": "hp_sys_config",
             "columns": [
                 {
                     "name": "key",
@@ -144,11 +144,11 @@ const (
         },
         {
             "name": "created",
-            "type": "datetime"
+            "type": "uint32"
         },
         {
             "name": "updated",
-            "type": "datetime"
+            "type": "uint32"
         }
     ],
     "indexes": [
@@ -210,11 +210,11 @@ const (
         },
         {
             "name": "created",
-            "type": "datetime"
+            "type": "uint32"
         },
         {
             "name": "updated",
-            "type": "datetime"
+            "type": "uint32"
         }
     ],
     "indexes": [

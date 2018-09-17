@@ -82,8 +82,8 @@ hpTerm.List = function(modname, modelid) {
 
             for (var i in rsj.items) {
 
-                rsj.items[i].created = l4i.TimeParseFormat(rsj.items[i].created, "Y-m-d");
-                rsj.items[i].updated = l4i.TimeParseFormat(rsj.items[i].updated, "Y-m-d H:i:s");
+                rsj.items[i].created = l4i.UnixTimeFormat(rsj.items[i].created, "Y-m-d");
+                rsj.items[i].updated = l4i.UnixTimeFormat(rsj.items[i].updated, "Y-m-d H:i:s");
 
                 if (!rsj.items[i].weight) {
                     rsj.items[i].weight = 0;

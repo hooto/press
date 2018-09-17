@@ -20,6 +20,7 @@ import (
 
 func init() {
 	httpsrv.GlobalService.Config.TemplateFuncRegister("TimeFormat", TimeFormat)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("UnixtimeFormat", UnixtimeFormat)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldHtmlPrint", FieldHtmlPrint)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldStringPrint", FieldStringPrint)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldHtmlSubPrint", FieldHtmlSubPrint)

@@ -21,13 +21,13 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/hooto/httpsrv"
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/types"
-	"github.com/lynkdb/iomix/rdb"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -171,7 +171,7 @@ func (c Term) SetAction() {
 
 	var (
 		set   = map[string]interface{}{}
-		table = fmt.Sprintf("tx%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
+		table = fmt.Sprintf("hpt_%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
 	)
 
 	q := store.Data.NewQueryer().From(table).Limit(1)
@@ -215,7 +215,7 @@ func (c Term) SetAction() {
 			set["uid"] = rsp.UID
 			set["title"] = rsp.Title
 			set["status"] = rsp.Status
-			set["created"] = rdb.TimeNow("datetime")
+			set["created"] = uint32(time.Now().Unix())
 			set["userid"] = c.us.UserId()
 		}
 
@@ -264,7 +264,7 @@ func (c Term) SetAction() {
 			set["title"] = rsp.Title
 			set["status"] = rsp.Status
 			set["weight"] = rsp.Weight
-			set["created"] = rdb.TimeNow("datetime")
+			set["created"] = uint32(time.Now().Unix())
 			set["userid"] = c.us.UserId()
 		}
 
@@ -280,7 +280,7 @@ func (c Term) SetAction() {
 
 	if len(set) > 0 {
 
-		set["updated"] = rdb.TimeNow("datetime")
+		set["updated"] = uint32(time.Now().Unix())
 
 		if rsp.ID > 0 {
 

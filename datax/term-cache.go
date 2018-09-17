@@ -47,7 +47,7 @@ func _termTaxonomyCacheRefresh(modname, table string) {
 		return
 	}
 
-	tx_table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(modname, 12), table)
+	tx_table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(modname, 12), table)
 
 	qs := store.Data.NewQueryer().From(tx_table).Limit(200).Order("weight desc")
 	qs.Where().And("status", 1)
@@ -71,8 +71,8 @@ func _termTaxonomyCacheRefresh(modname, table string) {
 			UserID:  v.Field("userid").String(),
 			Title:   v.Field("title").String(),
 			Weight:  v.Field("weight").Int32(),
-			Created: v.Field("created").TimeFormat("datetime", "atom"),
-			Updated: v.Field("updated").TimeFormat("datetime", "atom"),
+			Created: v.Field("created").Uint32(),
+			Updated: v.Field("updated").Uint32(),
 		})
 	}
 

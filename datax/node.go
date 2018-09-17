@@ -29,7 +29,7 @@ import (
 
 func (q *QuerySet) NodeCount() (int64, error) {
 
-	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+	table := fmt.Sprintf("hpn_%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	return store.Data.Count(table, q.filter)
 }
@@ -47,7 +47,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 		return rsp
 	}
 
-	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+	table := fmt.Sprintf("hpn_%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := store.Data.NewQueryer().
 		Select(q.cols).
@@ -88,8 +88,8 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 				PID:     v.Field("pid").String(),
 				Status:  v.Field("status").Int16(),
 				UserID:  v.Field("userid").String(),
-				Created: v.Field("created").TimeFormat("datetime", "atom"),
-				Updated: v.Field("updated").TimeFormat("datetime", "atom"),
+				Created: v.Field("created").Uint32(),
+				Updated: v.Field("updated").Uint32(),
 			}
 
 			if model.Extensions.AccessCounter {
@@ -198,7 +198,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 		case api.TermTaxonomy:
 
-			table := fmt.Sprintf("tx%s_%s", utils.StringEncode16(q.ModName, 12), term.Meta.Name)
+			table := fmt.Sprintf("hpt_%s_%s", utils.StringEncode16(q.ModName, 12), term.Meta.Name)
 			qs := store.Data.NewQueryer().From(table).Limit(1000)
 			qs.Where().And("id.in", ids...)
 
@@ -281,7 +281,7 @@ func (q *QuerySet) NodeEntry() api.Node {
 		return rsp
 	}
 
-	table := fmt.Sprintf("nx%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
+	table := fmt.Sprintf("hpn_%s_%s", utils.StringEncode16(q.ModName, 12), q.Table)
 
 	qs := store.Data.NewQueryer().
 		Select(q.cols).
@@ -349,8 +349,8 @@ func (q *QuerySet) NodeEntry() api.Node {
 	rsp.ID = rs.Field("id").String()
 	rsp.Status = rs.Field("status").Int16()
 	rsp.UserID = rs.Field("userid").String()
-	rsp.Created = rs.Field("created").TimeFormat("datetime", "atom")
-	rsp.Updated = rs.Field("updated").TimeFormat("datetime", "atom")
+	rsp.Created = rs.Field("created").Uint32()
+	rsp.Updated = rs.Field("updated").Uint32()
 
 	if rsp.Model.Extensions.AccessCounter {
 		rsp.ExtAccessCounter = rs.Field("ext_access_counter").Uint32()
