@@ -20,7 +20,7 @@
           <div class="hinfo">
             <span class="section">
               <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
-              {{UnixtimeFormat .entry.Created "Y-m-d H:i:s"}}
+              {{UnixtimeFormat .entry.Created "Y-m-d"}}
             </span>
             
             {{range $term := .entry.Terms}}

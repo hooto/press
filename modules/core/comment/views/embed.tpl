@@ -75,15 +75,15 @@
         <div class="form-group">
           <label>Verification</label>
           <div>
-            <div class="row">          
-              <div class="col-xs-6">
+		    <table width="100%">
+			  <tr><td width="50%" valign="top">
                 <input type="text" class="form-control" name="captcha_word" value="">
                 <span class="help-block">Type the characters you see in the right picture</span>
-              </div>
-              <div class="col-xs-6" style="background-color: #dce6ff;">
+			  </td><td style="width: 10px">
+			  </td><td style="background-color: #dce6ff;">
                 <img id="hp-comment-captcha-url" src="">
-              </div>
-            </div>        
+			  </td></tr>
+			</table>
           </div>
         </div>
 

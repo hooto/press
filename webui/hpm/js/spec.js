@@ -816,7 +816,7 @@ hpSpec.NodeSet = function(modname, modelid) {
             if (!data.extensions.text_search) {
                 data.extensions.text_search = false;
             }
- 
+
 
             data._field_idx_typedef = hpSpec.field_idx_typedef;
             data._field_typedef = hpSpec.field_typedef;
@@ -949,6 +949,10 @@ hpSpec.NodeSetCommit = function() {
 
     if (form.find("select[name=ext_text_search]").val() == "true") {
         req.extensions.text_search = true;
+    }
+
+    if (form.find("select[name=ext_comment_enable]").val() == "true") {
+        req.extensions.comment_enable = true;
     }
 
     if (form.find("select[name=ext_comment_perentry]").val() == "true") {

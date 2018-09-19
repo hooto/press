@@ -22,7 +22,7 @@
             
             <span class="section">
               <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
-              {{UnixtimeFormat $v.Created "Y-m-d H:i:s"}}
+              {{UnixtimeFormat $v.Created "Y-m-d"}}
             </span>
             
             {{range $term := $v.Terms}}

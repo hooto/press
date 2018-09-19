@@ -2,7 +2,7 @@
   <meta charset="utf-8">
   <title>{{if .__html_head_title__}}{{.__html_head_title__}} | {{end}}{{SysConfig "frontend_html_head_subtitle"}}</title>
   <link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/bs/4/css/bootstrap.css"}}?v={{.sys_version_sign}}" type="text/css">
-  <link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/hp/css/base.css"}}?v={{.sys_version_sign}}" type="text/css">
+  <link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/hp/css/base.v2.css"}}?v={{.sys_version_sign}}" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="{{HttpSrvBasePath "hp/~/hp/img/ap.ico"}}?v={{.sys_version_sign}}">
   <meta name="keywords" content="{{SysConfig "frontend_html_head_meta_keywords"}}">
   <meta name="description" content="{{SysConfig "frontend_html_head_meta_description"}}">

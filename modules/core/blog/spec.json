@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/blog",
-    "version": "0.0.31"
+    "version": "0.0.32"
   },
   "srvname": "blog",
   "status": 1,
@@ -54,6 +54,7 @@
       ],
       "extensions": {
         "access_counter": true,
+        "comment_enable": true,
         "comment_perentry": true,
         "permalink": "name",
         "text_search": true
