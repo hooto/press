@@ -75,6 +75,7 @@ type ConfigCommon struct {
 	IoConnectors          connect.MultiConnOptions `json:"io_connectors"`
 	RunMode               string                   `json:"run_mode,omitempty"`
 	ExtUpDatabases        connect.MultiConnOptions `json:"ext_up_databases,omitempty"`
+	ExpModuleInits        []string                 `json:"exp_module_inits,omitempty"`
 }
 
 func init() {

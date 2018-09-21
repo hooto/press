@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-{{pagelet . "core/general" "html-header.tpl"}}
-<body>
-{{pagelet . "core/general" "nav-header.tpl" "topnav"}}
+{{pagelet . "core/general" "bs4/html-header.tpl"}}
+<body id="hp-body">
+{{pagelet . "core/general" "bs4/nav-header.tpl" "topnav"}}
+
 
 <div class="container">
   
@@ -19,7 +20,7 @@
           <h2>{{FieldStringPrint .entry "title" .LANG}}</h2>
           <div class="hinfo">
             <span class="section">
-              <span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;
+              <img src="/hp/~/open-iconic/svg/timer.svg" width="12" height="12" class="hpdoc_icon">&nbsp;
               {{UnixtimeFormat .entry.Created "Y-m-d"}}
             </span>
             
@@ -27,7 +28,7 @@
               {{if eq $term.Name "categories"}}
               {{if $term.Items}}
               <span class="section">
-                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>&nbsp;
+                <img src="/hp/~/open-iconic/svg/list.svg" width="12" height="12" class="hpdoc_icon">&nbsp;
                 {{range $term_item := $term.Items}}
                 <a href="{{$.baseuri}}/list?term_categories={{printf "%d" $term_item.ID}}">{{$term_item.Title}}</a>
                 {{end}}
@@ -40,7 +41,7 @@
               {{if eq $term.Name "tags"}}
               {{if $term.Items}}
               <span class="section">
-                <span class="glyphicon glyphicon-tags" aria-hidden="true"></span>&nbsp;          
+                <img src="/hp/~/open-iconic/svg/tags.svg" width="12" height="12" class="hpdoc_icon">&nbsp;
                 {{range $term_item := $term.Items}}
                 <a href="{{$.baseuri}}/list?term_tags={{$term_item.Title}}" class="tag-item">{{$term_item.Title}}</a>
                 {{end}}
@@ -64,7 +65,7 @@
 
 </div>
 
-{{pagelet . "core/general" "footer.tpl"}}
+{{pagelet . "core/general" "bs4/footer.tpl"}}
 
 <script type="text/javascript">
 {{if .entry.ExtCommentEnable}}

@@ -186,6 +186,10 @@ func module_init() error {
 		}
 	}
 
+	for _, v := range Config.ExpModuleInits {
+		coreModules = append(coreModules, v)
+	}
+
 	//
 	for _, modname := range coreModules {
 

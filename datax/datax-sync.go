@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/lessos/lessgo/types"
@@ -29,6 +30,16 @@ import (
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/store"
 )
+
+func utf8_rune_filter(str string) string {
+	strs, outs := []rune(str), []rune{}
+	for _, v := range strs {
+		if utf8.ValidRune(v) && v != 0 {
+			outs = append(outs, v)
+		}
+	}
+	return string(outs)
+}
 
 func data_sync_pull() error {
 
@@ -42,7 +53,7 @@ func data_sync_pull() error {
 	}
 
 	var (
-		limit int64 = 100
+		limit int64 = 50
 		src   rdb.Connector
 		err   error
 		tng   = uint32(time.Now().Unix())
@@ -116,15 +127,18 @@ func data_sync_pull() error {
 
 			var (
 				cn, cu  = 0, 0
-				q       = src.NewQueryer().From(vt.Name).Limit(limit)
+				q       = src.NewQueryer().From(vt.Name).Order("updated ASC").Limit(limit)
 				offset  = int64(0)
 				up_name = fmt.Sprintf("sync-time/%s:%s/%s",
 					cv.Value("host"), cv.Value("port"), vt.Name)
+				up_offset = uint32(0)
 			)
 			err = nil
 
-			if pv := cfgs.Get(up_name); len(pv.String()) > 10 {
-				q.Where().And("updated.ge", pv.String())
+			if pv := cfgs.Get(up_name); pv.Uint32() > 0 {
+				up_offset = pv.Uint32()
+				q.Where().And("updated.ge", up_offset)
+				// hlog.Printf("warn", "%s updated.ge %d", vt.Name, pv.Uint32())
 			}
 
 			// fmt.Println("\nTABLE", vt.Name, tn, tng)
@@ -133,10 +147,16 @@ func data_sync_pull() error {
 
 				rs, err := src.Query(q)
 				if err != nil {
+					hlog.Printf("warn", "%s query error %s", vt.Name, err.Error())
 					break
 				}
 
 				for _, v := range rs {
+
+					tup := v.Field("updated").Uint32()
+					if tup < tng && tup > up_offset {
+						up_offset = tup
+					}
 
 					sets := map[string]interface{}{}
 					for k, f := range v.Fields {
@@ -152,32 +172,61 @@ func data_sync_pull() error {
 					rsi, err := store.Data.Fetch(qr)
 
 					if rsi.NotFound() {
-						if _, err = store.Data.Insert(vt.Name, sets); err != nil {
-							// fmt.Println("  ER INSERT", vt.Name, v.Field("id").String(), err.Error())
+
+						_, err = store.Data.Insert(vt.Name, sets)
+						if err != nil {
+							if strings.Contains(err.Error(), "invalid byte sequence for encoding") {
+								for sk, sv := range sets {
+									sets[sk] = utf8_rune_filter(sv.(string))
+								}
+								_, err = store.Data.Insert(vt.Name, sets)
+							}
+						}
+
+						if err != nil {
+							hlog.Printf("warn", "data sync (%s) ErrInsert %s %s",
+								up_name, v.Field("id").String(), err.Error())
 							break
+
 						} else {
 							// fmt.Println("  OK INSERT", vt.Name, v.Field("id").String())
 							cn += 1
 						}
+
 					} else if err != nil {
-						// fmt.Printf(" TABLE %s, ID %s, ER %s\n", vt.Name, v.Field("id").String(), err.Error())
+						hlog.Printf("warn", "data sync (%s), ID: %s, QueryError %s",
+							vt.Name, v.Field("id").String(), err.Error())
 						break
 					} else {
 
 						var (
-							tup = v.Field("updated").Uint32()
 							tlc = rsi.Field("updated").Uint32()
 						)
 
 						if tup > tlc {
 
-							if _, err = store.Data.Update(vt.Name, sets, fr); err != nil {
+							_, err = store.Data.Update(vt.Name, sets, fr)
+
+							if err != nil {
+								if strings.Contains(err.Error(), "invalid byte sequence for encoding") {
+									for sk, sv := range sets {
+										sets[sk] = utf8_rune_filter(sv.(string))
+									}
+									_, err = store.Data.Update(vt.Name, sets, fr)
+								}
+							}
+
+							if err != nil {
+								hlog.Printf("warn", "data sync (%s) ErrUpdate %s %s",
+									up_name, v.Field("id").String(), err.Error())
 								// fmt.Println("  ER UPDATE", vt.Name, v.Field("id").String())
 								break
 							} else {
 								// fmt.Println("  OK UPDATE", vt.Name, v.Field("id").String())
 								cu += 1
 							}
+						} else {
+							// fmt.Println("  OK UPDATE SKIP ", vt.Name, v.Field("id").String())
 						}
 
 						continue
@@ -192,12 +241,14 @@ func data_sync_pull() error {
 				}
 
 				offset += limit
+				q.Offset(offset)
 			}
 
 			if err == nil {
 				if cn > 0 || cu > 0 {
-					hlog.Printf("info", "data sync (%s) INSERT %d, UPDATE %d", up_name, cn, cu)
-					cfgs.Set(up_name, tng)
+					hlog.Printf("info", "data sync (%s) INSERT %d, UPDATE %d",
+						up_name, cn, cu)
+					cfgs.Set(up_name, up_offset)
 				}
 			} else {
 				hlog.Printf("warn", "data sync ((%s) error : %s",
