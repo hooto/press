@@ -204,13 +204,13 @@ hpS2.ObjList = function(path) {
 
     if (!path) {
         path = l4iStorage.Get("hpm_s2_obj_path_active");
-    } else {
-        path = path.replace(/\/+/g, '/');
-        l4iStorage.Set("hpm_s2_obj_path_active", path);
+        if (!path) {
+            path = hpS2.bucket;
+        }
     }
-    if (path) {
-        path = path.replace(/\/+/g, "/");
-    }
+
+    path = path.replace(/\/+/g, '/');
+    l4iStorage.Set("hpm_s2_obj_path_active", path);
     if (path.indexOf(hpS2.bucket) != 0) {
         path = hpS2.bucket;
         l4iStorage.Set("hpm_s2_obj_path_active", path);
