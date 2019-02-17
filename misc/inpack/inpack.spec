@@ -1,6 +1,6 @@
 [project]
 name = hooto-press
-version = 0.4.7.alpha
+version = 0.6.0
 vendor = hooto.com
 homepage = https://github.com/hooto/hpress
 groups = app/other
@@ -10,7 +10,7 @@ export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
 export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache,tmp}
-go build -ldflags "-s -w -X main.version={{.project__version}} -X main.release={{.project__release}}" -o {{.buildroot}}/bin/hooto-press main.go
+go build -ldflags "-X main.version={{.project__version}} -X main.release={{.project__release}}" -o {{.buildroot}}/bin/hooto-press cmd/server/main.go
 go build -ldflags "-s -w -X main.version={{.project__version}} -X main.release={{.project__release}}" -o {{.buildroot}}/bin/hp-s2-upgrade misc/s2-upgrade.go
 
 sed -i 's/debug:\!0/debug:\!1/g' {{.buildroot}}/webui/hp/js/main.js

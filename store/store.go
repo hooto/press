@@ -25,7 +25,7 @@ import (
 	"github.com/lynkdb/iomix/skv"
 	"github.com/lynkdb/kvgo"
 	"github.com/lynkdb/mysqlgo"
-	"github.com/lynkdb/postgrego"
+	"github.com/lynkdb/pgsqlgo"
 )
 
 var (
@@ -56,8 +56,8 @@ func Init(cfg connect.MultiConnOptions) error {
 	case "lynkdb/mysqlgo":
 		Data, err = mysqlgo.NewConnector(*opts)
 
-	case "lynkdb/postgrego":
-		Data, err = postgrego.NewConnector(*opts)
+	case "lynkdb/pgsqlgo":
+		Data, err = pgsqlgo.NewConnector(*opts)
 
 	default:
 		return errors.New("Invalid lynkdb/driver")
@@ -113,7 +113,7 @@ func db_upgrade_0_5(data rdb.Connector) error {
 						fmt.Sprintf("ALTER TABLE %s CHANGE time_tmp %s int", tbl.Name, cv.Name),
 					}
 
-				case "lynkdb/postgrego":
+				case "lynkdb/pgsqlgo":
 					sqls = []string{
 						fmt.Sprintf("ALTER TABLE %s ADD COLUMN time_tmp bigint", tbl.Name),
 						fmt.Sprintf("UPDATE %s SET time_tmp = extract(epoch from %s)", tbl.Name, cv.Name),
@@ -156,7 +156,7 @@ func db_upgrade_0_5(data rdb.Connector) error {
 			case "lynkdb/mysqlgo":
 				sql = fmt.Sprintf("RENAME TABLE %s TO %s", tbl.Name, tbl_name_new)
 
-			case "lynkdb/postgrego":
+			case "lynkdb/pgsqlgo":
 				sql = fmt.Sprintf("ALTER TABLE %s RENAME TO %s", tbl.Name, tbl_name_new)
 			}
 

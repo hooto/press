@@ -24,7 +24,7 @@ import (
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/mysqlgo"
-	"github.com/lynkdb/postgrego"
+	"github.com/lynkdb/pgsqlgo"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -59,6 +59,11 @@ func data_sync_pull() error {
 		tng   = uint32(time.Now().Unix())
 		dtbs  types.ArrayString
 	)
+	defer func() {
+		if src != nil {
+			src.Close()
+		}
+	}()
 
 	dmr, err := store.Data.Modeler()
 	if err != nil {
@@ -80,15 +85,15 @@ func data_sync_pull() error {
 
 		if src != nil {
 			// TODO
-			// src.Close()
+			src.Close()
 		}
 
 		switch cv.Driver {
 		case "lynkdb/mysqlgo":
 			src, err = mysqlgo.NewConnector(*cv)
 
-		case "lynkdb/postgrego":
-			src, err = postgrego.NewConnector(*cv)
+		case "lynkdb/pgsqlgo":
+			src, err = pgsqlgo.NewConnector(*cv)
 
 		default:
 			continue
@@ -126,7 +131,9 @@ func data_sync_pull() error {
 			}
 
 			var (
-				cn, cu  = 0, 0
+				cnew    = 0
+				cupd    = 0
+				cign    = 0
 				q       = src.NewQueryer().From(vt.Name).Order("updated ASC").Limit(limit)
 				offset  = int64(0)
 				up_name = fmt.Sprintf("sync-time/%s:%s/%s",
@@ -159,8 +166,10 @@ func data_sync_pull() error {
 					}
 
 					sets := map[string]interface{}{}
+					ext_counter := 0
 					for k, f := range v.Fields {
 						if k == "ext_access_counter" {
+							ext_counter = f.Int()
 							continue
 						}
 						sets[k] = f.String()
@@ -173,11 +182,18 @@ func data_sync_pull() error {
 
 					if rsi.NotFound() {
 
+						if ext_counter > 0 {
+							sets["ext_access_counter"] = ext_counter
+						}
+
 						_, err = store.Data.Insert(vt.Name, sets)
 						if err != nil {
 							if strings.Contains(err.Error(), "invalid byte sequence for encoding") {
 								for sk, sv := range sets {
-									sets[sk] = utf8_rune_filter(sv.(string))
+									switch sv.(type) {
+									case string:
+										sets[sk] = utf8_rune_filter(sv.(string))
+									}
 								}
 								_, err = store.Data.Insert(vt.Name, sets)
 							}
@@ -190,7 +206,7 @@ func data_sync_pull() error {
 
 						} else {
 							// fmt.Println("  OK INSERT", vt.Name, v.Field("id").String())
-							cn += 1
+							cnew += 1
 						}
 
 					} else if err != nil {
@@ -200,17 +216,34 @@ func data_sync_pull() error {
 					} else {
 
 						var (
-							tlc = rsi.Field("updated").Uint32()
+							tlc          = rsi.Field("updated").Uint32()
+							sync_counter = false
 						)
 
-						if tup > tlc {
+						if ext_counter > 0 {
+							if ext_counter > rsi.Field("ext_access_counter").Int() {
+								if tup > tlc {
+									sets["ext_access_counter"] = ext_counter
+								} else {
+									sets = map[string]interface{}{
+										"ext_access_counter": ext_counter,
+									}
+								}
+								sync_counter = true
+							}
+						}
+
+						if tup > tlc || sync_counter {
 
 							_, err = store.Data.Update(vt.Name, sets, fr)
 
 							if err != nil {
 								if strings.Contains(err.Error(), "invalid byte sequence for encoding") {
 									for sk, sv := range sets {
-										sets[sk] = utf8_rune_filter(sv.(string))
+										switch sv.(type) {
+										case string:
+											sets[sk] = utf8_rune_filter(sv.(string))
+										}
 									}
 									_, err = store.Data.Update(vt.Name, sets, fr)
 								}
@@ -223,10 +256,11 @@ func data_sync_pull() error {
 								break
 							} else {
 								// fmt.Println("  OK UPDATE", vt.Name, v.Field("id").String())
-								cu += 1
+								cupd += 1
 							}
 						} else {
-							// fmt.Println("  OK UPDATE SKIP ", vt.Name, v.Field("id").String())
+							// fmt.Println("  OK IGNORE ", vt.Name, v.Field("id").String())
+							cign += 1
 						}
 
 						continue
@@ -236,7 +270,7 @@ func data_sync_pull() error {
 
 				if err != nil || len(rs) < int(limit) {
 					// fmt.Printf("  DONE INSERT/IGNORE %d, UPDATE %d, ALL %d\n",
-					// 	cn, cu, int(offset)+len(rs))
+					// 	cnew, cupd, int(offset)+len(rs))
 					break
 				}
 
@@ -245,9 +279,9 @@ func data_sync_pull() error {
 			}
 
 			if err == nil {
-				if cn > 0 || cu > 0 {
-					hlog.Printf("info", "data sync (%s) INSERT %d, UPDATE %d",
-						up_name, cn, cu)
+				if cnew > 0 || cupd > 0 {
+					hlog.Printf("info", "data sync (%s) INSERT %d, UPDATE %d, IGNORE %d",
+						up_name, cnew, cupd, cign)
 					cfgs.Set(up_name, up_offset)
 				}
 			} else {

@@ -16,7 +16,6 @@ package main
 
 import (
 	_ "expvar"
-	"flag"
 	"fmt"
 	"net/http"
 	_ "net/http/pprof"
@@ -43,16 +42,12 @@ import (
 )
 
 var (
-	version    = ""
-	release    = ""
-	flagPrefix = flag.String("prefix", "", "the prefix folder path")
+	version = ""
+	release = ""
 )
 
 func init() {
-	//
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	//
-	flag.Parse()
 }
 
 func main() {
@@ -72,13 +67,13 @@ func main() {
 	//
 	for {
 
-		err := config.Initialize(*flagPrefix)
+		err := config.Setup()
 		if err == nil {
 			break
 		}
 
-		// fmt.Println("Error on config.Initialize", err)
-		hlog.Printf("error", "config.Initialize error: %v", err)
+		// fmt.Println("Error on config.Setup", err)
+		hlog.Printf("error", "config.Setup error: %v", err)
 		time.Sleep(3e9)
 	}
 

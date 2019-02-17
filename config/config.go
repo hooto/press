@@ -24,13 +24,14 @@ import (
 	"time"
 
 	"github.com/hooto/hcaptcha/captcha4g"
+	"github.com/hooto/hflag4g/hflag"
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/iam/iamapi"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
-	"github.com/sysinner/incore/inapi"
+	"github.com/sysinner/incore/inconf"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/store"
@@ -139,20 +140,22 @@ func init() {
 	go func() {
 		for {
 			time.Sleep(60e9)
-			if err := sync_sysinner_config(); err != nil {
-				hlog.Printf("error", "sync_sysinner_config err: %s", err.Error())
+			if err := syncSysinnerConfig(); err != nil {
+				hlog.Printf("error", "syncSysinnerConfig err: %s", err.Error())
 			}
 		}
 	}()
 }
 
-func Initialize(prefix string) error {
+func Setup() error {
 
 	if inited {
 		return nil
 	}
 
 	var err error
+
+	prefix := hflag.Value("prefix").String()
 
 	if prefix == "" {
 		if prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/.."); err != nil {
@@ -186,7 +189,7 @@ func Initialize(prefix string) error {
 		Config.AppTitle = "Hooto Press"
 	}
 
-	if err := sync_sysinner_config(); err != nil {
+	if err := syncSysinnerConfig(); err != nil {
 		return err
 	}
 
@@ -256,147 +259,120 @@ func Initialize(prefix string) error {
 
 	inited = true
 
+	hlog.Printf("info", "hooto-press inited, version %s, release %s",
+		Version, Release)
+
 	return nil
 }
 
-func sync_sysinner_config() error {
+func syncSysinnerConfig() error {
 
 	if Config.RunMode == "local-dev" {
 		return nil
 	}
 
-	var inst inapi.Pod
-	if err := json.DecodeFile(pod_inst, &inst); err != nil {
+	conf, err := inconf.NewAppConfigurator("hooto-press*")
+	if err != nil {
 		return err
 	}
 
-	if inst.Spec == nil ||
-		len(inst.Spec.Boxes) == 0 ||
-		inst.Spec.Boxes[0].Resources == nil {
-		return errors.New("Not Pod Instance Setup")
-	}
-
-	var (
-		opt       *inapi.AppOption
-		optref    *inapi.AppOption
-		data_opts = Config.IoConnectors.Options(types.NameIdentifier("hpress_database"))
-		sync      = false
-		box_port  = uint16(5432)
-		db_driver = types.NameIdentifier("lynkdb/postgrego")
-	)
-
-	for _, app := range inst.Apps {
-
-		if !strings.HasPrefix(app.Spec.Meta.ID, "hooto-press-") {
-			continue
-		}
-
-		//
-		if opt == nil {
-			opt = app.Operate.Options.Get("cfg/hooto-press") // TODO
-		}
-
-		if optref == nil {
-			optref = app.Operate.Options.Get("cfg/sysinner-postgresql") // TODO
-			box_port = 5432
-			db_driver = "lynkdb/postgrego"
-		}
-
-		if optref == nil {
-			optref = app.Operate.Options.Get("cfg/sysinner-mysql") // TODO
-			box_port = 3306
-			db_driver = "lynkdb/mysqlgo"
-		}
-	}
-
+	opt := conf.AppConfig("cfg/hooto-press")
 	if opt == nil {
 		return errors.New("No Configure Found")
 	}
 
-	if v, ok := opt.Items.Get("iam_service_url"); ok {
+	var (
+		dbConnOpts = Config.IoConnectors.Options(types.NameIdentifier("hpress_database"))
+		chg        = false
+	)
+
+	if v, ok := opt.ValueOK("iam_service_url"); ok {
 		if v.String() != Config.IamServiceUrl {
-			Config.IamServiceUrl, sync = v.String(), true
+			Config.IamServiceUrl, chg = v.String(), true
 		}
 	} else {
 		return errors.New("No Config.IamServiceUrl Found")
 	}
 
-	if v, ok := opt.Items.Get("iam_service_url_frontend"); ok {
+	if v, ok := opt.ValueOK("iam_service_url_frontend"); ok {
 		if v.String() != Config.IamServiceUrlFrontend {
-			Config.IamServiceUrlFrontend, sync = v.String(), true
+			Config.IamServiceUrlFrontend, chg = v.String(), true
 		}
 	} else {
 		Config.IamServiceUrlFrontend = Config.IamServiceUrl
 	}
 
-	if v, ok := opt.Items.Get("http_pprof_enable"); ok && v.String() == "1" {
+	if v, ok := opt.ValueOK("http_pprof_enable"); ok && v.String() == "1" {
 		if p := Config.HttpPort + 1; p != Config.HttpPortPprof {
-			Config.HttpPortPprof, sync = Config.HttpPort+1, true
+			Config.HttpPortPprof, chg = Config.HttpPort+1, true
 		}
 	} else {
 		Config.HttpPortPprof = 0
 	}
 
-	if optref == nil {
-		return errors.New("No Database Connection Configure Found")
+	var (
+		dbService = conf.AppServiceQuery("spec=sysinner-pgsql-*", "spec=sysinner-postgresql-*")
+		dbCfg     = conf.AppConfigQuery("cfg/sysinner-pgsql", "cfg/sysinner-postgresql")
+		dbDriver  = types.NameIdentifier("lynkdb/pgsqlgo")
+	)
+
+	if dbService == nil {
+		dbService = conf.AppServiceQuery("spec=sysinner-mysql-*")
+		dbCfg = conf.AppConfigQuery("cfg/sysinner-mysql")
+		dbDriver = "lynkdb/mysqlgo"
 	}
 
-	ref_pod_id := inst.Meta.ID
-	if optref.Ref != nil && optref.Ref.PodId != "" {
-		ref_pod_id = optref.Ref.PodId
+	if dbService == nil {
+		return errors.New("No Database Connection Service Found")
 	}
 
-	if data_opts == nil {
-		data_opts = &connect.ConnOptions{
+	if dbCfg == nil {
+		return errors.New("No Database Connection Config Found")
+	}
+
+	if dbConnOpts == nil {
+		dbConnOpts = &connect.ConnOptions{
 			Name:      types.NameIdentifier("hpress_database"),
-			Connector: "iomix/rdb/Connector",
-			Driver:    db_driver,
+			Connector: "iomix/rdb/connector",
+		}
+	}
+	if dbConnOpts.Driver != dbDriver {
+		dbConnOpts.Driver = dbDriver
+	}
+
+	if v, ok := dbCfg.ValueOK("db_name"); ok {
+		if dbConnOpts.Value("dbname") != v.String() {
+			dbConnOpts.SetValue("dbname", v.String())
+			chg = true
 		}
 	}
 
-	if v, ok := optref.Items.Get("db_name"); ok {
-		if data_opts.Value("dbname") != v.String() {
-			data_opts.SetValue("dbname", v.String())
-			sync = true
+	if v, ok := dbCfg.ValueOK("db_user"); ok {
+		if dbConnOpts.Value("user") != v.String() {
+			dbConnOpts.SetValue("user", v.String())
+			chg = true
 		}
 	}
 
-	if v, ok := optref.Items.Get("db_user"); ok {
-		if data_opts.Value("user") != v.String() {
-			data_opts.SetValue("user", v.String())
-			sync = true
+	if v, ok := dbCfg.ValueOK("db_auth"); ok {
+		if dbConnOpts.Value("pass") != v.String() {
+			dbConnOpts.SetValue("pass", v.String())
+			chg = true
 		}
 	}
 
-	if v, ok := optref.Items.Get("db_auth"); ok {
-		if data_opts.Value("pass") != v.String() {
-			data_opts.SetValue("pass", v.String())
-			sync = true
-		}
+	if dbConnOpts.Value("host") != dbService.Endpoints[0].Ip {
+		dbConnOpts.SetValue("host", dbService.Endpoints[0].Ip)
+		chg = true
+	}
+	if p := fmt.Sprintf("%d", dbService.Endpoints[0].Port); p != dbConnOpts.Value("port") {
+		dbConnOpts.SetValue("port", p)
+		chg = true
 	}
 
-	var nsz inapi.NsPodServiceMap
-	if err := json.DecodeFile("/dev/shm/sysinner/nsz/"+ref_pod_id, &nsz); err != nil {
-		return err
-	}
+	Config.IoConnectors.SetOptions(*dbConnOpts)
 
-	// TODO
-	if srv := nsz.Get(box_port); srv == nil || len(srv.Items) == 0 {
-		return errors.New("No Pod ServicePort Found")
-	} else {
-		if data_opts.Value("host") != srv.Items[0].Ip {
-			data_opts.SetValue("host", srv.Items[0].Ip)
-			sync = true
-		}
-		if p := fmt.Sprintf("%d", srv.Items[0].Port); p != data_opts.Value("port") {
-			data_opts.SetValue("port", p)
-			sync = true
-		}
-	}
-
-	Config.IoConnectors.SetOptions(*data_opts)
-
-	if sync {
+	if chg {
 		Save()
 		hlog.Printf("warn", "sysinner configs synced")
 	}
@@ -414,7 +390,7 @@ func store_init() error {
 		if opts == nil {
 			opts = &connect.ConnOptions{
 				Name:      io_name,
-				Connector: "iomix/skv/Connector",
+				Connector: "iomix/skv/connector",
 				Driver:    types.NewNameIdentifier("lynkdb/kvgo"),
 			}
 		}
@@ -433,12 +409,12 @@ func store_init() error {
 
 		if opts == nil {
 			if Config.RunMode != "local-dev" {
-				return errors.New("iomix/rdb/Connector " + io_name.String() + " Not Found")
+				return errors.New("iomix/rdb/connector " + io_name.String() + " Not Found")
 			}
 			opts = &connect.ConnOptions{
 				Name:      io_name,
-				Connector: "iomix/rdb/Connector",
-				Driver:    types.NewNameIdentifier("lynkdb/postgrego"),
+				Connector: "iomix/rdb/connector",
+				Driver:    types.NewNameIdentifier("lynkdb/pgsqlgo"),
 			}
 		}
 

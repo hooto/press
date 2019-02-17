@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# export GOPATH=$GOPATH:/opt/gopath/src/code.hooto.com/hooto/hootopress/vendor
+# export GOPATH=$GOPATH:/opt/gopath/src/code.hooto.com/hooto/hooto-press/vendor
 
-rm -f ./bin/hootopress
+rm -f ./bin/hooto-press
 
-#go build -race -o ./bin/hootopress ./main.go
-go build -ldflags "-s -w" -o ./bin/hootopress ./main.go
+#go build -race -o ./bin/hooto-press ./main.go
+go build -ldflags "-s -w" -o ./bin/hooto-press ./cmd/server/main.go
 
-./bin/hootopress -logtostderr=true 
+./bin/hooto-press -logtostderr=true 
 

@@ -21,7 +21,7 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/mysqlgo"
-	"github.com/lynkdb/postgrego"
+	"github.com/lynkdb/pgsqlgo"
 
 	"github.com/hooto/hpress/config"
 )
@@ -50,8 +50,8 @@ func main() {
 	case "lynkdb/mysqlgo":
 		Data, err = mysqlgo.NewConnector(*dbcfg)
 
-	case "lynkdb/postgrego":
-		Data, err = postgrego.NewConnector(*dbcfg)
+	case "lynkdb/pgsqlgo":
+		Data, err = pgsqlgo.NewConnector(*dbcfg)
 
 	default:
 		return
