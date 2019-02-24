@@ -159,7 +159,7 @@ func Setup() error {
 
 	if prefix == "" {
 		if prefix, err = filepath.Abs(filepath.Dir(os.Args[0]) + "/.."); err != nil {
-			prefix = "/home/action/apps/hooto-press"
+			prefix = "/opt/hooto/press"
 		}
 	}
 
@@ -311,8 +311,8 @@ func syncSysinnerConfig() error {
 	}
 
 	var (
-		dbService = conf.AppServiceQuery("spec=sysinner-pgsql-*", "spec=sysinner-postgresql-*")
-		dbCfg     = conf.AppConfigQuery("cfg/sysinner-pgsql", "cfg/sysinner-postgresql")
+		dbService = conf.AppServiceQuery("spec=sysinner-pgsql-*")
+		dbCfg     = conf.AppConfigQuery("cfg/sysinner-pgsql")
 		dbDriver  = types.NameIdentifier("lynkdb/pgsqlgo")
 	)
 

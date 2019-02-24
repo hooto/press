@@ -21,7 +21,7 @@ sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hpm/js/main.js
 
 cd {{.inpack__pack_dir}}/deps/sphinxsearch
 
-./configure --prefix=/home/action/apps/hootopress --without-mysql --without-pgsql --with-libexpat
+./configure --prefix=/opt/hooto/press --without-mysql --without-pgsql --with-libexpat
 make -j4
 
 install src/indexer   {{.buildroot}}/bin/sph-indexer
