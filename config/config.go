@@ -70,7 +70,6 @@ type ConfigCommon struct {
 	AppInstance           iamapi.AppInstance       `json:"app_instance"`
 	AppTitle              string                   `json:"app_title,omitempty"`
 	HttpPort              uint16                   `json:"http_port"`
-	HttpPortPprof         uint16                   `json:"http_port_pprof,omitempty"`
 	IamServiceUrl         string                   `json:"iam_service_url"`
 	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend"`
 	IoConnectors          connect.MultiConnOptions `json:"io_connectors"`
@@ -300,14 +299,6 @@ func syncSysinnerConfig() error {
 		}
 	} else {
 		Config.IamServiceUrlFrontend = Config.IamServiceUrl
-	}
-
-	if v, ok := opt.ValueOK("http_pprof_enable"); ok && v.String() == "1" {
-		if p := Config.HttpPort + 1; p != Config.HttpPortPprof {
-			Config.HttpPortPprof, chg = Config.HttpPort+1, true
-		}
-	} else {
-		Config.HttpPortPprof = 0
 	}
 
 	var (

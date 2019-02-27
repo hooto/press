@@ -15,10 +15,7 @@
 package main
 
 import (
-	_ "expvar"
 	"fmt"
-	"net/http"
-	_ "net/http/pprof"
 	"os"
 	"runtime"
 	"time"
@@ -112,11 +109,6 @@ func main() {
 	httpsrv.GlobalService.ModuleRegister("/hp/mgr", cmgr.NewModule())
 	httpsrv.GlobalService.ModuleRegister("/hp", cdef.NewHtpModule())
 	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
-
-	//
-	if config.Config.HttpPortPprof > 0 {
-		go http.ListenAndServe(fmt.Sprintf(":%d", config.Config.HttpPortPprof), nil)
-	}
 
 	if err := httpsrv.GlobalService.Start(); err != nil {
 		fmt.Println("httpsrv.GlobalService.Start error", err)
