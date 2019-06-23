@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/gdoc",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "srvname": "gdoc",
   "status": 1,

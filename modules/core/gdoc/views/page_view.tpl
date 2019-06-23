@@ -7,7 +7,8 @@
 {{pagelet . "core/general" "bs4/nav-header.tpl" "topnav"}}
 
 <div class="hp-gdoc-index-frame-blue hp-gdoc-node-content hp-gdoc-bgimg-hexagons">
-<div class="container row" style="padding: 10px;">
+<div class="container" style="padding: 10px;">
+  <div class="row">
   <div class="col">
     <ol class="hp-gdoc-nav-ol">
       <li>
@@ -27,6 +28,7 @@
     <a href="{{FieldStringPrint .doc_entry "repo_url" .LANG}}">
       Git Version {{FieldStringPrint .doc_entry "repo_version" .LANG}}
     </a>
+  </div>
   </div>
 </div>
 </div>
