@@ -276,7 +276,7 @@ func (c ModSet) SpecNodeSetAction() {
 		return
 	}
 
-	err = modset.SpecNodeSet(set.ModName, set)
+	err = modset.SpecNodeSet(set.ModName, &set)
 
 	if err != nil {
 		set.Error = types.NewErrorMeta(api.ErrCodeInternalError, err.Error())

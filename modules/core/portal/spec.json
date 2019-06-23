@@ -11,6 +11,7 @@
       "meta": {
         "name": "page"
       },
+      "modname": "core/portal",
       "title": "Page",
       "fields": [
         {

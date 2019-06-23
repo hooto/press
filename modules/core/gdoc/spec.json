@@ -1,18 +1,18 @@
 {
   "meta": {
-    "name": "core/doc",
-    "version": "0.0.30"
+    "name": "core/gdoc",
+    "version": "0.1.0"
   },
-  "srvname": "doc",
+  "srvname": "gdoc",
   "status": 1,
-  "title": "Document",
+  "title": "Git Document",
   "nodeModels": [
     {
       "meta": {
         "name": "doc"
       },
-      "modname": "core/doc",
-      "title": "Document",
+      "modname": "core/gdoc",
+      "title": "Git Document",
       "fields": [
         {
           "name": "title",
@@ -25,6 +25,43 @@
             }
           ],
           "title": "Title"
+        },
+        {
+          "name": "repo_url",
+          "type": "string",
+          "length": "100",
+          "title": "Git Repo URL"
+        },
+        {
+          "name": "repo_branch",
+          "type": "string",
+          "length": "50",
+          "title": "Git Repo Branch Name"
+        },
+        {
+          "name": "repo_dir",
+          "type": "string",
+          "length": "50",
+          "title": "Sub Directory Entry"
+        },
+        {
+          "name": "repo_auth_user",
+          "type": "string",
+          "length": "50",
+          "title": "Repo Auth Username (optional)"
+        },
+        {
+          "name": "repo_auth_key",
+          "type": "string",
+          "length": "50",
+          "title": "Repo Auth Password (optional)"
+        },
+        {
+          "name": "repo_version",
+          "type": "string",
+          "length": "50",
+          "title": "Repo Version",
+          "edit_disable": true
         },
         {
           "name": "preface",
@@ -44,7 +81,8 @@
               "value": "en-us,zh-cn"
             }
           ],
-          "title": "Preface"
+          "title": "Preface",
+          "edit_disable": true
         },
         {
           "name": "content",
@@ -64,7 +102,8 @@
               "value": "en-us,zh-cn"
             }
           ],
-          "title": "Table of Contents"
+          "title": "Table of Contents",
+          "edit_disable": true
         }
       ],
       "terms": [
@@ -93,20 +132,21 @@
       "meta": {
         "name": "page"
       },
-      "modname": "core/doc",
+      "modname": "core/gdoc",
       "title": "Page",
       "fields": [
         {
           "name": "title",
           "type": "string",
           "length": "100",
-          "attrs": [
-            {
-              "key": "langs",
-              "value": "en-us,zh-cn"
-            }
-          ],
           "title": "Title"
+        },
+        {
+          "name": "repo_sumcheck",
+          "type": "string",
+          "length": "50",
+          "title": "Repo SumCheck",
+          "edit_disable": true
         },
         {
           "name": "content",
@@ -126,7 +166,8 @@
               "value": "en-us,zh-cn"
             }
           ],
-          "title": "Content"
+          "title": "Content",
+          "edit_disable": true
         }
       ],
       "extensions": {
@@ -215,14 +256,14 @@
         "default": true
       },
       {
-        "path": "entry/:doc_entry_id/:page_entry_id",
+        "path": "view/:doc_entry_id/:page_entry_id",
         "dataAction": "page_view",
-        "template": "page_entry.tpl"
+        "template": "page_view.tpl"
       },
       {
-        "path": "entry/:doc_entry_id",
+        "path": "view/:doc_entry_id",
         "dataAction": "doc_view",
-        "template": "doc_entry.tpl"
+        "template": "doc_view.tpl"
       }
     ]
   }

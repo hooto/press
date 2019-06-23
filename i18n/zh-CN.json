@@ -1,0 +1,25 @@
+{
+  "locale": "zh-cn",
+  "items": [
+    {
+      "key": "browser-reject-advice-desc",
+      "val": "请使用以下浏览器，下载安装或升级到最新版本"
+    },
+    {
+      "key": "browser-reject-desc",
+      "val": "当前的应用无法完美支持您的浏览器或版本"
+    },
+    {
+      "key": "document",
+      "val": "文档"
+    },
+    {
+      "key": "documents",
+      "val": "文档"
+    },
+    {
+      "key": "version",
+      "val": "版本"
+    }
+  ]
+}

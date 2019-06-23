@@ -126,7 +126,7 @@ func NewNodeSphinxSearchEngine(prefix string) (NodeSearchEngine, error) {
 	return engine, nil
 }
 
-func (it *NodeSphinxSearchEngine) ModelSet(bukname string, model api.NodeModel) error {
+func (it *NodeSphinxSearchEngine) ModelSet(bukname string, model *api.NodeModel) error {
 
 	//
 	var (
@@ -138,11 +138,11 @@ func (it *NodeSphinxSearchEngine) ModelSet(bukname string, model api.NodeModel) 
 	defer it.mu.Unlock()
 
 	if active.model == nil {
-		active.model = &model
+		active.model = model
 	}
 
 	if buk != nil && buk.Model == nil {
-		buk.Model = &model
+		buk.Model = model
 		json.EncodeToFile(it.cfgs, it.cfgConfigPath, "  ")
 	}
 

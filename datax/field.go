@@ -58,9 +58,27 @@ var (
 	regMultiSpace = regexp.MustCompile("\\s{2,}")
 	regLineSpace  = regexp.MustCompile("\\n\\s*\\n")
 	regMath       = regexp.MustCompile("\\$\\$(.*?)\\$\\$")
-	mkp           = bluemonday.UGCPolicy()
-	htmlp         = bluemonday.UGCPolicy()
-	shtmlp        = bluemonday.UGCPolicy()
+	mdRenderFlags = 0 |
+		blackfriday.HTML_USE_XHTML |
+		blackfriday.HTML_USE_SMARTYPANTS |
+		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
+		blackfriday.HTML_SMARTYPANTS_DASHES |
+		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
+	mdRenderOpts = blackfriday.Options{
+		Extensions: 0 |
+			blackfriday.EXTENSION_NO_INTRA_EMPHASIS |
+			blackfriday.EXTENSION_TABLES |
+			blackfriday.EXTENSION_FENCED_CODE |
+			blackfriday.EXTENSION_AUTOLINK |
+			blackfriday.EXTENSION_STRIKETHROUGH |
+			blackfriday.EXTENSION_SPACE_HEADERS |
+			blackfriday.EXTENSION_HEADER_IDS |
+			blackfriday.EXTENSION_BACKSLASH_LINE_BREAK |
+			blackfriday.EXTENSION_DEFINITION_LISTS,
+	}
+	mkp    = bluemonday.UGCPolicy()
+	htmlp  = bluemonday.UGCPolicy()
+	shtmlp = bluemonday.UGCPolicy()
 )
 
 func init() {
@@ -84,6 +102,18 @@ func init() {
 	shtmlp.AllowAttrs("class").OnElements("a")
 	shtmlp.AllowAttrs("class").OnElements("img")
 	shtmlp.AllowAttrs("class").OnElements("span")
+}
+
+func markdownCommon(v []byte, opts *api.NodeFieldTextRenderOptions) []byte {
+	if opts == nil || opts.AbsolutePrefix == "" {
+		return blackfriday.MarkdownCommon(v)
+	}
+
+	mdRender := blackfriday.HtmlRendererWithParameters(mdRenderFlags, "", "", blackfriday.HtmlRendererParameters{
+		AbsolutePrefix: opts.AbsolutePrefix,
+	})
+
+	return blackfriday.MarkdownOptions(v, mdRender, mdRenderOpts)
 }
 
 func s2_replace(s string) string {
@@ -521,17 +551,31 @@ func FieldHtmlPrint(node_entry api.Node, colname, lang string) template.HTML {
 		}
 	}
 
+	opts := &api.NodeFieldTextRenderOptions{}
+	if node_entry.Model != nil && node_entry.Model.ModName == "core/gdoc" {
+
+		switch node_entry.Model.Meta.Name {
+		case "doc":
+			opts.AbsolutePrefix = fmt.Sprintf("/%s/view/%s",
+				node_entry.Model.SrvName, node_entry.ExtPermalinkName)
+
+		case "page":
+			opts.AbsolutePrefix = fmt.Sprintf("/%s/view/%s",
+				node_entry.Model.SrvName, node_entry.ExtNodeRefer)
+		}
+	}
+
 	fm := "text"
 	if attr := field.Attrs.Get("format"); attr != nil {
 		fm = attr.String()
 	}
 
-	val = field_value_html_convert(fm, field.Value)
+	val = field_value_html_convert(fm, field.Value, opts)
 	field.Caches.Set(cache_key, val)
 
 	if field.Langs != nil {
 		for _, v := range field.Langs.Items {
-			v.Value = field_value_html_convert(fm, v.Value)
+			v.Value = field_value_html_convert(fm, v.Value, opts)
 			field.Caches.Set(cache_key+v.Key, v.Value)
 			if v.Key == lang {
 				val = v.Value
@@ -542,7 +586,7 @@ func FieldHtmlPrint(node_entry api.Node, colname, lang string) template.HTML {
 	return template.HTML(val)
 }
 
-func field_value_html_convert(fm, val string) string {
+func field_value_html_convert(fm, val string, opts *api.NodeFieldTextRenderOptions) string {
 
 	val = strings.TrimSpace(strings.Replace(val, "\r\n", "\n", -1))
 	val = regMultiLine.ReplaceAllString(val, "\n\n")
@@ -558,7 +602,7 @@ func field_value_html_convert(fm, val string) string {
 			val = strings.Replace(val, `\\`, `\\\\`, -1)
 		}
 
-		unsafe := blackfriday.MarkdownCommon([]byte(val))
+		unsafe := markdownCommon([]byte(val), opts)
 		val = string(mkp.SanitizeBytes(unsafe))
 
 	case "html":

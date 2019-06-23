@@ -46,9 +46,6 @@ var (
 	SysVersionSign = ""
 	CaptchaConfig  = captcha4g.DefaultConfig
 
-	pod_inst_updated time.Time
-	pod_inst         = "/home/action/.sysinner/pod_instance.json"
-
 	User = &user.User{
 		Uid:      "2048",
 		Gid:      "2048",

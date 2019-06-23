@@ -25,6 +25,7 @@ var (
 		"core/comment",
 		"core/portal",
 		"core/doc",
+		"core/gdoc",
 		"core/blog",
 	}
 

@@ -11,6 +11,7 @@
       "meta": {
         "name": "menu"
       },
+      "modname": "core/general",
       "title": "Menu",
       "comment": "Customize the site navigation menu",
       "fields": [
@@ -45,6 +46,7 @@
       "meta": {
         "name": "page"
       },
+      "modname": "core/general",
       "title": "Basic Page",
       "comment": "Use basic pages for your static content, such as an 'About us' page",
       "fields": [

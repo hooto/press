@@ -231,7 +231,7 @@ func _termListEqual(ls1, ls2 []api.TermModel) bool {
 	return true
 }
 
-func SpecNodeSet(modname string, entry api.NodeModel) error {
+func SpecNodeSet(modname string, entry *api.NodeModel) error {
 
 	if modname == "" {
 		return errors.New("modname Not Found")
@@ -919,9 +919,8 @@ func SpecSchemaSync(spec api.Spec) error {
 
 				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
 					tbl.AddColumn(&modeler.Column{
-						Name:     "field_" + field.Name + "_langs",
-						Type:     "string-text",
-						NullAble: true,
+						Name: "field_" + field.Name + "_langs",
+						Type: "string-text",
 					})
 				}
 
@@ -950,9 +949,8 @@ func SpecSchemaSync(spec api.Spec) error {
 
 				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
 					tbl.AddColumn(&modeler.Column{
-						Name:     "field_" + field.Name + "_langs",
-						Type:     "string-text",
-						NullAble: true,
+						Name: "field_" + field.Name + "_langs",
+						Type: "string-text",
 					})
 				}
 
@@ -1074,5 +1072,32 @@ func SpecSchemaSync(spec api.Spec) error {
 	if err != nil {
 		return err
 	}
-	return ms.SchemaSync(ds)
+	err = ms.SchemaSync(ds)
+	if err != nil {
+		return err
+	}
+
+	for _, termModel := range spec.TermModels {
+
+		switch termModel.Type {
+
+		case api.TermTaxonomy:
+
+			tblName := fmt.Sprintf("hpt_%s_%s",
+				idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
+			rs, _ := store.Data.Fetch(store.Data.NewQueryer().From(tblName))
+			if rs.NotFound() {
+				store.Data.Insert(tblName, map[string]interface{}{
+					"pid":     0,
+					"title":   "Default",
+					"status":  1,
+					"weight":  0,
+					"created": time.Now().Unix(),
+					"userid":  "",
+				})
+			}
+		}
+	}
+
+	return nil
 }

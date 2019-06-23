@@ -901,8 +901,20 @@ func doubleSpace(out *bytes.Buffer) {
 }
 
 func isRelativeLink(link []byte) (yes bool) {
+	if len(link) < 1 {
+		return true
+	}
 	// a tag begin with '#'
 	if link[0] == '#' {
+		return true
+	}
+
+	if bytes.HasPrefix(link, []byte("http")) {
+		return false
+	}
+	if (link[0] >= '0' && link[0] <= '9') ||
+		(link[0] >= 'a' && link[0] <= 'z') ||
+		(link[0] >= 'A' && link[0] <= 'Z') {
 		return true
 	}
 

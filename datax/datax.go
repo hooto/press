@@ -51,6 +51,8 @@ func Worker() {
 				continue
 			}
 
+			gdocRefresh()
+
 			for {
 
 				ls := store.LocalCache.KvScan([]byte("access_counter"), []byte("access_counter"), limit).KvList()
@@ -109,5 +111,6 @@ func Worker() {
 				hlog.Printf("error", "data_sync_pull error : %s", err.Error())
 			}
 		}
+
 	}()
 }

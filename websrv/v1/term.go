@@ -258,6 +258,10 @@ func (c Term) SetAction() {
 				set["weight"] = rsp.Weight
 			}
 
+			if rs[0].Field("userid").String() == "" {
+				set["userid"] = c.us.UserId()
+			}
+
 		} else {
 
 			set["pid"] = rsp.PID

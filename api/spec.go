@@ -34,7 +34,7 @@ type Spec struct {
 	Status         int16                 `json:"status,omitempty"`
 	Title          string                `json:"title"`
 	Comment        string                `json:"comment,omitempty"`
-	NodeModels     []NodeModel           `json:"nodeModels,omitempty"`
+	NodeModels     []*NodeModel          `json:"nodeModels,omitempty"`
 	TermModels     []TermModel           `json:"termModels,omitempty"`
 	Actions        []Action              `json:"actions,omitempty"`
 	Views          []View                `json:"views,omitempty"`
@@ -44,7 +44,7 @@ type Spec struct {
 func (it *Spec) NodeModelGet(name string) *NodeModel {
 	for _, v := range it.NodeModels {
 		if v.Meta.Name == name {
-			return &v
+			return v
 		}
 	}
 	return nil
@@ -83,20 +83,22 @@ type SpecList struct {
 }
 
 type FieldModel struct {
-	Name      string        `json:"name"`
-	Type      string        `json:"type"`
-	Length    string        `json:"length,omitempty"`
-	Extra     []string      `json:"extra,omitempty"`
-	Attrs     types.KvPairs `json:"attrs,omitempty"`
-	IndexType int           `json:"indexType,omitempty"`
-	Title     string        `json:"title"`
-	Comment   string        `json:"comment,omitempty"`
+	Name        string        `json:"name"`
+	Type        string        `json:"type"`
+	Length      string        `json:"length,omitempty"`
+	Extra       []string      `json:"extra,omitempty"`
+	Attrs       types.KvPairs `json:"attrs,omitempty"`
+	IndexType   int           `json:"indexType,omitempty"`
+	Title       string        `json:"title"`
+	EditDisable bool          `json:"edit_disable,omitempty"`
+	Comment     string        `json:"comment,omitempty"`
 }
 
 type NodeModel struct {
 	types.TypeMeta `json:",inline"`
 	Meta           types.ObjectMeta `json:"meta,omitempty"`
 	ModName        string           `json:"modname,omitempty"`
+	SrvName        string           `json:"-"`
 	Status         int16            `json:"status,omitempty"`
 	Title          string           `json:"title,omitempty"`
 	Comment        string           `json:"comment,omitempty"`

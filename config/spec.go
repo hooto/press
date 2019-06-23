@@ -50,6 +50,19 @@ func SpecSet(spec *api.Spec) {
 	Modules[spec.SrvName] = spec
 }
 
+func SpecGet(modname string) *api.Spec {
+	for _, mod := range Modules {
+
+		if mod.Meta.Name == modname {
+			if mod.Status == 1 {
+				return mod
+			}
+			break
+		}
+	}
+	return nil
+}
+
 func SpecNodeModel(modname, modelName string) (*api.NodeModel, error) {
 
 	for _, mod := range Modules {
@@ -61,7 +74,7 @@ func SpecNodeModel(modname, modelName string) (*api.NodeModel, error) {
 		for _, nodeModel := range mod.NodeModels {
 
 			if modelName == nodeModel.Meta.Name {
-				return &nodeModel, nil
+				return nodeModel, nil
 			}
 		}
 	}
@@ -114,6 +127,9 @@ func module_init() error {
 				sync := false
 				for j, v2 := range mod.NodeModels {
 
+					v2.ModName = mod.Meta.Name
+					v2.SrvName = mod.SrvName
+
 					if ft := v2.Field("title"); ft == nil {
 						v2.Fields = append([]api.FieldModel{
 							{
@@ -146,7 +162,7 @@ func module_init() error {
 						for _, v3 := range rs {
 							if len(v3.Field("field_title").String()) < 2 {
 
-								fmt.Println("id", v3.Field("id").String(), v3.Field("title").String())
+								// fmt.Println("id", v3.Field("id").String(), v3.Field("title").String())
 
 								fr := store.Data.NewFilter()
 								fr.And("id", v3.Field("id").String())
@@ -206,6 +222,8 @@ func module_init() error {
 		// upgrade
 		sync := false
 		for j, v2 := range spec.NodeModels {
+			v2.ModName = modname
+			v2.SrvName = spec.SrvName
 			if ft := v2.Field("title"); ft == nil {
 				v2.Fields = append([]api.FieldModel{
 					{
@@ -402,9 +420,8 @@ func _instance_schema_sync(spec *api.Spec) error {
 
 				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
 					tbl.AddColumn(&modeler.Column{
-						Name:     "field_" + field.Name + "_langs",
-						Type:     "string-text",
-						NullAble: true,
+						Name: "field_" + field.Name + "_langs",
+						Type: "string-text",
 					})
 				}
 
@@ -432,9 +449,8 @@ func _instance_schema_sync(spec *api.Spec) error {
 
 				if attr := field.Attrs.Get("langs"); attr != nil && len(attr.String()) > 3 {
 					tbl.AddColumn(&modeler.Column{
-						Name:     "field_" + field.Name + "_langs",
-						Type:     "string-text",
-						NullAble: true,
+						Name: "field_" + field.Name + "_langs",
+						Type: "string-text",
 					})
 				}
 
@@ -559,5 +575,33 @@ func _instance_schema_sync(spec *api.Spec) error {
 	if err != nil {
 		return err
 	}
-	return dm.SchemaSync(ds)
+
+	err = dm.SchemaSync(ds)
+	if err != nil {
+		return err
+	}
+
+	for _, termModel := range spec.TermModels {
+
+		switch termModel.Type {
+
+		case api.TermTaxonomy:
+
+			tblName := fmt.Sprintf("hpt_%s_%s",
+				idhash.HashToHexString([]byte(spec.Meta.Name), 12), termModel.Meta.Name)
+			rs, _ := store.Data.Fetch(store.Data.NewQueryer().From(tblName))
+			if rs.NotFound() {
+				store.Data.Insert(tblName, map[string]interface{}{
+					"pid":     0,
+					"title":   "Default",
+					"status":  1,
+					"weight":  0,
+					"created": time.Now().Unix(),
+					"userid":  "",
+				})
+			}
+		}
+	}
+
+	return nil
 }

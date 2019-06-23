@@ -680,6 +680,9 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
             for (var i in data.model.fields) {
 
                 var field = data.model.fields[i];
+                if (field.edit_disable) {
+                    continue;
+                }
 
                 if (!field.attrs) {
                     field.attrs = [];
@@ -823,6 +826,10 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                     for (var i in data.model.fields) {
 
                         var field = data.model.fields[i];
+                        if (field.edit_disable) {
+                            continue;
+                        }
+
                         var dstid = "hpm-nodeset-fields";
 
                         var tplid = null;
@@ -1186,6 +1193,9 @@ hpNode.SetCommit = function(options) {
     for (var i in hpNode.setCurrent.model.fields) {
 
         var field = hpNode.setCurrent.model.fields[i];
+        if (field.edit_disable) {
+            continue;
+        }
 
         var field_set = {
             name: field.name,

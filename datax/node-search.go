@@ -35,7 +35,7 @@ import (
 type NodeSearchEngine interface {
 	Query(bucket string, q string, qs *QuerySet) api.NodeList
 	Put(bucket string, node api.Node) error
-	ModelSet(bucket string, model api.NodeModel) error
+	ModelSet(bucket string, model *api.NodeModel) error
 }
 
 var (

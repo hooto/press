@@ -8,6 +8,11 @@ body {
   word-wrap: break-word;
 
   padding-top: 56px;
+
+}
+
+body .container {
+  max-width: 1400px;
 }
 
 #hp-body>.container {
@@ -596,7 +601,7 @@ body {
 }
 
 .markdown-body a {
-  color: #4183c4;
+  color: #007bff;
   text-decoration: none;
 }
 
@@ -905,36 +910,45 @@ body {
 }
 
 .markdown-body table {
-  display: block;
   width: 100%;
   overflow: auto;
   word-break: normal;
   word-break: keep-all;
 }
-
-.markdown-body table th {
-  font-weight: bold;
-}
-
 .markdown-body table th,
 .markdown-body table td {
   padding: 6px 13px;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
-
+.markdown-body table th {
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+  color: #888;
+}
+.markdown-body table th:first-child,
+.markdown-body table td:first-child {
+  padding-left: 2px !important;
+} 
+.markdown-body table th:last-child,
+.markdown-body table td:last-child {
+  padding-right: 2px !important;
+} 
 .markdown-body table tr {
   background-color: #fff;
-  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 }
-
 .markdown-body table tr:nth-child(2n) {
-  background-color: #f8f8f8;
+  _background-color: #f8f8f8;
 }
 
 .markdown-body img {
   max-width: 100%;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+.markdown-body p>img {
+  display: block;
+  margin: 0 auto;
 }
 
 .markdown-body code {
@@ -1160,5 +1174,5 @@ body {
 .markdown-body :checked+.radio-label {
   z-index: 1;
   position: relative;
-  border-color: #4183c4;
+  border-color: #007bff;
 }

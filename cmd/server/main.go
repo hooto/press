@@ -20,6 +20,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/hooto/hlang4g/hlang"
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
 	"github.com/hooto/iam/iamclient"
@@ -90,14 +91,16 @@ func main() {
 	httpsrv.GlobalService.Config.UrlBasePath = config.Config.UrlBasePath
 	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort
 
+	// i18n
+	hlang.StdLangFeed.LoadMessages(config.Prefix+"/i18n/en.json", true)
+	hlang.StdLangFeed.LoadMessages(config.Prefix+"/i18n/zh-CN.json", true)
+	hlang.StdLangFeed.Init()
+
 	// status
 	status.Init()
 	datax.Worker()
 
 	//
-	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/en.json")
-	// httpsrv.Config.I18n(config.Prefix + "/src/i18n/zh_CN.json")
-
 	httpsrv.GlobalService.ModuleRegister("/hp/+/comment", ext_comment.NewModule())
 	httpsrv.GlobalService.ModuleRegister("/hp/+/hcaptcha", ext_captcha.WebServerModule())
 

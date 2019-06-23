@@ -1,0 +1,163 @@
+.hp-gdoc-frame-box {
+  margin: 20px 0 20px 0;
+}
+
+.hp-gdoc-node-content {
+  font-size: 12pt !important;
+  line-height: 150% !important;
+}
+
+.hp-gdoc-index-frame-blue {
+  background-color: #096dd9;
+  color: #fff;
+  padding: 20px 5px;
+}
+.hp-gdoc-index-frame-blue a {
+  color: #fff;
+}
+.hp-gdoc-index-frame-blue .font-dark a {
+  color: #aaa;
+}
+
+.hp-gdoc-index-frame-dark {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 20px 5px;
+}
+.hp-gdoc-index-frame-dark a {
+  color: #fff;
+}
+.hp-gdoc-index-frame-title {
+  font-size: 30pt;
+}
+
+.hp-gdoc-bgimg-hexagons {
+  background-image: url("/hp/-/static/gdoc/img/grid-hexagons.png");
+}
+
+.hp-gdoc-icon {
+  display: inline-block;
+  vertical-align: text-top;
+  fill: currentColor;
+}
+
+.hp-gdoc-icon-light {
+  fill: #f759ab !important;
+}
+
+.hp-gdoc-index-frame-dark-light {
+  background-color: #f5f5f5;
+}
+
+.hp-gdoc-entry-summary {
+  font-size: 10pt;
+  line-height: 120%;
+  padding: 0;
+}
+.hp-gdoc-entry-summary h1,
+.hp-gdoc-entry-summary h2,
+.hp-gdoc-entry-summary h3,
+.hp-gdoc-entry-summary h4,
+.hp-gdoc-entry-summary h5,
+.hp-gdoc-entry-summary h6 {
+  margin: 0 0 5px 0;
+  padding: 0;
+  font-size: 120%;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+}
+.hp-gdoc-entry-summary h2 {
+  font-size: 160%;
+}
+.hp-gdoc-entry-summary h3 {
+  font-size: 145%;
+}
+.hp-gdoc-entry-summary h4 {
+  font-size: 130%;
+}
+.hp-gdoc-entry-summary p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.hp-gdoc-entry-summary ul {
+  margin: 0 0 20px 0;
+  padding: 0;
+}
+.hp-gdoc-entry-summary ul li {
+  list-style-type: none;
+  padding: 2px 2px 5px 2px;
+  line-height: 120%;
+}
+.hp-gdoc-entry-summary li ul {
+  padding: 0 0 10px 10px;
+}
+.hp-gdoc-entry-summary hr {
+  height: 0;
+  margin: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.hp-gdoc-page-content {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 1px 2px 0px #999;
+  min-height: 600px;
+  padding: 20px;
+  line-height: 160%;
+}
+
+.hp-gdoc-nodels-item {
+  background-color: #fff;
+  /* border-radius: 4px;
+  box-shadow: 0px 1px 2px 0px #999;
+  padding: 15px; */
+  margin-bottom: 20px;
+}
+.hp-gdoc-nodels-item .card {
+  background: url("/hp/~/octicons/lib/svg/repo.svg") no-repeat 5px;;
+  background-size: 40px 40px;
+  background-position: 20px 20px;
+  min-height: 160px;
+}
+.hp-gdoc-nodels-item .card-body,
+.hp-gdoc-nodels-item .card-footer {
+  margin-left: 60px !important;
+}
+.hp-gdoc-nodels-item .card-body {
+  padding-bottom: 0 !important;
+}
+.hp-gdoc-nodels-item:hover {
+  /* box-shadow: 0px 1px 2px 0px #333; */
+}
+.hp-gdoc-nodels-info a {
+  color: rgba(0, 0, 0, 0.85);
+}
+.hp-gdoc-nodels-info .tag-item {
+  margin-right: 10px;
+}
+.hp-gdoc-nodels-title a {
+  color: #096dd9;
+  font-size: 18pt;
+}
+.hp-gdoc-nodels-item .card-footer {
+  border-top: 0 !important;
+}
+
+.hp-gdoc-nav-ol {
+  list-style: none;
+  display: block;
+  margin: 0;
+  padding: 0;
+  font-size: 120%;
+}
+.hp-gdoc-nav-ol li {
+  display: inline-block;
+}
+.hp-gdoc-nav-ol li.active {
+  font-weight: bold;
+}
+.hp-gdoc-nav-ol>li+li:before {
+  padding: 0 5px;
+  color: #ccc;
+  content: "/\00a0";
+}

@@ -41,6 +41,7 @@ type Node struct {
 }
 
 var (
+	NodeIdReg           = regexp.MustCompile("^[0-9a-f]{12}$")
 	NodeExtNodeReferReg = regexp.MustCompile("^[0-9a-f]{12,16}$")
 )
 
@@ -110,6 +111,10 @@ type NodeField struct {
 
 type NodeFieldLangs struct {
 	Items types.KvPairs `json:"items,omitempty"`
+}
+
+type NodeFieldTextRenderOptions struct {
+	AbsolutePrefix string
 }
 
 type NodeTerm struct {

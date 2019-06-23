@@ -24,6 +24,7 @@ import (
 	"github.com/hooto/iam/iamapi"
 	"github.com/hooto/iam/iamclient"
 	"github.com/lessos/lessgo/crypto/idhash"
+	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/x/webui"
 	"github.com/lynkdb/iomix/skv"
 
@@ -198,6 +199,10 @@ func (c Index) IndexAction() {
 	}
 }
 
+var staticImages = types.ArrayString([]string{
+	"png", "jpg", "jpeg", "gif", "webp", "svg",
+})
+
 func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 	mod, ok := config.Modules[srvname]
@@ -283,7 +288,6 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 			if c.Params.Get("qry_text") != "" {
 				ls = qry.NodeListSearch(c.Params.Get("qry_text"))
 				if ls.Error != nil {
-					fmt.Println(ls.Error.Message)
 					ls = qry.NodeList([]string{}, []string{})
 				}
 			} else {
@@ -336,13 +340,31 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		}
 
 		id_ext := ""
+		if mod.Meta.Name == "core/gdoc" {
+			if ad.Query.Table == "page" {
+				id = strings.ToLower(c.Request.RequestPathOdd)
+			} else if ad.Query.Table == "doc" && api.NodeIdReg.MatchString(id) {
+				id_ext = "html"
+			}
+		}
 		if i := strings.LastIndex(id, "."); i > 0 {
-			id_ext = id[i:]
+			id_ext = id[i+1:]
 			id = id[:i]
 		}
 
-		if id_ext == ".html" {
+		if id_ext == "html" {
 			qry.Filter("id", id)
+		} else if staticImages.Has(id_ext) {
+			if mod.Meta.Name == "core/gdoc" && ad.Query.Table == "page" {
+
+				pid := c.Params.Get("doc_entry_id")
+				if pid != "" {
+					s2Server(c.Controller, c.Request.RequestPathOdd,
+						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.RequestPathOdd))
+				}
+			}
+			return
+
 		} else if nodeModel.Extensions.Permalink != "" {
 			if nodeModel.Extensions.NodeRefer != "" && node_refer == "" {
 				return

@@ -11,6 +11,7 @@
       "meta": {
         "name": "entry"
       },
+      "modname": "core/comment",
       "title": "Comment Entry",
       "fields": [
         {

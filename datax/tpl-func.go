@@ -15,6 +15,7 @@
 package datax
 
 import (
+	"github.com/hooto/hlang4g/hlang"
 	"github.com/hooto/httpsrv"
 )
 
@@ -31,4 +32,5 @@ func init() {
 	httpsrv.GlobalService.Config.TemplateFuncRegister("FieldSubHtml", FieldSubHtml)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("pagelet", Pagelet)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("FilterUri", FilterUri)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("T", hlang.StdLangFeed.Translate)
 }

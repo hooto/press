@@ -70,13 +70,24 @@ type S2 struct {
 
 // resize
 func (c S2) IndexAction() {
+	s2Server(c.Controller, "", "")
+}
+
+func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 
 	c.AutoRender = false
+	var err error
 
-	obj_path, err := path_filter(strings.TrimPrefix(c.Request.RequestPath, s2_url_prefix))
-	if err != nil {
-		c.RenderError(404, "Object Not Found")
-		return
+	if objPath == "" {
+		objPath, err = path_filter(strings.TrimPrefix(c.Request.RequestPath, s2_url_prefix))
+		if err != nil {
+			c.RenderError(404, "Object Not Found")
+			return
+		}
+	}
+
+	if absPath == "" {
+		absPath = config.Prefix + "/var/storage/" + objPath
 	}
 
 	var (
@@ -87,8 +98,7 @@ func (c S2) IndexAction() {
 		ipl_step  = 64
 		ipl_smin  = 64
 		ipl_smax  = 2048
-		abs_path  = config.Prefix + "/var/storage/" + obj_path
-		ext       = strings.ToLower(filepath.Ext(obj_path))
+		ext       = strings.ToLower(filepath.Ext(objPath))
 		meta_type = ""
 	)
 
@@ -114,10 +124,10 @@ func (c S2) IndexAction() {
 	if (ipn == "" && ipl == "") ||
 		meta_type == "image/svg+xml" {
 
-		if fp, err := os.Open(abs_path); err == nil {
+		if fp, err := os.Open(absPath); err == nil {
 
 			c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-			http.ServeContent(c.Response.Out, c.Request.Request, obj_path, time.Now(), fp)
+			http.ServeContent(c.Response.Out, c.Request.Request, objPath, time.Now(), fp)
 			fp.Close()
 
 		} else {
@@ -197,7 +207,7 @@ func (c S2) IndexAction() {
 	}
 
 	var (
-		key = fmt.Sprintf("%s.%d.%d.%t", obj_path, ipls[0], ipls[1], iplc)
+		key = fmt.Sprintf("%s.%d.%d.%t", objPath, ipls[0], ipls[1], iplc)
 		hid = "s2." + idhash.HashToHexString([]byte(key), 12)
 	)
 
@@ -217,7 +227,7 @@ func (c S2) IndexAction() {
 		}
 	}()
 
-	fp, err := os.Open(abs_path)
+	fp, err := os.Open(absPath)
 	if err != nil {
 		c.RenderError(400, "Bad Request (invalid object path)")
 		return
