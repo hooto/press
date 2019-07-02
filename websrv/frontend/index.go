@@ -342,7 +342,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		id_ext := ""
 		if mod.Meta.Name == "core/gdoc" {
 			if ad.Query.Table == "page" {
-				id = strings.ToLower(c.Request.RequestPathOdd)
+				id = strings.ToLower(c.Request.UrlPathExtra)
 			} else if ad.Query.Table == "doc" && api.NodeIdReg.MatchString(id) {
 				id_ext = "html"
 			}
@@ -359,8 +359,8 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 				pid := c.Params.Get("doc_entry_id")
 				if pid != "" {
-					s2Server(c.Controller, c.Request.RequestPathOdd,
-						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.RequestPathOdd))
+					s2Server(c.Controller, c.Request.UrlPathExtra,
+						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
 				}
 			}
 			return

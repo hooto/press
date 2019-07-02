@@ -118,9 +118,10 @@ func markdownCommon(v []byte, opts *api.NodeFieldTextRenderOptions) []byte {
 
 func s2_replace(s string) string {
 	if s2Replacer == nil {
-		s2Replacer = strings.NewReplacer(
+		sets := []string{
 			"{{hp_storage_service_endpoint}}", config.SysConfigList.FetchString("storage_service_endpoint"),
-		)
+		}
+		s2Replacer = strings.NewReplacer(sets...)
 	}
 	return s2Replacer.Replace(s)
 }
