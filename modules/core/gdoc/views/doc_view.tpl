@@ -18,7 +18,7 @@
         </a>
       </li>
       <li class="active">
-        <a href="{{.baseuri}}/view/{{.doc_entry.ID}}">
+        <a href="{{.baseuri}}/view/{{.doc_entry.ID}}/">
           {{FieldStringPrint .doc_entry "title" .LANG}}
         </a>
       </li>

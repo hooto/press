@@ -47,6 +47,8 @@ var (
 		"en",
 		"zh", "zh-cn", "zh-hk", "zh-tw",
 	}) // TODO
+	gdocAttrsJS = `[{"key":"format", "value":"md"}]`
+	gdocVerDef  = "0000"
 )
 
 func gdocTextFilter(txt string) string {
@@ -123,16 +125,10 @@ func gdocRefresh() {
 		return
 	}
 
-	attrs := types.KvPairs{}
-	attrs.Set("format", "md")
-	attrsJS, _ := json.Encode(attrs, "")
-
 	var (
-		offset   = int64(0)
-		limit    = int64(10)
-		qry      = NewQuery("core/gdoc", "doc")
-		tableDoc = fmt.Sprintf("hpn_%s_%s", utils.StringEncode16("core/gdoc", 12), "doc")
-		table    = fmt.Sprintf("hpn_%s_%s", utils.StringEncode16("core/gdoc", 12), "page")
+		offset = int64(0)
+		limit  = int64(10)
+		qry    = NewQuery("core/gdoc", "doc")
 	)
 	qry.Limit(limit)
 
@@ -171,159 +167,13 @@ func gdocRefresh() {
 				continue
 			}
 
-			if ver == v.Field("repo_version").Value {
+			if ver != gdocVerDef && ver == v.Field("repo_version").Value {
 				hlog.Printf("debug", "vcs %s, version %s, skip", v.ID, ver)
 				continue
 			}
 
-			hlog.Printf("info", "vcs %s, version %s", v.ID, ver)
-
-			args := []string{
-				dir,
-				"-type",
-				"f",
-				"-name",
-				"*.md",
-			}
-
-			out, err := exec.Command("find", args...).Output()
-			if err != nil {
-				continue
-			}
-
-			var (
-				files   = strings.Split(strings.TrimSpace(string(out)), "\n")
-				summary = ""
-				readme  = ""
-				langs   = map[string]map[string]string{}
-			)
-
-			sort.Slice(files, func(i, j int) bool {
-				return (strings.Compare(files[i], files[j]) == 1)
-			})
-
-			for _, path := range files {
-
-				subPath := strings.TrimSpace(path[len(dir)+1:])
-				if !gdocNameReg.MatchString(subPath) {
-					continue
-				}
-				subPath = strings.ToLower(subPath)
-				if len(subPath) < 4 {
-					continue
-				}
-				subPath = subPath[:len(subPath)-3]
-
-				var (
-					nodeId = idhash.HashToHexString([]byte(v.ID+subPath), 12)
-				)
-
-				bs, err := ioutil.ReadFile(path)
-				if err != nil {
-					hlog.Printf("warn", "doc %s, path walk err %s", v.ID, err.Error())
-					continue
-				}
-				txt := gdocTextFilter(string(bs))
-
-				if subPath == "readme" {
-					readme = txt
-					continue
-				} else if subPath == "summary" {
-					summary = gdocTextSummaryFilter(txt)
-					continue
-				}
-
-				if pSubPath, lang, hit := gdocNameLangHit(subPath); hit {
-					lx, ok := langs[pSubPath]
-					if !ok {
-						lx = map[string]string{}
-					}
-					if pSubPath == "summary" {
-						lx[lang] = gdocTextSummaryFilter(txt)
-					} else {
-						lx[lang] = txt
-					}
-					langs[pSubPath] = lx
-					continue
-				}
-
-				q := store.Data.NewQueryer().
-					Select("id,field_repo_sumcheck").
-					From(table)
-
-				q.Where().And("id", nodeId)
-
-				rs, err := store.Data.Fetch(q)
-				if err != nil && !rs.NotFound() {
-					continue
-				}
-
-				var (
-					langTxt  = gdocLangExts(langs, subPath)
-					sumCheck = fmt.Sprintf("crc32:%d", crc32.ChecksumIEEE([]byte(txt+langTxt)))
-				)
-
-				sets := map[string]interface{}{
-					"userid":              v.UserID,
-					"pid":                 v.ID,
-					"title":               subPath,
-					"field_title":         subPath,
-					"field_content":       txt,
-					"field_content_attrs": string(attrsJS),
-					"field_repo_sumcheck": sumCheck,
-					"ext_permalink_name":  subPath,
-					"ext_permalink_idx":   nodeId,
-					"ext_node_refer":      v.ID,
-					"status":              1,
-					"updated":             time.Now().Unix(),
-				}
-				if len(langTxt) > 2 {
-					sets["field_content_langs"] = langTxt
-				}
-
-				if rs.NotFound() {
-					sets["id"] = nodeId
-					sets["created"] = sets["updated"]
-					_, err = store.Data.Insert(table, sets)
-				} else {
-					if rs.Field("field_repo_sumcheck").String() != sumCheck {
-						fr := store.Data.NewFilter().And("id", nodeId)
-						_, err = store.Data.Update(table, sets, fr)
-					} else {
-						err = nil
-						hlog.Printf("info", "doc %s, page %s, path %s, skip",
-							v.ID, nodeId, subPath)
-					}
-				}
-
-				if err != nil {
-					hlog.Printf("warn", "doc %s, page %s, path %s, refreshed err %s",
-						v.ID, nodeId, subPath, err.Error())
-				} else {
-					hlog.Printf("info", "doc %s, page %s, path %s, refreshed %d",
-						v.ID, nodeId, subPath, len(bs))
-				}
-			}
-
-			sets := map[string]interface{}{
-				"field_preface":       readme,
-				"field_preface_attrs": string(attrsJS),
-				"field_content":       summary,
-				"field_content_attrs": string(attrsJS),
-				"field_repo_version":  ver,
-				"updated":             time.Now().Unix(),
-			}
-			if langTxt := gdocLangExts(langs, "readme"); len(langTxt) > 2 {
-				sets["field_preface_langs"] = langTxt
-			}
-			if langTxt := gdocLangExts(langs, "summary"); len(langTxt) > 2 {
-				sets["field_content_langs"] = langTxt
-			}
-
-			_, err = store.Data.Update(tableDoc, sets,
-				store.Data.NewFilter().And("id", v.ID))
-			if err != nil {
-				hlog.Printf("warn", "vcs %s, err %s", v.ID, err.Error())
+			if err := gdocRefreshItem(v.ID, v.UserID, ver, dir); err != nil {
+				hlog.Printf("warn", "vcs %s, version %s, err %s", v.ID, ver, err.Error())
 			}
 		}
 
@@ -333,4 +183,199 @@ func gdocRefresh() {
 
 		offset += limit
 	}
+
+	expGdocRefreshPath()
+}
+
+func expGdocRefreshPath() {
+
+	ver := "00000000"
+
+	for _, dir := range config.Config.ExpGdocPaths {
+
+		docId := idhash.HashToHexString([]byte(dir), 12)
+
+		if err := gdocRefreshItem(docId, "sysadmin", ver, dir); err != nil {
+			hlog.Printf("warn", "vcs %s, version %s, err %s", docId, ver, err.Error())
+		}
+	}
+}
+
+func gdocRefreshItem(docId, userId, ver, dir string) error {
+
+	var (
+		tableDoc = fmt.Sprintf("hpn_%s_%s", utils.StringEncode16("core/gdoc", 12), "doc")
+		table    = fmt.Sprintf("hpn_%s_%s", utils.StringEncode16("core/gdoc", 12), "page")
+	)
+
+	hlog.Printf("info", "vcs %s, version %s", docId, ver)
+
+	args := []string{
+		dir,
+		"-type",
+		"f",
+		"-name",
+		"*.md",
+	}
+
+	out, err := exec.Command("find", args...).Output()
+	if err != nil {
+		return err
+	}
+
+	var (
+		files   = strings.Split(strings.TrimSpace(string(out)), "\n")
+		summary = ""
+		readme  = ""
+		langs   = map[string]map[string]string{}
+	)
+
+	sort.Slice(files, func(i, j int) bool {
+		return (strings.Compare(files[i], files[j]) == 1)
+	})
+
+	for _, path := range files {
+
+		subPath := strings.TrimSpace(path[len(dir)+1:])
+		if !gdocNameReg.MatchString(subPath) {
+			continue
+		}
+		subPath = strings.ToLower(subPath)
+		if len(subPath) < 4 {
+			continue
+		}
+		subPath = subPath[:len(subPath)-3]
+
+		var (
+			nodeId = idhash.HashToHexString([]byte(docId+subPath), 12)
+		)
+
+		bs, err := ioutil.ReadFile(path)
+		if err != nil {
+			hlog.Printf("warn", "doc %s, path walk err %s", docId, err.Error())
+			continue
+		}
+		txt := gdocTextFilter(string(bs))
+
+		if subPath == "readme" {
+			readme = txt
+		} else if subPath == "summary" {
+			summary = gdocTextSummaryFilter(txt)
+			continue
+		}
+
+		if pSubPath, lang, hit := gdocNameLangHit(subPath); hit {
+			lx, ok := langs[pSubPath]
+			if !ok {
+				lx = map[string]string{}
+			}
+			if pSubPath == "summary" {
+				lx[lang] = gdocTextSummaryFilter(txt)
+			} else {
+				lx[lang] = txt
+			}
+			langs[pSubPath] = lx
+			continue
+		}
+
+		q := store.Data.NewQueryer().
+			Select("id,field_repo_sumcheck").
+			From(table)
+
+		q.Where().And("id", nodeId)
+
+		rs, err := store.Data.Fetch(q)
+		if err != nil && !rs.NotFound() {
+			continue
+		}
+
+		var (
+			langTxt  = gdocLangExts(langs, subPath)
+			sumCheck = fmt.Sprintf("crc32:%d", crc32.ChecksumIEEE([]byte(txt+langTxt)))
+		)
+
+		sets := map[string]interface{}{
+			"userid":              userId,
+			"pid":                 docId,
+			"title":               subPath,
+			"field_title":         subPath,
+			"field_content":       txt,
+			"field_content_attrs": gdocAttrsJS,
+			"field_repo_sumcheck": sumCheck,
+			"ext_permalink_name":  subPath,
+			"ext_permalink_idx":   nodeId,
+			"ext_node_refer":      docId,
+			"status":              1,
+			"updated":             time.Now().Unix(),
+		}
+		if len(langTxt) > 2 {
+			sets["field_content_langs"] = langTxt
+		}
+
+		if rs.NotFound() {
+			sets["id"] = nodeId
+			sets["created"] = sets["updated"]
+			_, err = store.Data.Insert(table, sets)
+		} else {
+			if rs.Field("field_repo_sumcheck").String() != sumCheck {
+				fr := store.Data.NewFilter().And("id", nodeId)
+				_, err = store.Data.Update(table, sets, fr)
+			} else {
+				err = nil
+				hlog.Printf("info", "doc %s, page %s, path %s, skip",
+					docId, nodeId, subPath)
+			}
+		}
+
+		if err != nil {
+			hlog.Printf("warn", "doc %s, page %s, path %s, refreshed err %s",
+				docId, nodeId, subPath, err.Error())
+		} else {
+			hlog.Printf("info", "doc %s, page %s, path %s, refreshed %d",
+				docId, nodeId, subPath, len(bs))
+		}
+	}
+
+	sets := map[string]interface{}{
+		"field_preface":       readme,
+		"field_preface_attrs": gdocAttrsJS,
+		"field_content":       summary,
+		"field_content_attrs": gdocAttrsJS,
+		"field_repo_version":  ver,
+		"updated":             time.Now().Unix(),
+	}
+	if langTxt := gdocLangExts(langs, "readme"); len(langTxt) > 2 {
+		sets["field_preface_langs"] = langTxt
+	}
+	if langTxt := gdocLangExts(langs, "summary"); len(langTxt) > 2 {
+		sets["field_content_langs"] = langTxt
+	}
+
+	q := store.Data.NewQueryer().Select("id").From(tableDoc)
+	q.Where().And("id", docId)
+
+	// store.Data.Delete(tableDoc, store.Data.NewFilter().And("id", docId))
+
+	rs, err := store.Data.Fetch(q)
+
+	if err != nil && rs.NotFound() {
+
+		sets["id"] = docId
+		sets["created"] = time.Now().Unix()
+		sets["userid"] = userId
+		sets["title"] = docId
+		sets["field_title"] = docId
+		sets["status"] = 1
+		sets["ext_permalink_name"] = docId
+
+		_, err = store.Data.Insert(tableDoc, sets)
+	} else {
+		_, err = store.Data.Update(tableDoc, sets, store.Data.NewFilter().And("id", docId))
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

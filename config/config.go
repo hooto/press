@@ -73,6 +73,7 @@ type ConfigCommon struct {
 	RunMode               string                   `json:"run_mode,omitempty"`
 	ExtUpDatabases        connect.MultiConnOptions `json:"ext_up_databases,omitempty"`
 	ExpModuleInits        []string                 `json:"exp_module_inits,omitempty"`
+	ExpGdocPaths          []string                 `json:"exp_gdoc_paths,omitempty"`
 }
 
 func init() {
