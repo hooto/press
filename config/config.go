@@ -90,7 +90,7 @@ func init() {
 		"", "",
 	})
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_footer_copyright", "2015~2018 hooto.com",
+		"frontend_footer_copyright", fmt.Sprintf("2015~%d hooto.com", time.Now().Year()),
 		"", "",
 	})
 

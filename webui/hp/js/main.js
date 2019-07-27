@@ -163,6 +163,7 @@ hp.CodeRender = function(options) {
             case "swift":
             case "xml":
             case "yaml":
+            case "protobuf":
                 modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js" + hp.urlver(true));
                 break;
 

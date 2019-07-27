@@ -5,7 +5,7 @@
     </div>
 	<div class="pull-right">
       <span class="hp-footer-powerby-item">Published by <strong><a href="https://github.com/hooto/hpress" target="_blank">Hooto Press CMS</a></strong>,</span>
-      <span class="hp-footer-powerby-item">Hosted by <strong><a href="https://www.sysinner.com" target="_blank">Sysinner PaaS Engine</a></strong></span>
+      <span class="hp-footer-powerby-item">Powered by <strong><a href="https://www.sysinner.com" target="_blank">Sysinner PaaS Engine</a></strong></span>
       {{if $.frontend_langs}}
       <span class="hp-footer-powerby-item">Language
       <select onclick="hp.LangChange(this)" class="hp-footer-langs">
