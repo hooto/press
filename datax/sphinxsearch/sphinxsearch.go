@@ -10,6 +10,7 @@ import (
 	"math"
 	"net"
 	"reflect"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -227,6 +228,81 @@ var DefaultOptions = &Options{
 	Timeout:    1000,
 	RankMode:   SPH_RANK_PROXIMITY_BM25,
 	Select:     "*",
+}
+
+type Connector struct {
+	clients chan *Client
+	opts    *Options
+	cNum    int
+}
+
+func NewConnector(opts *Options, cNum int) (*Connector, error) {
+
+	if cNum == -1 {
+		cNum = runtime.NumCPU()
+	}
+
+	if cNum < 1 {
+		cNum = 1
+	} else if cNum > 32 {
+		cNum = 32
+	}
+
+	cr := &Connector{
+		clients: make(chan *Client, cNum),
+		cNum:    cNum,
+	}
+
+	for i := 0; i < cNum; i++ {
+		c := NewClient(opts)
+		if c.Timeout < 3000 {
+			c.Timeout = 3000
+		} else if c.Timeout > 100000 {
+			c.Timeout = 10000
+		}
+		cr.clients <- c
+	}
+
+	return cr, nil
+}
+
+func (cr *Connector) Close() {
+	for i := 0; i < cr.cNum; i++ {
+		cn, _ := cr.Pull()
+		cn.Close()
+	}
+}
+
+func (cr *Connector) Push(cn *Client) {
+	cr.clients <- cn
+}
+
+func (cr *Connector) Pull() (cn *Client, err error) {
+
+	sc := <-cr.clients
+
+	if err := sc.Open(); err != nil {
+		if sc.conn != nil {
+			sc.Close()
+		}
+		if err = sc.Open(); err != nil {
+			sc.Close()
+			cr.clients <- sc
+			return nil, err
+		}
+	}
+
+	timeout := time.Duration(sc.Timeout) * time.Millisecond
+	if err = sc.conn.SetDeadline(time.Now().Add(timeout)); err != nil {
+		sc.Close()
+		cr.clients <- sc
+		return nil, err
+	}
+
+	sc.ResetFilters()
+	sc.ResetGroupBy()
+
+	return sc, nil
 }
 
 func NewClient(opts ...*Options) (sc *Client) {
@@ -1261,12 +1337,13 @@ func (sc *Client) connect() (err error) {
 
 	// Try unix socket first.
 	if sc.Socket != "" {
-		if sc.conn, err = net.DialTimeout("unix", sc.Socket, timeout); err != nil {
+		// if sc.conn, err = net.DialTimeout("unix", sc.Socket, timeout); err != nil {
+		if sc.conn, err = net.Dial("unix", sc.Socket); err != nil {
 			sc.connerror = true
 			return fmt.Errorf("connect() net.DialTimeout(%d ms) > %v", sc.Timeout, err)
 		}
 	} else if sc.Port > 0 {
-		if sc.conn, err = net.DialTimeout("tcp", fmt.Sprintf("%s:%d", sc.Host, sc.Port), timeout); err != nil {
+		if sc.conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", sc.Host, sc.Port)); err != nil {
 			sc.connerror = true
 			return fmt.Errorf("connect() net.DialTimeout(%d ms) > %v", sc.Timeout, err)
 		}
