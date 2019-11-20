@@ -373,13 +373,13 @@ func syncSysinnerConfig() error {
 func store_init() error {
 
 	{
-		io_name := types.NewNameIdentifier("hpress_local_cache")
+		io_name := types.NewNameIdentifier("hpress_local")
 		opts := Config.IoConnectors.Options(io_name)
 
 		if opts == nil {
 			opts = &connect.ConnOptions{
 				Name:      io_name,
-				Connector: "iomix/skv/connector",
+				Connector: "iomix/sko/client-connector",
 				Driver:    types.NewNameIdentifier("lynkdb/kvgo"),
 			}
 		}
@@ -390,6 +390,7 @@ func store_init() error {
 		}
 
 		Config.IoConnectors.SetOptions(*opts)
+		Save()
 	}
 
 	{

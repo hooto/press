@@ -75,7 +75,7 @@ func main() {
 		time.Sleep(3e9)
 	}
 
-	ext_captcha.DataConnector = store.LocalCache
+	ext_captcha.DataConnector = store.DataLocal
 	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
 		hlog.Printf("error", "ext_captcha.Config error: %v", err)
 		fmt.Println("ext_captcha.Config error", err)

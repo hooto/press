@@ -563,7 +563,7 @@ func (c Node) SetAction() {
 		qry.Filter("status", 1)
 		qry.Filter("id", rsp.ID)
 
-		store.LocalCache.KvDel([]byte(qry.Hash()))
+		store.DataLocal.NewWriter([]byte(qry.Hash()), nil).ModeDeleteSet(true).Commit()
 
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{

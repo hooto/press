@@ -22,7 +22,6 @@ import (
 
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
-	"github.com/lynkdb/iomix/skv"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -118,7 +117,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					var ls api.NodeList
 					qryhash := qry.Hash()
 					if datax.CacheTTL > 0 && user != config.Config.AppInstance.Meta.User {
-						if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+						if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
 							rs.Decode(&ls)
 						}
 					}
@@ -126,9 +125,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					if len(ls.Items) == 0 {
 						ls = qry.NodeList([]string{}, []string{})
 						if datax.CacheTTL > 0 && len(ls.Items) > 0 {
-							store.LocalCache.KvPut([]byte(qryhash), ls, &skv.KvWriteOptions{
-								Ttl: datax.CacheTTL,
-							})
+							store.DataLocal.NewWriter([]byte(qryhash), ls).ExpireSet(datax.CacheTTL).Commit()
 						}
 					}
 
@@ -139,7 +136,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					var entry api.Node
 					qryhash := qry.Hash()
 					if datax.CacheTTL > 0 && user != config.Config.AppInstance.Meta.User {
-						if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+						if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
 							rs.Decode(&entry)
 						}
 					}
@@ -147,9 +144,7 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					if entry.Title == "" {
 						entry = qry.NodeEntry()
 						if datax.CacheTTL > 0 && entry.Title != "" {
-							store.LocalCache.KvPut([]byte(qryhash), entry, &skv.KvWriteOptions{
-								Ttl: datax.CacheTTL,
-							})
+							store.DataLocal.NewWriter([]byte(qryhash), entry).ExpireSet(datax.CacheTTL).Commit()
 						}
 					}
 

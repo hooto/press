@@ -34,7 +34,6 @@ import (
 	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/sync"
-	"github.com/lynkdb/iomix/skv"
 
 	"github.com/nfnt/resize"
 	"github.com/oliamb/cutter"
@@ -211,10 +210,10 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 		hid = "s2." + idhash.HashToHexString([]byte(key), 12)
 	)
 
-	if rs := store.LocalCache.KvGet([]byte(hid)); rs.OK() {
+	if rs := store.DataLocal.NewReader([]byte(hid)).Query(); rs.OK() {
 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
 		c.Response.Out.Header().Set("Content-type", meta_type)
-		c.Response.Out.Write(rs.Bytex().Bytes())
+		c.Response.Out.Write(rs.DataValue().Bytes())
 		return
 	}
 
@@ -317,9 +316,8 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 
 	//
 	if dst_buf.Len() > 10 {
-		store.LocalCache.KvPut([]byte(hid), dst_buf.Bytes(), &skv.KvWriteOptions{
-			Ttl: int64(36000+rand.Intn(36000)) * 1000,
-		})
+		store.DataLocal.NewWriter([]byte(hid), dst_buf.Bytes()).
+			ExpireSet(int64(36000+rand.Intn(36000)) * 1000).Commit()
 	}
 
 	//

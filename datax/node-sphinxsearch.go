@@ -417,9 +417,10 @@ func (it *NodeSphinxSearchEngine) indexFull(active *sphinxSearchBucketActive) er
 
 		for {
 
-			ls := store.LocalCache.KvScan(offset, cutset, limit).KvList()
+			ls := store.DataLocal.NewReader(nil).KeyRangeSet(offset, cutset).
+				LimitNumSet(int64(limit)).Query()
 
-			for _, v := range ls {
+			for _, v := range ls.Items {
 				var nv api.Node
 				if err := v.Decode(&nv); err == nil {
 					if _, err := fpbuf.WriteString(sphDocumentXml(&nv, active)); err != nil {
@@ -427,10 +428,10 @@ func (it *NodeSphinxSearchEngine) indexFull(active *sphinxSearchBucketActive) er
 					}
 				}
 				num += 1
-				offset = v.Key
+				offset = v.Meta.Key
 			}
 
-			if len(ls) < limit {
+			if !ls.Next {
 				break
 			}
 		}
@@ -588,8 +589,8 @@ func (it *NodeSphinxSearchEngine) indexRepair(idxname string) error {
 
 func (it *NodeSphinxSearchEngine) Put(bukname string, node api.Node) error {
 
-	if rs := store.LocalCache.KvPut(api.NsTextSearchCacheNodeEntry(bukname, node.ID), node, nil); !rs.OK() {
-		return errors.New("LocalCache/Put Error")
+	if rs := store.DataLocal.NewWriter(api.NsTextSearchCacheNodeEntry(bukname, node.ID), node).Commit(); !rs.OK() {
+		return errors.New("DataLocal/Put Error")
 	}
 
 	active := it.active(bukname)
@@ -658,8 +659,8 @@ func (it *NodeSphinxSearchEngine) Query(bukname string, q string, qs *QuerySet) 
 			continue
 		}
 
-		if rs := store.LocalCache.KvGet(
-			api.NsTextSearchCacheNodeEntry(bukname, fmt.Sprintf("%s", v.AttrValues[id_idx]))); rs.OK() {
+		if rs := store.DataLocal.NewReader(
+			api.NsTextSearchCacheNodeEntry(bukname, fmt.Sprintf("%s", v.AttrValues[id_idx]))).Query(); rs.OK() {
 			var node api.Node
 			if err := rs.Decode(&node); err == nil {
 				ls.Items = append(ls.Items, node)

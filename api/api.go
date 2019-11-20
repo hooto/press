@@ -31,15 +31,15 @@ const (
 )
 
 func NsSysDataPull() []byte {
-	return []byte("/sys/config/ext_data_pull")
+	return []byte("hp:sys:config:ext_data_pull")
 }
 
 func NsSysNodeSearch(bukname string) []byte {
-	return []byte("/sys/config/ext_node_search/" + bukname)
+	return []byte("hp:sys:config:ext_node_search:" + bukname)
 }
 
 func NsTextSearchCacheNodeEntry(bukname, id string) []byte {
-	return []byte("/cache/node/" + bukname + "/" + id)
+	return []byte("hp:cache:node:" + bukname + ":" + id)
 }
 
 func ObjPrint(name string, obj interface{}) {

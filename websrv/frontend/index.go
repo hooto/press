@@ -26,7 +26,6 @@ import (
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/types"
 	"github.com/lessos/lessgo/x/webui"
-	"github.com/lynkdb/iomix/skv"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
@@ -278,7 +277,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		qryhash := qry.Hash()
 
 		if ad.CacheTTL > 0 && (!c.us.IsLogin() || c.us.UserName != config.Config.AppInstance.Meta.User) {
-			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
 				rs.Decode(&ls)
 			}
 		}
@@ -298,9 +297,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 				c.hookPosts = append(
 					c.hookPosts,
 					func() {
-						store.LocalCache.KvPut([]byte(qryhash), &ls, &skv.KvWriteOptions{
-							Ttl: ad.CacheTTL,
-						})
+						store.DataLocal.NewWriter([]byte(qryhash), ls).ExpireSet(ad.CacheTTL).Commit()
 					},
 				)
 			}
@@ -377,7 +374,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		var entry api.Node
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 && (!c.us.IsLogin() || c.us.UserName != config.Config.AppInstance.Meta.User) {
-			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
 				rs.Decode(&entry)
 			}
 		}
@@ -388,9 +385,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 				c.hookPosts = append(
 					c.hookPosts,
 					func() {
-						store.LocalCache.KvPut([]byte(qryhash), &entry, &skv.KvWriteOptions{
-							Ttl: ad.CacheTTL,
-						})
+						store.DataLocal.NewWriter([]byte(qryhash), entry).ExpireSet(ad.CacheTTL).Commit()
 					},
 				)
 			}
@@ -405,7 +400,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 			if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
 
 				table := fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(mod.Meta.Name), 12), ad.Query.Table)
-				store.LocalCache.KvPut([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1", nil)
+				store.DataLocal.NewWriter([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1").Commit()
 			}
 		}
 
@@ -425,7 +420,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		var ls api.TermList
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 {
-			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
 				rs.Decode(&ls)
 			}
 		}
@@ -433,9 +428,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		if len(ls.Items) == 0 {
 			ls = qry.TermList()
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
-				store.LocalCache.KvPut([]byte(qryhash), ls, &skv.KvWriteOptions{
-					Ttl: ad.CacheTTL,
-				})
+				store.DataLocal.NewWriter([]byte(qryhash), ls).ExpireSet(ad.CacheTTL).Commit()
 			}
 		}
 
@@ -454,7 +447,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		qryhash := qry.Hash()
 
 		if ad.CacheTTL > 0 {
-			if rs := store.LocalCache.KvGet([]byte(qryhash)); rs.OK() {
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
 				rs.Decode(&entry)
 			}
 		}
@@ -462,9 +455,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		if entry.Title == "" {
 			entry = qry.TermEntry()
 			if ad.CacheTTL > 0 && entry.Title != "" {
-				store.LocalCache.KvPut([]byte(qryhash), entry, &skv.KvWriteOptions{
-					Ttl: ad.CacheTTL,
-				})
+				store.DataLocal.NewWriter([]byte(qryhash), entry).ExpireSet(ad.CacheTTL).Commit()
 			}
 		}
 

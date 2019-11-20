@@ -22,7 +22,7 @@ import (
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/lynkdb/iomix/connect"
 	"github.com/lynkdb/iomix/rdb"
-	"github.com/lynkdb/iomix/skv"
+	"github.com/lynkdb/iomix/sko"
 	"github.com/lynkdb/kvgo"
 	"github.com/lynkdb/mysqlgo"
 	"github.com/lynkdb/pgsqlgo"
@@ -32,17 +32,17 @@ var (
 	err         error
 	Data        rdb.Connector
 	DataOptions *connect.ConnOptions
-	LocalCache  skv.Connector
+	DataLocal   sko.ClientConnector
 )
 
 func Init(cfg connect.MultiConnOptions) error {
 
-	opts := cfg.Options("hpress_local_cache")
+	opts := cfg.Options("hpress_local")
 	if opts == nil {
-		return errors.New("No hpress_local_cache Config.IoConnectors Found")
+		return errors.New("No hpress_local Config.IoConnectors Found")
 	}
 
-	if LocalCache, err = kvgo.Open(*opts); err != nil {
+	if DataLocal, err = kvgo.Open(*opts); err != nil {
 		return fmt.Errorf("Can Not Connect To %s, Error: %s", opts.Name, err.Error())
 	}
 

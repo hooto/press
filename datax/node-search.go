@@ -145,7 +145,7 @@ func data_search_sync() error {
 
 			nodeSearcher.ModelSet(tblname, model)
 
-			if rs := store.LocalCache.KvGet(kvKey); rs.OK() {
+			if rs := store.DataLocal.NewReader(kvKey).Query(); rs.OK() {
 				rs.Decode(&cfgs)
 				if pv := cfgs.Get("index_updated"); pv.String() != "" {
 					q.Where().And("updated.ge", pv.String())
@@ -290,7 +290,7 @@ func data_search_sync() error {
 
 			if indexNum > 0 {
 				cfgs.Set("index_updated", indexUpdated)
-				if rs := store.LocalCache.KvPut(kvKey, cfgs, nil); !rs.OK() {
+				if rs := store.DataLocal.NewWriter(kvKey, cfgs).Commit(); !rs.OK() {
 					hlog.Printf("warn", "search index error")
 				}
 				hlog.Printf("info", "search data sync %d at %v",

@@ -47,7 +47,7 @@ func Worker() {
 		for {
 
 			time.Sleep(1e9)
-			if store.LocalCache == nil {
+			if store.DataLocal == nil {
 				continue
 			}
 
@@ -55,13 +55,15 @@ func Worker() {
 
 			for {
 
-				ls := store.LocalCache.KvScan([]byte("access_counter"), []byte("access_counter"), limit).KvList()
+				ls := store.DataLocal.NewReader(nil).KeyRangeSet(
+					[]byte("access_counter"), []byte("access_counter")).
+					LimitNumSet(int64(limit)).Query()
 
 				imap := map[string]int{}
 
-				for _, v := range ls {
+				for _, v := range ls.Items {
 
-					s := strings.Split(string(v.Key), "/")
+					s := strings.Split(string(v.Meta.Key), "/")
 
 					if len(s) == 4 {
 
@@ -73,7 +75,7 @@ func Worker() {
 						}
 					}
 
-					store.LocalCache.KvDel(v.Key)
+					store.DataLocal.NewWriter(v.Meta.Key, nil).ModeDeleteSet(true).Commit()
 				}
 
 				for key, num := range imap {
@@ -98,7 +100,7 @@ func Worker() {
 					}
 				}
 
-				if len(ls) < limit {
+				if !ls.Next {
 					break
 				}
 			}
