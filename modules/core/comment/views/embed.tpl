@@ -87,7 +87,7 @@
           </div>
         </div>
 
-        <button class="btn btn-default" onclick="hpComment.EmbedCommit()">Commit</button>
+        <button class="btn btn-dark" onclick="hpComment.EmbedCommit()">Commit</button>
 
       </div>
     </div>
