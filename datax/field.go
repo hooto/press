@@ -433,10 +433,10 @@ func FieldSubHtml(fields []*api.NodeField, colname string, length int) template.
 	return template.HTML(val)
 }
 
-func FieldHtmlSubPrint(node_entry api.Node, colname string, length int, lang string) template.HTML {
+func FieldHtmlSubPrint(nodeEntry api.Node, colname string, length int, lang string) template.HTML {
 
 	var field *api.NodeField
-	for _, v := range node_entry.Fields {
+	for _, v := range nodeEntry.Fields {
 		if v.Name == colname {
 			field = v
 			break
@@ -503,8 +503,8 @@ func FieldHtmlSubPrint(node_entry api.Node, colname string, length int, lang str
 	return template.HTML(val)
 }
 
-func FieldStringPrint(node_entry api.Node, colname, lang string) string {
-	for _, field := range node_entry.Fields {
+func FieldStringPrint(nodeEntry api.Node, colname, lang string) string {
+	for _, field := range nodeEntry.Fields {
 		if field.Name == colname {
 			if field.Langs != nil {
 				if v := field.Langs.Items.Get(lang); v != nil {
@@ -517,10 +517,14 @@ func FieldStringPrint(node_entry api.Node, colname, lang string) string {
 	return ""
 }
 
-func FieldHtmlPrint(node_entry api.Node, colname, lang string) template.HTML {
+var (
+	nodeReferMap = map[string]string{}
+)
+
+func FieldHtmlPrint(nodeEntry api.Node, colname, lang string) template.HTML {
 
 	var field *api.NodeField
-	for _, v := range node_entry.Fields {
+	for _, v := range nodeEntry.Fields {
 		if v.Name == colname {
 			field = v
 			break
@@ -553,16 +557,24 @@ func FieldHtmlPrint(node_entry api.Node, colname, lang string) template.HTML {
 	}
 
 	opts := &api.NodeFieldTextRenderOptions{}
-	if node_entry.Model != nil && node_entry.Model.ModName == "core/gdoc" {
+	if nodeEntry.Model != nil && nodeEntry.Model.ModName == "core/gdoc" {
 
-		switch node_entry.Model.Meta.Name {
+		switch nodeEntry.Model.Meta.Name {
 		case "doc":
 			opts.AbsolutePrefix = fmt.Sprintf("/%s/view/%s",
-				node_entry.Model.SrvName, node_entry.ExtPermalinkName)
+				nodeEntry.Model.SrvName, nodeEntry.ExtPermalinkName)
+			if nrv, ok := nodeReferMap[nodeEntry.ID]; !ok ||
+				nrv != nodeEntry.ExtPermalinkName {
+				nodeReferMap[nodeEntry.ID] = nodeEntry.ExtPermalinkName
+			}
 
 		case "page":
+			nodeRefer := nodeEntry.ExtNodeRefer
+			if nrv, ok := nodeReferMap[nodeRefer]; ok && nrv != nodeRefer {
+				nodeRefer = nrv
+			}
 			opts.AbsolutePrefix = fmt.Sprintf("/%s/view/%s",
-				node_entry.Model.SrvName, node_entry.ExtNodeRefer)
+				nodeEntry.Model.SrvName, nodeRefer)
 		}
 	}
 

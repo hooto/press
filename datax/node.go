@@ -106,8 +106,12 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 				}
 			}
 
-			if model.Extensions.Permalink != "" && v.Field("ext_permalink_name").String() != "" {
-				item.ExtPermalinkName = v.Field("ext_permalink_name").String()
+			if model.Extensions.Permalink != "" {
+				if pn := v.Field("ext_permalink_name").String(); pn != "" {
+					item.ExtPermalinkName = pn
+				} else {
+					item.ExtPermalinkName = item.ID
+				}
 				item.SelfLink = fmt.Sprintf("%s", item.ExtPermalinkName)
 			} else {
 				item.SelfLink = fmt.Sprintf("%s.html", item.ID)
@@ -367,7 +371,11 @@ func (q *QuerySet) NodeEntry() api.Node {
 	}
 
 	if rsp.Model.Extensions.Permalink != "" {
-		rsp.ExtPermalinkName = rs.Field("ext_permalink_name").String()
+		if pn := rs.Field("ext_permalink_name").String(); pn != "" {
+			rsp.ExtPermalinkName = pn
+		} else {
+			rsp.ExtPermalinkName = rsp.ID
+		}
 	}
 
 	if rsp.Model.Extensions.NodeRefer != "" {
