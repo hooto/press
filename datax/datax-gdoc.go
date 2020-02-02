@@ -51,6 +51,35 @@ var (
 	gdocVerDef  = "0000"
 )
 
+var (
+	gdocNodeReferToPermalinkName = map[string]string{}
+	gdocPermalinkNameToNodeRefer = map[string]string{}
+)
+
+func gdocNodePermalinkNameSet(nodeId, name string) {
+	if name == "" {
+		return
+	}
+	if pn, ok := gdocNodeReferToPermalinkName[nodeId]; !ok || name != pn {
+		gdocNodeReferToPermalinkName[nodeId] = name
+		gdocPermalinkNameToNodeRefer[name] = nodeId
+	}
+}
+
+func gdocNodePermalinkName(nodeId string) string {
+	if pn, ok := gdocNodeReferToPermalinkName[nodeId]; ok {
+		return pn
+	}
+	return nodeId
+}
+
+func GdocNodeId(name string) string {
+	if id, ok := gdocPermalinkNameToNodeRefer[name]; ok {
+		return id
+	}
+	return name
+}
+
 func gdocTextFilter(txt string) string {
 	txt = strings.TrimSpace(txt)
 	if len(txt) > 8 && txt[:3] == "---" {
@@ -160,6 +189,8 @@ func gdocRefresh() {
 			if repo.Branch == "" {
 				repo.Branch = "master"
 			}
+
+			gdocNodePermalinkNameSet(v.ID, v.ExtPermalinkName)
 
 			ver, err := vcsAction(repo)
 			if err != nil {

@@ -153,6 +153,7 @@ hp.CodeRender = function(options) {
             case "markdown":
             case "nginx":
             case "perl":
+            case "protobuf":
             case "python":
             case "r":
             case "rpm":
@@ -161,9 +162,9 @@ hp.CodeRender = function(options) {
             case "shell":
             case "sql":
             case "swift":
+            case "toml":
             case "xml":
             case "yaml":
-            case "protobuf":
                 modes.push("~/cm/5/mode/" + lang + "/" + lang + ".js" + hp.urlver(true));
                 break;
 

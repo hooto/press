@@ -517,10 +517,6 @@ func FieldStringPrint(nodeEntry api.Node, colname, lang string) string {
 	return ""
 }
 
-var (
-	nodeReferMap = map[string]string{}
-)
-
 func FieldHtmlPrint(nodeEntry api.Node, colname, lang string) template.HTML {
 
 	var field *api.NodeField
@@ -563,18 +559,11 @@ func FieldHtmlPrint(nodeEntry api.Node, colname, lang string) template.HTML {
 		case "doc":
 			opts.AbsolutePrefix = fmt.Sprintf("/%s/view/%s",
 				nodeEntry.Model.SrvName, nodeEntry.ExtPermalinkName)
-			if nrv, ok := nodeReferMap[nodeEntry.ID]; !ok ||
-				nrv != nodeEntry.ExtPermalinkName {
-				nodeReferMap[nodeEntry.ID] = nodeEntry.ExtPermalinkName
-			}
+			gdocNodePermalinkNameSet(nodeEntry.ID, nodeEntry.ExtPermalinkName)
 
 		case "page":
-			nodeRefer := nodeEntry.ExtNodeRefer
-			if nrv, ok := nodeReferMap[nodeRefer]; ok && nrv != nodeRefer {
-				nodeRefer = nrv
-			}
 			opts.AbsolutePrefix = fmt.Sprintf("/%s/view/%s",
-				nodeEntry.Model.SrvName, nodeRefer)
+				nodeEntry.Model.SrvName, gdocNodePermalinkName(nodeEntry.ExtNodeRefer))
 		}
 	}
 

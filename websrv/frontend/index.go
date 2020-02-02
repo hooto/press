@@ -35,8 +35,9 @@ import (
 
 type Index struct {
 	*httpsrv.Controller
-	hookPosts []func()
-	us        iamapi.UserSession
+	renderSkip bool
+	hookPosts  []func()
+	us         iamapi.UserSession
 }
 
 func (c *Index) Init() int {
@@ -185,12 +186,14 @@ func (c Index) IndexAction() {
 		}
 	}
 
-	// render_start := time.Now()
-	c.Render(mod.Meta.Name, template)
+	if !c.renderSkip {
+		// render_start := time.Now()
+		c.Render(mod.Meta.Name, template)
 
-	// fmt.Println("render in-time", mod.Meta.Name, template, time.Since(render_start))
+		// fmt.Println("render in-time", mod.Meta.Name, template, time.Since(render_start))
 
-	c.RenderString(fmt.Sprintf("<!-- rt-time/db+render : %d ms -->", (time.Now().UnixNano()-start)/1e6))
+		c.RenderString(fmt.Sprintf("<!-- rt-time/db+render : %d ms -->", (time.Now().UnixNano()-start)/1e6))
+	}
 
 	// fmt.Println("hookPosts", len(c.hookPosts))
 	for _, fn := range c.hookPosts {
@@ -330,10 +333,10 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 			return
 		}
 
-		node_refer := ""
+		nodeRefer := ""
 		if nodeModel.Extensions.NodeRefer != "" {
 			if mv, ok := c.Data[action_name+"_nsr_"+nodeModel.Extensions.NodeRefer]; ok {
-				node_refer = mv.(string)
+				nodeRefer = mv.(string)
 			}
 		}
 
@@ -355,20 +358,21 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		} else if staticImages.Has(id_ext) {
 			if mod.Meta.Name == "core/gdoc" && ad.Query.Table == "page" {
 
-				pid := c.Params.Get("doc_entry_id")
+				pid := datax.GdocNodeId(c.Params.Get("doc_entry_id"))
 				if pid != "" {
 					// fmt.Println(fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
 					s2Server(c.Controller, c.Request.UrlPathExtra,
 						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
+					c.renderSkip = true
 				}
 			}
 			return
 
 		} else if nodeModel.Extensions.Permalink != "" {
-			if nodeModel.Extensions.NodeRefer != "" && node_refer == "" {
+			if nodeModel.Extensions.NodeRefer != "" && nodeRefer == "" {
 				return
 			}
-			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(node_refer+id), 12))
+			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(nodeRefer+id), 12))
 		} else {
 			return
 		}
