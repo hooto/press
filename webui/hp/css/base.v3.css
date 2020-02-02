@@ -530,19 +530,23 @@ body .container {
   padding: 0.5rem 1.0rem;
   border-bottom: 1px solid #ddd;
 }
+
 .hp-content table th {
   font-weight: bold;
   border-bottom: 2px solid #ddd;
   color: #888;
 }
+
 .hp-content table th:first-child,
 .hp-content table td:first-child {
   padding-left: 2px !important;
-} 
+}
+
 .hp-content table th:last-child,
 .hp-content table td:last-child {
   padding-right: 2px !important;
-} 
+}
+
 .hp-content table tr {
   background-color: #fff;
   border-bottom: 1px solid #ccc;
@@ -553,6 +557,7 @@ body .container {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 .hp-content p>img {
   display: block;
   margin: 0 auto;
@@ -568,7 +573,7 @@ body .container {
   padding: 0;
   word-wrap: normal;
   border: 0;
-  font-size: 0.9em !important;
+  font-size: 1.0em !important;
   line-height: 1.5em !important;
   background-color: #f1f3f4;
 }
@@ -577,11 +582,11 @@ body .container {
   padding: 0.2em 0.4em;
 }
 
-.hp-content >pre {
+.hp-content>pre {
   border-radius: 3px;
 }
 
-.hp-content >pre>code {
+.hp-content>pre>code {
   padding: 10px;
   display: block;
   height: auto !important;
@@ -607,4 +612,3 @@ body .container {
   clear: both;
   content: "";
 }
-

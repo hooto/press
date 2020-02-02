@@ -208,7 +208,7 @@ func gdocRefreshItem(docId, userId, ver, dir string) error {
 		table    = fmt.Sprintf("hpn_%s_%s", utils.StringEncode16("core/gdoc", 12), "page")
 	)
 
-	hlog.Printf("info", "vcs %s, version %s", docId, ver)
+	hlog.Printf("debug", "vcs %s, version %s", docId, ver)
 
 	args := []string{
 		dir,
@@ -322,16 +322,16 @@ func gdocRefreshItem(docId, userId, ver, dir string) error {
 				_, err = store.Data.Update(table, sets, fr)
 			} else {
 				err = nil
-				hlog.Printf("info", "doc %s, page %s, path %s, skip",
+				hlog.Printf("debug", "doc %s, page %s, path %s, skip",
 					docId, nodeId, subPath)
 			}
 		}
 
 		if err != nil {
-			hlog.Printf("warn", "doc %s, page %s, path %s, refreshed err %s",
+			hlog.Printf("info", "doc %s, page %s, path %s, refreshed err %s",
 				docId, nodeId, subPath, err.Error())
 		} else {
-			hlog.Printf("info", "doc %s, page %s, path %s, refreshed %d",
+			hlog.Printf("debug", "doc %s, page %s, path %s, refreshed %d",
 				docId, nodeId, subPath, len(bs))
 		}
 	}

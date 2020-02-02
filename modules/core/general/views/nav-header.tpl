@@ -30,8 +30,8 @@
   <img class="iam-photo" src="{[=it.photo_url]}">
   <div class="iam-name">{[=it.display_name]}</div>
   {[? it.instance_owner]}<a class="btn btn-primary iam-btn" href="{[=hp.HttpSrvBasePath('mgr')]}" target="_blank">Content Manage</a>{[?]}
-  <a class="btn btn-default iam-btn" href="{[=it.iam_url]}" target="_blank">Account Center</a>
-  <a class="btn btn-default iam-btn" href="{[=hp.HttpSrvBasePath('auth/sign-out')]}">Sign out</a>
+  <a class="btn btn-primary iam-btn" href="{[=it.iam_url]}" target="_blank">Account Center</a>
+  <a class="btn btn-primary iam-btn" href="{[=hp.HttpSrvBasePath('auth/sign-out')]}">Sign out</a>
 </div>
 </script>
 

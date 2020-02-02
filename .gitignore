@@ -19,4 +19,5 @@ image.lua
 nginx.conf
 *.txz
 .build_tempdir
+batch-*
 

@@ -915,28 +915,34 @@ body .container {
   word-break: normal;
   word-break: keep-all;
 }
+
 .markdown-body table th,
 .markdown-body table td {
   padding: 6px 13px;
   border-bottom: 1px solid #ddd;
 }
+
 .markdown-body table th {
   font-weight: bold;
   border-bottom: 2px solid #ddd;
   color: #888;
 }
+
 .markdown-body table th:first-child,
 .markdown-body table td:first-child {
   padding-left: 2px !important;
-} 
+}
+
 .markdown-body table th:last-child,
 .markdown-body table td:last-child {
   padding-right: 2px !important;
-} 
+}
+
 .markdown-body table tr {
   background-color: #fff;
   border-bottom: 1px solid #ccc;
 }
+
 .markdown-body table tr:nth-child(2n) {
   _background-color: #f8f8f8;
 }
@@ -946,6 +952,7 @@ body .container {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 .markdown-body p>img {
   display: block;
   margin: 0 auto;
