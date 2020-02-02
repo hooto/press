@@ -16,13 +16,13 @@
 <div class="container hpdoc_node_content">
   <div class="row" style="padding: 20px 0;">
     <div class="col-3">
-      <div class="hpdoc_entry_summary markdown-body hp-content" style="">
+      <div class="hpdoc_entry_summary hp-content" style="">
         <ul><li><a href=".">Preface</a></li></ul>
         {{FieldHtmlPrint .doc_entry "content" .LANG}}
       </div>
     </div>
     <div class="col-9">
-      <div class="hpdoc_entry_content hpdoc_page_content markdown-body hp-content">{{FieldHtmlPrint .page_entry "content" .LANG}}</div>
+      <div class="hpdoc_entry_content hpdoc_page_content hp-content">{{FieldHtmlPrint .page_entry "content" .LANG}}</div>
     </div>
   </div>
 </div>

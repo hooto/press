@@ -323,6 +323,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 				return
 			}
 		}
+		// fmt.Println("node.entry", ad.Name+"_id", id)
 
 		nodeModel, err := config.SpecNodeModel(mod.Meta.Name, ad.Query.Table)
 		if err != nil {
@@ -356,6 +357,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 				pid := c.Params.Get("doc_entry_id")
 				if pid != "" {
+					// fmt.Println(fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
 					s2Server(c.Controller, c.Request.UrlPathExtra,
 						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
 				}

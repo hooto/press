@@ -74,7 +74,7 @@
         <textarea class="l4i-form-control" id="field_{[=it.name]}" name="field_{[=it.name]}" rows="{[if (it.attr_ui_rows) {]}{[=it.attr_ui_rows]}{[} else {]}6{[}]}">{[=it.value]}</textarea>
       </div>
       <div id="field_{[=it.name]}_colpreview" style="display:none" classs="editor-fra-item">
-        <div class="markdown-body hp-scroll" 
+        <div class="hp-content hp-scroll" 
           id="field_{[=it.name]}_preview" style="padding:10px"></div>
       </div>
     </div>

@@ -115,7 +115,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 			for _, field := range model.Fields {
 
-				if field.Name != "title" && len(ar_fields) > 0 && !ar_fields.Contain(field.Name) {
+				if field.Name != "title" && len(ar_fields) > 0 && !ar_fields.Has(field.Name) {
 					continue
 				}
 
@@ -152,7 +152,7 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 
 			for _, term := range model.Terms {
 
-				if len(ar_terms) > 0 && !ar_terms.Contain(term.Meta.Name) {
+				if len(ar_terms) > 0 && !ar_terms.Has(term.Meta.Name) {
 					continue
 				}
 

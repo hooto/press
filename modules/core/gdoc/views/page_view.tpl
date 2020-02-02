@@ -37,12 +37,12 @@
 <div class="container hp-gdoc-node-content">
   <div class="row" style="padding: 20px 0;">
     <div class="col" style="min-width:200px;max-width:300px">
-      <div class="hp-gdoc-entry-summary markdown-body hp-content" style="">
+      <div class="hp-gdoc-entry-summary hp-content" style="">
         {{FieldHtmlPrint .doc_entry "content" .LANG}}
       </div>
     </div>
     <div class="col" style="min-width:400px;">
-      <div class="hp-gdoc-entry-content hp-gdoc-page-content markdown-body hp-content">{{FieldHtmlPrint .page_entry "content" .LANG}}</div>
+      <div class="hp-gdoc-entry-content hp-gdoc-page-content hp-content">{{FieldHtmlPrint .page_entry "content" .LANG}}</div>
     </div>
   </div>
 </div>
