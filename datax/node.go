@@ -107,14 +107,14 @@ func (q *QuerySet) NodeList(fields, terms []string) api.NodeList {
 			}
 
 			if model.Extensions.Permalink != "" {
-				if pn := v.Field("ext_permalink_name").String(); pn != "" {
-					item.ExtPermalinkName = pn
-				} else {
-					item.ExtPermalinkName = item.ID
-				}
-				item.SelfLink = fmt.Sprintf("%s", item.ExtPermalinkName)
-			} else {
+				item.ExtPermalinkName = v.Field("ext_permalink_name").String()
+			}
+
+			if item.ExtPermalinkName == "" {
+				item.ExtPermalinkName = item.ID
 				item.SelfLink = fmt.Sprintf("%s.html", item.ID)
+			} else {
+				item.SelfLink = fmt.Sprintf("%s", item.ExtPermalinkName)
 			}
 
 			for _, field := range model.Fields {

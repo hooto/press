@@ -57,7 +57,7 @@ var (
 )
 
 func gdocNodePermalinkNameSet(nodeId, name string) {
-	if name == "" {
+	if name == "" || nodeId == name {
 		return
 	}
 	if pn, ok := gdocNodeReferToPermalinkName[nodeId]; !ok || name != pn {
