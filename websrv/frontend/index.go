@@ -35,9 +35,8 @@ import (
 
 type Index struct {
 	*httpsrv.Controller
-	renderSkip bool
-	hookPosts  []func()
-	us         iamapi.UserSession
+	hookPosts []func()
+	us        iamapi.UserSession
 }
 
 func (c *Index) Init() int {
@@ -89,8 +88,14 @@ func (c Index) filter(rt []string, spec *api.Spec) (string, string, bool) {
 }
 
 var (
-	srvname_default = "core-genereal"
-	uris_default    = []string{"core-general"}
+	srvnameDefault     = "core-genereal"
+	urisDefault        = []string{"core-general"}
+	dataRenderOK       = 0
+	dataRenderNotFound = 1
+	dataRenderSkip     = 2
+	staticImages       = types.ArrayString([]string{
+		"png", "jpg", "jpeg", "gif", "webp", "svg",
+	})
 )
 
 func (c Index) IndexAction() {
@@ -118,7 +123,7 @@ func (c Index) IndexAction() {
 			reqpath = config.RouterBasepathDefault
 			uris = config.RouterBasepathDefaults
 		} else {
-			uris = uris_default
+			uris = urisDefault
 		}
 	}
 	srvname := uris[0]
@@ -130,7 +135,7 @@ func (c Index) IndexAction() {
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
-		srvname = srvname_default
+		srvname = srvnameDefault
 		mod, ok = config.Modules[srvname]
 		if !ok {
 			return
@@ -169,6 +174,8 @@ func (c Index) IndexAction() {
 		c.Data["s_user"] = c.us.UserName
 	}
 
+	drs := dataRenderNotFound
+
 	if dataAction != "" {
 
 		for _, action := range mod.Actions {
@@ -178,7 +185,7 @@ func (c Index) IndexAction() {
 			}
 
 			for _, datax := range action.Datax {
-				c.dataRender(srvname, action.Name, datax)
+				drs = c.dataRender(srvname, action.Name, datax)
 				c.Data["__datax_table__"] = datax.Query.Table
 			}
 
@@ -186,30 +193,31 @@ func (c Index) IndexAction() {
 		}
 	}
 
-	if !c.renderSkip {
+	switch drs {
+	case dataRenderOK:
+
 		// render_start := time.Now()
 		c.Render(mod.Meta.Name, template)
 
 		// fmt.Println("render in-time", mod.Meta.Name, template, time.Since(render_start))
 
 		c.RenderString(fmt.Sprintf("<!-- rt-time/db+render : %d ms -->", (time.Now().UnixNano()-start)/1e6))
-	}
 
-	// fmt.Println("hookPosts", len(c.hookPosts))
-	for _, fn := range c.hookPosts {
-		fn()
+		// fmt.Println("hookPosts", len(c.hookPosts))
+		for _, fn := range c.hookPosts {
+			fn()
+		}
+
+	case dataRenderNotFound:
+		c.RenderError(404, "Page Not Found")
 	}
 }
 
-var staticImages = types.ArrayString([]string{
-	"png", "jpg", "jpeg", "gif", "webp", "svg",
-})
-
-func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
+func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
-		return
+		return dataRenderNotFound
 	}
 
 	qry := datax.NewQuery(mod.Meta.Name, ad.Query.Table)
@@ -319,18 +327,18 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 	case "node.entry":
 
-		id := c.Params.Get(ad.Name + "_id")
-		if id == "" {
-			id = c.Params.Get("id")
-			if id == "" {
-				return
+		nodeId := c.Params.Get(ad.Name + "_id")
+		if nodeId == "" {
+			nodeId = c.Params.Get("id")
+			if nodeId == "" {
+				return dataRenderNotFound
 			}
 		}
-		// fmt.Println("node.entry", ad.Name+"_id", id)
+		// fmt.Println("node.entry", ad.Name+"_id", nodeId)
 
 		nodeModel, err := config.SpecNodeModel(mod.Meta.Name, ad.Query.Table)
 		if err != nil {
-			return
+			return dataRenderNotFound
 		}
 
 		nodeRefer := ""
@@ -340,22 +348,22 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 			}
 		}
 
-		id_ext := ""
+		nodeExt := ""
 		if mod.Meta.Name == "core/gdoc" {
 			if ad.Query.Table == "page" {
-				id = strings.ToLower(c.Request.UrlPathExtra)
-			} else if ad.Query.Table == "doc" && api.NodeIdReg.MatchString(id) {
-				id_ext = "html"
+				nodeId = strings.ToLower(c.Request.UrlPathExtra)
+			} else if ad.Query.Table == "doc" && api.NodeIdReg.MatchString(nodeId) {
+				nodeExt = "html"
 			}
 		}
-		if i := strings.LastIndex(id, "."); i > 0 {
-			id_ext = id[i+1:]
-			id = id[:i]
+		if i := strings.LastIndex(nodeId, "."); i > 0 {
+			nodeExt = nodeId[i+1:]
+			nodeId = nodeId[:i]
 		}
 
-		if id_ext == "html" {
-			qry.Filter("id", id)
-		} else if staticImages.Has(id_ext) {
+		if nodeExt == "html" {
+			qry.Filter("id", nodeId)
+		} else if staticImages.Has(nodeExt) {
 			if mod.Meta.Name == "core/gdoc" && ad.Query.Table == "page" {
 
 				pid := datax.GdocNodeId(c.Params.Get("doc_entry_id"))
@@ -363,18 +371,17 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 					// fmt.Println(fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
 					s2Server(c.Controller, c.Request.UrlPathExtra,
 						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
-					c.renderSkip = true
 				}
 			}
-			return
+			return dataRenderSkip
 
 		} else if nodeModel.Extensions.Permalink != "" {
 			if nodeModel.Extensions.NodeRefer != "" && nodeRefer == "" {
-				return
+				return dataRenderNotFound
 			}
-			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(nodeRefer+id), 12))
+			qry.Filter("ext_permalink_idx", idhash.HashToHexString([]byte(nodeRefer+nodeId), 12))
 		} else {
-			return
+			return dataRenderNotFound
 		}
 
 		var entry api.Node
@@ -398,7 +405,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 		}
 
 		if entry.ID == "" {
-			return
+			return dataRenderNotFound
 		}
 
 		if nodeModel.Extensions.AccessCounter {
@@ -467,4 +474,6 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) {
 
 		c.Data[ad.Name] = entry
 	}
+
+	return dataRenderOK
 }
