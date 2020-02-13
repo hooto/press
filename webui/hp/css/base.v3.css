@@ -573,7 +573,7 @@ body .container {
   padding: 0;
   word-wrap: normal;
   border: 0;
-  font-size: 1.0em !important;
+  font-size: 0.90em !important;
   line-height: 1.5em !important;
   background-color: #f1f3f4;
 }

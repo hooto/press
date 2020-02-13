@@ -174,7 +174,7 @@ func (c Index) IndexAction() {
 		c.Data["s_user"] = c.us.UserName
 	}
 
-	drs := dataRenderNotFound
+	drs := dataRenderOK
 
 	if dataAction != "" {
 
