@@ -48,7 +48,7 @@
         <div>
           <div class="info"><strong>Guest</strong></div>
           <div>
-            <input type="text" class="form-control" name="author" placeholder="Leave a comment ..." onclick="hpComment.EmbedFormActive()">
+            <input type="text" class="input form-control" name="author" placeholder="Leave a comment ..." onclick="hpComment.EmbedFormActive()">
           </div>
         </div>
       </div>
@@ -64,12 +64,12 @@
 
         <div class="form-group">
           <label>Your name</label>
-          <input type="text" class="form-control" name="author" value="{{.new_form_author}}">
+          <input type="text" class="input form-control" name="author" value="{{.new_form_author}}">
         </div>
 
         <div class="form-group">
           <label>Content</label>
-          <textarea class="form-control" rows="3" name="content"></textarea>
+          <textarea class="textarea form-control" rows="3" name="content"></textarea>
         </div>
 
         <div class="form-group">
@@ -77,7 +77,7 @@
           <div>
 		    <table width="100%">
 			  <tr><td width="50%" valign="top">
-                <input type="text" class="form-control" name="captcha_word" value="">
+                <input type="text" class="input form-control" name="captcha_word" value="">
                 <span class="help-block">Type the characters you see in the right picture</span>
 			  </td><td style="width: 10px">
 			  </td><td style="background-color: #dce6ff;">
@@ -87,7 +87,7 @@
           </div>
         </div>
 
-        <button class="btn btn-dark" onclick="hpComment.EmbedCommit()">Commit</button>
+        <button class="button is-dark btn btn-dark" onclick="hpComment.EmbedCommit()">Commit</button>
 
       </div>
     </div>

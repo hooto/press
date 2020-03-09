@@ -1,35 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-{{pagelet . "core/general" "bs4/html-header.tpl"}}
+{{pagelet . "core/general" "v2/html-header.tpl"}}
 <body id="hp-body">
-{{pagelet . "core/general" "bs4/nav-header.tpl" "topnav"}}
+
+{{pagelet . "core/general" "v2/nav-header.tpl" "topnav"}}
+
+<div class="container" style="margin-top:10px">
+
+  <div class="columns">
+    <div class="column is-9">
+      <div class="hp-ctn-title">
+        Content Explore
+      </div>
+    </div>
+    <div class="column is-3">
+      <form action="{{.baseuri}}/list">
+        <div class="field has-addons">
+          <div class="control">
+            <input type="text" class="input"
+              placeholder=""
+              name="qry_text"
+              value="{{.qry_text}}">
+          </div>
+          <div class="control">
+            <input class="button is-dark" type="submit" value="Search">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <div class="container">
-  
-  <div class="hp-ctn-header">
-    <h2>Content Explore</h2>
-  </div>
+  <div class="columns">
 
-  <div class="row">
+    <div class="column is-9">
 
-    <div class="col-md-9">
-    
-    <ul class="hp-nodels">
+    <ul class="hp-node-list">
       {{range $v := .list.Items}}
-      <li class="hp-nodels-item">
-        <h4 class="hp-nodels-heading"><a href="{{$.baseuri}}/view/{{$v.SelfLink}}">{{FieldStringPrint $v "title" $.LANG}}</a></h4>
-        <span class="hp-nodels-info">
-            
-            <span class="section">
-              <img src="/hp/~/open-iconic/svg/timer.svg" width="12" height="12" class="hpdoc_icon">&nbsp;
-              {{UnixtimeFormat $v.Created "Y-m-d"}}
+      <li class="hp-node-list-item">
+        <h4 class="hp-node-list-heading">
+          <a href="{{$.baseuri}}/view/{{$v.ID}}.html">{{FieldStringPrint $v "title" $.LANG}}</a>
+        </h4>
+        <div class="hp-node-list-info">
+
+            <span class="info-item">
+              Published : {{UnixtimeFormat $v.Created "Y-m-d"}}
             </span>
-            
+
             {{range $term := $v.Terms}}
               {{if eq $term.Name "categories"}}
               {{if $term.Items}}
-              <span class="section">
-                <img src="/hp/~/open-iconic/svg/list.svg" width="12" height="12" class="hpdoc_icon">&nbsp;
+              <span class="info-item">
+                Categories :
                 {{range $term_item := $term.Items}}
                 <a href="{{$.baseuri}}/list?term_categories={{printf "%d" $term_item.ID}}">{{$term_item.Title}}</a>
                 {{end}}
@@ -37,64 +60,56 @@
               {{end}}
               {{end}}
             {{end}}
-            
+
             {{range $term := $v.Terms}}
               {{if eq $term.Name "tags"}}
               {{if $term.Items}}
-              <span class="section">
-                <img src="/hp/~/open-iconic/svg/tags.svg" width="12" height="12" class="hpdoc_icon">&nbsp;
+              <span class="info-item">
+                Tags :
                 {{range $term_item := $term.Items}}
-                <a href="{{$.baseuri}}/list?term_tags={{$term_item.Title}}" class="tag-item">{{$term_item.Title}}</a>
+                <a href="{{$.baseuri}}/list?term_tags={{$term_item.Title}}" class="info-tag-item">{{$term_item.Title}}</a>
                 {{end}}
               </span>
               {{end}}
               {{end}}
             {{end}}
 
-        </span>
+        </div>
 
-        <div class="hp-nodels-text">{{FieldHtmlSubPrint $v "content" 200 $.LANG}}</div>
+        <div class="hp-node-list-text">{{FieldHtmlSubPrint $v "content" 200 $.LANG}}</div>
       </li>
       {{end}}
     </ul>
 
     {{if .list_pager}}
-    <ul class="pagination pagination-sm">
+    <nav class="pagination is-centered hp-pagination">
       {{if .list_pager.FirstPageNumber}}
-      <li class="page-item">
-        <a class="page-link" href="{{$.baseuri}}/list?page={{.list_pager.FirstPageNumber}}">First</a>
-      </li>
+      <a class="pagination-previous" href="{{$.baseuri}}/list?page={{.list_pager.FirstPageNumber}}">First</a>
       {{end}}
-
+      <ul class="pagination-list">
       {{range $index, $page := .list_pager.RangePages}}
-      <li class="page-item {{if eq $page $.list_pager.CurrentPageNumber}}active{{end}}">
-        <a class="page-link" href="{{$.baseuri}}/list?{{FilterUri $ "page" $page}}">{{$page}}</a>
+      <li>
+        <a class="pagination-link {{if eq $page $.list_pager.CurrentPageNumber}}is-current{{end}}" href="{{$.baseuri}}/list?{{FilterUri $ "page" $page}}">{{$page}}</a>
       </li>
       {{end}}
-      
-      {{if .list_pager.LastPageNumber}}
-      <li class="page-item">
-        <a class="page-link" href="{{$.baseuri}}/list?page={{.list_pager.LastPageNumber}}">Last</a>
-      </li>
-      {{end}}
-    </ul>
-    {{end}}
+      </ul>
 
+      {{if .list_pager.LastPageNumber}}
+      <a class="pagination-next" href="{{$.baseuri}}/list?page={{.list_pager.LastPageNumber}}">Last</a>
+      {{end}}
+    </nav>
+    {{end}}
 
     </div>
 
-    <div class="col-md-3">
-        
-        {{pagelet . .modname "search.tpl"}}
-
+    <div class="column is-3">
         {{pagelet . .modname "term/categories.tpl"}}
+    </div>
 
-    </div> 
-    
   </div>
 </div>
 
-{{pagelet . "core/general" "bs4/footer.tpl"}}
+{{pagelet . "core/general" "v2/footer.tpl"}}
 
 {{pagelet . "core/general" "html-footer.tpl"}}
 </body>

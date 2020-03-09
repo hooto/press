@@ -248,8 +248,8 @@ hp.NavActive = function(tplid, nav_path) {
             }
             var href = $(this).attr("href");
             if (href && href == nav_path) {
-                nav.find("a.active").removeClass("active");
-                $(this).addClass("active");
+                nav.find("a.is-active").removeClass("is-active");
+                $(this).addClass("is-active");
                 found = true;
             }
         });
@@ -310,18 +310,6 @@ hp.AuthSessionRefresh = function() {
                 dstid: "hp-topbar-userbar",
                 tplid: "hp-topbar-user-signed-tpl",
                 data: data,
-                success: function() {
-
-
-                    $("#hp-topbar-userbar").hover(function() {
-                        $("#hp-topbar-user-signed-modal").fadeIn(200);
-                    }, function() {}
-                    );
-                    $("#hp-topbar-user-signed-modal").hover(function() {}, function() {
-                        $("#hp-topbar-user-signed-modal").fadeOut(200);
-                    }
-                    );
-                },
             });
         },
     });
@@ -330,5 +318,27 @@ hp.AuthSessionRefresh = function() {
 hp.LangChange = function(t) {
     l4iCookie.Set("lang", t.value, null, "/");
     window.location.reload(true);
+}
+
+hp.NavbarMenuToggle = function(tplid) {
+    var el = document.getElementById(tplid);
+    if (el) {
+        el.classList.toggle('is-active');
+    }
+}
+
+hp.NavbarMenuUserToggle = function() {
+    l4iModal.Open({
+        position: "cursor",
+        title: "User Overview",
+        tplid: "hp-topbar-user-signed-modal",
+        width: 300,
+        width_min: 200,
+        height: "auto",
+        buttons: [{
+            title: "Close",
+            onclick: "l4iModal.Close()",
+        }],
+    })
 }
 
