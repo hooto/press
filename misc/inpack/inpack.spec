@@ -47,6 +47,7 @@ webui/bs/3.3/fonts/
 webui/octicons/
 webui/open-iconic/
 webui/katex/
+webui/bulma/
 misc/sphinxsearch
 
 %js_compress
@@ -73,6 +74,7 @@ webui/lessui/css/base.css
 webui/hp/css/
 webui/hpm/css/
 webui/katex/
+webui/bulma/
 modules/core/
 
 
