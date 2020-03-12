@@ -1,6 +1,6 @@
 .pt_frame_box {
-    margin: 20px 0 20px 0;
-    padding 0 5px !important;
+    _margin: 20px 0 20px 0;
+    _padding 0 5px !important;
 }
 
 .pt_node_content {

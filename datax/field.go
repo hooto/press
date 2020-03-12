@@ -93,6 +93,10 @@ func init() {
 	shtmlp.AllowAttrs("style").OnElements("div")
 
 	//
+	shtmlp.AllowAttrs("class").OnElements("i")
+	shtmlp.AllowAttrs("class").OnElements("p")
+
+	//
 	shtmlp.AllowAttrs("class").OnElements("button")
 	shtmlp.AllowAttrs("onclick").OnElements("button")
 

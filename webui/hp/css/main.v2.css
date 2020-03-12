@@ -17,8 +17,17 @@ body .container {
   padding: 10px;
 }
 
+#hp-body .container>.columns {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 #hp-body>.navbar>.container {
   padding: 0 10px;
+}
+
+#hp-body>.hp-container-full>.container {
+  padding: 10px;
 }
 
 #hp-topbar {

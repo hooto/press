@@ -1,4 +1,4 @@
-<footer class="hp-footer">
+<footer class="hp-footer hp-container-full">
 <div class="container">
   <div class="columns">
     <div class="column">

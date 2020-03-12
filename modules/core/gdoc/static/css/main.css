@@ -12,9 +12,11 @@
   color: #fff;
   padding: 20px 5px;
 }
+
 .hp-gdoc-index-frame-blue a {
   color: #fff;
 }
+
 .hp-gdoc-index-frame-blue .font-dark a {
   color: #aaa;
 }
@@ -22,13 +24,17 @@
 .hp-gdoc-index-frame-dark {
   background-color: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 20px 5px;
+  margin: 0 !important;
+  padding: 0 !important;
 }
+
 .hp-gdoc-index-frame-dark a {
   color: #fff;
 }
+
 .hp-gdoc-index-frame-title {
-  font-size: 30pt;
+  font-size: 200%;
+  line-height: 150%;
 }
 
 .hp-gdoc-bgimg-hexagons {
@@ -54,6 +60,7 @@
   line-height: 120%;
   padding: 0;
 }
+
 .hp-gdoc-entry-summary h1,
 .hp-gdoc-entry-summary h2,
 .hp-gdoc-entry-summary h3,
@@ -66,31 +73,39 @@
   border-bottom: 1px solid #ddd;
   color: #555;
 }
+
 .hp-gdoc-entry-summary h2 {
   font-size: 160%;
 }
+
 .hp-gdoc-entry-summary h3 {
   font-size: 145%;
 }
+
 .hp-gdoc-entry-summary h4 {
   font-size: 130%;
 }
+
 .hp-gdoc-entry-summary p {
   margin: 0 !important;
   padding: 0 !important;
 }
+
 .hp-gdoc-entry-summary ul {
   margin: 0 0 20px 0;
   padding: 0;
 }
+
 .hp-gdoc-entry-summary ul li {
   list-style-type: none;
   padding: 2px 2px 5px 2px;
   line-height: 120%;
 }
+
 .hp-gdoc-entry-summary li ul {
   padding: 0 0 10px 10px;
 }
+
 .hp-gdoc-entry-summary hr {
   height: 0;
   margin: 10px 0;
@@ -106,41 +121,21 @@
   line-height: 180%;
 }
 
-.hp-gdoc-nodels-item {
-  background-color: #fff;
-  /* border-radius: 4px;
-  box-shadow: 0px 1px 2px 0px #999;
-  padding: 15px; */
-  margin-bottom: 20px;
-}
 .hp-gdoc-nodels-item .card {
-  background: url("/hp/~/octicons/lib/svg/repo.svg") no-repeat 5px;;
-  background-size: 40px 40px;
-  background-position: 20px 20px;
-  min-height: 160px;
+  padding: 10px;
 }
-.hp-gdoc-nodels-item .card-body,
-.hp-gdoc-nodels-item .card-footer {
-  margin-left: 60px !important;
+
+.hp-gdoc-nodels-item .card .card-content {
+  padding: 10px;
 }
-.hp-gdoc-nodels-item .card-body {
-  padding-bottom: 0 !important;
+
+.hp-gdoc-nodels-item .card .title>a {
+  color: #000;
 }
-.hp-gdoc-nodels-item:hover {
-  /* box-shadow: 0px 1px 2px 0px #333; */
-}
-.hp-gdoc-nodels-info a {
-  color: rgba(0, 0, 0, 0.85);
-}
-.hp-gdoc-nodels-info .tag-item {
-  margin-right: 10px;
-}
-.hp-gdoc-nodels-title a {
-  color: #096dd9;
-  font-size: 18pt;
-}
-.hp-gdoc-nodels-item .card-footer {
-  border-top: 0 !important;
+
+.hp-gdoc-nodels-item .card .media-left .image img {
+  width: 48px;
+  height: 48px;
 }
 
 .hp-gdoc-nav-ol {
@@ -148,16 +143,43 @@
   display: block;
   margin: 0;
   padding: 0;
-  font-size: 120%;
+  font-size: 160%;
 }
+
 .hp-gdoc-nav-ol li {
   display: inline-block;
 }
+
 .hp-gdoc-nav-ol li.active {
   font-weight: bold;
 }
+
 .hp-gdoc-nav-ol>li+li:before {
   padding: 0 5px;
   color: #ccc;
   content: "/\00a0";
+}
+
+.hp-is-desktop {
+  display: block;
+}
+
+.hp-is-desktop.is-active {
+  display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .hp-is-desktop {
+    display: none;
+  }
+}
+
+.hp-is-mobile {
+  display: block;
+}
+
+@media screen and (min-width: 768px) {
+  .hp-is-mobile {
+    display: none !important;
+  }
 }

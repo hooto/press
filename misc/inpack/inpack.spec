@@ -48,6 +48,7 @@ webui/octicons/
 webui/open-iconic/
 webui/katex/
 webui/bulma/
+webui/fa/
 misc/sphinxsearch
 
 %js_compress
@@ -75,6 +76,7 @@ webui/hp/css/
 webui/hpm/css/
 webui/katex/
 webui/bulma/
+webui/fa/
 modules/core/
 
 
