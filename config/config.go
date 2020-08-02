@@ -26,11 +26,13 @@ import (
 	"github.com/hooto/hcaptcha/captcha4g"
 	"github.com/hooto/hflag4g/hflag"
 	"github.com/hooto/hlog4g/hlog"
+	"github.com/hooto/htoml4g/htoml"
 	"github.com/hooto/iam/iamapi"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
+	"github.com/lynkdb/kvgo"
 	"github.com/sysinner/incore/inconf"
 
 	"github.com/hooto/hpress/api"
@@ -61,19 +63,20 @@ var (
 )
 
 type ConfigCommon struct {
-	UrlBasePath           string                   `json:"url_base_path,omitempty"`
-	ModuleDir             string                   `json:"module_dir,omitempty"`
-	InstanceID            string                   `json:"instance_id"`
-	AppInstance           iamapi.AppInstance       `json:"app_instance"`
-	AppTitle              string                   `json:"app_title,omitempty"`
-	HttpPort              uint16                   `json:"http_port"`
-	IamServiceUrl         string                   `json:"iam_service_url"`
-	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend"`
-	IoConnectors          connect.MultiConnOptions `json:"io_connectors"`
-	RunMode               string                   `json:"run_mode,omitempty"`
-	ExtUpDatabases        connect.MultiConnOptions `json:"ext_up_databases,omitempty"`
-	ExpModuleInits        []string                 `json:"exp_module_inits,omitempty"`
-	ExpGdocPaths          []string                 `json:"exp_gdoc_paths,omitempty"`
+	UrlBasePath           string                   `json:"url_base_path,omitempty" toml:"url_base_path,omitempty"`
+	ModuleDir             string                   `json:"module_dir,omitempty" toml:"module_dir,omitempty"`
+	InstanceID            string                   `json:"instance_id" toml:"instance_id"`
+	AppInstance           iamapi.AppInstance       `json:"app_instance" toml:"app_instance"`
+	AppTitle              string                   `json:"app_title,omitempty" toml:"app_title,omitempty"`
+	HttpPort              uint16                   `json:"http_port" toml:"http_port"`
+	IamServiceUrl         string                   `json:"iam_service_url" toml:"iam_service_url"`
+	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend" toml:"iam_service_url_frontend"`
+	IoConnectors          connect.MultiConnOptions `json:"io_connectors" toml:"io_connectors"`
+	DataLocal             *kvgo.Config             `json:"data_local" toml:"data_local"`
+	RunMode               string                   `json:"run_mode,omitempty" toml:"run_mode,omitempty"`
+	ExtUpDatabases        connect.MultiConnOptions `json:"ext_up_databases,omitempty" toml:"ext_up_databases,omitempty"`
+	ExpModuleInits        []string                 `json:"exp_module_inits,omitempty" toml:"exp_module_inits,omitempty"`
+	ExpGdocPaths          []string                 `json:"exp_gdoc_paths,omitempty" toml:"exp_gdoc_paths,omitempty"`
 }
 
 func init() {
@@ -89,9 +92,10 @@ func init() {
 		"frontend_header_site_logo_url", "",
 		"", "",
 	})
+
 	SysConfigList.Insert(api.SysConfig{
-		"frontend_footer_copyright", fmt.Sprintf("2015~%d hooto.com", time.Now().Year()),
-		"", "",
+		"frontend_footer_copyright", fmt.Sprintf("© 2015~%d hooto.com", time.Now().Year()),
+		"", "text",
 	})
 
 	//
@@ -163,11 +167,20 @@ func Setup() error {
 	Prefix = filepath.Clean(prefix)
 	Config.ModuleDir = Prefix + "/modules"
 
-	file := Prefix + "/etc/config.json"
-	if err := json.DecodeFile(file, &Config); err != nil {
+	file := Prefix + "/etc/config.toml"
+	if err := htoml.DecodeFromFile(&Config, file); err != nil {
+
 		if !os.IsNotExist(err) {
 			return err
 		}
+
+		if err := json.DecodeFile(Prefix+"/etc/config.json", &Config); err != nil {
+			if !os.IsNotExist(err) {
+				return err
+			}
+		}
+
+		Save()
 	}
 
 	{
@@ -372,24 +385,14 @@ func syncSysinnerConfig() error {
 //
 func store_init() error {
 
-	{
-		io_name := types.NewNameIdentifier("hpress_local")
-		opts := Config.IoConnectors.Options(io_name)
+	if Config.DataLocal == nil {
 
-		if opts == nil {
-			opts = &connect.ConnOptions{
-				Name:      io_name,
-				Connector: "iomix/sko/client-connector",
-				Driver:    types.NewNameIdentifier("lynkdb/kvgo"),
-			}
+		Config.DataLocal = &kvgo.Config{
+			Storage: kvgo.ConfigStorage{
+				DataDirectory: Prefix + "/var/hpress_local",
+			},
 		}
 
-		if opts.Value("data_dir") == "" {
-			opts.SetValue("data_dir", Prefix+"/var/"+string(io_name))
-			Save()
-		}
-
-		Config.IoConnectors.SetOptions(*opts)
 		Save()
 	}
 
@@ -419,7 +422,7 @@ func store_init() error {
 		Config.IoConnectors.SetOptions(*opts)
 	}
 
-	if err := store.Init(Config.IoConnectors); err != nil {
+	if err := store.Setup(Config.DataLocal, Config.IoConnectors); err != nil {
 		hlog.Printf("error", "store_init %s", err.Error())
 		return err
 	}
@@ -435,9 +438,11 @@ func store_init() error {
 		hlog.Printf("error", "store_init %s", err.Error())
 	}
 
+	Save()
+
 	return err
 }
 
 func Save() error {
-	return json.EncodeToFile(Config, Prefix+"/etc/config.json", "  ")
+	return htoml.EncodeToFile(Config, Prefix+"/etc/config.toml", nil)
 }

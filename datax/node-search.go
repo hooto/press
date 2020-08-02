@@ -57,6 +57,49 @@ func data_search_node_label(name string) string {
 
 func data_search_sync() error {
 
+	dataSearchOn := false
+
+	q := store.Data.NewQueryer().From("hp_modules").Limit(100)
+	rs, err := store.Data.Query(q)
+	if err != nil {
+		return nil
+	}
+
+	dataModOn := map[string]bool{}
+	for _, v := range rs {
+		var entry api.Spec
+		if err := v.Field("body").JsonDecode(&entry); err == nil {
+			if entry.Status == 1 {
+				dataModOn[entry.Meta.Name] = true
+			}
+		}
+	}
+
+	for _, mod := range config.Modules {
+
+		if mod.Meta.Name == "core/comment" {
+			continue
+		}
+
+		if _, ok := dataModOn[mod.Meta.Name]; !ok {
+			continue
+		}
+
+		for _, model := range mod.NodeModels {
+			if model.Extensions.TextSearch {
+				dataSearchOn = true
+				break
+			}
+		}
+		if dataSearchOn {
+			break
+		}
+	}
+
+	if !dataSearchOn {
+		return nil
+	}
+
 	searchLocker.Lock()
 	if !searchInited {
 		if engine, err := NewNodeSphinxSearchEngine(config.Prefix); err != nil {

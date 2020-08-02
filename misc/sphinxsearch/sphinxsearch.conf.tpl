@@ -50,12 +50,12 @@ index {{$v.Name}}
 
 indexer
 {
-    mem_limit             = 128M
+    mem_limit             = 64M
     max_xmlpipe2_field    = 2M
     write_buffer          = 8M
     max_iops              = 40
     max_iosize            = 1048576
-    max_file_field_buffer = 64M
+    max_file_field_buffer = 32M
 }
 
 searchd
@@ -71,6 +71,8 @@ searchd
     preopen_indexes  = 1    
     unlink_old       = 1    
     workers          = prefork 
+    dist_threads     = {{.config.Daemon.CpuCoreNum}}
+    max_children     = {{.config.Daemon.MaxChildren}}
     max_packet_size  = 16M
 }
 

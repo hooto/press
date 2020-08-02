@@ -1,7 +1,7 @@
 <footer class="hp-footer ">
   <div class="container text-center">
     <div class="pull-left">
-      &copy; {{SysConfig "frontend_footer_copyright"}}
+      {{raw (SysConfig "frontend_footer_copyright")}}
     </div>
 	<div class="pull-right">
       <span class="hp-footer-powerby-item">Published by <strong><a href="https://github.com/hooto/hpress" target="_blank">Hooto Press CMS</a></strong>,</span>

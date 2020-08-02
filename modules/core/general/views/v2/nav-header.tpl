@@ -46,7 +46,7 @@
 <img id="hp-topbar-user-signed" class="status-photo" src="{[=it.photo_url]}" width="28" height="28"/>
 
 <div id="hp-topbar-user-signed-modal" style="display:none;">
-<div class="hp-topbar-user-signed-modal">
+<div class="hp-topbar-user-signed-modal" onclick="hp.NavbarMenuUserClose()">
   <img class="iam-photo" src="{[=it.photo_url]}">
   <div class="iam-name">{[=it.display_name]}</div>
   {[? it.instance_owner]}

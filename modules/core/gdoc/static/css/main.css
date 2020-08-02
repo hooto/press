@@ -144,6 +144,7 @@
   margin: 0;
   padding: 0;
   font-size: 160%;
+  line-height: 160%;
 }
 
 .hp-gdoc-nav-ol li {
@@ -162,6 +163,7 @@
 
 .hp-is-desktop {
   display: block;
+  line-height: 160%;
 }
 
 .hp-is-desktop.is-active {

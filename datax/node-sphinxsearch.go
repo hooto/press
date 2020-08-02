@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"text/template"
@@ -59,6 +60,10 @@ type NodeSphinxSearchEngine struct {
 type SphinxSearchConfig struct {
 	Prefix  string                           `json:"prefix"`
 	Buckets []*SphinxSearchConfigBucketEntry `json:"buckets"`
+	Daemon  struct {
+		CpuCoreNum  int `json:"cpu_core_num"`
+		MaxChildren int `json:"max_children"`
+	} `json:"daemon"`
 }
 
 type SphinxSearchConfigBucketEntry struct {
@@ -118,6 +123,8 @@ func NewNodeSphinxSearchEngine(prefix string) (NodeSearchEngine, error) {
 	json.DecodeFile(engine.cfgConfigPath, &engine.cfgs)
 
 	engine.cfgs.Prefix = filepath.Clean(prefix)
+	engine.cfgs.Daemon.CpuCoreNum = runtime.NumCPU()
+	engine.cfgs.Daemon.MaxChildren = runtime.NumCPU() * 2
 
 	engine.configRefresh()
 

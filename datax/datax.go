@@ -55,7 +55,7 @@ func Worker() {
 
 			for {
 
-				ls := store.DataLocal.NewReader(nil).KeyRangeSet(
+				ls := store.DataLocal.NewReader().KeyRangeSet(
 					[]byte("access_counter"), []byte("access_counter")).
 					LimitNumSet(int64(limit)).Query()
 

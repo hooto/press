@@ -22,8 +22,8 @@ import (
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/lynkdb/iomix/connect"
 	"github.com/lynkdb/iomix/rdb"
-	"github.com/lynkdb/iomix/sko"
 	"github.com/lynkdb/kvgo"
+	kv2 "github.com/lynkdb/kvspec/go/kvspec/v2"
 	"github.com/lynkdb/mysqlgo"
 	"github.com/lynkdb/pgsqlgo"
 )
@@ -32,21 +32,21 @@ var (
 	err         error
 	Data        rdb.Connector
 	DataOptions *connect.ConnOptions
-	DataLocal   sko.ClientConnector
+	DataLocal   kv2.Client
 )
 
-func Init(cfg connect.MultiConnOptions) error {
+func Setup(dbc *kvgo.Config, cfg connect.MultiConnOptions) error {
 
-	opts := cfg.Options("hpress_local")
+	if dbc == nil {
+		return errors.New("No hpress_local Config Found")
+	}
+
+	if DataLocal, err = kvgo.Open(dbc); err != nil {
+		return fmt.Errorf("db open error %s", err.Error())
+	}
+
+	opts := cfg.Options("hpress_database")
 	if opts == nil {
-		return errors.New("No hpress_local Config.IoConnectors Found")
-	}
-
-	if DataLocal, err = kvgo.Open(*opts); err != nil {
-		return fmt.Errorf("Can Not Connect To %s, Error: %s", opts.Name, err.Error())
-	}
-
-	if opts = cfg.Options("hpress_database"); opts == nil {
 		hlog.Print("error", err.Error())
 		return errors.New("No hpress_database Config.IoConnectors Found")
 	}

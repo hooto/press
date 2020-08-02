@@ -342,3 +342,6 @@ hp.NavbarMenuUserToggle = function() {
     })
 }
 
+hp.NavbarMenuUserClose = function() {
+    l4iModal.Close();
+}
