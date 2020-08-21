@@ -333,7 +333,7 @@ func SpecSrvRefresh(srvname string) {
 
 	httpsrv.GlobalService.TemplateLoader.Clean(spec.Meta.Name)
 	httpsrv.GlobalService.TemplateLoader.Set(spec.Meta.Name,
-		[]string{fmt.Sprintf("%s/modules/%s/views", Prefix, spec.Meta.Name)})
+		[]string{fmt.Sprintf("%s/modules/%s/views", Prefix, spec.Meta.Name)}, nil)
 }
 
 func _instance_schema_sync(spec *api.Spec) error {

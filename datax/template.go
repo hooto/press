@@ -169,15 +169,10 @@ func templateRender(data map[string]interface{}, module, templatePath string) te
 		}
 	}()
 
-	tplset, err := httpsrv.GlobalService.TemplateLoader.Template(module, templatePath)
+	var out bytes.Buffer
+	err := httpsrv.GlobalService.TemplateLoader.Render(&out, module, templatePath, data)
 	if err != nil {
 		fmt.Println(err)
-		return ""
-	}
-
-	var out bytes.Buffer
-	if err = tplset.Render(&out, data); err != nil {
-		hlog.Printf("error", "tplset.Render Error %v", err)
 		return ""
 	}
 

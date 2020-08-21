@@ -1,3 +1,8 @@
+body .container {
+   max-width: 1400px !important;
+}
+
+
 .hp-gdoc-frame-box {
   margin: 20px 0 20px 0;
 }
@@ -55,10 +60,14 @@
   background-color: #f5f5f5;
 }
 
+.hp-gdoc-cell-box {
+  padding: 10px;
+}
+
 .hp-gdoc-entry-summary {
-  font-size: 10pt;
+  font-size: 90%;
   line-height: 120%;
-  padding: 0;
+  padding: 10px;
 }
 
 .hp-gdoc-entry-summary h1,
@@ -120,6 +129,42 @@
   padding: 20px;
   line-height: 180%;
 }
+.hp-gdoc-entry-toc {
+  padding: 10px;
+  font-size: 90%;
+}
+.hp-gdoc-page-toc-menu nav {
+  margin: 0 0 0 10px;;
+  padding: 0;
+  font-size: 0.9rem; 
+}
+.hp-gdoc-page-toc-menu h1 {
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-size: 120%;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+  line-height: 2.0em;
+}
+.hp-gdoc-page-toc-menu a {
+  color: #6c757d;
+  text-decoration: none;
+}
+.hp-gdoc-page-toc-menu a:hover {
+  text-decoration: underline;
+}
+.hp-gdoc-page-toc-menu ul {
+  margin: 0 0 5px 0;
+  padding: 0;
+}
+.hp-gdoc-page-toc-menu ul li {
+  list-style-type: none;
+  padding: 5px 2px 5px 2px;
+  line-height: 160%;
+}
+.hp-gdoc-page-toc-menu li ul {
+  padding: 0 0 10px 10px;
+}
 
 .hp-gdoc-nodels-item .card {
   padding: 10px;
@@ -168,11 +213,21 @@
 
 .hp-is-desktop.is-active {
   display: block;
+  position: relative;
+  height: auto;
 }
 
 @media screen and (max-width: 768px) {
   .hp-is-desktop {
     display: none;
+  }
+  .hp-gdoc-entry-summary {
+    position: relative;
+    height: auto;
+  }
+  .hp-gdoc-entry-toc {
+    position: relative;
+    height: auto;
   }
 }
 
@@ -183,5 +238,15 @@
 @media screen and (min-width: 768px) {
   .hp-is-mobile {
     display: none !important;
+  }
+  .hp-gdoc-entry-summary {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 20px);
+  }
+  .hp-gdoc-entry-toc {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 20px);
   }
 }

@@ -18,6 +18,10 @@
       "val": "文档"
     },
     {
+      "key": "page nav",
+      "val": "页面导航"
+    },
+    {
       "key": "version",
       "val": "版本"
     }
