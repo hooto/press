@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"image/color"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -27,14 +28,17 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/hooto/hlog4g/hlog"
 	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/sync"
 
+	"code.ivysaur.me/imagequant/v2"
 	"github.com/nfnt/resize"
 	"github.com/oliamb/cutter"
 
@@ -42,26 +46,21 @@ import (
 	"github.com/hooto/hpress/store"
 )
 
-var (
-	rezlocker      = sync.NewPermitPool(1)
-	s2_path_reg    = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
-	s2_bucket_deft = "/deft/"
-	s2_url_prefix  = "hp/s2"
+const (
+	s2BucketDeft  = "/deft/"
+	s3UrlPrefix   = "hp/s2"
+	objCacheTTL   = int64(86400 * 1000) // ms
+	iplStep       = 64
+	iplSizeMin    = iplStep
+	iplSizeMax    = 2048
+	pngQualityMin = 20
+	pngQualityMax = 50
 )
 
-func path_filter(path string) (string, error) {
-
-	path = filepath.Clean(strings.Replace(strings.TrimSpace(path), " ", "-", -1))
-	if !s2_path_reg.MatchString(path) {
-		return path, fmt.Errorf("Invalid File Name")
-	}
-
-	if !strings.HasPrefix(path, s2_bucket_deft) {
-		return "", errors.New("Invalid Bucket Name")
-	}
-
-	return path, nil
-}
+var (
+	rezlocker = sync.NewPermitPool(runtime.NumCPU())
+	s2PathRE  = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
+)
 
 type S2 struct {
 	*httpsrv.Controller
@@ -78,7 +77,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	var err error
 
 	if objPath == "" {
-		objPath, err = path_filter(strings.TrimPrefix(c.Request.RequestPath, s2_url_prefix))
+		objPath, err = pathFilter(strings.TrimPrefix(c.Request.RequestPath, s3UrlPrefix))
 		if err != nil {
 			c.RenderError(404, "Object Not Found")
 			return
@@ -90,38 +89,38 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	}
 
 	var (
-		ipn       = c.Params.Get("ipn")
-		ipl       = c.Params.Get("ipl")
-		ipls      = [2]int{0, 0} // width, height
-		iplc      = false
-		ipl_step  = 64
-		ipl_smin  = 64
-		ipl_smax  = 2048
-		ext       = strings.ToLower(filepath.Ext(objPath))
-		meta_type = ""
+		ipn       = c.Params.Get("ipn") // v1
+		ipl       = c.Params.Get("ipl") // v2
+		ipls      = [2]int{0, 0}        // width, height
+		iplCrop   = false
+		fileExt   = strings.ToLower(filepath.Ext(objPath))
+		mediaType = ""
 	)
 
-	switch ext {
+	switch fileExt {
 
 	case ".jpg", ".jpeg":
-		meta_type = "image/jpeg"
+		mediaType = "image/jpeg"
 
 	case ".png":
-		meta_type = "image/png"
+		mediaType = "image/png"
+		if ipn == "" && ipl == "" {
+			ipl = "w2000"
+		}
 
 	case ".gif":
-		meta_type = "image/gif"
+		mediaType = "image/gif"
 
 	case ".svg":
-		meta_type = "image/svg+xml"
+		mediaType = "image/svg+xml"
 
 	default:
-		c.RenderError(400, "Bad Request #01")
+		c.RenderError(400, "Bad Request (media type not support)")
 		return
 	}
 
 	if (ipn == "" && ipl == "") ||
-		meta_type == "image/svg+xml" {
+		mediaType == "image/svg+xml" {
 
 		if fp, err := os.Open(absPath); err == nil {
 
@@ -158,7 +157,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 				}
 
 			case 'c':
-				iplc = true
+				iplCrop = true
 			}
 		}
 
@@ -169,10 +168,10 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 			ipls[0], ipls[1] = 60, 40
 
 		case "s800":
-			ipls[0], ipls[1], iplc = 800, 800, false
+			ipls[0], ipls[1], iplCrop = 800, 800, false
 
 		case "s800x":
-			ipls[0], ipls[1], iplc = 800, 8000, false
+			ipls[0], ipls[1], iplCrop = 800, 8000, false
 
 		case "thumb":
 			ipls[0], ipls[1] = 150, 150
@@ -196,24 +195,26 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	}
 
 	for i := range ipls {
-		ipls[i] = ipls[i] - (ipls[i] % ipl_step)
+		ipls[i] = ipls[i] - (ipls[i] % iplStep)
 
-		if ipls[i] < ipl_smin {
-			ipls[i] = ipl_smin
-		} else if ipls[i] > ipl_smax {
-			ipls[i] = ipl_smax
+		if ipls[i] < iplSizeMin {
+			ipls[i] = iplSizeMin
+		} else if ipls[i] > iplSizeMax {
+			ipls[i] = iplSizeMax
 		}
 	}
 
 	var (
-		key = fmt.Sprintf("%s.%d.%d.%t", objPath, ipls[0], ipls[1], iplc)
+		key = fmt.Sprintf("%s_%d.%d.%t", absPath, ipls[0], ipls[1], iplCrop)
 		hid = "s2." + idhash.HashToHexString([]byte(key), 12)
 	)
 
 	if rs := store.DataLocal.NewReader([]byte(hid)).Query(); rs.OK() {
+		imBytes := rs.DataValue().Bytes()
 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-		c.Response.Out.Header().Set("Content-type", meta_type)
-		c.Response.Out.Write(rs.DataValue().Bytes())
+		c.Response.Out.Header().Set("Content-type", mediaType)
+		c.Response.Out.Write(imBytes)
+		hlog.Printf("debug", "image cache hit %s, bytes %d", key, len(imBytes))
 		return
 	}
 
@@ -234,18 +235,18 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	defer fp.Close()
 
 	//
-	var src_img image.Image
+	var srcImg image.Image
 
-	switch ext {
+	switch fileExt {
 
 	case ".jpg", ".jpeg":
-		src_img, err = jpeg.Decode(fp)
+		srcImg, err = jpeg.Decode(fp)
 
 	case ".png":
-		src_img, err = png.Decode(fp)
+		srcImg, err = png.Decode(fp)
 
 	case ".gif":
-		src_img, err = gif.Decode(fp)
+		srcImg, err = gif.Decode(fp)
 	}
 
 	if err != nil {
@@ -255,59 +256,66 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 
 	//
 	var (
-		dst_img    image.Image
-		dst_buf    = new(bytes.Buffer)
-		src_bounds = src_img.Bounds()
+		dstImg    image.Image
+		dstBuf    = new(bytes.Buffer)
+		srcBounds = srcImg.Bounds()
 	)
 
-	if ipls[0] < src_bounds.Dx() || ipls[1] < src_bounds.Dy() {
+	if ipls[0] < srcBounds.Dx() || ipls[1] < srcBounds.Dy() {
 
-		if iplc {
-			if im, err := cutter.Crop(src_img, cutter.Config{
+		if iplCrop {
+			if im, err := cutter.Crop(srcImg, cutter.Config{
 				Width:   ipls[0],
 				Height:  ipls[1],
 				Mode:    cutter.Centered,
 				Options: cutter.Ratio,
 			}); err == nil {
-				dst_img = resize.Thumbnail(uint(ipls[0]), uint(ipls[1]), im, resize.Lanczos3)
+				dstImg = resize.Thumbnail(uint(ipls[0]), uint(ipls[1]), im, resize.Lanczos3)
 			}
 		} else {
 
 			rate := float32(1.0)
 
-			if hrate := float32(ipls[1]) / float32(src_bounds.Dy()); hrate < rate {
+			if hrate := float32(ipls[1]) / float32(srcBounds.Dy()); hrate < rate {
 				rate = hrate
 			}
 
-			if wrate := float32(ipls[0]) / float32(src_bounds.Dx()); wrate < rate {
+			if wrate := float32(ipls[0]) / float32(srcBounds.Dx()); wrate < rate {
 				rate = wrate
 			}
 
 			if rate < 1 {
-				ipls[0] = int(float32(src_bounds.Dx()) * rate)
-				ipls[1] = int(float32(src_bounds.Dy()) * rate)
+				ipls[0] = int(float32(srcBounds.Dx()) * rate)
+				ipls[1] = int(float32(srcBounds.Dy()) * rate)
 			}
 		}
 
-		if dst_img == nil {
-			dst_img = resize.Thumbnail(uint(ipls[0]), uint(ipls[1]), src_img, resize.Lanczos3)
+		if dstImg == nil {
+			dstImg = resize.Thumbnail(uint(ipls[0]), uint(ipls[1]), srcImg, resize.Lanczos3)
 		}
 
 	} else {
-		dst_img = src_img
+		dstImg = srcImg
 	}
 
 	//
-	switch ext {
+	switch fileExt {
 
 	case ".jpg", ".jpeg":
-		err = jpeg.Encode(dst_buf, dst_img, &jpeg.Options{90})
+		err = jpeg.Encode(dstBuf, dstImg, &jpeg.Options{90})
 
 	case ".png":
-		err = png.Encode(dst_buf, dst_img)
+
+		if imc, err := pngCompress(dstImg); err == nil {
+			dstImg = imc
+		}
+		pngEnc := png.Encoder{
+			CompressionLevel: png.BestCompression,
+		}
+		err = pngEnc.Encode(dstBuf, dstImg)
 
 	case ".gif":
-		err = gif.Encode(dst_buf, dst_img, &gif.Options{NumColors: 256})
+		err = gif.Encode(dstBuf, dstImg, &gif.Options{NumColors: 256})
 	}
 	if err != nil {
 		c.RenderError(400, "Bad Request : "+err.Error())
@@ -315,13 +323,114 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	}
 
 	//
-	if dst_buf.Len() > 10 {
-		store.DataLocal.NewWriter([]byte(hid), dst_buf.Bytes()).
-			ExpireSet(int64(36000+rand.Intn(36000)) * 1000).Commit()
+	if dstBuf.Len() > 10 {
+		store.DataLocal.NewWriter([]byte(hid), dstBuf.Bytes()).
+			ExpireSet(imageCacheTTL()).Commit()
 	}
 
 	//
-	c.Response.Out.Header().Set("Content-type", meta_type)
+	c.Response.Out.Header().Set("Content-type", mediaType)
 	c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
-	c.Response.Out.Write(dst_buf.Bytes())
+	c.Response.Out.Write(dstBuf.Bytes())
+
+	if st, err := fp.Stat(); err == nil {
+		hlog.Printf("info", "image resize %s from %d to %d bytes",
+			key, st.Size(), dstBuf.Len())
+	}
+}
+
+func pathFilter(path string) (string, error) {
+
+	path = filepath.Clean(strings.Replace(strings.TrimSpace(path), " ", "-", -1))
+	if !s2PathRE.MatchString(path) {
+		return path, fmt.Errorf("Invalid File Name")
+	}
+
+	if !strings.HasPrefix(path, s2BucketDeft) {
+		return "", errors.New("Invalid Bucket Name")
+	}
+
+	return path, nil
+}
+
+func imageCacheTTL() int64 { // ms
+	return objCacheTTL + rand.Int63n(objCacheTTL)
+}
+
+func pngCompress(im image.Image) (image.Image, error) {
+
+	attr, err := imagequant.NewAttributes()
+	if err != nil {
+		return nil, err
+	}
+	defer attr.Release()
+
+	attr.SetQuality(pngQualityMin, pngQualityMax)
+
+	rgba32data := imageToRgba32(im)
+	iqm, err := imagequant.NewImage(attr, string(rgba32data),
+		im.Bounds().Max.X, im.Bounds().Max.Y, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer iqm.Release()
+
+	res, err := iqm.Quantize(attr)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Release()
+
+	rgb8data, err := res.WriteRemappedImage()
+	if err != nil {
+		return nil, err
+	}
+
+	return rgb8PaletteToImage(res.GetImageWidth(), res.GetImageHeight(),
+		rgb8data, res.GetPalette()), nil
+}
+
+func imageToRgba32(im image.Image) []byte {
+
+	var (
+		w   = im.Bounds().Max.X
+		h   = im.Bounds().Max.Y
+		ret = make([]byte, w*h*4)
+		p   = 0
+	)
+
+	for y := 0; y < h; y += 1 {
+		for x := 0; x < w; x += 1 {
+			r16, g16, b16, a16 := im.At(x, y).RGBA() // Each value ranges within [0, 0xffff]
+
+			ret[p+0] = uint8(r16 >> 8)
+			ret[p+1] = uint8(g16 >> 8)
+			ret[p+2] = uint8(b16 >> 8)
+			ret[p+3] = uint8(a16 >> 8)
+			p += 4
+		}
+	}
+
+	return ret
+}
+
+func rgb8PaletteToImage(w, h int, rgb8data []byte, pal color.Palette) image.Image {
+
+	var (
+		rect = image.Rectangle{
+			Max: image.Point{
+				X: w,
+				Y: h,
+			},
+		}
+		ret = image.NewPaletted(rect, pal)
+	)
+
+	for y := 0; y < h; y += 1 {
+		for x := 0; x < w; x += 1 {
+			ret.SetColorIndex(x, y, rgb8data[y*w+x])
+		}
+	}
+
+	return ret
 }

@@ -27,7 +27,7 @@ gdoc.PageEntryRender = function() {
             continue;
         }
         var level = parseInt(item.previousSibling.nodeName.substring(1));
-        if (level > 3) {
+        if (level > 4) {
             continue;
         } else if (level < 2) {
             level = 2;
@@ -40,15 +40,21 @@ gdoc.PageEntryRender = function() {
             nav += "</li>\n";
         }
         var tocid = "hp-gdoc-toc-" + i;
-        nav += "<li><a href=\"#" + tocid + "\">" + item.previousSibling.outerText + "</a>";
+        var toctitle = item.previousSibling.outerText.trim();
+        if (toctitle.length < 1) {
+            continue;
+        } else if (toctitle.length > 40) {
+            toctitle = toctitle.substr(0, 30) + "...";
+        }
+        nav += "<li><a href=\"#" + tocid + "\">" + toctitle + "</a>";
         last = level;
         item.previousSibling.id = tocid;
         num += 1;
     }
 
-    if (num < 2) {
-        elo.style.display = "none";
-        el.classList.replace("is-8", "is-10");
+    if (num < 1) {
+        // elo.style.display = "none";
+        // el.classList.replace("is-8", "is-10");
         return;
     }
 
@@ -59,3 +65,25 @@ gdoc.PageEntryRender = function() {
 
     elo.innerHTML = "<nav class=\"hp-gdoc-page-toc-menu\">\n<h1>Page Nav</h1>" + nav + "</nav>";
 }
+
+gdoc.textWidth = function(txt, opts) {
+
+    opts = opts || {};
+
+    var el = document.createElement('div');
+    if (opts.fontSize) {
+        el.style.fontSize = opts.fontSize;
+    }
+    el.style.position = "absolute";
+    el.style.whiteSpace = "nowrap";
+    el.style.left = -1000;
+    el.style.top = -1000;
+    el.innerHTML = txt;
+
+    document.body.appendChild(el);
+    var width = el.clientWidth;
+    document.body.removeChild(el);
+
+    return width;
+}
+

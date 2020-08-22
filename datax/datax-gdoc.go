@@ -218,7 +218,25 @@ func gdocRefresh() {
 	expGdocRefreshPath()
 }
 
+var (
+	gdocLpMu       sync.RWMutex
+	gdocLocalPaths = map[string]string{}
+)
+
+func GdocLocalPath(docId string) string {
+	gdocLpMu.RLock()
+	defer gdocLpMu.RUnlock()
+	p, ok := gdocLocalPaths[docId]
+	if ok {
+		return p
+	}
+	return ""
+}
+
 func expGdocRefreshPath() {
+
+	gdocLpMu.Lock()
+	defer gdocLpMu.Unlock()
 
 	ver := "00000000"
 
@@ -228,6 +246,8 @@ func expGdocRefreshPath() {
 
 		if err := gdocRefreshItem(docId, "sysadmin", ver, dir); err != nil {
 			hlog.Printf("warn", "vcs %s, version %s, err %s", docId, ver, err.Error())
+		} else {
+			gdocLocalPaths[docId] = dir
 		}
 	}
 }

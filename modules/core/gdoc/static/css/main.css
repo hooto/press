@@ -1,5 +1,5 @@
 body .container {
-   max-width: 1400px !important;
+  max-width: 1400px !important;
 }
 
 
@@ -129,15 +129,19 @@ body .container {
   padding: 20px;
   line-height: 180%;
 }
+
 .hp-gdoc-entry-toc {
   padding: 10px;
   font-size: 90%;
 }
+
 .hp-gdoc-page-toc-menu nav {
-  margin: 0 0 0 10px;;
+  margin: 0 0 0 10px;
+  ;
   padding: 0;
-  font-size: 0.9rem; 
+  font-size: 0.9rem;
 }
+
 .hp-gdoc-page-toc-menu h1 {
   margin: 0 0 10px 0;
   padding: 0;
@@ -146,22 +150,34 @@ body .container {
   color: #555;
   line-height: 2.0em;
 }
+
 .hp-gdoc-page-toc-menu a {
   color: #6c757d;
   text-decoration: none;
+  /**
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  width: auto;
+  */
 }
+
 .hp-gdoc-page-toc-menu a:hover {
   text-decoration: underline;
 }
+
 .hp-gdoc-page-toc-menu ul {
   margin: 0 0 5px 0;
   padding: 0;
 }
+
 .hp-gdoc-page-toc-menu ul li {
   list-style-type: none;
   padding: 5px 2px 5px 2px;
   line-height: 160%;
 }
+
 .hp-gdoc-page-toc-menu li ul {
   padding: 0 0 10px 10px;
 }
@@ -221,10 +237,12 @@ body .container {
   .hp-is-desktop {
     display: none;
   }
+
   .hp-gdoc-entry-summary {
     position: relative;
     height: auto;
   }
+
   .hp-gdoc-entry-toc {
     position: relative;
     height: auto;
@@ -239,11 +257,13 @@ body .container {
   .hp-is-mobile {
     display: none !important;
   }
+
   .hp-gdoc-entry-summary {
     position: sticky;
     top: 0;
     height: calc(100vh - 20px);
   }
+
   .hp-gdoc-entry-toc {
     position: sticky;
     top: 0;

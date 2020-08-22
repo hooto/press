@@ -366,11 +366,14 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 		} else if staticImages.Has(nodeExt) {
 			if mod.Meta.Name == "core/gdoc" && ad.Query.Table == "page" {
 
-				pid := datax.GdocNodeId(c.Params.Get("doc_entry_id"))
-				if pid != "" {
-					// fmt.Println(fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
-					s2Server(c.Controller, c.Request.UrlPathExtra,
-						fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, pid, c.Request.UrlPathExtra))
+				if docId := datax.GdocNodeId(c.Params.Get("doc_entry_id")); docId != "" {
+					localPath := datax.GdocLocalPath(docId)
+					if localPath == "" {
+						localPath = fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, docId, c.Request.UrlPathExtra)
+					} else {
+						localPath = localPath + "/" + c.Request.UrlPathExtra
+					}
+					s2Server(c.Controller, c.Request.UrlPathExtra, localPath)
 				}
 			}
 			return dataRenderSkip
