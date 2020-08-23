@@ -23,9 +23,11 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"math/rand"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -53,14 +55,26 @@ const (
 	iplStep       = 64
 	iplSizeMin    = iplStep
 	iplSizeMax    = 2048
-	pngQualityMin = 20
-	pngQualityMax = 50
+	pngQualityMin = 10
+	pngQualityMax = 40
 )
 
 var (
-	rezlocker = sync.NewPermitPool(runtime.NumCPU())
-	s2PathRE  = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
+	rezlocker  = sync.NewPermitPool(runtime.NumCPU())
+	s2PathRE   = regexp.MustCompile("^[0-9a-zA-Z_\\-\\.\\/]{1,100}$")
+	pngCmpPath = ""
 )
+
+func init() {
+
+	pngCmpPath = config.Prefix + "/bin/pngquant"
+	if _, err := os.Stat(pngCmpPath); err != nil {
+		pngCmpPath, err = exec.LookPath("pngquant")
+		if err != nil {
+			pngCmpPath = ""
+		}
+	}
+}
 
 type S2 struct {
 	*httpsrv.Controller
@@ -79,7 +93,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	if objPath == "" {
 		objPath, err = pathFilter(strings.TrimPrefix(c.Request.RequestPath, s3UrlPrefix))
 		if err != nil {
-			c.RenderError(404, "Object Not Found")
+			c.RenderError(404, "Object Not Found #1")
 			return
 		}
 	}
@@ -129,7 +143,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 			fp.Close()
 
 		} else {
-			c.RenderError(404, "Object Not Found")
+			c.RenderError(404, "Object Not Found #2")
 		}
 
 		return
@@ -223,7 +237,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 
 	defer func() {
 		if x := recover(); x != nil {
-			c.RenderError(404, "Object Not Found")
+			c.RenderError(404, "Object Not Found #3 ")
 		}
 	}()
 
@@ -257,7 +271,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	//
 	var (
 		dstImg    image.Image
-		dstBuf    = new(bytes.Buffer)
+		dstBuf    bytes.Buffer
 		srcBounds = srcImg.Bounds()
 	)
 
@@ -302,20 +316,33 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	switch fileExt {
 
 	case ".jpg", ".jpeg":
-		err = jpeg.Encode(dstBuf, dstImg, &jpeg.Options{90})
+		err = jpeg.Encode(&dstBuf, dstImg, &jpeg.Options{90})
 
 	case ".png":
 
-		if imc, err := pngCompress(dstImg); err == nil {
-			dstImg = imc
+		if pngCmpPath != "" {
+			pngEnc := png.Encoder{
+				CompressionLevel: png.NoCompression,
+			}
+			if err = pngEnc.Encode(&dstBuf, dstImg); err == nil {
+				var dstCmp bytes.Buffer
+				if err = pngCompressCmd(&dstBuf, &dstCmp); err == nil {
+					dstBuf = dstCmp
+				}
+			}
+		} else {
+			pngEnc := png.Encoder{
+				CompressionLevel: png.BestCompression,
+			}
+			err = pngEnc.Encode(&dstBuf, dstImg)
 		}
-		pngEnc := png.Encoder{
-			CompressionLevel: png.BestCompression,
-		}
-		err = pngEnc.Encode(dstBuf, dstImg)
+
+		// if imc, err := pngCompress(dstImg); err == nil {
+		// 	dstImg = imc
+		// }
 
 	case ".gif":
-		err = gif.Encode(dstBuf, dstImg, &gif.Options{NumColors: 256})
+		err = gif.Encode(&dstBuf, dstImg, &gif.Options{NumColors: 256})
 	}
 	if err != nil {
 		c.RenderError(400, "Bad Request : "+err.Error())
@@ -339,6 +366,16 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	}
 }
 
+func pngCompressCmd(r io.Reader, w *bytes.Buffer) error {
+
+	cmd := exec.Command("pngquant", "-", fmt.Sprintf("--quality=%d-%d", pngQualityMin, pngQualityMax))
+
+	cmd.Stdin = r
+	cmd.Stdout = w
+
+	return cmd.Run()
+}
+
 func pathFilter(path string) (string, error) {
 
 	path = filepath.Clean(strings.Replace(strings.TrimSpace(path), " ", "-", -1))
@@ -357,6 +394,7 @@ func imageCacheTTL() int64 { // ms
 	return objCacheTTL + rand.Int63n(objCacheTTL)
 }
 
+// 1. memory leak, 2. high CPU cost
 func pngCompress(im image.Image) (image.Image, error) {
 
 	attr, err := imagequant.NewAttributes()
@@ -370,6 +408,7 @@ func pngCompress(im image.Image) (image.Image, error) {
 	rgba32data := imageToRgba32(im)
 	iqm, err := imagequant.NewImage(attr, string(rgba32data),
 		im.Bounds().Max.X, im.Bounds().Max.Y, 0)
+	rgba32data = nil
 	if err != nil {
 		return nil, err
 	}
@@ -386,8 +425,10 @@ func pngCompress(im image.Image) (image.Image, error) {
 		return nil, err
 	}
 
-	return rgb8PaletteToImage(res.GetImageWidth(), res.GetImageHeight(),
+	im1, err := rgb8PaletteToImage(res.GetImageWidth(), res.GetImageHeight(),
 		rgb8data, res.GetPalette()), nil
+	rgb8data = nil
+	return im1, err
 }
 
 func imageToRgba32(im image.Image) []byte {

@@ -326,55 +326,59 @@ func (it *NodeSphinxSearchEngine) run() {
 
 	for {
 		time.Sleep(1e9)
+		it.runAction()
+	}
+}
 
-		tn := int64(time.Now().Unix())
+func (it *NodeSphinxSearchEngine) runAction() {
 
-		for _, active := range it.actives {
-			if buk := it.bucket(active.bukname, false); buk == nil {
-				it.bucket(active.bukname, true)
-				it.configRefresh()
-			}
+	tn := int64(time.Now().Unix())
+
+	for _, active := range it.actives {
+		if buk := it.bucket(active.bukname, false); buk == nil {
+			it.bucket(active.bukname, true)
+			it.configRefresh()
 		}
+	}
 
-		if err := it.setupServer(); err != nil {
-			hlog.Printf("error", "server %s", err.Error())
+	if err := it.setupServer(); err != nil {
+		hlog.Printf("error", "server %s", err.Error())
+		return
+	}
+
+	for _, active := range it.actives {
+
+		buk := it.bucket(active.bukname, false)
+		if buk == nil {
 			continue
 		}
 
-		for _, active := range it.actives {
+		it.deltaRefresh(active)
 
-			buk := it.bucket(active.bukname, false)
-			if buk == nil {
-				continue
+		if (tn - buk.StatsFullIndexed) > 86400 {
+			if err := it.indexFull(active); err == nil {
+				buk.StatsFullIndexed = tn
+				json.EncodeToFile(it.cfgs, it.cfgConfigPath, "  ")
+			} else {
+				hlog.Printf("error", "index/full ER %s", err.Error())
 			}
+		}
 
-			it.deltaRefresh(active)
-
-			if (tn - buk.StatsFullIndexed) > 86400 {
-				if err := it.indexFull(active); err == nil {
-					buk.StatsFullIndexed = tn
-					json.EncodeToFile(it.cfgs, it.cfgConfigPath, "  ")
-				} else {
-					hlog.Printf("error", "index/full ER %s", err.Error())
-				}
+		if len(active.deltas) > active.deltaIndexNum {
+			if n, err := it.indexDelta(active); err == nil {
+				active.deltaIndexNum = n
+			} else {
+				hlog.Printf("error", "index/delta ER %s", err.Error())
 			}
+		}
 
-			if len(active.deltas) > active.deltaIndexNum {
-				if n, err := it.indexDelta(active); err == nil {
-					active.deltaIndexNum = n
-				} else {
-					hlog.Printf("error", "index/delta ER %s", err.Error())
-				}
-			}
-
-			if len(active.deltas) > it.merge_max {
-				hlog.Printf("info", "merge %d", len(active.deltas))
-				if err := it.indexMerge(active.bukname); err == nil {
-					active.deltas = []api.Node{}
-					active.deltaIndexNum = 0
-				} else {
-					hlog.Printf("error", "index/merge ER %s", err.Error())
-				}
+		if len(active.deltas) > it.merge_max {
+			hlog.Printf("info", "merge %d", len(active.deltas))
+			if err := it.indexMerge(active.bukname); err == nil {
+				active.deltas = []api.Node{}
+				active.deltaIndexNum = 0
+			} else {
+				hlog.Printf("error", "index/merge ER %s", err.Error())
 			}
 		}
 	}
