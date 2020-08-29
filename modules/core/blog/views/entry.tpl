@@ -87,7 +87,7 @@ window.onload_hooks.push(function() {
 {{end}}
 
 window.onload_hooks.push(function() {
-    hp.CodeRender();
+    hp.CodeRender({"theme": "monokai"});
 });
 
 </script>

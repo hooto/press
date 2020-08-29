@@ -61,14 +61,24 @@ hpEditor.Open = function(name, format) {
             if (!elem_layout) {
                 return;
             }
+            var bw = $(window).width();
             var height = elem_layout.height(),
                 width = elem_layout.width();
+            if (bw - width < 100) {
+                width = width - 150;
+            }
+            $("#field_" + name + "_editor").css({
+                "width": width + "px"
+            });
+
+            // $(".CodeMirror-line").css({"width": (width - 200) +"px"});
+            // $("#field_"+ name).css({"width": (width - 200) +"px"});
 
             // var elem_layout_editor = document.getElementById("field_"+name+"_editor");
-                // if (!elem_layout_editor) {
-                // 	return;
-                // }
-                // elem_layout_editor.className = "hpm-nodeset-auto-height";
+            // if (!elem_layout_editor) {
+            // 	return;
+            // }
+            // elem_layout_editor.className = "hpm-nodeset-auto-height";
 
             var elem = document.getElementById("field_" + name);
             if (!elem) {

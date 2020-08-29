@@ -58,7 +58,7 @@
       {{FieldHtmlPrint .page_entry "content" .LANG}}
       </div>
     </div>
-    <div id="hp-gdoc-page-entry-toc" class="column is-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box">
+    <div id="hp-gdoc-page-entry-toc" class="column is-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box hp-scroll">
     </div>
   </div>
 </div>

@@ -573,8 +573,8 @@ body .container {
 .hp-content pre,
 .hp-content code {
   position: relative;
-  _overflow: auto;
-  overflow-x: auto;
+  overflow: auto;
+  _overflow-x: auto;
   font-family: Courier, monospace;
   margin: 0;
   padding: 0;
@@ -583,6 +583,8 @@ body .container {
   font-size: 0.90em !important;
   line-height: 1.5em !important;
   background-color: #f1f3f4;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .hp-content code {

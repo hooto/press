@@ -123,9 +123,9 @@ body .container {
 
 .hp-gdoc-page-content {
   background-color: #fff;
-  border-radius: 4px;
+  border-radius: 2px;
   box-shadow: 0px 1px 2px 0px #999;
-  min-height: 600px;
+  min-height: 400px;
   padding: 20px;
   line-height: 180%;
 }
@@ -137,7 +137,6 @@ body .container {
 
 .hp-gdoc-page-toc-menu nav {
   margin: 0 0 0 10px;
-  ;
   padding: 0;
   font-size: 0.9rem;
 }

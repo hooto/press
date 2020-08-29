@@ -736,7 +736,7 @@ hpNode.Set = function(modname, modelid, nodeid, referid) {
                     }
 
                     if (!field.attr_format) {
-                        field.attr_format = "text";
+                        field.attr_format = "md";
                     }
                     if (!field.attr_formats) {
                         field.attr_formats = "text,html,md";
