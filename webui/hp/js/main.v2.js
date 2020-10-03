@@ -248,8 +248,12 @@ hp.NavActive = function(tplid, nav_path) {
             }
             var href = $(this).attr("href");
             if (href && href == nav_path) {
+                //
                 nav.find("a.is-active").removeClass("is-active");
                 $(this).addClass("is-active");
+                //
+                nav.find("a.active").removeClass("active");
+                $(this).addClass("active");
                 found = true;
             }
         });

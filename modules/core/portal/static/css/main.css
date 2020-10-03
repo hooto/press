@@ -1,3 +1,29 @@
+body .container {
+  max-width: 1400px !important;
+}
+
+a {
+  font-weight: 800;
+  color: #343a40;
+}
+a:hover {
+  color: #111111;;
+}
+
+
+#hp-topbar {
+  min-height: 70px !important;
+  __background-color: #FFC300 !important;
+  __color: rgba(0, 0, 0, 0.7) !important;
+}
+
+
+#hp-topbar .nav-link {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+
 .pt_frame_box {
     _margin: 20px 0 20px 0;
     _padding 0 5px !important;
@@ -8,22 +34,49 @@
     line-height: 180% !important;
 }
 
-.pt_index_frame_blue {
+.pt-body-section-blue {
   /* background-color: #1890ff; */
   background-color: #096dd9;
   color: #fff;
   padding: 20px 5px !important;
 }
 
-.pt_index_frame_dark {
+.pt-body-section-dark {
   background-color: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 20px 5px !important;
+  padding: 20px 10px !important;
+}
+
+.pt-body-section-yellow {
+  background-color: #ffc107;
+  color: #212529;
+  padding: 20px 10px !important;
+}
+
+.pt-bg-hexagons-light-x1 {
+  background-image: url("/hp/-/static/pt/img/grid-hexagons-light-x1.png");
+}
+.pt-bg-hexagons-light-x2 {
+  background-image: url("/hp/-/static/pt/img/grid-hexagons-light-x2.png");
+}
+.pt-bg-hexagons-light-x3 {
+  background-image: url("/hp/-/static/pt/img/grid-hexagons-light-x3.png");
+}
+
+.pt-bg-hexagons-dark-x1 {
+  background-image: url("/hp/-/static/pt/img/grid-hexagons-dark-x1.png");
+}
+.pt-bg-hexagons-dark-x2 {
+  background-image: url("/hp/-/static/pt/img/grid-hexagons-dark-x2.png");
+}
+.pt-bg-hexagons-dark-x3 {
+  background-image: url("/hp/-/static/pt/img/grid-hexagons-dark-x3.png");
 }
 
 
-.pt_bgimg_hexagons {
-  background-image: url("/hp/-/static/pt/img/grid-hexagons.png");
+.bi {
+  display: inline-block;
+  vertical-align: text-bottom;
 }
 
 .pt_icon {
@@ -34,4 +87,7 @@
 
 .pt_icon_light {
   fill: #f759ab !important;
+}
+.pt_icon_dark {
+  fill: #222 !important;
 }

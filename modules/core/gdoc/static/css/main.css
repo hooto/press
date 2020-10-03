@@ -121,6 +121,24 @@ body .container {
   border-bottom: 1px solid #ccc;
 }
 
+.hp-gdoc-entry-summary,
+.hp-gdoc-entry-summary a {
+  color: rgba(0,0,0,0.65);
+}
+.hp-gdoc-entry-summary a {
+  padding: 2px 5px;
+  text-decoration: none;
+  white-space: pre-wrap;
+  display: inline-block;
+}
+.hp-gdoc-entry-summary li:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+.hp-gdoc-entry-summary a.active {
+  font-weight: 600;
+  color: rgba(0,0,0,0.85);
+}
+
 .hp-gdoc-page-content {
   background-color: #fff;
   border-radius: 2px;
@@ -128,6 +146,18 @@ body .container {
   min-height: 400px;
   padding: 20px;
   line-height: 180%;
+}
+
+.hp-gdoc-page-content a {
+  padding: 4px;
+  border-radius: 4px;
+  color: rgba(0,0,0,0.85);
+  text-decoration: underline;
+}
+
+.hp-gdoc-page-content a:hover {
+  text-decoration: underline;
+  background-color: rgba(0,0,0,0.10);
 }
 
 .hp-gdoc-entry-toc {

@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	LangArray = []LangEntry{
+	LangArray = []*LangEntry{
 		{"en-US", "English"},
 		{"zh-CN", "简体中文"},
 		{"zh-TW", "繁體中文"},
@@ -41,7 +41,7 @@ type LangEntry struct {
 
 type LangList struct {
 	types.TypeMeta `json:",inline"`
-	Items          []LangEntry `json:"items"`
+	Items          []*LangEntry `json:"items"`
 }
 
 func LangsStringFilter(str string) string {
@@ -49,6 +49,18 @@ func LangsStringFilter(str string) string {
 		return strings.Join(fls, ",")
 	}
 	return ""
+}
+
+func LangHit(ls []*LangEntry, lang string) string {
+	if len(ls) > 0 {
+		for _, v := range ls {
+			if v.Id == lang {
+				return v.Id
+			}
+		}
+		return ls[0].Id
+	}
+	return lang
 }
 
 func LangsStringFilterArray(str string) types.ArrayString {

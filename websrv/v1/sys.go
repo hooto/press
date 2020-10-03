@@ -143,10 +143,9 @@ func (c Sys) ConfigSetAction() {
 		}
 
 		if sync && entry.Key == "frontend_languages" {
-			config.Languages = []api.LangEntry{}
-			if langs := api.LangsStringFilterArray(entry.Value); len(langs) > 1 {
+			config.Languages = []*api.LangEntry{}
+			if langs := api.LangsStringFilterArray(entry.Value); len(langs) > 0 {
 				for _, lv := range langs {
-
 					for _, lv2 := range api.LangArray {
 						if lv == lv2.Id {
 							config.Languages = append(config.Languages, lv2)

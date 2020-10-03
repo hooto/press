@@ -151,11 +151,11 @@ func (c Index) IndexAction() {
 		}
 	}
 
+	lang := "en"
 	if lang, ok := c.Data["LANG"]; ok {
-		c.Data["LANG"] = strings.ToLower(lang.(string))
-	} else {
-		c.Data["LANG"] = ""
+		lang = strings.ToLower(lang.(string))
 	}
+	c.Data["LANG"] = api.LangHit(config.Languages, lang)
 
 	if len(config.Languages) > 1 {
 		c.Data["frontend_langs"] = config.Languages

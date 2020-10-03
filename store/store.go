@@ -82,6 +82,7 @@ func db_upgrade_0_5(data rdb.Connector) error {
 	mdr, _ := data.Modeler()
 
 	tbls, _ := mdr.TableDump()
+
 	for _, tbl := range tbls {
 
 		if strings.HasPrefix(tbl.Name, "nx") ||

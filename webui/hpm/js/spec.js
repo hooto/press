@@ -431,18 +431,18 @@ hpSpec.InfoSet = function(name) {
 
             l4iModal.Open({
                 tplsrc: tpl,
-                width: 600,
-                height: 400,
+                width: 1200,
+                height: 800,
                 title: ptitle,
                 data: data,
-                success: function() {},
                 buttons: [{
                     onclick: "l4iModal.Close()",
                     title: "Close",
+                    style: "btn btn-light",
                 }, {
                     onclick: "hpSpec.InfoSetCommit()",
                     title: "Save",
-                    style: "btn-primary",
+                    style: "btn btn-dark",
                 }],
             });
         });
@@ -480,6 +480,7 @@ hpSpec.InfoSetCommit = function() {
         srvname: form.find("input[name=srvname]").val(),
         title: form.find("input[name=title]").val(),
         status: parseInt(form.find("select[name=status]").val()),
+        theme_config: form.find("textarea[name=theme_config]").val(),
     };
 
 

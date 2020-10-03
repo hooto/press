@@ -59,7 +59,7 @@ var (
 	inited                 = false
 	RouterBasepathDefault  = "/"
 	RouterBasepathDefaults = []string{}
-	Languages              = []api.LangEntry{}
+	Languages              = []*api.LangEntry{}
 )
 
 type ConfigCommon struct {
@@ -222,7 +222,6 @@ func Setup() error {
 	{
 		rs, err := store.Data.Query(store.Data.NewQueryer().From("hp_sys_config").Limit(1000))
 		if err != nil {
-			fmt.Println(store.Data.NewQueryer().From("hp_sys_config").Limit(1000))
 			hlog.Print("error", err.Error())
 			return err
 		}
@@ -246,10 +245,9 @@ func Setup() error {
 			}
 
 			if item.Key == "frontend_languages" {
-				if langs := api.LangsStringFilterArray(item.Value); len(langs) > 1 {
-					Languages = []api.LangEntry{}
+				if langs := api.LangsStringFilterArray(item.Value); len(langs) > 0 {
+					Languages = []*api.LangEntry{}
 					for _, lv := range langs {
-
 						for _, lv2 := range api.LangArray {
 							if lv == lv2.Id {
 								Languages = append(Languages, lv2)

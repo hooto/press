@@ -39,6 +39,7 @@ type Spec struct {
 	Actions        []Action              `json:"actions,omitempty"`
 	Views          []View                `json:"views,omitempty"`
 	Router         Router                `json:"router,omitempty"`
+	ThemeConfig    string                `json:"theme_config,omitempty"`
 }
 
 func (it *Spec) NodeModelGet(name string) *NodeModel {

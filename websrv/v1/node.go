@@ -237,11 +237,11 @@ func (c Node) SetAction() {
 		}
 
 		if model.Extensions.Permalink != "" {
-			set["ext_permalink_name"] = rs[0].Field("ext_permalink_name")
+			set["ext_permalink_name"] = rs[0].Field("ext_permalink_name").String()
 		}
 
 		if model.Extensions.NodeRefer != "" {
-			set["ext_node_refer"] = rs[0].Field("ext_node_refer")
+			set["ext_node_refer"] = rs[0].Field("ext_node_refer").String()
 		}
 
 		//
@@ -266,7 +266,8 @@ func (c Node) SetAction() {
 					attrs := types.KvPairs{}
 
 					for _, attr := range valField.Attrs {
-						if modField.Type == "text" && attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
+						if modField.Type == "text" && attr.Key == "format" &&
+							utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
 							attrs.Set(attr.Key, attr.Value)
 						}
 					}
@@ -368,7 +369,8 @@ func (c Node) SetAction() {
 					attrs := types.KvPairs{}
 
 					for _, attr := range valField.Attrs {
-						if modField.Type == "text" && attr.Key == "format" && utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
+						if modField.Type == "text" && attr.Key == "format" &&
+							utilx.ArrayContain(attr.Value, []string{"md", "text", "html", "shtml"}) {
 							attrs.Set(attr.Key, attr.Value)
 						}
 					}
@@ -470,7 +472,7 @@ func (c Node) SetAction() {
 
 	if model.Extensions.Permalink != "" {
 
-		if prev, ok := set["ext_permalink_name"]; !ok || prev != rsp.ExtPermalinkName {
+		if prev, ok := set["ext_permalink_name"]; !ok || prev.(string) != rsp.ExtPermalinkName {
 
 			if rsp.ExtPermalinkName == "" {
 				if len(rsp.ID) > 0 {
@@ -493,6 +495,7 @@ func (c Node) SetAction() {
 
 					q := store.Data.NewQueryer().From(table).Limit(1)
 					q.Where().And("ext_permalink_idx", permaidx)
+					q.Where().And("status", 1)
 
 					if len(rsp.ID) > 0 {
 						q.Where().And("id.ne", rsp.ID)

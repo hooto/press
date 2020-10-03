@@ -2,7 +2,18 @@ var gdoc = {
 }
 
 
-gdoc.PageEntryRender = function() {
+gdoc.PageEntryRender = function(opts) {
+
+    opts = opts || {};
+
+    if (window.location.pathname) {
+        $("#hp-gdoc-entry-summary a").each(function(i, el) {
+            var basepath = $(this).attr("href");
+            if (basepath && basepath == window.location.pathname) {
+                $(this).addClass("active");
+            }
+        });
+    }
 
     var idre = /^H\d{1}$/;
     var el = document.getElementById("hp-gdoc-page-entry-content");

@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"regexp"
 	"strings"
 
 	"github.com/hooto/hlog4g/hlog"
@@ -54,6 +55,10 @@ func FilterUri(data map[string]interface{}, args ...interface{}) template.URL {
 	return ""
 }
 
+var (
+	varNameRE = regexp.MustCompile("[a-zA-Z0-9_]{1,30}")
+)
+
 func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 
 	defer func() {
@@ -63,8 +68,17 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 	}()
 
 	//
-	if len(args) < 2 || len(args) > 3 {
+	if len(args) < 2 || len(args) > 10 {
 		return ""
+	}
+
+	//
+	for i := 2; i < len(args); i++ {
+		if ar := strings.Split(args[i], "="); len(ar) == 2 {
+			if varNameRE.MatchString(ar[0]) {
+				data[ar[0]] = ar[1]
+			}
+		}
 	}
 
 	//

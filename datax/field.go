@@ -101,6 +101,11 @@ func init() {
 	shtmlp.AllowAttrs("onclick").OnElements("button")
 
 	//
+	shtmlp.AllowAttrs("class", "width", "height", "fill", "viewBox", "xmlns").OnElements("svg")
+	shtmlp.AllowAttrs("xlink:href").OnElements("use")
+	shtmlp.AllowAttrs("d", "fill-rule").OnElements("path")
+
+	//
 	shtmlp.AllowAttrs("href").OnElements("a")
 	shtmlp.AllowAttrs("target").OnElements("a")
 	shtmlp.AllowAttrs("class").OnElements("a")

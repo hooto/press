@@ -40,7 +40,7 @@ import (
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/sync"
 
-	"code.ivysaur.me/imagequant/v2"
+	// "code.ivysaur.me/imagequant/v2"
 	"github.com/nfnt/resize"
 	"github.com/oliamb/cutter"
 
@@ -394,6 +394,7 @@ func imageCacheTTL() int64 { // ms
 	return objCacheTTL + rand.Int63n(objCacheTTL)
 }
 
+/**
 // 1. memory leak, 2. high CPU cost
 func pngCompress(im image.Image) (image.Image, error) {
 
@@ -430,6 +431,7 @@ func pngCompress(im image.Image) (image.Image, error) {
 	rgb8data = nil
 	return im1, err
 }
+*/
 
 func imageToRgba32(im image.Image) []byte {
 

@@ -69,7 +69,9 @@
 <script type="text/javascript">
 window.onload_hooks.push(function() {
     hp.CodeRender({"theme": "monokai"});
-	gdoc.PageEntryRender();
+	gdoc.PageEntryRender({
+        "doc_base_path": "{{.baseuri}}/view/{{.doc_entry.ExtPermalinkName}}/",
+	});
 });
 </script>
 

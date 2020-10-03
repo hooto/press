@@ -1,6 +1,6 @@
 [project]
 name = "hooto-press"
-version = "0.6.4"
+version = "0.6.6"
 vendor = "hooto.com"
 homepage = "https://github.com/hooto/hpress"
 groups = ["app/other"]
@@ -17,6 +17,7 @@ webui/hp/img/alpha2.png
 webui/hp/img/search-16.png
 webui/hp/img/ap.ico
 webui/bs/3.3/fonts/
+webui/bi/1/bootstrap-icons.svg
 webui/octicons/
 webui/open-iconic/
 webui/katex/
@@ -27,6 +28,7 @@ misc/sphinxsearch"""
 js_compress = """
 webui/bs/3.3/js/bootstrap.js
 webui/bs/4/js/bootstrap.js
+webui/bs/5/js/bootstrap.js
 webui/cm/5/
 webui/lessui/js/lessui.js
 webui/lessui/js/browser-detect.js
@@ -41,6 +43,7 @@ vendor/github.com/hooto/hchart/webui/"""
 css_compress = """
 webui/bs/3.3/css/
 webui/bs/4/css/
+webui/bs/5/css/
 webui/cm/5/
 webui/purecss/pure.css
 webui/lessui/css/lessui.css
@@ -69,8 +72,8 @@ export GOPATH=/opt/gopath
 mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache,tmp}
 
-go build -ldflags \"-X main.version={{.project__version}} -X main.release={{.project__release}}\" -o {{.buildroot}}/bin/hooto-press cmd/server/main.go
-go build -ldflags \"-s -w -X main.version={{.project__version}} -X main.release={{.project__release}}\" -o {{.buildroot}}/bin/hp-s2-upgrade misc/s2-upgrade.go
+CGO_ENABLED=0 go build -a -ldflags \"-X main.version={{.project__version}} -X main.release={{.project__release}}\" -o {{.buildroot}}/bin/hooto-press cmd/server/main.go
+# go build -ldflags \"-s -w -X main.version={{.project__version}} -X main.release={{.project__release}}\" -o {{.buildroot}}/bin/hp-s2-upgrade misc/s2-upgrade.go
 
 sed -i 's/debug:\\!0/debug:\\!1/g' {{.buildroot}}/webui/hp/js/main.js
 sed -i 's/debug:\\!0/debug:\\!1/g' {{.buildroot}}/webui/hpm/js/main.js

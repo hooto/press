@@ -139,13 +139,15 @@ func SpecInfoSet(entry api.Spec) error {
 
 	if prev.Title != entry.Title ||
 		prev.SrvName != entry.SrvName ||
-		prev.Status != entry.Status {
+		prev.Status != entry.Status ||
+		prev.ThemeConfig != entry.ThemeConfig {
 
 		prev.Meta.Version = api.NewSpecVersion(prev.Meta.Version).Add(0, 0, 1).String()
 		prev.Title = entry.Title
 		prev.SrvName, err = api.SrvNameFilter(entry.SrvName)
 		prev.Status = entry.Status
 		prev.Meta.Updated = types.MetaTimeNow()
+		prev.ThemeConfig = entry.ThemeConfig
 
 		if err := spec_config_file_sync(prev); err != nil {
 			return err

@@ -1,4 +1,4 @@
-<nav class="navbar is-light" id="hp-topbar">
+<nav class="navbar {{.navbar_class}}" id="hp-topbar">
 <div class="container">
   <div class="navbar-brand">
    {{if SysConfig "frontend_header_site_logo_url"}}
