@@ -1,45 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-{{pagelet . "core/general" "v2/html-header.tpl"}}
+{{pagelet . "core/general" "v3/html-header.tpl"}}
 <link rel="stylesheet" href="{{HttpSrvBasePath "hp/-/static/gdoc/css/main.css"}}?v={{.sys_version_sign}}" type="text/css">
 <link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/fa/v5/css/fas.css"}}?v={{.sys_version_sign}}" type="text/css">
 <script src="{{HttpSrvBasePath "hp/-/static/gdoc/js/gdoc.js"}}?v={{.sys_version_sign}}"></script>
 <body id="hp-body">
-{{pagelet . "core/general" "v2/nav-header.tpl" "topnav"}}
+{{pagelet . "core/general" "v3/nav-header.tpl" "topnav" "topbar_class=navbar-light"}}
 
 
-<div class="hp-container-full hp-gdoc-index-frame-dark hp-gdoc-node-content hp-gdoc-bgimg-hexagons">
-<div class="container" style="padding: 10px;">
-  <div class="columns is-vcentered">
-    <div class="column">
-      <ol class="hp-gdoc-nav-ol">
-        <li>
-          <a href="{{.baseuri}}/">
-            <span class="icon"><i class="fas fa-file-alt"></i></span>
+<div class="hp-container-full hp-gdoc-index-frame-dark-light" style="padding-top:10px;">
+<nav  class="container" >
+  <ol class="breadcrumb " style="margin:0">
+        <li class="breadcrumb-item">
+          <span class="icon"><i class="fas fa-file-alt"></i></span>
+          <a href="{{.baseuri}}/" style="margin-left: 10px">
             <span>{{T .LANG "Documents"}}</span>
           </a>
         </li>
-        <li class="active">
+        <li class="breadcrumb-item active">
           <a href="{{.baseuri}}/view/{{.doc_entry.ExtPermalinkName}}/">
             {{FieldStringPrint .doc_entry "title" .LANG}}
           </a>
         </li>
-      </ol>
-    </div>
-    <div class="column font-dark hp-is-desktop" style="text-align: right;">
-      <a href="{{FieldStringPrint .doc_entry "repo_url" .LANG}}">
-        Git Version {{FieldStringPrint .doc_entry "repo_version" .LANG}}
-      </a>
-    </div>
-  </div>
-</div>
+  </ol>
+</nav>
 </div>
 
+    
 <div class="hp-container-full hp-gdoc-index-frame-dark-light">
 <div class="container hp-gdoc-node-content">
-  <div class="columns hp-is-mobile">
-    <div class="column">
-      <button class="button" onclick="hp.NavbarMenuToggle('hp-gdoc-entry-summary')">
+  <div class="row hp-is-mobile">
+    <div class="col-auto">
+      <button class="btn btn-dark" onclick="hp.NavbarMenuToggle('hp-gdoc-entry-summary')">
 	    <span class="icon">
 	      <i class="fas fa-list"></i>
         </span>
@@ -49,22 +41,25 @@
       </button>
     </div>
   </div>
-  <div class="columns">
-    <div id="hp-gdoc-entry-summary" class="column is-2 hp-gdoc-entry-summary hp-content hp-is-desktop hp-scroll hp-gdoc-cell-box">
+  <div class="row">
+    <div class="col-lg-2 hp-gdoc-cell-box">
+      <div id="hp-gdoc-entry-summary" class=" hp-gdoc-entry-summary hp-content  hp-is-desktop hp-scroll">
       {{FieldHtmlPrint .doc_entry "content" .LANG}}
+      </div>
     </div>
-    <div class="column is-8 hp-gdoc-cell-box">
+    <div class="col-lg-8 hp-gdoc-cell-box">
       <div id="hp-gdoc-page-entry-content" class="hp-gdoc-entry-content hp-gdoc-page-content content hp-content">
       {{FieldHtmlPrint .page_entry "content" .LANG}}
       </div>
     </div>
-    <div id="hp-gdoc-page-entry-toc" class="column is-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box hp-scroll">
+    <div id="hp-gdoc-page-entry-toc" class="col-lg-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box hp-scroll">
     </div>
   </div>
 </div>
 </div>
 
-{{pagelet . "core/general" "v2/footer.tpl"}}
+
+{{pagelet . "core/general" "v3/footer.tpl"}}
 
 <script type="text/javascript">
 window.onload_hooks.push(function() {

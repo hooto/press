@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/hooto/hlog4g/hlog"
+	"github.com/hooto/htoml4g/htoml"
 	"github.com/hooto/httpsrv"
 	"github.com/lessos/lessgo/crypto/idhash"
 	"github.com/lessos/lessgo/encoding/json"
@@ -34,9 +35,32 @@ import (
 )
 
 var (
-	locker  sync.Mutex
-	Modules = map[string]*api.Spec{}
+	locker    sync.Mutex
+	Modules   = map[string]*api.Spec{}
+	mtmu      sync.RWMutex
+	modThemes = map[string]map[string]string{}
 )
+
+func ModTheme(name string) map[string]string {
+	mtmu.Lock()
+	defer mtmu.Unlock()
+	mt, ok := modThemes[name]
+	if ok {
+		return mt
+	}
+	return map[string]string{}
+}
+
+func ThemeConfigFetchString(name, key string, args ...string) string {
+	tc := ModTheme(name)
+	if v, ok := tc[key]; ok && len(v) > 0 {
+		return v
+	}
+	if len(args) > 0 {
+		return args[0]
+	}
+	return ""
+}
 
 func SpecSet(spec *api.Spec) {
 
@@ -48,6 +72,7 @@ func SpecSet(spec *api.Spec) {
 	}
 
 	Modules[spec.SrvName] = spec
+
 }
 
 func SpecGet(modname string) *api.Spec {
@@ -325,6 +350,13 @@ func SpecSrvRefresh(srvname string) {
 	spec, ok := Modules[srvname]
 	if !ok {
 		return
+	}
+
+	var theme map[string]string
+	if err := htoml.Decode(&theme, []byte(spec.ThemeConfig)); err == nil {
+		mtmu.Lock()
+		modThemes[spec.SrvName] = theme
+		mtmu.Unlock()
 	}
 
 	for i, v := range spec.Router.Routes {

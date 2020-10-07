@@ -2,7 +2,7 @@
   <div class="container hp-topbar-collapse">
     <ul class="hp-nav">
       {{if SysConfig "frontend_header_site_logo_url"}}
-      <li><img class="hp-topbar-logo" src="{{SysConfig "frontend_header_site_logo_url"}}"></li>
+      <li><img class="hp-topbar-logo" src="{{SysConfig "frontend_header_site_logo_url"}}" height="30"></li>
       {{end}}
       <li class="hp-topbar-brand">{{SysConfig "frontend_header_site_name"}}</li>
     </ul>

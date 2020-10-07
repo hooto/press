@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-{{pagelet . "core/general" "v2/html-header.tpl"}}
+{{pagelet . "core/general" "v3/html-header.tpl"}}
 <link rel="stylesheet" href="{{HttpSrvBasePath "hp/-/static/gdoc/css/main.css"}}?v={{.sys_version_sign}}" type="text/css">
 <link rel="stylesheet" href="{{HttpSrvBasePath "hp/~/open-iconic/font/css/open-iconic-bootstrap.css"}}?v={{.sys_version_sign}}" type="text/css">
 <body id="hp-body">
-{{pagelet . "core/general" "v2/nav-header.tpl" "topnav"}}
+{{pagelet . "core/general" "v3/nav-header.tpl" "topnav" "topbar_class=navbar-light"}}
 
 <div class="hp-gdoc-index-frame-dark hp-gdoc-node-content hp-gdoc-bgimg-hexagons">
-<div class="container" style="padding: 20px 10px; text-align: center;">
+<div class="container" style="padding: 40px 20px; text-align: center;">
   <div class="hp-gdoc-index-frame-title">Explore Documents</div>
 </div>
 </div>
 
 <div class="container" style="margin-top:10px">
-<div class="hp-gdoc-nodels columns is-multiline" style="">
+<div class="hp-gdoc-nodels row" style="">
   {{range $v := .doc_list.Items}}
-  <div class="hp-gdoc-nodels-item column is-6">
-  <div class="card">
-    <div class="card-content">
-      <div class="media">
+  <div class="hp-gdoc-nodels-item col-lg-6">
+  <div class="card mb-4">
+    <div class="row">
+      <div class="col-auto" style="width:70px; padding:20px 20px;">
         <div class="media-left">
           <figure class="image is-48x48">
 		    <img src="/hp/~/octicons/lib/svg/repo.svg" width="48" height="48">
           </figure>
 		</div>
-        <div class="media-content">
-          <p class="title is-4">
+      </div>
+      <div class="col">
+        <div class="card-body">
+          <p class="card-title" style="font-size:1.2rem;font-weight:bold;">
 		    <a href="{{$.baseuri}}/view/{{$v.ExtPermalinkName}}/">{{FieldStringPrint $v "title" $.LANG}}</a>
 		  </p>
 		  <p class="subtitle is-6">
@@ -48,9 +50,9 @@
               {{end}}
             </span>
 		  </p>
-		  <p style="text-align:right">
-            <a class="button is-dark" href="{{$.baseuri}}/view/{{$v.ExtPermalinkName}}/">Read</a>
-		  </p>
+        </div>
+        <div class="card-footer text-right bg-transparent border-0">
+           <a class="btn btn-dark" href="{{$.baseuri}}/view/{{$v.ExtPermalinkName}}/">Read</a>
         </div>
       </div>
     </div>
@@ -81,7 +83,7 @@
 </div>
 
 
-{{pagelet . "core/general" "v2/footer.tpl"}}
+{{pagelet . "core/general" "v3/footer.tpl"}}
 
 {{pagelet . "core/general" "html-footer.tpl"}}
 </body>

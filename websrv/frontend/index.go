@@ -94,7 +94,7 @@ var (
 	dataRenderNotFound = 1
 	dataRenderSkip     = 2
 	staticImages       = types.ArrayString([]string{
-		"png", "jpg", "jpeg", "gif", "webp", "svg",
+		"png", "jpg", "jpeg", "gif", "webp", "svg", "ico",
 	})
 )
 

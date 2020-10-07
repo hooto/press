@@ -1,7 +1,24 @@
+a {
+  color: #343a40;
+}
+
+a:hover {
+  color: #111111;;
+}
+
+
 body .container {
   max-width: 1400px !important;
 }
 
+#hp-topbar {
+  min-height: 70px !important;
+}
+
+#hp-topbar .nav-link {                                                                  
+  padding-left: 1rem;                                                                   
+  padding-right: 1rem;                                                                  
+}
 
 .hp-gdoc-frame-box {
   margin: 20px 0 20px 0;
@@ -61,7 +78,7 @@ body .container {
 }
 
 .hp-gdoc-cell-box {
-  padding: 10px;
+  padding: 10px 10px 0 10px;
 }
 
 .hp-gdoc-entry-summary {
@@ -270,6 +287,10 @@ body .container {
   .hp-gdoc-entry-summary {
     position: relative;
     height: auto;
+	margin-top: 10px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px 0px #666;
   }
 
   .hp-gdoc-entry-toc {

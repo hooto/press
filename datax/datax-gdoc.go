@@ -242,6 +242,8 @@ func expGdocRefreshPath() {
 
 	for _, dir := range config.Config.ExpGdocPaths {
 
+		dir = filepath.Clean(dir)
+
 		docId := idhash.HashToHexString([]byte(dir), 12)
 
 		if err := gdocRefreshItem(docId, "sysadmin", ver, dir); err != nil {

@@ -92,6 +92,10 @@ func init() {
 		"frontend_header_site_logo_url", "",
 		"", "",
 	})
+	SysConfigList.Insert(api.SysConfig{
+		"frontend_header_site_icon_url", "",
+		"", "",
+	})
 
 	SysConfigList.Insert(api.SysConfig{
 		"frontend_footer_copyright", fmt.Sprintf("© 2015~%d hooto.com", time.Now().Year()),

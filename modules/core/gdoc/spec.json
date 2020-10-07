@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "core/gdoc",
-    "version": "0.1.2"
+    "version": "0.1.5"
   },
   "srvname": "gdoc",
   "status": 1,
@@ -266,5 +266,6 @@
         "template": "doc_view.tpl"
       }
     ]
-  }
+  },
+  "theme_config": "mode = \"light\"\ncolor_primary = \"#ffc107\""
 }

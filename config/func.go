@@ -22,6 +22,7 @@ import (
 
 func init() {
 	httpsrv.GlobalService.Config.TemplateFuncRegister("SysConfig", SysConfigList.FetchString)
+	httpsrv.GlobalService.Config.TemplateFuncRegister("ThemeConfig", ThemeConfigFetchString)
 	httpsrv.GlobalService.Config.TemplateFuncRegister("HttpSrvBasePath", HttpSrvBasePath)
 }
 

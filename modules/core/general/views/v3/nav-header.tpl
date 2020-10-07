@@ -1,9 +1,9 @@
 <nav class="navbar navbar-expand-lg {{.topbar_class}}" id="hp-topbar">
 <div class="container">
 
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="/">
       {{if SysConfig "frontend_header_site_logo_url"}}
-      <img src="{{SysConfig "frontend_header_site_logo_url"}}"  height="30" alt="">
+      <img src="{{SysConfig "frontend_header_site_logo_url"}}"  height="40" alt="">
       {{end}}
       {{SysConfig "frontend_header_site_name"}}
     </a>

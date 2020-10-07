@@ -83,6 +83,10 @@ var (
 
 func init() {
 	mkp.AllowAttrs("class").OnElements("code")
+	mkp.AllowAttrs("class").OnElements("div")
+	mkp.AllowAttrs("class").OnElements("span")
+	mkp.AllowAttrs("class").OnElements("p")
+	mkp.AllowAttrs("class").OnElements("table")
 
 	//
 	shtmlp.AllowElements("script")

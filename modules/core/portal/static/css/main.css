@@ -3,9 +3,9 @@ body .container {
 }
 
 a {
-  font-weight: 800;
   color: #343a40;
 }
+
 a:hover {
   color: #111111;;
 }
@@ -23,6 +23,14 @@ a:hover {
   padding-right: 1rem;
 }
 
+.pt_node_content .card-title,
+.pt_node_content .card-header {
+  font-weight: 800;
+}
+
+.card-body ul {
+  padding: 0 0 0 1.1em;
+}
 
 .pt_frame_box {
     _margin: 20px 0 20px 0;

@@ -48,7 +48,7 @@ func (c Static) IndexAction() {
 	switch ext {
 	case ".js", ".css":
 
-	case ".jpg", ".png", ".svg", ".git":
+	case ".jpg", ".png", ".svg", ".git", ".ico":
 
 	default:
 		return
