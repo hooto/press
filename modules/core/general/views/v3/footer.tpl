@@ -1,3 +1,6 @@
+{{if (SysConfig "frontend_html_footer")}}
+{{raw (SysConfig "frontend_html_footer")}}
+{{else}}
 <footer class="hp-footer hp-container-full">
 <div class="container">
   <div class="columns">
@@ -22,4 +25,5 @@
   </div>
 </div>
 </footer>
+{{end}}
 {{raw (SysConfig "frontend_footer_analytics_scripts")}}

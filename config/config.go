@@ -117,6 +117,11 @@ func init() {
 	})
 
 	SysConfigList.Insert(api.SysConfig{
+		"frontend_html_footer", "",
+		"Raw HTML Text for custom page footer", "text",
+	})
+
+	SysConfigList.Insert(api.SysConfig{
 		"frontend_footer_analytics_scripts", "",
 		"Embeded analytics scripts, ex. Google Analytics or Piwik ...", "text",
 	})

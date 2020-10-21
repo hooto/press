@@ -42,17 +42,17 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-lg-2 hp-gdoc-cell-box">
+    <div class="col-md-2 hp-gdoc-cell-box">
       <div id="hp-gdoc-entry-summary" class=" hp-gdoc-entry-summary hp-content  hp-is-desktop hp-scroll">
       {{FieldHtmlPrint .doc_entry "content" .LANG}}
       </div>
     </div>
-    <div class="col-lg-8 hp-gdoc-cell-box">
+    <div class="col-md-8 hp-gdoc-cell-box">
       <div id="hp-gdoc-page-entry-content" class="hp-gdoc-entry-content hp-gdoc-page-content content hp-content">
       {{FieldHtmlPrint .page_entry "content" .LANG}}
       </div>
     </div>
-    <div id="hp-gdoc-page-entry-toc" class="col-lg-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box hp-scroll">
+    <div id="hp-gdoc-page-entry-toc" class="col-md-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box hp-scroll">
     </div>
   </div>
 </div>
