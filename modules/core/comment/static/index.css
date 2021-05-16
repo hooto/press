@@ -93,3 +93,20 @@
 #hp-comment-embed-new-form-alert {
   margin: 5px 0;
 }
+
+#hp-comment-embed-new-form .alert {
+  padding: 10px;
+  border-radius: 2px;
+}
+
+#hp-comment-embed-new-form .alert-success {
+  border: 1px solid #48c774;
+  color: #257942;
+  background-color: #effaf3;
+}
+
+#hp-comment-embed-new-form .alert-danger {
+  border: 1px solid #f14668;
+  color: #cc0f35;
+  background-color: #feecf0;
+}

@@ -14,9 +14,9 @@
     {{range $v := .list.Items}}
     <div class="entry">
       <div class="avatar">
-        <img src="{{HttpSrvBasePath "hp/+/comment/~/img/user-default.png"}}">
-      </div>  
-      
+        <img src="{{HttpSrvBasePath " hp/+/comment/~/img/user-default.png"}}">
+      </div>
+
       <div class="body">
         <div class="info">
           <strong>{{FieldSubString $v.Fields "author" 50}}</strong>
@@ -41,14 +41,15 @@
   <div class="list">
     <div class="entry">
       <div class="avatar">
-        <img src="{{HttpSrvBasePath "hp/+/comment/~/img/user-default.png"}}">
-      </div>  
-      
+        <img src="{{HttpSrvBasePath " hp/+/comment/~/img/user-default.png"}}">
+      </div>
+
       <div id="hp-comment-embed-new-form-ctrl" class="body">
         <div>
           <div class="info"><strong>Guest</strong></div>
           <div>
-            <input type="text" class="input form-control" name="author" placeholder="Leave a comment ..." onclick="hpComment.EmbedFormActive()">
+            <input type="text" class="input form-control" name="author" placeholder="Leave a comment ..."
+              onclick="hpComment.EmbedFormActive()">
           </div>
         </div>
       </div>
@@ -75,19 +76,31 @@
         <div class="form-group">
           <label>Verification</label>
           <div>
-		    <table width="100%">
-			  <tr><td width="50%" valign="top">
-                <input type="text" class="input form-control" name="captcha_word" value="">
-                <span class="help-block">Type the characters you see in the right picture</span>
-			  </td><td style="width: 10px">
-			  </td><td style="background-color: #dce6ff;">
-                <img id="hp-comment-captcha-url" src="">
-			  </td></tr>
-			</table>
+            <table width="100%">
+              <tr>
+                <td width="50%" valign="top">
+                  <input type="text" class="input form-control" name="captcha_word" value="">
+                  <span class="help-block">Type the characters you see in the right picture</span>
+                </td>
+                <td style="width: 10px">
+                </td>
+                <td style="background-color: #dce6ff;">
+                  <img id="hp-comment-captcha-url" src="">
+                </td>
+              </tr>
+            </table>
           </div>
         </div>
 
-        <button class="button is-dark btn btn-dark" onclick="hpComment.EmbedCommit()">Commit</button>
+
+        <div class="form-group">
+
+          <div id="hp-comment-embed-new-form-footer">
+            <button class="button is-dark btn btn-dark" onclick="hpComment.EmbedCommit()">Commit</button>
+          </div>
+
+          <div id="hp-comment-embed-new-form-footer-alert"></div>
+        </div>
 
       </div>
     </div>
@@ -108,4 +121,3 @@
   </div>
 </div>
 </script>
-

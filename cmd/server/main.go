@@ -63,16 +63,26 @@ func main() {
 	}
 
 	//
-	for {
+	retry := time.Second * 3
+	for i := 0; ; i++ {
 
 		err := config.Setup()
 		if err == nil {
 			break
 		}
 
+		if i >= 100 {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		// fmt.Println("Error on config.Setup", err)
 		hlog.Printf("error", "config.Setup error: %v", err)
-		time.Sleep(3e9)
+		time.Sleep(retry)
+
+		if retry < time.Minute {
+			retry += time.Second
+		}
 	}
 
 	ext_captcha.DataConnector = store.DataLocal
