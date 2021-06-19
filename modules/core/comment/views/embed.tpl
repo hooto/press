@@ -14,7 +14,7 @@
     {{range $v := .list.Items}}
     <div class="entry">
       <div class="avatar">
-        <img src="{{HttpSrvBasePath " hp/+/comment/~/img/user-default.png"}}">
+        <img src="{{HttpSrvBasePath "hp/+/comment/~/img/user-default.png"}}">
       </div>
 
       <div class="body">
@@ -41,7 +41,7 @@
   <div class="list">
     <div class="entry">
       <div class="avatar">
-        <img src="{{HttpSrvBasePath " hp/+/comment/~/img/user-default.png"}}">
+        <img src="{{HttpSrvBasePath "hp/+/comment/~/img/user-default.png"}}">
       </div>
 
       <div id="hp-comment-embed-new-form-ctrl" class="body">
