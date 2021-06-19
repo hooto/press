@@ -8,12 +8,12 @@
       {{SysConfig "frontend_header_site_name"}}
     </a>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#hp-topbar-navbar-toggler">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav flex-row flex-wrap mr-auto" id="hp-topbar-nav-main">
+    <div class="collapse navbar-collapse" id="hp-topbar-navbar-toggler">
+      <ul class="navbar-nav me-auto" id="hp-topbar-nav-main">
         {{range $v := .topnav.Items}}
         <li class="nav-item col-6 col-md-auto ml-2 mr-2">
           <a class="nav-link is-tab" href="{{FieldString $v.Fields "url"}}">{{FieldStringPrint $v "title" $.LANG}}</a>
@@ -21,7 +21,7 @@
         {{end}}
       </ul>
       <hr class="d-mode-none text-width-50">
-      <ul class="navbar-nav flex-row ml-md-auto">
+      <ul class="navbar-nav d-flex">
         <li class="nav-item" id="hp-topbar-userbar" onclick="hp.NavbarMenuUserToggle()"></li>
       </ul>
     </div>
