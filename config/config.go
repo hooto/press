@@ -177,7 +177,7 @@ func Setup() error {
 	Config.ModuleDir = Prefix + "/modules"
 
 	file := Prefix + "/etc/config.toml"
-	if err := htoml.DecodeFromFile(&Config, file); err != nil {
+	if err := htoml.DecodeFromFile(file, &Config); err != nil {
 
 		if !os.IsNotExist(err) {
 			return err

@@ -353,7 +353,7 @@ func SpecSrvRefresh(srvname string) {
 	}
 
 	var theme map[string]string
-	if err := htoml.Decode(&theme, []byte(spec.ThemeConfig)); err == nil {
+	if err := htoml.Decode([]byte(spec.ThemeConfig), &theme); err == nil {
 		mtmu.Lock()
 		modThemes[spec.SrvName] = theme
 		mtmu.Unlock()

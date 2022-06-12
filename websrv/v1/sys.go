@@ -19,7 +19,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"syscall"
+	"time"
 
 	"github.com/hooto/httpsrv"
 	"github.com/hooto/iam/iamapi"
@@ -32,6 +32,14 @@ import (
 	"github.com/hooto/hpress/status"
 	"github.com/hooto/hpress/store"
 )
+
+var (
+	uptime time.Time
+)
+
+func init() {
+	uptime = time.Now()
+}
 
 type Sys struct {
 	*httpsrv.Controller
@@ -258,21 +266,24 @@ func memStatsFetch() runtime.MemStats {
 
 func sysinfoFetch() api.SysStatusInfo {
 
-	var si syscall.Sysinfo_t
-	syscall.Sysinfo(&si)
+	// var si syscall.Sysinfo_t
+	// syscall.Sysinfo(&si)
+
+	var ms runtime.MemStats
+	runtime.ReadMemStats(&ms)
 
 	return api.SysStatusInfo{
 		CpuNum:    runtime.NumCPU(),
-		Uptime:    si.Uptime,
-		Loads:     si.Loads,
-		MemTotal:  si.Totalram,
-		MemFree:   si.Freeram,
-		MemShared: si.Sharedram,
-		MemBuffer: si.Bufferram,
-		MemUsed:   si.Totalram - si.Freeram,
-		SwapTotal: si.Totalswap,
-		SwapFree:  si.Freeswap,
-		Procs:     si.Procs,
+		Uptime:    uptime.Unix(),       // si.Uptime,
+		Loads:     [3]uint64{0, 0, 0},  // si.Loads,
+		MemTotal:  ms.Alloc,            // si.Totalram,
+		MemFree:   ms.Frees,            // si.Freeram,
+		MemShared: 0,                   // si.Sharedram,
+		MemBuffer: 0,                   // si.Bufferram,
+		MemUsed:   ms.Alloc - ms.Frees, // si.Totalram - si.Freeram,
+		SwapTotal: 0,                   // si.Totalswap,
+		SwapFree:  0,                   // si.Freeswap,
+		Procs:     0,                   // si.Procs,
 		// TimeNow: time.Now().Format(time.RFC3339),
 	}
 }
