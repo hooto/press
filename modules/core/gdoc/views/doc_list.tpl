@@ -12,11 +12,11 @@
 </div>
 </div>
 
-<div class="container" style="margin-top:10px">
-<div class="hp-gdoc-nodels row" style="">
+<div class="container">
+<div class="hp-gdoc-nodels row hp-block-mt-std">
   {{range $v := .doc_list.Items}}
-  <div class="hp-gdoc-nodels-item col-md-6">
-  <div class="card mb-4">
+  <div class="hp-gdoc-nodels-item col-md-6 hp-block-p-std">
+  <div class="card ">
     <div class="row">
       <div class="col-auto" style="width:70px; padding:20px 20px;">
         <div class="media-left">

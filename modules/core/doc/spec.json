@@ -1,10 +1,9 @@
 {
   "meta": {
     "name": "core/doc",
-    "version": "0.0.31"
+    "version": "0.0.32"
   },
   "srvname": "doc",
-  "status": 1,
   "title": "Document",
   "nodeModels": [
     {

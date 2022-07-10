@@ -3,9 +3,9 @@
 
     <a class="navbar-brand" href="/">
       {{if SysConfig "frontend_header_site_logo_url"}}
-      <img src="{{SysConfig "frontend_header_site_logo_url"}}"  height="40" alt="">
+      <img src="{{SysConfig "frontend_header_site_logo_url"}}"  height="36" alt="">
       {{end}}
-      {{SysConfig "frontend_header_site_name"}}
+      <span class="align-middle">{{SysConfig "frontend_header_site_name"}}</span>
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#hp-topbar-navbar-toggler">

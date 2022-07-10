@@ -8,8 +8,8 @@
 {{pagelet . "core/general" "v3/nav-header.tpl" "topnav" "topbar_class=navbar-light"}}
 
 
-<div class="hp-container-full hp-gdoc-index-frame-dark-light" style="padding-top:10px;">
-<nav  class="container" >
+<div class="hp-container-full hp-gdoc-index-frame-dark-light">
+<nav class="container hp-block-p-std">
   <ol class="breadcrumb " style="margin:0">
         <li class="breadcrumb-item">
           <span class="icon"><i class="fas fa-file-alt"></i></span>
@@ -42,17 +42,17 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-2 hp-gdoc-cell-box">
+    <div class="col-md-2 hp-block-px-std hp-block-pb-std">
       <div id="hp-gdoc-entry-summary" class=" hp-gdoc-entry-summary hp-content  hp-is-desktop hp-scroll">
       {{FieldHtmlPrint .doc_entry "content" .LANG}}
       </div>
     </div>
-    <div class="col-md-8 hp-gdoc-cell-box">
+    <div class="col-md-8 hp-block-px-std hp-block-pb-std">
       <div id="hp-gdoc-page-entry-content" class="hp-gdoc-entry-content hp-gdoc-page-content content hp-content">
       {{FieldHtmlPrint .page_entry "content" .LANG}}
       </div>
     </div>
-    <div id="hp-gdoc-page-entry-toc" class="col-md-2 hp-is-desktop hp-gdoc-entry-toc hp-gdoc-cell-box hp-scroll">
+    <div id="hp-gdoc-page-entry-toc" class="col-md-2 hp-is-desktop hp-gdoc-entry-toc hp-scroll hp-block-px-std hp-block-pb-std">
     </div>
   </div>
 </div>

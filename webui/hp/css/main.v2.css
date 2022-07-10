@@ -14,7 +14,7 @@ body .container {
 
 #hp-body>.container,
 #hp-body>.hp-footer>.container {
-  padding: 10px;
+  __padding: 10px;
 }
 
 #hp-body .container>.columns {
@@ -27,7 +27,7 @@ body .container {
 }
 
 #hp-body>.hp-container-full>.container {
-  padding: 10px;
+  _padding: 10px;
 }
 
 #hp-topbar {
@@ -628,4 +628,34 @@ body .container {
 
 .hp-display {
   display: block !important;
+}
+
+.hp-block-m-std {
+  margin: 10px;
+}
+.hp-block-mt-std {
+  margin-top: 10px;
+}
+.hp-block-mt-std-x2 {
+  margin-top: 20px;
+}
+.hp-block-mb-std {
+  margin-bottom: 10px;
+}
+.hp-block-mx-std {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.hp-block-p-std {
+  padding: 10px;
+}
+.hp-block-pt-std {
+  padding-top: 10px;
+}
+.hp-block-pb-std {
+  padding-bottom: 10px;
+}
+.hp-block-px-std {
+  padding-left: 10px;
+  padding-right: 10px;
 }
