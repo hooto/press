@@ -1,5 +1,5 @@
 <footer class="hp-footer hp-container-full">
-<div class="container">
+<div class="container hp-block-p-std">
   <div class="columns">
     <div class="column">
       {{raw (SysConfig "frontend_footer_copyright")}}

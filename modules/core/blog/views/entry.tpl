@@ -4,7 +4,7 @@
 <body id="hp-body">
 {{pagelet . "core/general" "v2/nav-header.tpl" "topnav"}}
 
-<div class="container" style="margin-top:10px">
+<div class="container hp-block-p-std">
 
   <div class="columns">
     <div class="column">
@@ -15,7 +15,7 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container hp-block-p-std">
   <div class="columns">
     <div class="column">
 

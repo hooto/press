@@ -1,6 +1,6 @@
 [project]
 name = "hooto-press"
-version = "0.6.9"
+version = "0.7.0"
 vendor = "hooto.com"
 homepage = "https://github.com/hooto/hpress"
 groups = ["app/other"]
@@ -66,8 +66,6 @@ webui/hpm/img/"""
 
 [scripts]
 build = """
-export PATH=$PATH:/usr/local/go/bin:/opt/gopath/bin
-export GOPATH=/opt/gopath
 
 mkdir -p {{.buildroot}}/bin
 mkdir -p {{.buildroot}}/var/{hcaptchadb,log,storage,hpress_local_cache,tmp}
