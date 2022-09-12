@@ -1,6 +1,6 @@
 [project]
 name = "hooto-press"
-version = "0.7.0"
+version = "0.7.1"
 vendor = "hooto.com"
 homepage = "https://github.com/hooto/hpress"
 groups = ["app/other"]
@@ -22,8 +22,7 @@ webui/octicons/
 webui/open-iconic/
 webui/katex/
 webui/bulma/
-webui/fa/
-misc/sphinxsearch"""
+webui/fa/"""
 
 js_compress = """
 webui/bs/3.3/js/bootstrap.js
@@ -78,16 +77,4 @@ sed -i 's/debug:\\!0/debug:\\!1/g' {{.buildroot}}/webui/hpm/js/main.js
 sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hp/js/main.js
 sed -i 's/debug:true/debug:false/g' {{.buildroot}}/webui/hpm/js/main.js
 
-cd {{.inpack__pack_dir}}/deps/sphinxsearch
-
-./configure --prefix=/opt/hooto/press --without-mysql --without-pgsql --with-libexpat
-make -j4
-
-install src/indexer   {{.buildroot}}/bin/sph-indexer
-install src/indextool {{.buildroot}}/bin/sph-indextool
-install src/searchd   {{.buildroot}}/bin/sph-searchd
-
-strip -s {{.buildroot}}/bin/sph-indexer
-strip -s {{.buildroot}}/bin/sph-indextool
-strip -s {{.buildroot}}/bin/sph-searchd
 """
