@@ -1,7 +1,8 @@
 kind = "AppSpec"
 last_version = "0.0"
 roles = [101, 100]
-type_tags = ["enterprise"]
+runtime_images = ["sysinner/innerstack-g3:el8"]
+type_tags = ["enterprise", "net"]
 
 [meta]
   id = "hooto-press-pgsql-x1"
@@ -16,13 +17,20 @@ type_tags = ["enterprise"]
 
 [[packages]]
   name = "hooto-press"
-  version = "0.6"
+  version = "0.7"
+
+[[packages]]
+  name = "hooto-press-search"
+  version = "1.0"
+  release = "1"
+  dist = "el8"
+  arch = "x64"
 
 [[executors]]
   name = "main"
-  exec_start = """
-DAEMON=/opt/hooto/press/bin/hooto-press
-DAEMON_ARGS="-log_dir=/opt/hooto/press/var/log -minloglevel=1 -logtolevels=true"
+  updated = 0
+  exec_start = """DAEMON=/opt/hooto/press/bin/hooto-press
+DAEMON_ARGS=\"-log_dir=/opt/hooto/press/var/log -minloglevel=1 -logtolevels=true\"
 NAME=hooto-press
 
 if pidof $NAME; then
@@ -37,7 +45,6 @@ $DAEMON $DAEMON_ARGS >> /home/action/var/log/hooto-press.log 2>&1 &
 
   exec_stop = "killall hooto-press"
   priority = 8
-
   [executors.plan]
     on_tick = 60
 
@@ -69,5 +76,7 @@ $DAEMON $DAEMON_ARGS >> /home/action/var/log/hooto-press.log 2>&1 &
   rep_min = 1
   rep_max = 1
   sys_state = 1
+  failover_time = 300
+  failover_num_max = 0
+  failover_rate_max = 0
   network_mode = 1
-
