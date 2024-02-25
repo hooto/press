@@ -21,34 +21,32 @@ import (
 	"github.com/hooto/hpress/config"
 )
 
-func NewModule() httpsrv.Module {
+func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule("default")
+	module := httpsrv.NewModule()
 
-	module.ControllerRegister(new(Index))
-	module.ControllerRegister(new(Error))
+	module.RegisterController(new(Index))
+	module.RegisterController(new(Error))
 
 	return module
 }
 
-func NewHtpModule() httpsrv.Module {
+func NewHtpModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule("default_hpress")
+	module := httpsrv.NewModule()
 
-	module.RouteSet(httpsrv.Route{
-		Type:       httpsrv.RouteTypeStatic,
-		Path:       "~/hchart",
-		StaticPath: config.Prefix + "/vendor/github.com/hooto/hchart/webui",
-	})
+	module.RegisterStaticFilepath(
+		"/~/hchart",
+		config.Prefix+"/deps/github.com/hooto/hchart/webui",
+	)
 
-	module.RouteSet(httpsrv.Route{
-		Type:       httpsrv.RouteTypeStatic,
-		Path:       "~",
-		StaticPath: config.Prefix + "/webui/",
-	})
+	module.RegisterStaticFilepath(
+		"/~",
+		config.Prefix+"/webui/",
+	)
 
-	module.ControllerRegister(new(S2))
-	module.ControllerRegister(new(iamclient.Auth))
+	module.RegisterController(new(S2))
+	module.RegisterController(new(iamclient.Auth))
 
 	return module
 }

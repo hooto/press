@@ -23,7 +23,7 @@ import (
 	"github.com/lynkdb/iomix/connect"
 	"github.com/lynkdb/iomix/rdb"
 	"github.com/lynkdb/kvgo"
-	kv2 "github.com/lynkdb/kvspec/go/kvspec/v2"
+	kv2 "github.com/lynkdb/kvspec/v2/go/kvspec"
 	"github.com/lynkdb/mysqlgo"
 	"github.com/lynkdb/pgsqlgo"
 )

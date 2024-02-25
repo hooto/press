@@ -21,16 +21,16 @@ import (
 )
 
 func init() {
-	httpsrv.GlobalService.Config.TemplateFuncRegister("SysConfig", SysConfigList.FetchString)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("ThemeConfig", ThemeConfigFetchString)
-	httpsrv.GlobalService.Config.TemplateFuncRegister("HttpSrvBasePath", HttpSrvBasePath)
+	httpsrv.DefaultService.Config.TemplateFuncRegister("SysConfig", SysConfigList.FetchString)
+	httpsrv.DefaultService.Config.TemplateFuncRegister("ThemeConfig", ThemeConfigFetchString)
+	httpsrv.DefaultService.Config.TemplateFuncRegister("HttpSrvBasePath", HttpSrvBasePath)
 }
 
 func HttpSrvBasePath(uri string) string {
 
-	if httpsrv.GlobalService.Config.UrlBasePath == "" {
+	if httpsrv.DefaultService.Config.UrlBasePath == "" {
 		return filepath.Clean("/" + uri)
 	}
 
-	return filepath.Clean("/" + httpsrv.GlobalService.Config.UrlBasePath + "/" + uri)
+	return filepath.Clean("/" + httpsrv.DefaultService.Config.UrlBasePath + "/" + uri)
 }

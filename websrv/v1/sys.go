@@ -219,8 +219,8 @@ func (c Sys) IamStatusAction() {
 		inst_url = "http" + inst_url
 	}
 
-	if len(httpsrv.GlobalService.Config.UrlBasePath) > 0 {
-		inst_url += "/" + httpsrv.GlobalService.Config.UrlBasePath
+	if len(httpsrv.DefaultService.Config.UrlBasePath) > 0 {
+		inst_url += "/" + httpsrv.DefaultService.Config.UrlBasePath
 	}
 
 	sets = api.SysIamStatus{

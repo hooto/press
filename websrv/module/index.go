@@ -35,7 +35,7 @@ func (c Static) IndexAction() {
 	c.AutoRender = false
 
 	var (
-		object_path = strings.TrimPrefix(filepath.Clean(c.Request.RequestPath), "hp/-/static/")
+		object_path = strings.TrimPrefix(c.Request.UrlPath(), "/hp/-/static/")
 	)
 
 	n := strings.Index(object_path, "/")

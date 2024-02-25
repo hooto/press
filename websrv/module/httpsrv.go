@@ -18,11 +18,11 @@ import (
 	"github.com/hooto/httpsrv"
 )
 
-func NewModule() httpsrv.Module {
+func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule("default_module")
+	module := httpsrv.NewModule()
 
-	module.ControllerRegister(new(Static))
+	module.RegisterController(new(Static))
 
 	return module
 }

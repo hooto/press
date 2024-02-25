@@ -184,7 +184,7 @@ func templateRender(data map[string]interface{}, module, templatePath string) te
 	}()
 
 	var out bytes.Buffer
-	err := httpsrv.GlobalService.TemplateLoader.Render(&out, module, templatePath, data)
+	err := httpsrv.DefaultService.TemplateLoader.Render(&out, module, templatePath, data)
 	if err != nil {
 		fmt.Println(err)
 		return ""

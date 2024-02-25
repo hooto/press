@@ -16,7 +16,6 @@ package frontend
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -71,7 +70,7 @@ func (c Index) filter(rt []string, spec *api.Spec) (string, string, bool) {
 		if matlen == len(route.Tree) {
 
 			for k, v := range params {
-				c.Params.Values[k] = append(c.Params.Values[k], v)
+				c.Params.SetValue(k, v)
 			}
 
 			return route.DataAction, route.Template, true
@@ -108,7 +107,7 @@ func (c Index) IndexAction() {
 	}
 
 	var (
-		reqpath = filepath.Clean("/" + c.Request.RequestPath)
+		reqpath = c.Request.UrlPath()
 		uris    = []string{}
 	)
 	if reqpath == "" || reqpath == "." {
@@ -348,10 +347,14 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 			}
 		}
 
-		nodeExt := ""
+		var (
+			urlExtraPath = strings.TrimPrefix(c.Request.UrlPath(), c.Request.UrlMatchPath())
+			nodeExt      = ""
+		)
+
 		if mod.Meta.Name == "core/gdoc" {
 			if ad.Query.Table == "page" {
-				nodeId = strings.ToLower(c.Request.UrlPathExtra)
+				nodeId = strings.ToLower(urlExtraPath)
 			} else if ad.Query.Table == "doc" && api.NodeIdReg.MatchString(nodeId) {
 				nodeExt = "html"
 			}
@@ -369,11 +372,11 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 				if docId := datax.GdocNodeId(c.Params.Get("doc_entry_id")); docId != "" {
 					localPath := datax.GdocLocalPath(docId)
 					if localPath == "" {
-						localPath = fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, docId, c.Request.UrlPathExtra)
+						localPath = fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, docId, urlExtraPath)
 					} else {
-						localPath = localPath + "/" + c.Request.UrlPathExtra
+						localPath = localPath + "/" + urlExtraPath
 					}
-					s2Server(c.Controller, c.Request.UrlPathExtra, localPath)
+					s2Server(c.Controller, urlExtraPath, localPath)
 				}
 			}
 			return dataRenderSkip

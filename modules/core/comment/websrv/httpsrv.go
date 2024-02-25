@@ -20,17 +20,15 @@ import (
 	"github.com/hooto/hpress/config"
 )
 
-func NewModule() httpsrv.Module {
+func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule("ext_comment")
+	module := httpsrv.NewModule()
 
-	module.RouteSet(httpsrv.Route{
-		Type:       httpsrv.RouteTypeStatic,
-		Path:       "~",
-		StaticPath: config.Prefix + "/modules/core/comment/static/",
-	})
+	module.RegisterStaticFilepath("/~",
+		config.Prefix+"/modules/core/comment/static/",
+	)
 
-	module.ControllerRegister(new(Comment))
+	module.RegisterController(new(Comment))
 
 	return module
 }

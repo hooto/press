@@ -18,30 +18,30 @@ import (
 	"github.com/hooto/httpsrv"
 )
 
-func NewModule() httpsrv.Module {
+func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule("cms_api")
-
-	//
-	module.ControllerRegister(new(ModSet))
-	module.ControllerRegister(new(ModSetFs))
+	module := httpsrv.NewModule()
 
 	//
-	module.ControllerRegister(new(Node))
-	module.ControllerRegister(new(NodeModel))
+	module.RegisterController(new(ModSet))
+	module.RegisterController(new(ModSetFs))
 
 	//
-	module.ControllerRegister(new(Term))
-	module.ControllerRegister(new(TermModel))
+	module.RegisterController(new(Node))
+	module.RegisterController(new(NodeModel))
 
 	//
-	module.ControllerRegister(new(Text))
+	module.RegisterController(new(Term))
+	module.RegisterController(new(TermModel))
 
 	//
-	module.ControllerRegister(new(Sys))
+	module.RegisterController(new(Text))
 
 	//
-	module.ControllerRegister(new(S2Obj))
+	module.RegisterController(new(Sys))
+
+	//
+	module.RegisterController(new(S2Obj))
 
 	return module
 }

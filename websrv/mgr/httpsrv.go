@@ -21,9 +21,9 @@ import (
 	"github.com/hooto/hpress/websrv/mgr/controllers"
 )
 
-func NewModule() httpsrv.Module {
+func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule("hpress_mgr")
+	module := httpsrv.NewModule()
 
 	// module.RouteSet(httpsrv.Route{
 	// 	Type:       httpsrv.RouteTypeStatic,
@@ -37,10 +37,10 @@ func NewModule() httpsrv.Module {
 	// 	StaticPath: config.Prefix + "/webui/hpressm/",
 	// })
 
-	module.TemplatePathSet(config.Prefix + "/websrv/mgr/views")
+	module.SetTemplatePath(config.Prefix + "/websrv/mgr/views")
 
-	module.ControllerRegister(new(controllers.Index))
-	module.ControllerRegister(new(controllers.Setup))
+	module.RegisterController(new(controllers.Index))
+	module.RegisterController(new(controllers.Setup))
 
 	return module
 }

@@ -50,7 +50,7 @@ import (
 
 const (
 	s2BucketDeft  = "/deft/"
-	s3UrlPrefix   = "hp/s2"
+	s3UrlPrefix   = "/hp/s2"
 	objCacheTTL   = int64(86400 * 1000) // ms
 	iplStep       = 64
 	iplSizeMin    = iplStep
@@ -91,7 +91,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	var err error
 
 	if objPath == "" {
-		objPath, err = pathFilter(strings.TrimPrefix(c.Request.RequestPath, s3UrlPrefix))
+		objPath, err = pathFilter(strings.TrimPrefix(c.Request.UrlPath(), s3UrlPrefix))
 		if err != nil {
 			c.RenderError(404, "Object Not Found #1")
 			return

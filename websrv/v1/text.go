@@ -30,7 +30,7 @@ func (c Text) MarkdownRenderAction() {
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response.Out.Header().Set("Content-type", "text/x-markdown")
 
-	output := blackfriday.MarkdownBasic(c.Request.RawBody)
+	output := blackfriday.MarkdownBasic(c.Request.RawBody())
 
 	c.Response.Out.Write(output)
 }

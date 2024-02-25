@@ -98,8 +98,8 @@ func main() {
 	iamclient.InstanceID = config.Config.InstanceID
 	iamclient.InstanceOwner = config.Config.AppInstance.Meta.User
 
-	httpsrv.GlobalService.Config.UrlBasePath = config.Config.UrlBasePath
-	httpsrv.GlobalService.Config.HttpPort = config.Config.HttpPort
+	httpsrv.DefaultService.Config.UrlBasePath = config.Config.UrlBasePath
+	httpsrv.DefaultService.Config.HttpPort = config.Config.HttpPort
 
 	// i18n
 	hlang.StdLangFeed.LoadMessages(config.Prefix+"/i18n/en.json", true)
@@ -111,20 +111,20 @@ func main() {
 	datax.Worker()
 
 	//
-	httpsrv.GlobalService.ModuleRegister("/hp/+/comment", ext_comment.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/hp/+/hcaptcha", ext_captcha.WebServerModule())
+	httpsrv.DefaultService.HandleModule("/hp/+/comment", ext_comment.NewModule())
+	httpsrv.DefaultService.HandleModule("/hp/+/hcaptcha", ext_captcha.WebServerModule())
 
 	//
-	httpsrv.GlobalService.ModuleRegister("/hp/-", cmod.NewModule())
+	httpsrv.DefaultService.HandleModule("/hp/-", cmod.NewModule())
 
 	//
-	httpsrv.GlobalService.ModuleRegister("/hp/v1", capi.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/hp/mgr", cmgr.NewModule())
-	httpsrv.GlobalService.ModuleRegister("/hp", cdef.NewHtpModule())
-	httpsrv.GlobalService.ModuleRegister("/", cdef.NewModule())
+	httpsrv.DefaultService.HandleModule("/hp/v1", capi.NewModule())
+	httpsrv.DefaultService.HandleModule("/hp/mgr", cmgr.NewModule())
+	httpsrv.DefaultService.HandleModule("/hp", cdef.NewHtpModule())
+	httpsrv.DefaultService.HandleModule("/", cdef.NewModule())
 
-	if err := httpsrv.GlobalService.Start(); err != nil {
-		fmt.Println("httpsrv.GlobalService.Start error", err)
+	if err := httpsrv.DefaultService.Start(); err != nil {
+		fmt.Println("httpsrv.DefaultService.Start error", err)
 		os.Exit(1)
 	}
 

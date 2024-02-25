@@ -363,8 +363,8 @@ func SpecSrvRefresh(srvname string) {
 		spec.Router.Routes[i].Tree = strings.Split(strings.Trim(filepath.Clean(v.Path), "/"), "/")
 	}
 
-	httpsrv.GlobalService.TemplateLoader.Clean(spec.Meta.Name)
-	httpsrv.GlobalService.TemplateLoader.Set(spec.Meta.Name,
+	httpsrv.DefaultService.TemplateLoader.Clean(spec.Meta.Name)
+	httpsrv.DefaultService.TemplateLoader.Set(spec.Meta.Name,
 		[]string{fmt.Sprintf("%s/modules/%s/views", Prefix, spec.Meta.Name)}, nil)
 }
 
