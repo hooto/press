@@ -16,6 +16,8 @@ package frontend
 
 import (
 	"fmt"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -34,8 +36,9 @@ import (
 
 type Index struct {
 	*httpsrv.Controller
-	hookPosts []func()
-	us        iamapi.UserSession
+	urlActionPath string
+	hookPosts     []func()
+	us            iamapi.UserSession
 }
 
 func (c *Index) Init() int {
@@ -95,6 +98,8 @@ var (
 	staticImages       = types.ArrayString([]string{
 		"png", "jpg", "jpeg", "gif", "webp", "svg", "ico",
 	})
+
+	gdocPathRX = regexp.MustCompile(`^view\/([a-zA-Z-_0-9]+)\/(.*)$`)
 )
 
 func (c Index) IndexAction() {
@@ -140,6 +145,8 @@ func (c Index) IndexAction() {
 			return
 		}
 	}
+
+	c.urlActionPath = strings.Join(uris[1:], "/")
 
 	dataAction, template, mat := c.filter(uris[1:], mod)
 	if !mat {
@@ -200,7 +207,8 @@ func (c Index) IndexAction() {
 
 		// fmt.Println("render in-time", mod.Meta.Name, template, time.Since(render_start))
 
-		c.RenderString(fmt.Sprintf("<!-- rt-time/db+render : %d ms -->", (time.Now().UnixNano()-start)/1e6))
+		c.RenderString(fmt.Sprintf("<!-- version %s, rt-time/db+render %d ms -->",
+			config.Version, (time.Now().UnixNano()-start)/1e6))
 
 		// fmt.Println("hookPosts", len(c.hookPosts))
 		for _, fn := range c.hookPosts {
@@ -333,7 +341,6 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 				return dataRenderNotFound
 			}
 		}
-		// fmt.Println("node.entry", ad.Name+"_id", nodeId)
 
 		nodeModel, err := config.SpecNodeModel(mod.Meta.Name, ad.Query.Table)
 		if err != nil {
@@ -348,13 +355,14 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 		}
 
 		var (
-			urlExtraPath = strings.TrimPrefix(c.Request.UrlPath(), c.Request.UrlMatchPath())
-			nodeExt      = ""
+			nodeExt = ""
 		)
 
 		if mod.Meta.Name == "core/gdoc" {
 			if ad.Query.Table == "page" {
-				nodeId = strings.ToLower(urlExtraPath)
+				if mat := gdocPathRX.FindAllStringSubmatch(c.urlActionPath, 1); len(mat) == 1 {
+					nodeId = strings.ToLower(mat[0][2])
+				}
 			} else if ad.Query.Table == "doc" && api.NodeIdReg.MatchString(nodeId) {
 				nodeExt = "html"
 			}
@@ -370,13 +378,16 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 			if mod.Meta.Name == "core/gdoc" && ad.Query.Table == "page" {
 
 				if docId := datax.GdocNodeId(c.Params.Get("doc_entry_id")); docId != "" {
+
 					localPath := datax.GdocLocalPath(docId)
 					if localPath == "" {
-						localPath = fmt.Sprintf("%s/var/vcs/%s/%s", config.Prefix, docId, urlExtraPath)
-					} else {
-						localPath = localPath + "/" + urlExtraPath
+						localPath = fmt.Sprintf("%s/var/vcs/%s", config.Prefix, docId)
 					}
-					s2Server(c.Controller, urlExtraPath, localPath)
+					if mat := gdocPathRX.FindAllStringSubmatch(c.urlActionPath, 1); len(mat) == 1 {
+						localPath += "/" + mat[0][2]
+					}
+					localPath = filepath.Clean(localPath)
+					s2Server(c.Controller, c.urlActionPath, localPath)
 				}
 			}
 			return dataRenderSkip

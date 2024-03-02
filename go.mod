@@ -2,29 +2,30 @@ module github.com/hooto/hpress
 
 go 1.22.0
 
-replace github.com/hooto/httpsrv v0.12.0 => /opt/workspace/src/github.com/hooto/httpsrv
+// replace github.com/hooto/httpsrv v0.12.1 => /opt/workspace/src/github.com/hooto/httpsrv
 
 require (
 	github.com/bamiaux/rez v0.0.0-20170731184118-29f4463c688b
 	github.com/eryx/go-gd v0.0.0-20150901145023-5b9e56d14d88
 	github.com/hooto/hcaptcha v0.1.1
+	github.com/hooto/hchart v0.0.0-20210820154659-40f12957ba94
 	github.com/hooto/hflag4g v0.10.0
 	github.com/hooto/hini4g v0.0.0-20181117114356-13d2f492e123
 	github.com/hooto/hlang4g v0.1.0
 	github.com/hooto/hlog4g v0.9.4
 	github.com/hooto/htoml4g v0.9.4
-	github.com/hooto/httpsrv v0.12.0
+	github.com/hooto/httpsrv v0.12.1
 	github.com/hooto/iam v0.9.2
 	github.com/lessos/lessgo v1.0.0
 	github.com/lynkdb/iomix v0.0.0-20210408130459-cc48edfc442f
-	github.com/lynkdb/kvgo v1.1.8
+	github.com/lynkdb/kvgo v1.1.9
 	github.com/lynkdb/kvspec/v2 v2.0.4
 	github.com/lynkdb/mysqlgo v0.0.0-20210408130716-96edd6491cba
 	github.com/lynkdb/pgsqlgo v0.0.0-20210408130625-1c1f97eedf2c
 	github.com/microcosm-cc/bluemonday v1.0.23
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/oliamb/cutter v0.2.2
-	github.com/russross/blackfriday v1.5.2
+	github.com/shurcooL/sanitized_anchor_name v1.0.0
 	github.com/sysinner/incore v0.0.0-20220918125909-6aa795faa890
 	github.com/ulikunitz/xz v0.5.11
 )
@@ -73,10 +74,10 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
 	golang.org/x/image v0.5.0 // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6 // indirect
-	google.golang.org/grpc v1.52.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240221002015-b0ce06bbee7c // indirect
+	google.golang.org/grpc v1.62.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 )

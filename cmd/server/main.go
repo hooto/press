@@ -98,6 +98,8 @@ func main() {
 	iamclient.InstanceID = config.Config.InstanceID
 	iamclient.InstanceOwner = config.Config.AppInstance.Meta.User
 
+	httpsrv.DefaultService.SetLogger(httpsrv.NewRawLogger())
+
 	httpsrv.DefaultService.Config.UrlBasePath = config.Config.UrlBasePath
 	httpsrv.DefaultService.Config.HttpPort = config.Config.HttpPort
 

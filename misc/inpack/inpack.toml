@@ -1,6 +1,6 @@
 [project]
 name = "hooto-press"
-version = "0.7.1"
+version = "0.8.0"
 vendor = "hooto.com"
 homepage = "https://github.com/hooto/hpress"
 groups = ["app/other"]
@@ -37,7 +37,7 @@ webui/hp/js/
 webui/hpm/js/
 webui/katex/
 modules/core/
-vendor/github.com/hooto/hchart/webui/"""
+deps/github.com/hooto/hchart/webui/"""
 
 css_compress = """
 webui/bs/3.3/css/
@@ -54,7 +54,7 @@ webui/bulma/
 webui/fa/
 modules/core/"""
 
-html_compress = """
+html_compress_disable = """
 modules/core/
 webui/hpm/
 websrv/mgr/views/"""

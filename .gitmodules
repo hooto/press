@@ -1,8 +1,8 @@
 [submodule "webui/lessui"]
 	path = webui/lessui
 	url = git@github.com:lessos/lessui.git
-[submodule "vendor/github.com/hooto/hchart"]
-	path = deps/vendor/github.com/hooto/hchart
+[submodule "deps/github.com/hooto/hchart"]
+	path = deps/github.com/hooto/hchart
 	url = git@github.com:hooto/hchart.git
 [submodule "deps/sphinxsearch"]
 	path = deps/sphinxsearch

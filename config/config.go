@@ -43,7 +43,7 @@ var (
 	Prefix         string
 	Config         ConfigCommon
 	AppName        = "hooto-press"
-	Version        = "0.7"
+	Version        = "0.8"
 	Release        = "1"
 	SysVersionSign = ""
 	CaptchaConfig  = captcha4g.DefaultConfig
@@ -389,7 +389,6 @@ func syncSysinnerConfig() error {
 	return nil
 }
 
-//
 func store_init() error {
 
 	if Config.DataLocal == nil {

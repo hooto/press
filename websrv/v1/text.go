@@ -15,8 +15,8 @@
 package v1
 
 import (
+	"github.com/hooto/hpress/internal/blackfriday"
 	"github.com/hooto/httpsrv"
-	"github.com/russross/blackfriday"
 )
 
 type Text struct {

@@ -22,10 +22,10 @@ import (
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
 
 	"github.com/hooto/hpress/api"
 	"github.com/hooto/hpress/config"
+	"github.com/hooto/hpress/internal/blackfriday"
 )
 
 const (
