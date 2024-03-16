@@ -71,17 +71,17 @@ func (c Node) ListAction() {
 		return
 	}
 
-	model, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid"))
+	model, err := config.SpecNodeModel(c.Params.Value("modname"), c.Params.Value("modelid"))
 	if err != nil {
 		ls.Error = types.NewErrorMeta("400", "Invalid modname or modelid")
 		return
 	}
 
-	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dq := datax.NewQuery(c.Params.Value("modname"), c.Params.Value("modelid"))
 	dq.Limit(node_list_limit)
 	dq.Filter("status.gt", 0)
 
-	page := c.Params.Int64("page")
+	page := c.Params.IntValue("page")
 	if page < 1 {
 		page = 1
 	}
@@ -90,24 +90,24 @@ func (c Node) ListAction() {
 		dq.Offset(int64((page - 1) * node_list_limit))
 	}
 
-	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dqc := datax.NewQuery(c.Params.Value("modname"), c.Params.Value("modelid"))
 	dqc.Filter("status.gt", 0)
 
-	node_refer := c.Params.Get("ext_node_refer")
+	node_refer := c.Params.Value("ext_node_refer")
 	if model.Extensions.NodeRefer != "" &&
-		api.NodeExtNodeReferReg.MatchString(c.Params.Get("ext_node_refer")) {
+		api.NodeExtNodeReferReg.MatchString(c.Params.Value("ext_node_refer")) {
 		dq.Filter("ext_node_refer", node_refer)
 		dqc.Filter("ext_node_refer", node_refer)
 	}
 
-	if c.Params.Get("qry_text") != "" {
-		dq.Filter("field_title.like", "%"+c.Params.Get("qry_text")+"%")
-		dqc.Filter("field_title.like", "%"+c.Params.Get("qry_text")+"%")
+	if c.Params.Value("qry_text") != "" {
+		dq.Filter("field_title.like", "%"+c.Params.Value("qry_text")+"%")
+		dqc.Filter("field_title.like", "%"+c.Params.Value("qry_text")+"%")
 	}
 
 	var (
-		fields = strings.Split(c.Params.Get("fields"), ",")
-		terms  = strings.Split(c.Params.Get("terms"), ",")
+		fields = strings.Split(c.Params.Value("fields"), ",")
+		terms  = strings.Split(c.Params.Value("terms"), ",")
 	)
 
 	count, err := dqc.NodeCount()
@@ -134,11 +134,11 @@ func (c Node) EntryAction() {
 		return
 	}
 
-	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dq := datax.NewQuery(c.Params.Value("modname"), c.Params.Value("modelid"))
 	dq.Limit(100)
 	dq.Filter("status.gt", 0)
 
-	dq.Filter("id", c.Params.Get("id"))
+	dq.Filter("id", c.Params.Value("id"))
 
 	rsp = dq.NodeEntry()
 }
@@ -161,7 +161,7 @@ func (c Node) SetAction() {
 		return
 	}
 
-	model, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid"))
+	model, err := config.SpecNodeModel(c.Params.Value("modname"), c.Params.Value("modelid"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    "404",
@@ -175,8 +175,8 @@ func (c Node) SetAction() {
 
 	var (
 		set          = map[string]interface{}{}
-		table_prefix = fmt.Sprintf("hpn_%s_", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12))
-		table        = table_prefix + c.Params.Get("modelid")
+		table_prefix = fmt.Sprintf("hpn_%s_", idhash.HashToHexString([]byte(c.Params.Value("modname")), 12))
+		table        = table_prefix + c.Params.Value("modelid")
 		node_refer   = ""
 	)
 
@@ -320,7 +320,7 @@ func (c Node) SetAction() {
 
 				case api.TermTag:
 
-					tags, _ := datax.TermSync(c.Params.Get("modname"), modTerm.Meta.Name, term.Value)
+					tags, _ := datax.TermSync(c.Params.Value("modname"), modTerm.Meta.Name, term.Value)
 
 					if rs[0].Field("term_"+term.Name).String() != term.Value {
 						set["term_"+modTerm.Meta.Name] = tags.Content()
@@ -443,7 +443,7 @@ func (c Node) SetAction() {
 
 				case api.TermTag:
 
-					tags, _ := datax.TermSync(c.Params.Get("modname"), modTerm.Meta.Name, term.Value)
+					tags, _ := datax.TermSync(c.Params.Value("modname"), modTerm.Meta.Name, term.Value)
 					set["term_"+modTerm.Meta.Name] = tags.Content()
 					set["term_"+modTerm.Meta.Name+"_idx"] = tags.Index()
 
@@ -562,11 +562,11 @@ func (c Node) SetAction() {
 		}
 
 		// clean frontend cache
-		qry := datax.NewQuery(c.Params.Get("modname"), model.Meta.Name)
+		qry := datax.NewQuery(c.Params.Value("modname"), model.Meta.Name)
 		qry.Filter("status", 1)
 		qry.Filter("id", rsp.ID)
 
-		store.DataLocal.NewWriter([]byte(qry.Hash()), nil).ModeDeleteSet(true).Commit()
+		store.DataLocal.NewDeleter([]byte(qry.Hash())).Exec()
 
 		if err != nil {
 			rsp.Error = &types.ErrorMeta{
@@ -590,7 +590,7 @@ func (c Node) DelAction() {
 		return
 	}
 
-	if _, err := config.SpecNodeModel(c.Params.Get("modname"), c.Params.Get("modelid")); err != nil {
+	if _, err := config.SpecNodeModel(c.Params.Value("modname"), c.Params.Value("modelid")); err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    "404",
 			Message: "Spec or Model Not Found",
@@ -605,10 +605,10 @@ func (c Node) DelAction() {
 	}
 
 	//
-	table := fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
+	table := fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(c.Params.Value("modname")), 12), c.Params.Value("modelid"))
 
 	//
-	ids := strings.Split(c.Params.Get("id"), ",")
+	ids := strings.Split(c.Params.Value("id"), ",")
 
 	for _, id := range ids {
 

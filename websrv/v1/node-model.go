@@ -54,7 +54,7 @@ func (c NodeModel) EntryAction() {
 		return
 	}
 
-	modname, modelid := c.Params.Get("modname"), c.Params.Get("modelid")
+	modname, modelid := c.Params.Value("modname"), c.Params.Value("modelid")
 
 	nmodel, err := config.SpecNodeModel(modname, modelid)
 	if err != nil {

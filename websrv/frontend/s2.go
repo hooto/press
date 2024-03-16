@@ -103,9 +103,9 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	}
 
 	var (
-		ipn       = c.Params.Get("ipn") // v1
-		ipl       = c.Params.Get("ipl") // v2
-		ipls      = [2]int{0, 0}        // width, height
+		ipn       = c.Params.Value("ipn") // v1
+		ipl       = c.Params.Value("ipl") // v2
+		ipls      = [2]int{0, 0}          // width, height
 		iplCrop   = false
 		fileExt   = strings.ToLower(filepath.Ext(objPath))
 		mediaType = ""
@@ -223,8 +223,8 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 		hid = "s2." + idhash.HashToHexString([]byte(key), 12)
 	)
 
-	if rs := store.DataLocal.NewReader([]byte(hid)).Query(); rs.OK() {
-		imBytes := rs.DataValue().Bytes()
+	if rs := store.DataLocal.NewReader([]byte(hid)).Exec(); rs.OK() {
+		imBytes := rs.Item().Value
 		c.Response.Out.Header().Set("Cache-Control", "max-age=86400")
 		c.Response.Out.Header().Set("Content-type", mediaType)
 		c.Response.Out.Write(imBytes)
@@ -352,7 +352,7 @@ func s2Server(c *httpsrv.Controller, objPath, absPath string) {
 	//
 	if dstBuf.Len() > 10 {
 		store.DataLocal.NewWriter([]byte(hid), dstBuf.Bytes()).
-			ExpireSet(imageCacheTTL()).Commit()
+			SetTTL(imageCacheTTL()).Exec()
 	}
 
 	//

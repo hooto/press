@@ -77,7 +77,7 @@ func (c ModSetFs) RenameAction() {
 		return
 	}
 
-	modname, err := modset.ModNameFilter(c.Params.Get("modname"))
+	modname, err := modset.ModNameFilter(c.Params.Value("modname"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"403", "Forbidden"}
 		return
@@ -122,7 +122,7 @@ func (c ModSetFs) DelAction() {
 	}
 
 	//
-	modname, err := modset.ModNameFilter(c.Params.Get("modname"))
+	modname, err := modset.ModNameFilter(c.Params.Value("modname"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"403", "Forbidden"}
 		return
@@ -164,7 +164,7 @@ func (c ModSetFs) PutAction() {
 		return
 	}
 
-	modname, err := modset.ModNameFilter(c.Params.Get("modname"))
+	modname, err := modset.ModNameFilter(c.Params.Value("modname"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"403", "Forbidden"}
 		return
@@ -327,13 +327,13 @@ func (c ModSetFs) ListAction() {
 		return
 	}
 
-	modname, err := modset.ModNameFilter(c.Params.Get("modname"))
+	modname, err := modset.ModNameFilter(c.Params.Value("modname"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"403", "Forbidden"}
 		return
 	}
 
-	path := filepath.Clean(c.Params.Get("path"))
+	path := filepath.Clean(c.Params.Value("path"))
 
 	projfp := filepath.Clean(config.Config.ModuleDir + "/" + modname + "/" + path)
 
@@ -430,13 +430,13 @@ func (c ModSetFs) GetAction() {
 		return
 	}
 
-	modname, err := modset.ModNameFilter(c.Params.Get("modname"))
+	modname, err := modset.ModNameFilter(c.Params.Value("modname"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"403", "Forbidden"}
 		return
 	}
 
-	path := filepath.Clean(c.Params.Get("path"))
+	path := filepath.Clean(c.Params.Value("path"))
 
 	path = filepath.Clean(config.Config.ModuleDir + "/" + modname + "/" + path)
 

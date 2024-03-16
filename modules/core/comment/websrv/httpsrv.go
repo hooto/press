@@ -22,13 +22,14 @@ import (
 
 func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule()
+	mod := httpsrv.NewModule()
 
-	module.RegisterStaticFilepath("/~",
+	mod.RegisterFileServer("/~",
 		config.Prefix+"/modules/core/comment/static/",
+		nil,
 	)
 
-	module.RegisterController(new(Comment))
+	mod.RegisterController(new(Comment))
 
-	return module
+	return mod
 }

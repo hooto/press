@@ -428,21 +428,21 @@ func (it *NodeSphinxSearchEngine) indexFull(active *sphinxSearchBucketActive) er
 
 		for {
 
-			ls := store.DataLocal.NewReader(nil).KeyRangeSet(offset, cutset).
-				LimitNumSet(int64(limit)).Query()
+			ls := store.DataLocal.NewRanger(offset, cutset).
+				SetLimit(int64(limit)).Exec()
 
 			for _, v := range ls.Items {
 				var nv api.Node
-				if err := v.Decode(&nv); err == nil {
+				if err := v.JsonDecode(&nv); err == nil {
 					if _, err := fpbuf.WriteString(sphDocumentXml(&nv, active)); err != nil {
 						return 0
 					}
 				}
 				num += 1
-				offset = v.Meta.Key
+				offset = v.Key
 			}
 
-			if !ls.Next {
+			if !ls.NextResultSet {
 				break
 			}
 		}
@@ -600,7 +600,7 @@ func (it *NodeSphinxSearchEngine) indexRepair(idxname string) error {
 
 func (it *NodeSphinxSearchEngine) Put(bukname string, node api.Node) error {
 
-	if rs := store.DataLocal.NewWriter(api.NsTextSearchCacheNodeEntry(bukname, node.ID), node).Commit(); !rs.OK() {
+	if rs := store.DataLocal.NewWriter(api.NsTextSearchCacheNodeEntry(bukname, node.ID), nil).SetJsonValue(node).Exec(); !rs.OK() {
 		return errors.New("DataLocal/Put Error")
 	}
 
@@ -671,9 +671,9 @@ func (it *NodeSphinxSearchEngine) Query(bukname string, q string, qs *QuerySet) 
 		}
 
 		if rs := store.DataLocal.NewReader(
-			api.NsTextSearchCacheNodeEntry(bukname, fmt.Sprintf("%s", v.AttrValues[id_idx]))).Query(); rs.OK() {
+			api.NsTextSearchCacheNodeEntry(bukname, fmt.Sprintf("%s", v.AttrValues[id_idx]))).Exec(); rs.OK() {
 			var node api.Node
-			if err := rs.Decode(&node); err == nil {
+			if err := rs.JsonDecode(&node); err == nil {
 				ls.Items = append(ls.Items, node)
 			}
 		}

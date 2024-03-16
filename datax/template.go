@@ -131,15 +131,15 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					var ls api.NodeList
 					qryhash := qry.Hash()
 					if datax.CacheTTL > 0 && user != config.Config.AppInstance.Meta.User {
-						if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
-							rs.Decode(&ls)
+						if rs := store.DataLocal.NewReader([]byte(qryhash)).Exec(); rs.OK() {
+							rs.JsonDecode(&ls)
 						}
 					}
 
 					if len(ls.Items) == 0 {
 						ls = qry.NodeList([]string{}, []string{})
 						if datax.CacheTTL > 0 && len(ls.Items) > 0 {
-							store.DataLocal.NewWriter([]byte(qryhash), ls).ExpireSet(datax.CacheTTL).Commit()
+							store.DataLocal.NewWriter([]byte(qryhash), nil).SetJsonValue(ls).SetTTL(datax.CacheTTL).Exec()
 						}
 					}
 
@@ -150,15 +150,15 @@ func Pagelet(data map[string]interface{}, args ...string) template.HTML {
 					var entry api.Node
 					qryhash := qry.Hash()
 					if datax.CacheTTL > 0 && user != config.Config.AppInstance.Meta.User {
-						if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
-							rs.Decode(&entry)
+						if rs := store.DataLocal.NewReader([]byte(qryhash)).Exec(); rs.OK() {
+							rs.JsonDecode(&entry)
 						}
 					}
 
 					if entry.Title == "" {
 						entry = qry.NodeEntry()
 						if datax.CacheTTL > 0 && entry.Title != "" {
-							store.DataLocal.NewWriter([]byte(qryhash), entry).ExpireSet(datax.CacheTTL).Commit()
+							store.DataLocal.NewWriter([]byte(qryhash), nil).SetJsonValue(entry).SetTTL(datax.CacheTTL).Exec()
 						}
 					}
 

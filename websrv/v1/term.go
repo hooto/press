@@ -71,7 +71,7 @@ func (c Term) ListAction() {
 		return
 	}
 
-	model, err := config.SpecTermModel(c.Params.Get("modname"), c.Params.Get("modelid"))
+	model, err := config.SpecTermModel(c.Params.Value("modname"), c.Params.Value("modelid"))
 	if err != nil {
 		ls.Error = &types.ErrorMeta{
 			Code:    "404",
@@ -80,9 +80,9 @@ func (c Term) ListAction() {
 		return
 	}
 
-	page, limit := c.Params.Int64("page"), term_list_limit
+	page, limit := c.Params.IntValue("page"), term_list_limit
 
-	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dq := datax.NewQuery(c.Params.Value("modname"), c.Params.Value("modelid"))
 	if model.Type == api.TermTaxonomy {
 		limit = term_list_limit_taxonomy
 		page = 1
@@ -100,10 +100,10 @@ func (c Term) ListAction() {
 	//
 	ls = dq.TermList()
 
-	dqc := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dqc := datax.NewQuery(c.Params.Value("modname"), c.Params.Value("modelid"))
 
-	if c.Params.Get("qry_text") != "" {
-		dqc.Filter("title.like", "%"+c.Params.Get("qry_text")+"%")
+	if c.Params.Value("qry_text") != "" {
+		dqc.Filter("title.like", "%"+c.Params.Value("qry_text")+"%")
 	}
 
 	count, err := dqc.TermCount()
@@ -133,10 +133,10 @@ func (c Term) EntryAction() {
 		return
 	}
 
-	dq := datax.NewQuery(c.Params.Get("modname"), c.Params.Get("modelid"))
+	dq := datax.NewQuery(c.Params.Value("modname"), c.Params.Value("modelid"))
 	dq.Limit(100)
 
-	dq.Filter("id", c.Params.Get("id"))
+	dq.Filter("id", c.Params.Value("id"))
 
 	rsp = dq.TermEntry()
 }
@@ -152,7 +152,7 @@ func (c Term) SetAction() {
 		return
 	}
 
-	model, err := config.SpecTermModel(c.Params.Get("modname"), c.Params.Get("modelid"))
+	model, err := config.SpecTermModel(c.Params.Value("modname"), c.Params.Value("modelid"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{
 			Code:    "404",
@@ -171,7 +171,7 @@ func (c Term) SetAction() {
 
 	var (
 		set   = map[string]interface{}{}
-		table = fmt.Sprintf("hpt_%s_%s", idhash.HashToHexString([]byte(c.Params.Get("modname")), 12), c.Params.Get("modelid"))
+		table = fmt.Sprintf("hpt_%s_%s", idhash.HashToHexString([]byte(c.Params.Value("modname")), 12), c.Params.Value("modelid"))
 	)
 
 	q := store.Data.NewQueryer().From(table).Limit(1)
@@ -272,7 +272,7 @@ func (c Term) SetAction() {
 			set["userid"] = c.us.UserId()
 		}
 
-		datax.TermTaxonomyCacheClean(c.Params.Get("modname"), c.Params.Get("modelid"))
+		datax.TermTaxonomyCacheClean(c.Params.Value("modname"), c.Params.Value("modelid"))
 
 	default:
 		rsp.Error = &types.ErrorMeta{

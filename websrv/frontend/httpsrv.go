@@ -23,30 +23,29 @@ import (
 
 func NewModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule()
+	mod := httpsrv.NewModule()
 
-	module.RegisterController(new(Index))
-	module.RegisterController(new(Error))
+	mod.RegisterController(new(Index), new(Error))
 
-	return module
+	return mod
 }
 
 func NewHtpModule() *httpsrv.Module {
 
-	module := httpsrv.NewModule()
+	mod := httpsrv.NewModule()
 
-	module.RegisterStaticFilepath(
-		"/~/hchart",
+	mod.RegisterFileServer("/~/hchart",
 		config.Prefix+"/deps/github.com/hooto/hchart/webui",
+		nil,
 	)
 
-	module.RegisterStaticFilepath(
+	mod.RegisterFileServer(
 		"/~",
 		config.Prefix+"/webui/",
+		nil,
 	)
 
-	module.RegisterController(new(S2))
-	module.RegisterController(new(iamclient.Auth))
+	mod.RegisterController(new(S2), new(iamclient.Auth))
 
-	return module
+	return mod
 }

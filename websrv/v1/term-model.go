@@ -60,9 +60,9 @@ func (c TermModel) EntryAction() {
 		return
 	}
 
-	modname, modelid := c.Params.Get("modname"), c.Params.Get("modelid")
-	if c.Params.Get("id") != "" {
-		if s := strings.Split(c.Params.Get("id"), ","); len(s) == 2 {
+	modname, modelid := c.Params.Value("modname"), c.Params.Value("modelid")
+	if c.Params.Value("id") != "" {
+		if s := strings.Split(c.Params.Value("id"), ","); len(s) == 2 {
 			modname, modelid = s[0], s[1]
 		}
 	}

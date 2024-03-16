@@ -21,9 +21,9 @@ import (
 )
 
 func init() {
-	httpsrv.DefaultService.Config.TemplateFuncRegister("SysConfig", SysConfigList.FetchString)
-	httpsrv.DefaultService.Config.TemplateFuncRegister("ThemeConfig", ThemeConfigFetchString)
-	httpsrv.DefaultService.Config.TemplateFuncRegister("HttpSrvBasePath", HttpSrvBasePath)
+	httpsrv.DefaultService.Config.RegisterTemplateFunc("SysConfig", SysConfigList.FetchString)
+	httpsrv.DefaultService.Config.RegisterTemplateFunc("ThemeConfig", ThemeConfigFetchString)
+	httpsrv.DefaultService.Config.RegisterTemplateFunc("HttpSrvBasePath", HttpSrvBasePath)
 }
 
 func HttpSrvBasePath(uri string) string {

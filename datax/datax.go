@@ -55,15 +55,15 @@ func Worker() {
 
 			for {
 
-				ls := store.DataLocal.NewReader().KeyRangeSet(
+				ls := store.DataLocal.NewRanger(
 					[]byte("access_counter"), []byte("access_counter")).
-					LimitNumSet(int64(limit)).Query()
+					SetLimit(int64(limit)).Exec()
 
 				imap := map[string]int{}
 
 				for _, v := range ls.Items {
 
-					s := strings.Split(string(v.Meta.Key), "/")
+					s := strings.Split(string(v.Key), "/")
 
 					if len(s) == 4 {
 
@@ -75,7 +75,7 @@ func Worker() {
 						}
 					}
 
-					store.DataLocal.NewWriter(v.Meta.Key, nil).ModeDeleteSet(true).Commit()
+					store.DataLocal.NewDeleter(v.Key).Exec()
 				}
 
 				for key, num := range imap {
@@ -100,7 +100,7 @@ func Worker() {
 					}
 				}
 
-				if !ls.Next {
+				if !ls.NextResultSet {
 					break
 				}
 			}

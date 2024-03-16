@@ -39,7 +39,7 @@ func (c ModSet) FsTplListAction() {
 		return
 	}
 
-	spec, err := modset.SpecFetch(c.Params.Get("modname"))
+	spec, err := modset.SpecFetch(c.Params.Value("modname"))
 	if err != nil {
 		ls.Error = &types.ErrorMeta{api.ErrCodeBadArgument, "ModName Not Found"}
 		return

@@ -42,7 +42,7 @@ func (c Comment) EmbedAction() {
 
 	c.AutoRender = false
 
-	if c.Params.Get("refer_modname") == "" || c.Params.Get("refer_id") == "" {
+	if c.Params.Value("refer_modname") == "" || c.Params.Value("refer_id") == "" {
 		return
 	}
 
@@ -50,14 +50,14 @@ func (c Comment) EmbedAction() {
 	qry.Limit(500)
 	qry.Filter("status", 1)
 	qry.Order("created asc")
-	qry.Filter("field_refer_id", c.Params.Get("refer_id"))
-	qry.Filter("field_refer", c.Params.Get("refer_modname")+"."+c.Params.Get("refer_datax_table"))
+	qry.Filter("field_refer_id", c.Params.Value("refer_id"))
+	qry.Filter("field_refer", c.Params.Value("refer_modname")+"."+c.Params.Value("refer_datax_table"))
 
 	c.Data["list"] = qry.NodeList([]string{}, []string{})
 
-	c.Data["new_form_refer_id"] = c.Params.Get("refer_id")
-	c.Data["new_form_refer_modname"] = c.Params.Get("refer_modname")
-	c.Data["new_form_refer_datax_table"] = c.Params.Get("refer_datax_table")
+	c.Data["new_form_refer_id"] = c.Params.Value("refer_id")
+	c.Data["new_form_refer_modname"] = c.Params.Value("refer_modname")
+	c.Data["new_form_refer_datax_table"] = c.Params.Value("refer_datax_table")
 
 	c.Data["new_form_author"] = "Guest"
 
@@ -126,7 +126,7 @@ func (c Comment) SetAction() {
 		return
 	}
 
-	if set.Error = captcha4g.Verify(set.CaptchaToken, set.CaptchaWord); set.Error != nil {
+	if err := captcha4g.Verify(set.CaptchaToken, set.CaptchaWord); err != nil {
 
 		set.Error.Code = errCaptchaNotMatch
 		set.Error.Message = "Word Verification do not match"

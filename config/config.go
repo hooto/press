@@ -32,7 +32,7 @@ import (
 	"github.com/lessos/lessgo/encoding/json"
 	"github.com/lessos/lessgo/types"
 	"github.com/lynkdb/iomix/connect"
-	"github.com/lynkdb/kvgo"
+	"github.com/lynkdb/kvgo/v2/pkg/storage"
 	"github.com/sysinner/incore/inconf"
 
 	"github.com/hooto/hpress/api"
@@ -43,7 +43,7 @@ var (
 	Prefix         string
 	Config         ConfigCommon
 	AppName        = "hooto-press"
-	Version        = "0.8"
+	Version        = "0.8.0.rc.3"
 	Release        = "1"
 	SysVersionSign = ""
 	CaptchaConfig  = captcha4g.DefaultConfig
@@ -72,7 +72,7 @@ type ConfigCommon struct {
 	IamServiceUrl         string                   `json:"iam_service_url" toml:"iam_service_url"`
 	IamServiceUrlFrontend string                   `json:"iam_service_url_frontend" toml:"iam_service_url_frontend"`
 	IoConnectors          connect.MultiConnOptions `json:"io_connectors" toml:"io_connectors"`
-	DataLocal             *kvgo.Config             `json:"data_local" toml:"data_local"`
+	DataCache             *storage.Options         `json:"data_cache" toml:"data_cache"`
 	RunMode               string                   `json:"run_mode,omitempty" toml:"run_mode,omitempty"`
 	ExtUpDatabases        connect.MultiConnOptions `json:"ext_up_databases,omitempty" toml:"ext_up_databases,omitempty"`
 	ExpModuleInits        []string                 `json:"exp_module_inits,omitempty" toml:"exp_module_inits,omitempty"`
@@ -212,18 +212,19 @@ func Setup() error {
 		return err
 	}
 
-	// Setting CAPTCHA
-	CaptchaConfig.DataDir = Prefix + "/var/hcaptchadb"
-	if err := captcha4g.Config(CaptchaConfig); err != nil {
-		return err
-	}
-
 	// Default User
 	if User, err = user.Current(); err != nil {
 		return err
 	}
 
-	if err := store_init(); err != nil {
+	if err := storeSetup(); err != nil {
+		return err
+	}
+
+	// Setting CAPTCHA
+	captcha4g.DataConnector = store.DataLocal
+	CaptchaConfig.DataDir = Prefix + "/var/hcaptchadb"
+	if err := captcha4g.Config(CaptchaConfig); err != nil {
 		return err
 	}
 
@@ -389,14 +390,14 @@ func syncSysinnerConfig() error {
 	return nil
 }
 
-func store_init() error {
+func storeSetup() error {
 
-	if Config.DataLocal == nil {
+	if Config.DataCache == nil {
 
-		Config.DataLocal = &kvgo.Config{
-			Storage: kvgo.ConfigStorage{
-				DataDirectory: Prefix + "/var/hpress_local",
-			},
+		Config.DataCache = &storage.Options{
+			DataDirectory:   Prefix + "/var/hpress_cache",
+			WriteBufferSize: 2,
+			BlockCacheSize:  8,
 		}
 
 		Save()
@@ -428,20 +429,20 @@ func store_init() error {
 		Config.IoConnectors.SetOptions(*opts)
 	}
 
-	if err := store.Setup(Config.DataLocal, Config.IoConnectors); err != nil {
-		hlog.Printf("error", "store_init %s", err.Error())
+	if err := store.Setup(Config.DataCache, Config.IoConnectors); err != nil {
+		hlog.Printf("error", "storeSetup %s", err.Error())
 		return err
 	}
 
 	dm, err := store.Data.Modeler()
 	if err != nil {
-		hlog.Printf("error", "store_init %s", err.Error())
+		hlog.Printf("error", "storeSetup %s", err.Error())
 		return err
 	}
 
 	err = dm.SchemaSyncByJson(dsBase)
 	if err != nil {
-		hlog.Printf("error", "store_init %s", err.Error())
+		hlog.Printf("error", "storeSetup %s", err.Error())
 	}
 
 	Save()

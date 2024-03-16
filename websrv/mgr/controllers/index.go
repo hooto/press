@@ -31,7 +31,7 @@ func (c Index) IndexAction() {
 	status.Locker.RLock()
 	defer status.Locker.RUnlock()
 
-	if c.Params.Get("_iam_out") != "" {
+	if c.Params.Value("_iam_out") != "" {
 		c.Redirect(c.UrlBase(""))
 		return
 	}

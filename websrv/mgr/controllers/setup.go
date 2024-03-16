@@ -42,7 +42,7 @@ func (c Setup) IndexAction() {
 		return
 	}
 
-	if token := c.Params.Get(iamclient.AccessTokenKey); len(token) >= 16 {
+	if token := c.Params.Value(iamclient.AccessTokenKey); len(token) >= 16 {
 		ck := &http.Cookie{
 			Name:     iamclient.AccessTokenKey,
 			Value:    token,
@@ -85,9 +85,9 @@ func (c Setup) AppRegisterSyncAction() {
 				ID: config.Config.InstanceID,
 			},
 			AppID:      config.AppName,
-			AppTitle:   c.Params.Get("app_title"),
+			AppTitle:   c.Params.Value("app_title"),
 			Version:    config.Version,
-			Url:        c.Params.Get("instance_url"),
+			Url:        c.Params.Value("instance_url"),
 			Privileges: config.Perms,
 		},
 	}

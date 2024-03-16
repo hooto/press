@@ -48,8 +48,8 @@ func data_sync_pull() error {
 	}
 
 	var cfgs types.KvPairs
-	if rs := store.DataLocal.NewReader(api.NsSysDataPull()).Query(); rs.OK() {
-		rs.Decode(&cfgs)
+	if rs := store.DataLocal.NewReader(api.NsSysDataPull()).Exec(); rs.OK() {
+		rs.JsonDecode(&cfgs)
 	}
 
 	var (
@@ -291,7 +291,7 @@ func data_sync_pull() error {
 		}
 	}
 
-	if rs := store.DataLocal.NewWriter(api.NsSysDataPull(), cfgs).Commit(); !rs.OK() {
+	if rs := store.DataLocal.NewWriter(api.NsSysDataPull(), nil).SetJsonValue(cfgs).Exec(); !rs.OK() {
 		// fmt.Println("  DATA PULL TAG ERROR")
 	}
 

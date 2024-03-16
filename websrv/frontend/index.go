@@ -135,7 +135,7 @@ func (c Index) IndexAction() {
 	if len(uris) < 2 {
 		uris = append(uris, "")
 	}
-	// fmt.Println(uris, srvname, c.Params.Get("referid"), c.Params.Get("id"))
+	// fmt.Println(uris, srvname, c.Params.Value("referid"), c.Params.Value("id"))
 
 	mod, ok := config.Modules[srvname]
 	if !ok {
@@ -252,7 +252,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 
 			for _, term := range modNode.Terms {
 
-				if termVal := c.Params.Get("term_" + term.Meta.Name); termVal != "" {
+				if termVal := c.Params.Value("term_" + term.Meta.Name); termVal != "" {
 
 					switch term.Type {
 
@@ -281,29 +281,29 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 			break
 		}
 
-		page := c.Params.Int64("page")
+		page := c.Params.IntValue("page")
 		if page > 1 {
 			qry.Offset(ad.Query.Limit * (page - 1))
 		}
 
-		if c.Params.Get("qry_text") != "" {
-			qry.Filter("field_title.like", "%"+c.Params.Get("qry_text")+"%")
-			c.Data["qry_text"] = c.Params.Get("qry_text")
+		if c.Params.Value("qry_text") != "" {
+			qry.Filter("field_title.like", "%"+c.Params.Value("qry_text")+"%")
+			c.Data["qry_text"] = c.Params.Value("qry_text")
 		}
 
 		var ls api.NodeList
 		qryhash := qry.Hash()
 
 		if ad.CacheTTL > 0 && (!c.us.IsLogin() || c.us.UserName != config.Config.AppInstance.Meta.User) {
-			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
-				rs.Decode(&ls)
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Exec(); rs.OK() {
+				rs.JsonDecode(&ls)
 			}
 		}
 
 		if len(ls.Items) == 0 {
 
-			if c.Params.Get("qry_text") != "" {
-				ls = qry.NodeListSearch(c.Params.Get("qry_text"))
+			if c.Params.Value("qry_text") != "" {
+				ls = qry.NodeListSearch(c.Params.Value("qry_text"))
 				if ls.Error != nil {
 					ls = qry.NodeList([]string{}, []string{})
 				}
@@ -315,7 +315,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 				c.hookPosts = append(
 					c.hookPosts,
 					func() {
-						store.DataLocal.NewWriter([]byte(qryhash), ls).ExpireSet(ad.CacheTTL).Commit()
+						store.DataLocal.NewWriter([]byte(qryhash), nil).SetJsonValue(ls).SetTTL(ad.CacheTTL).Exec()
 					},
 				)
 			}
@@ -334,9 +334,9 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 
 	case "node.entry":
 
-		nodeId := c.Params.Get(ad.Name + "_id")
+		nodeId := c.Params.Value(ad.Name + "_id")
 		if nodeId == "" {
-			nodeId = c.Params.Get("id")
+			nodeId = c.Params.Value("id")
 			if nodeId == "" {
 				return dataRenderNotFound
 			}
@@ -377,7 +377,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 		} else if staticImages.Has(nodeExt) {
 			if mod.Meta.Name == "core/gdoc" && ad.Query.Table == "page" {
 
-				if docId := datax.GdocNodeId(c.Params.Get("doc_entry_id")); docId != "" {
+				if docId := datax.GdocNodeId(c.Params.Value("doc_entry_id")); docId != "" {
 
 					localPath := datax.GdocLocalPath(docId)
 					if localPath == "" {
@@ -404,8 +404,8 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 		var entry api.Node
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 && (!c.us.IsLogin() || c.us.UserName != config.Config.AppInstance.Meta.User) {
-			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
-				rs.Decode(&entry)
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Exec(); rs.OK() {
+				rs.JsonDecode(&entry)
 			}
 		}
 
@@ -415,7 +415,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 				c.hookPosts = append(
 					c.hookPosts,
 					func() {
-						store.DataLocal.NewWriter([]byte(qryhash), entry).ExpireSet(ad.CacheTTL).Commit()
+						store.DataLocal.NewWriter([]byte(qryhash), nil).SetJsonValue(entry).SetTTL(ad.CacheTTL).Exec()
 					},
 				)
 			}
@@ -430,7 +430,7 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 			if ips := strings.Split(c.Request.RemoteAddr, ":"); len(ips) > 1 {
 
 				table := fmt.Sprintf("hpn_%s_%s", idhash.HashToHexString([]byte(mod.Meta.Name), 12), ad.Query.Table)
-				store.DataLocal.NewWriter([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), "1").Commit()
+				store.DataLocal.NewWriter([]byte("access_counter/"+table+"/"+ips[0]+"/"+entry.ID), []byte("1")).Exec()
 			}
 		}
 
@@ -450,15 +450,15 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 		var ls api.TermList
 		qryhash := qry.Hash()
 		if ad.CacheTTL > 0 {
-			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
-				rs.Decode(&ls)
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Exec(); rs.OK() {
+				rs.JsonDecode(&ls)
 			}
 		}
 
 		if len(ls.Items) == 0 {
 			ls = qry.TermList()
 			if ad.CacheTTL > 0 && len(ls.Items) > 0 {
-				store.DataLocal.NewWriter([]byte(qryhash), ls).ExpireSet(ad.CacheTTL).Commit()
+				store.DataLocal.NewWriter([]byte(qryhash), nil).SetJsonValue(ls).SetTTL(ad.CacheTTL).Exec()
 			}
 		}
 
@@ -477,15 +477,15 @@ func (c *Index) dataRender(srvname, action_name string, ad api.ActionData) int {
 		qryhash := qry.Hash()
 
 		if ad.CacheTTL > 0 {
-			if rs := store.DataLocal.NewReader([]byte(qryhash)).Query(); rs.OK() {
-				rs.Decode(&entry)
+			if rs := store.DataLocal.NewReader([]byte(qryhash)).Exec(); rs.OK() {
+				rs.JsonDecode(&entry)
 			}
 		}
 
 		if entry.Title == "" {
 			entry = qry.TermEntry()
 			if ad.CacheTTL > 0 && entry.Title != "" {
-				store.DataLocal.NewWriter([]byte(qryhash), entry).ExpireSet(ad.CacheTTL).Commit()
+				store.DataLocal.NewWriter([]byte(qryhash), nil).SetJsonValue(entry).SetTTL(ad.CacheTTL).Exec()
 			}
 		}
 

@@ -22,8 +22,9 @@ import (
 	"github.com/hooto/hlog4g/hlog"
 	"github.com/lynkdb/iomix/connect"
 	"github.com/lynkdb/iomix/rdb"
-	"github.com/lynkdb/kvgo"
-	kv2 "github.com/lynkdb/kvspec/v2/go/kvspec"
+	"github.com/lynkdb/kvgo/v2/pkg/kvapi"
+	"github.com/lynkdb/kvgo/v2/pkg/kvrep"
+	"github.com/lynkdb/kvgo/v2/pkg/storage"
 	"github.com/lynkdb/mysqlgo"
 	"github.com/lynkdb/pgsqlgo"
 )
@@ -32,16 +33,16 @@ var (
 	err         error
 	Data        rdb.Connector
 	DataOptions *connect.ConnOptions
-	DataLocal   kv2.Client
+	DataLocal   kvapi.Client
 )
 
-func Setup(dbc *kvgo.Config, cfg connect.MultiConnOptions) error {
+func Setup(dbc *storage.Options, cfg connect.MultiConnOptions) error {
 
 	if dbc == nil {
 		return errors.New("No hpress_local Config Found")
 	}
 
-	if DataLocal, err = kvgo.Open(dbc); err != nil {
+	if DataLocal, err = kvrep.NewReplica(dbc); err != nil {
 		return fmt.Errorf("db open error %s", err.Error())
 	}
 

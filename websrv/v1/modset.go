@@ -92,12 +92,12 @@ func (c ModSet) SpecEntryAction() {
 		return
 	}
 
-	if c.Params.Get("name") == "" {
+	if c.Params.Value("name") == "" {
 		rsp.Error = types.NewErrorMeta(api.ErrCodeBadArgument, "Object Not Found")
 		return
 	}
 
-	name, err := modset.ModNameFilter(c.Params.Get("name"))
+	name, err := modset.ModNameFilter(c.Params.Value("name"))
 	if err != nil {
 		rsp.Error = types.NewErrorMeta(api.ErrCodeBadArgument, err.Error())
 		return

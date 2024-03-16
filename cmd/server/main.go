@@ -28,7 +28,6 @@ import (
 	"github.com/hooto/hpress/config"
 	"github.com/hooto/hpress/datax"
 	"github.com/hooto/hpress/status"
-	"github.com/hooto/hpress/store"
 
 	cdef "github.com/hooto/hpress/websrv/frontend"
 	cmgr "github.com/hooto/hpress/websrv/mgr"
@@ -85,12 +84,12 @@ func main() {
 		}
 	}
 
-	ext_captcha.DataConnector = store.DataLocal
-	if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
-		hlog.Printf("error", "ext_captcha.Config error: %v", err)
-		fmt.Println("ext_captcha.Config error", err)
-		os.Exit(1)
-	}
+	// ext_captcha.DataConnector = store.DataLocal
+	// if err := ext_captcha.Config(config.CaptchaConfig); err != nil {
+	// 	hlog.Printf("error", "ext_captcha.Config error: %v", err)
+	// 	fmt.Println("ext_captcha.Config error", err)
+	// 	os.Exit(1)
+	// }
 
 	iamclient.ServiceUrl = config.Config.IamServiceUrl
 	iamclient.ServiceUrlFrontend = config.Config.IamServiceUrlFrontend

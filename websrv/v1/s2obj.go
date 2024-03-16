@@ -138,7 +138,7 @@ func (c S2Obj) DelAction() {
 	}
 
 	//
-	path, err := path_filter(c.Params.Get("path"))
+	path, err := path_filter(c.Params.Value("path"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"400", err.Error()}
 		return
@@ -250,7 +250,7 @@ func (c S2Obj) ListAction() {
 		return
 	}
 
-	path, err := path_filter(c.Params.Get("path"))
+	path, err := path_filter(c.Params.Value("path"))
 	if err != nil {
 		rsp.Error = &types.ErrorMeta{"400", err.Error()}
 		return
