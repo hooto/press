@@ -3,8 +3,6 @@ module github.com/hooto/hpress
 go 1.22.0
 
 require (
-	github.com/bamiaux/rez v0.0.0-20170731184118-29f4463c688b
-	github.com/eryx/go-gd v0.0.0-20150901145023-5b9e56d14d88
 	github.com/hooto/hcaptcha v0.1.2
 	github.com/hooto/hchart v0.0.0-20210820154659-40f12957ba94
 	github.com/hooto/hflag4g v0.10.0
@@ -72,7 +70,7 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
-	golang.org/x/image v0.5.0 // indirect
+	golang.org/x/image v0.10.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
