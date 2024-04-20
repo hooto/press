@@ -2,19 +2,20 @@ module github.com/hooto/hpress
 
 go 1.22.0
 
+// replace github.com/hooto/httpsrv v0.12.2 => /opt/workspace/src/github.com/hooto/httpsrv
+
 require (
 	github.com/bamiaux/rez v0.0.0-20170731184118-29f4463c688b
-	github.com/eryx/go-gd v0.0.0-20150901145023-5b9e56d14d88
 	github.com/hooto/hcaptcha v0.1.2
-	github.com/hooto/hchart v0.0.0-20210820154659-40f12957ba94
-	github.com/hooto/hflag4g v0.10.0
-	github.com/hooto/hini4g v0.0.0-20181117114356-13d2f492e123
+	github.com/hooto/hchart v0.1.2
+	github.com/hooto/hflag4g v0.10.1
+	github.com/hooto/hini4g v0.1.2
 	github.com/hooto/hlang4g v0.1.1
 	github.com/hooto/hlog4g v0.9.4
 	github.com/hooto/htoml4g v0.9.4
-	github.com/hooto/httpsrv v0.12.2
+	github.com/hooto/httpsrv v0.12.4
 	github.com/hooto/iam v0.9.4
-	github.com/lessos/lessgo v1.0.0
+	github.com/lessos/lessgo v1.0.1
 	github.com/lynkdb/iomix v0.0.0-20210408130459-cc48edfc442f
 	github.com/lynkdb/kvgo/v2 v2.0.0
 	github.com/lynkdb/mysqlgo v0.0.0-20210408130716-96edd6491cba
@@ -41,7 +42,7 @@ require (
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/getsentry/sentry-go v0.26.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
@@ -63,6 +64,7 @@ require (
 	github.com/prometheus/client_model v0.5.0 // indirect
 	github.com/prometheus/common v0.46.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
+	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.24.2 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
